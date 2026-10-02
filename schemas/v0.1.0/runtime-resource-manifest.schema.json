@@ -18,7 +18,7 @@
         "properties": {
           "logical_path": {"type": "string", "minLength": 1},
           "installed_path": {"type": "string", "minLength": 1},
-          "kind": {"enum": ["schema", "research_mode", "mode_action_registry", "mode_action", "decision_authority_matrix", "capability_requirement_index", "capability_requirement", "protocol_profile_index", "protocol_profile", "skill_release_projection_index", "skill_release_projection", "skill_manifest", "skill_asset", "task_packet"]},
+          "kind": {"enum": ["schema", "research_mode", "mode_action_registry", "mode_action", "decision_authority_matrix", "capability_requirement_index", "capability_requirement", "protocol_profile_index", "protocol_profile", "provider_adapters_v2", "provider_api_profile", "skill_release_projection_index", "skill_release_projection", "skill_manifest", "skill_asset", "task_packet"]},
           "size": {"type": "integer", "minimum": 0},
           "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
         },

@@ -570,22 +570,34 @@ class IsolatedApiSessionRunner:
                 "local_tool_history_assembled": local_history_assembled,
                 "tool_context_submission_attempts": tool_context_submission_attempts,
             }
-            if reason == "trace-capture-gap":
-                try:
-                    emit("session-summary", payload)
-                except Exception:
-                    warnings.append("conformance-stop-summary-capture-failed")
-            else:
+            try:
                 emit("session-summary", payload)
+            except Exception:
+                warnings.append("conformance-stop-summary-capture-failed")
+                if reason != "trace-capture-gap":
+                    # This terminal summary was already attempted. Reporting
+                    # its capture gap must not recursively retry that summary.
+                    return capture_gap(
+                        "session-terminal", "session-summary-capture-failed",
+                        terminal_summary_attempted=True,
+                    )
             return self._result(status, reason, provider_name, request.model, responses, tool_call_count, warnings)
 
-        def response_capture_gap() -> ApiSessionResult:
+        def capture_gap(
+            phase: str, failure_code: str, *, terminal_summary_attempted: bool = False,
+        ) -> ApiSessionResult:
             # Stopping capture is bounded best effort. A broken sink must not
             # erase already received/validated responses or export its error.
+            warnings.append("trace-capture-gap")
             try:
-                emit("capture-gap-summary", {"phase": "provider-response", "failure_code": "response-summary-capture-failed"})
+                emit("capture-gap-summary", {"phase": phase, "failure_code": failure_code})
             except Exception:
                 warnings.append("conformance-gap-summary-capture-failed")
+            if terminal_summary_attempted:
+                return self._result(
+                    ApiSessionStatus.SAFE_PAUSED, "trace-capture-gap", provider_name,
+                    request.model, responses, tool_call_count, warnings,
+                )
             return finish(ApiSessionStatus.SAFE_PAUSED, "trace-capture-gap")
 
         def boundary_reason() -> str | None:
@@ -619,14 +631,17 @@ class IsolatedApiSessionRunner:
                              else frozen_policy.after_successful_tool_result),
             )
             current_hash = request_content_sha256(current)
-            emit("request-summary", {
-                "phase": "specific-tool" if turn == 0 else "result-text",
-                "provider": identity.provider, "requested_model": bounded_request.model,
-                "tool_choice_kind": current.tool_choice.kind,
-                "tool_choice_name": current.tool_choice.name,
-                "model_attempt": turn + 1, "history_message_count": len(current.messages),
-                "tool_result_in_local_history": local_history_assembled,
-            })
+            try:
+                emit("request-summary", {
+                    "phase": "specific-tool" if turn == 0 else "result-text",
+                    "provider": identity.provider, "requested_model": bounded_request.model,
+                    "tool_choice_kind": current.tool_choice.kind,
+                    "tool_choice_name": current.tool_choice.name,
+                    "model_attempt": turn + 1, "history_message_count": len(current.messages),
+                    "tool_result_in_local_history": local_history_assembled,
+                })
+            except Exception:
+                return capture_gap("provider-request", "request-summary-capture-failed")
             reason = boundary_reason()
             if reason is not None:
                 return finish(ApiSessionStatus.SAFE_PAUSED, reason)
@@ -670,7 +685,7 @@ class IsolatedApiSessionRunner:
                         "cost_currency": response.usage.currency if response.usage.currency in {"USD", "CNY"} else None,
                     })
                 except Exception:
-                    return response_capture_gap()
+                    return capture_gap("provider-response", "response-summary-capture-failed")
             warnings.extend(response.warnings)
             reason = boundary_reason()
             if reason is not None:
@@ -710,10 +725,13 @@ class IsolatedApiSessionRunner:
             reason = boundary_reason()
             if reason is not None:
                 return finish(ApiSessionStatus.SAFE_PAUSED, reason)
-            emit("tool-attempt-summary", {
-                "tool_ordinal": 1, "tool_name": frozen_policy.expected_tool_name,
-                "handler_invoked": False,
-            })
+            try:
+                emit("tool-attempt-summary", {
+                    "tool_ordinal": 1, "tool_name": frozen_policy.expected_tool_name,
+                    "handler_invoked": False,
+                })
+            except Exception:
+                return capture_gap("tool-attempt", "tool-attempt-summary-capture-failed")
             reason = boundary_reason()
             if json_content_sha256(call.arguments) != arguments_hash:
                 reason = "conformance-tool-arguments-drift"
@@ -751,8 +769,7 @@ class IsolatedApiSessionRunner:
                         "result_eligible_for_local_history": deliverable,
                     })
                 except Exception:
-                    emit("capture-gap-summary", {"phase": "tool-result", "failure_code": "tool-summary-capture-failed"})
-                    return finish(ApiSessionStatus.SAFE_PAUSED, "trace-capture-gap")
+                    return capture_gap("tool-result", "tool-summary-capture-failed")
             if is_error:
                 return finish(ApiSessionStatus.FAILED, "conformance-tool-handler-failed")
             # Capture may be slow, cancel execution, or reflectively mutate
@@ -778,11 +795,14 @@ class IsolatedApiSessionRunner:
                 }),
             ),)))
             local_history_assembled = True
-            emit("tool-context-summary", {
-                "tool_ordinal": 1, "tool_name": frozen_policy.expected_tool_name,
-                "local_history_assembled": True, "result_entered_context": True,
-                "context_scope": "local-history",
-            })
+            try:
+                emit("tool-context-summary", {
+                    "tool_ordinal": 1, "tool_name": frozen_policy.expected_tool_name,
+                    "local_history_assembled": True, "result_entered_context": True,
+                    "context_scope": "local-history",
+                })
+            except Exception:
+                return capture_gap("tool-context", "tool-context-summary-capture-failed")
         return finish(ApiSessionStatus.FAILED, "conformance-session-terminal-missing")
 
     @classmethod

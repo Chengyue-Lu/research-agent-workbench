@@ -823,6 +823,30 @@ def _provider_conformance(args: argparse.Namespace) -> int:
     return 0 if report.status == "passed" else 1
 
 
+def _provider_profile_conformance(args: argparse.Namespace) -> int:
+    from research_workbench.adapters.models.profile_configuration import load_profile_configurations
+    from research_workbench.adapters.models.profile_conformance import profile_conformance_plan
+    from research_workbench.resources import RuntimeResources
+
+    configs = load_profile_configurations(args.config)
+    selected = [config for config in configs if config.adapter_id == args.adapter]
+    if len(selected) != 1:
+        raise ValueError("profile conformance requires one declared adapter")
+    root = Path(args.root) if args.root is not None else RuntimeResources().catalog_root
+    plan = profile_conformance_plan(
+        selected[0], root=root,
+        max_output_tokens=args.max_output_tokens, max_seconds=args.max_seconds,
+    )
+    document = json.dumps(plan, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
+    if args.output is not None:
+        # Plan-only entry: no credential, environment presence or Provider call.
+        # An existing file, directory or symlink is never a replaceable report.
+        with Path(args.output).open("x", encoding="utf-8", newline="\n") as stream:
+            stream.write(document)
+    print(document, end="")
+    return 0 if plan["readiness"] == "ready" else 1
+
+
 def _model_pool_probe(args: argparse.Namespace) -> int:
     pool = load_model_pool(args.config)
     environment = os.environ if args.check_environment else None
@@ -1616,6 +1640,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     provider_conformance.add_argument("--output", help="new YAML report path; required with --execute")
     provider_conformance.set_defaults(handler=_provider_conformance)
+
+    profile_conformance = provider_subparsers.add_parser(
+        "profile-conformance",
+        help="prepare fixed v2 profile checks without reading credentials or calling a provider",
+    )
+    profile_conformance.add_argument("--config", required=True)
+    profile_conformance.add_argument("--adapter", required=True)
+    profile_conformance.add_argument("--root", help="explicit profile-reference root; defaults to installed Runtime resources")
+    profile_conformance.add_argument("--max-output-tokens", type=int, default=256)
+    profile_conformance.add_argument("--max-seconds", type=float, default=120)
+    profile_conformance.add_argument("--output", help="optional new JSON plan path; existing targets are refused")
+    profile_conformance.set_defaults(handler=_provider_profile_conformance)
 
     models = subparsers.add_parser("models", help="inspect the explicit local model pool")
     model_subparsers = models.add_subparsers(dest="models_command", required=True)

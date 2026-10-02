@@ -277,23 +277,159 @@ class RuntimeResourceTests(unittest.TestCase):
             with self.subTest(arguments=arguments), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
                 main(arguments)
 
+    def provider_resource(self):
+        """Compose the new explicit provider rows in a private Runtime fixture."""
+        spec = json.loads((ROOT / "runtime-resources.json").read_bytes())
+        selected = [row for row in spec["catalogs"]
+                    if row["kind"] in {"provider_api_profile", "provider_adapters_v2"}]
+        self.assertEqual(13, len(selected))
+        self.assertEqual(12, sum(row["kind"] == "provider_api_profile" for row in selected))
+        self.put("schemas/v0.1.0/runtime-resource-manifest.schema.json",
+                 (ROOT / "schemas/v0.1.0/runtime-resource-manifest.schema.json").read_bytes())
+        for row in selected:
+            self.put(row["path"], (ROOT / row["path"]).read_bytes(), row["kind"])
+        return self.resource()
+
+    def test_provider_catalog_preserves_bytes_disabled_templates_and_installed_resolution(self):
+        from research_workbench.adapters.models.configured import build_profile_provider
+        from research_workbench.adapters.models.port import ProviderError
+        from research_workbench.adapters.models.profile_configuration import (
+            load_profile_configurations, resolve_profile_configuration,
+        )
+        resource = self.provider_resource()
+        result = resource.validate_catalog()
+        self.assertFalse(result["merge_eligible"])
+        profiles = resource.documents("provider_api_profile")
+        self.assertEqual(12, len(profiles))
+        self.assertEqual(11, len({p["identity"]["provider"] for p in profiles}))
+        for logical, entry in resource.entries.items():
+            if entry["kind"] in {"provider_api_profile", "provider_adapters_v2"}:
+                self.assertEqual((ROOT / logical).read_bytes(), resource.read(logical))
+        configs = load_profile_configurations(resource.path("registry/providers/adapters-v2.disabled.json"))
+        self.assertEqual(11, len(configs))
+        self.assertTrue(all(not c.enabled for c in configs))
+        config = next(c for c in configs if c.profile_ref["path"].endswith("deepseek-responses-v1.json"))
+        selector = config.document["model_selector"]
+        profile, resolved = resolve_profile_configuration(
+            config, root=resource.catalog_root,
+            model_environment={selector["value"]: "deepseek-flash"},
+        )
+        self.assertEqual(("deepseek", "deepseek-flash"), (profile.provider, resolved["model"]))
+        with patch("research_workbench.adapters.models.http.EnvironmentCredential.available",
+                   side_effect=AssertionError("no credential presence allowed")), patch(
+            "research_workbench.adapters.models.http.EnvironmentCredential.resolve",
+            side_effect=AssertionError("no credential resolution allowed"),
+        ), self.assertRaises(ProviderError):
+            build_profile_provider(config, root=resource.catalog_root)
+
+    def test_provider_catalog_rejects_profile_reference_hash_drift(self):
+        self.provider_resource()
+        logical = "registry/providers/adapters-v2.disabled.json"
+        document = self.document(logical)
+        document["adapters"][0]["profile_ref"]["sha256"] = "0" * 64
+        self.put(logical, document)
+        with self.assertRaisesRegex(ResourceError, "profile reference hash drift"):
+            self.resource().validate_catalog()
+
+    def test_provider_catalog_rejects_missing_or_wrong_kind_profile_target(self):
+        for wrong_kind in (False, True):
+            self.provider_resource()
+            logical = "registry/providers/adapters-v2.disabled.json"
+            document = self.document(logical)
+            reference = document["adapters"][0]["profile_ref"]
+            if wrong_kind:
+                target = "registry/modes/evidence-synthesis.yaml"
+                reference.update(path=target, sha256=hashlib.sha256(self.resource().read(target)).hexdigest())
+            else:
+                reference["path"] = "registry/providers/profiles/missing-profile.json"
+            self.put(logical, document)
+            with self.subTest(wrong_kind=wrong_kind), self.assertRaisesRegex(ResourceError, "target missing or wrong kind"):
+                self.resource().validate_catalog()
+
+    def test_provider_catalog_rejects_enabled_template(self):
+        self.provider_resource()
+        logical = "registry/providers/adapters-v2.disabled.json"
+        document = self.document(logical)
+        document["adapters"][0]["enabled"] = True
+        self.put(logical, document)
+        with self.assertRaisesRegex(ResourceError, "templates must remain disabled"):
+            self.resource().validate_catalog()
+
+    def test_provider_catalog_rejects_duplicate_profile_identity(self):
+        self.provider_resource()
+        logical = "registry/providers/profiles/google-gemma-content-v1.json"
+        document = self.document(logical)
+        document["profile_id"] = self.document("registry/providers/profiles/openai-responses-v1.json")["profile_id"]
+        self.put(logical, document)
+        with self.assertRaisesRegex(ResourceError, "duplicate Runtime Provider profile identity"):
+            self.resource().validate_catalog()
+
+    def test_provider_catalog_rejects_capability_enlargement(self):
+        self.provider_resource()
+        logical = "registry/providers/adapters-v2.disabled.json"
+        document = self.document(logical)
+        target = "registry/providers/profiles/google-gemma-content-v1.json"
+        document["adapters"][0].update(
+            profile_ref={"path": target, "sha256": hashlib.sha256(self.resource().read(target)).hexdigest()},
+            capabilities=["text", "tools"],
+        )
+        self.put(logical, document)
+        with self.assertRaisesRegex(ResourceError, "capabilities exceed"):
+            self.resource().validate_catalog()
+
+    def test_provider_catalog_closed_configuration_rejects_unimplemented_credential_backend(self):
+        self.provider_resource()
+        logical = "registry/providers/adapters-v2.disabled.json"
+        document = self.document(logical)
+        document["adapters"][0]["credential_source"] = {"kind": "os-vault", "reference": "synthetic-vault-reference"}
+        self.put(logical, document)
+        with self.assertRaisesRegex(ResourceError, "invalid closed Runtime Provider template"):
+            self.resource().validate_catalog()
+
+    def test_provider_catalog_rejects_duplicate_keys_adapter_ids_and_reference_paths(self):
+        logical = "registry/providers/adapters-v2.disabled.json"
+        self.provider_resource()
+        raw = (ROOT / logical).read_bytes().replace(b'"config_version": "2.0.0",',
+                                                   b'"config_version": "2.0.0", "config_version": "2.0.0",')
+        self.put(logical, raw)
+        with self.assertRaisesRegex(ResourceError, "duplicate resource metadata key"):
+            self.resource().validate_catalog()
+        for duplicate_id in (True, False):
+            self.provider_resource()
+            document = self.document(logical)
+            if duplicate_id:
+                document["adapters"][1]["adapter_id"] = document["adapters"][0]["adapter_id"]
+            else:
+                document["adapters"][1]["profile_ref"] = copy.deepcopy(document["adapters"][0]["profile_ref"])
+            self.put(logical, document)
+            with self.subTest(duplicate_id=duplicate_id), self.assertRaisesRegex(ResourceError, "duplicate Runtime Provider"):
+                self.resource().validate_catalog()
+
     def test_build_regeneration_is_identical_and_removes_stale_output(self):
         import build_backend
         source = self.base / "source"
         source.mkdir()
         shutil.copyfile(ROOT / "runtime-resources.json", source / "runtime-resources.json")
-        for entry in self.manifest["entries"]:
-            path = source / entry["logical_path"]
+        spec = json.loads((ROOT / "runtime-resources.json").read_bytes())
+        logical_paths = {entry["logical_path"] for entry in self.manifest["entries"]}
+        logical_paths.update(row["path"] for row in spec["catalogs"])
+        logical_paths.update(path.relative_to(ROOT).as_posix()
+                             for path in (ROOT / "schemas").glob("v*/*.schema.json"))
+        for logical in sorted(logical_paths):
+            path = source / logical
             path.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copyfile(ROOT / entry["logical_path"], path)
+            shutil.copyfile(ROOT / logical, path)
         pin = build_backend.generate(source)
         generated = source / "src/research_workbench/_runtime_data"
-        self.assertEqual((ROOT / "src/research_workbench/_runtime_data/manifest.json").read_bytes(),
-                         (generated / "manifest.json").read_bytes())
+        generated_manifest = (generated / "manifest.json").read_bytes()
         (generated / "stale.txt").write_text("stale")
         self.assertEqual(pin, build_backend.generate(source))
+        self.assertEqual(generated_manifest, (generated / "manifest.json").read_bytes())
         self.assertFalse((generated / "stale.txt").exists())
-        self.assertEqual(0, RuntimeResources(generated, expected_sha256=pin).validate_catalog()["projections"])
+        resources = RuntimeResources(generated, expected_sha256=pin)
+        self.assertEqual(0, resources.validate_catalog()["projections"])
+        self.assertEqual(13, sum(e["kind"] in {"provider_api_profile", "provider_adapters_v2"}
+                                 for e in resources.entries.values()))
         spec = json.loads((source / "runtime-resources.json").read_bytes())
         spec["catalogs"].append({"path": "registry/skills/accepted.json", "kind": "skill_asset"})
         (source / "runtime-resources.json").write_text(json.dumps(spec), encoding="utf-8")
