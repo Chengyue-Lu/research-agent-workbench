@@ -419,5 +419,7 @@ H5 helper bytes have no intervening Git diff. Focused current-source H1–H5 tes
 passed 111/111 on Python 3.11.16; documentation/public-surface passed 23/23,
 and the original 454-file archive cold replay passed. Exact commands, results
 and output hash are in the [review Attempt](attempts/M5-007-ACCEPTANCE-REVIEW-001/README.md).
+The actual protected-develop source CI for `2618ef4` later completed SUCCESS with all
+12 jobs successful; the earlier in-progress observation remains a dated entry fact.
 Task remains IN_PROGRESS, Issue55 OPEN, M5-008 BLOCKED; no
 live/admission/analysis authority was granted.

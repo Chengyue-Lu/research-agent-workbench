@@ -38,7 +38,7 @@ H5 proof 的 ZIP SHA-256 为 `176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7
    `develop@81a058b`、再等价迁至 `develop@39cf61e`，最终 rebase 到首发收口后的
    `develop@54192ef` 并 squash 合入 `develop@2618ef4`。`docs/STATUS.md` 同时保留
    H5 接受与 M14 首发完成；旧分支的文档 CI 依赖修复已由新基线吸收。PR107 的
-   exact-head component/governance 与实际 protected-develop component push 均已通过；
+   exact-head component/governance 与实际 protected-develop component/source CI 均已通过；
    整体验收仍须按[当前复核](M5-007_ACCEPTANCE_REVIEW.md)单独审查。
 2. 独立复核 M5-007 Task 行的全部验收：冻结和实际 binding、qualification/overlap/pairwise、
    typed execution fact/Receipt、失败/retry、blind review/reveal、metric/analysis、全链 cold

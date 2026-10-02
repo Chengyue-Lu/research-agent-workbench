@@ -18,8 +18,11 @@ using the original caller-pinned inventory reference and the current trusted sou
 current-source H1–H5 focused PASS, 23/23 documentation/public-surface PASS, and the
 [focused test log](evidence/focused-h1-h5.log) with its SHA-256. This includes a fresh
 H5 proof build, new-process replay and adversarial tamper cases. The
-protected-develop component push succeeded; its parallel source CI was still running
-at the recorded capture time. This Attempt does not claim M5-007 acceptance,
+protected-develop component push succeeded. Its parallel
+[exact-source CI](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201792)
+was running at the initial capture time and subsequently completed SUCCESS with all
+12 jobs successful, including both Python versions and coverage. This Attempt does
+not claim M5-007 acceptance,
 alter Task/Issue status, or unlock live evaluation.
 
 Capture is partial: not every intake, read and UI event has a native Agent Trace.

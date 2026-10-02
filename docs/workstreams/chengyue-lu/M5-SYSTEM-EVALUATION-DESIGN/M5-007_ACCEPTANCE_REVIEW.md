@@ -45,8 +45,9 @@ Provider/Tool/Human/admission 的验收。H1–H5 各 PR 的接受只证明其�
 ## 当前验证与审查缺口
 
 当前基线的 [component push CI](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201813)
-已经 SUCCESS；[source CI](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201792)
-仍在运行。本次已从原 454 文件 ZIP 解压至空目录，在当前受信源码下使用原 inventory ref
+及 [source CI](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201792)
+均已 SUCCESS；后者 12 个作业全通过，含双 Python 测试与 coverage。本次已从原 454 文件 ZIP
+解压至空目录，在当前受信源码下使用原 inventory ref
 [独立冷回放](attempts/M5-007-ACCEPTANCE-REVIEW-001/evidence/archived-replay.json) PASS：
 四臂 8 cells / 10 pairs、8 completed / 1 post-call-failed / 7 not-started，
 13 指标均 unavailable/null，primary eligibility 为 false。
