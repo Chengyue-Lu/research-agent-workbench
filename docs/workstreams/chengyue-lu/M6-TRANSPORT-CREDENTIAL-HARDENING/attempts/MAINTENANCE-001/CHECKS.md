@@ -71,3 +71,9 @@ The initial missing-runtime errors are retained rather than rewritten. Root gene
 ## Integration and review
 
 Actual diff-based component plan/run, documentation/public links and exact-head R2 PR governance are recorded by root after the source commit. Hosted CI and named human review remain separate; this summary is not live/account acceptance.
+
+## Actual source-component and documentation checks
+
+Source implementation commit `3adaf0f` selected adapters/docs plus the new changed test module, unknown paths0. Eight selected modules and the standard short regressions executed **92/92 PASS** (6.233 seconds). Existing model pool and API Session defaults are included. Plan SHA-256 `bf2cd5cff7e28913fc31535dc4de0dfc298ab567192c41cfba56028f061ed9ab`; native result SHA-256 `e1915aeb1eb7ffc53c07630e4b434f4ba6bc172c6c99f57729a1c640f414a001`.
+
+Existing documentation/public checks: **23/23 PASS**, including internal Markdown links and public projection boundaries. Independent technical review: **12/12 PASS**, no remaining reproduced blocker on the same six source/test hashes; review SHA-256 `35ef9f36fe741fdbbf37ca46ecb8a8cf3ce3f3d85cd4883d0ed525bee0ac2cfb`. This is Agent evidence, not named Human approval. Final commit adds only this check summary; source/test blobs remain equal to the tested implementation. Exact-head PR metadata/governance and hosted CI are retained in the external PR/receipt. No full/coverage/live acceptance is claimed.

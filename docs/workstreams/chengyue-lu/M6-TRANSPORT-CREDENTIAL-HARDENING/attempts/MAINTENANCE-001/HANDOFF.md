@@ -8,3 +8,5 @@ build_backend.generate生成runtime closure，无安装。最终结果见[CHECKS
 产品三家身份/Port/Session及所有Task/Gate不变；new vendor/Profile与Flash验收另行推进。
 R2需named review与必需CI，不自merge。可见dispatch/local证据保留，既有准备wrapper capture-gap
 如实记录，不声称保存完整hidden reasoning或补造原事件。
+
+最终冻结源focused62/62、独立security12/12、actual component92/92和docs/public23/23均PASS，详见CHECKS。root仅追加检查摘要，六个源/测试文件hash保持。待R2 PR、required hostedCI与named review后集成，不自主merge。
