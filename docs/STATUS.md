@@ -15,7 +15,7 @@ production runtime-execution binding、Human Decision、科学有效性或端到
 
 M4-001～004 已全部 accepted / merged：Source Admission、Artifact Promotion、Claim evidence localization
 与 bounded Run reconstruction 构成已实现的 provenance 链。M5-006 Protocol 与资格校验器已实现，
-M11-007 Skill closeout 与 Gate B 已按 PR81 实现及具名证据接受收口；M6-008 baseline envelope/closeout 已由 PR75 接受并收口。M5-007 H1–H5 bounded synthetic Harness 已完成，整项验收与证据映射见[收口记录](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)；后继 M5-008 live pilot 仍受 M6-004、真实 A4 admission 和专项授权阻断。
+M11-007 Skill closeout 与 Gate B 已按 PR81 实现及具名证据接受收口；M6-008 baseline envelope/closeout 已由 PR75 接受并收口。M5-007 H1–H5 bounded synthetic Harness 已完成，整项验收与证据映射见[收口记录](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)；后继 M5-008 live pilot 仍受 M6-010、真实 A4 admission 和专项授权阻断。
 M4 的 bounded 验收不替代真实 Case Dossier、live Provider/session conformance 或正式系统评价。
 
 Issue #57 / ADR-0021 的 M14-001～005 已完成首个 curated release：M14-001～004 提供受信
@@ -35,6 +35,8 @@ exact identities、source/hosted CI、review/merge/publish 决定和附件哈希
 首发仍是内部技术 alpha：安装、结构校验和固定离线示例的 bounded 重建不证明真实 Provider 可用性、
 Skill admission、正式研究评价或科学有效性。产品修复继续进入 develop，再独立冻结下一次 curated
 release；当前 release branch 不回并 develop，原 tag/附件保持不变。
+
+通用API接入目前进入任务定义：M6-009为offline-first协议/profile与凭据接口路线，M6-010为独立DeepSeek Flash验收，详见[计划](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)。当前没有新增厂商实现或live PASS；原M6-004 OpenAI验收仍BLOCKED。保存本地Key和晚间时间安排不证明Provider或Pilot已经可用。
 
 ## 已实现
 

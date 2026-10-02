@@ -128,15 +128,16 @@ flowchart LR
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / satisfied"] --> M5007
     M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
-    M6004["M6-004 BLOCKED<br/>live Provider/session"] --> M5004
-    M6004 --> M5008
+    M6009["M6-009 READY<br/>general offline Provider"] --> M6010["M6-010 BLOCKED<br/>DeepSeek Flash live"]
+    M6010 --> M5004
+    M6010 --> M5008
 ```
 
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
 `M5-006 DONE → M6-008 DONE → M5-007 DONE`；H1–H5 bounded synthetic Harness 的[整项收口](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)保留验收、失败/缺测量与冷回放边界。后继入口是仍受外部 Gate 阻断的 M5-008 live pilot。
 M5-004 的 M4 provenance 链、M5-003 计划契约、M11-006 mapping 机制、M6-008 baseline closeout 与 Skill replay Gate 已满足；
-M5-007 synthetic Harness 已闭合；仍等待两个 Human-approved public/private Case Dossier、M5-008 live pilot 验收、真实 A4 admission 与 M6-004 live
+M5-007 synthetic Harness 已闭合；仍等待两个 Human-approved public/private Case Dossier、M5-008 live pilot 验收、真实 A4 admission 与 M6-010 live
 Provider/session Gate。M5-008 使用独立获批的 pilot dossier，在完整 Harness、live conformance、A4 admission
 与专项授权闭合后验证四臂真实 Provider/Tool execution；当前 BLOCKED。验收只证明 exact source/config 的
 live 工程闭包，pilot runs 不进入 primary confirmatory run set；pilot 观察或调参影响的案例不能重新标为
@@ -157,7 +158,7 @@ M6-008 的 A1/A2 transport 已由 PR75 接受并收口为 DONE；plain arm 不�
 control、dummy Method/Snapshot 或 Skill Assignment 改写 M5-003 treatment。Harness 还必须独立重算 A3/A4
 pairwise record，不能把 Method、non-Skill substrate、interface 或 boundary 差异误报为 pure Skill effect。Issue
 #55 的 Gate A、[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 均已满足。
-M5-007 的实现依赖已满足，进入 IN_PROGRESS；具体实施和整体验收由路诚钺负责。M5-003 本身没有执行案例或产生净增量结论。
+M5-007 已DONE；具体实施和整体验收由路诚钺负责。M5-003 本身没有执行案例或产生净增量结论。
 `A4-RUNTIME-ADMISSION-GATE` 是外部可审计条件，不是新 M Task：它保持 M5-003 的 candidate/evaluation
 origin，并 exact-pin Human Admission Decision→accepted Release→Projection→Supply→Resolution→Snapshot→
 Bundle→View→Host 的逐跳 identity/hash closure；当前生产 projection index 为空，故该 Gate 未满足。

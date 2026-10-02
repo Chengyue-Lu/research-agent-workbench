@@ -10,22 +10,24 @@ transport 验证 live 环境中的调度、资格重验、实际执行事实、�
 验收对象是 Harness 的工程可用性；pilot observations 不产生 confirmatory net-benefit conclusion。
 
 ```text
-M5-007 完整验收 + M6-004 live conformance + A4 admission + pilot 专项授权
+M5-007 完整验收 + M6-010 live conformance + A4 admission + pilot 专项授权
   → M5-008 四臂 live pilot 与具名验收
   → M5-004（仍须满足获批真实 dossiers 和所有原有 Gate）
   → M5-005 Human disposition
 ```
 
 M5-008 为 BLOCKED。M5-007 的 H1/H2 PR 或单独 synthetic proof 不满足完整 Harness 前置；
-M6-004 只证明选定 Provider/session 的 live conformance，也不能替代本 Task 的跨 transport 集成证据。
+M6-010 只证明选定 Provider/session 的 live conformance，也不能替代本 Task 的跨 transport 集成证据。
 本任务定义及其 PR 合入不授权 API 消费、真实数据出站、Tool 副作用或 Skill 准入。
+
+当前首轮Provider验收专门采用DeepSeek Flash，按[通用接入定义](../M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)以M6-010替换本Gate的Provider前置。原M6-004 OpenAI范围继续BLOCKED；DeepSeek结果不能记作原OpenAI已通过。M6-010证据必须适用本次同一source/config/model/profile/Host/Tool binding，漂移时重新核对。这个定义修订不批准任何真实Pilot调用。
 
 ## 启动条件
 
 | 前置 | 执行前必须冻结、核对的依据 |
 |---|---|
 | M5-007 DONE | 完整 H1–H5 已接受的 implementation、validator、Schema、四臂 synthetic/replay 与 CI pins；传递 M5-006、M6-008、M11-004/006/007 和 Skill replay Gate |
-| M6-004 DONE | 适用于本次 exact Provider/Adapter/model slot、Windows Host/session 与 Tool surface 的有效 live conformance；旧模型或不同配置证据不能直接沿用 |
+| M6-010 DONE | 适用于本次 exact Provider/Adapter/model slot、Windows Host/session 与 Tool surface 的有效 live conformance；旧模型或不同配置证据不能直接沿用 |
 | `A4-RUNTIME-ADMISSION-GATE` | 按[既有 Gate](README.md#a4-runtime-admission-gate)核对 exact candidate/evaluation、具名 Human Admission Decision、accepted Release、Projection、Supply 以及唯一 Resolver 形成的 Snapshot→Bundle→View→Host 全链；live pilot 同样禁止 synthetic projection 和 candidate direct-load |
 | `M5-LIVE-PILOT-AUTHORIZATION-GATE` | 具名 Human 对 exact pilot dossier/Protocol、账户与模型、执行人、允许时间窗口、费用/token/turn/time/retry 上限、数据出站/读取范围、Tool 权限/副作用及停止条件的专项授权；只记录 credential reference，不归档密钥；执行负责人核对资源与配置有效性 |
 
