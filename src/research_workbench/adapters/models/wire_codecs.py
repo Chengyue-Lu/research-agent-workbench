@@ -624,11 +624,18 @@ def _decode_responses(document: Mapping[str, Any], profile: _Profile) -> ModelRe
     status = document.get("status")
     if status not in ("completed", "incomplete"):
         _error("Responses status is not a completed or recognized incomplete result")
+    incomplete_finish = None
+    if status == "incomplete":
+        reason = _object(document.get("incomplete_details", {})).get("reason")
+        incomplete_finish = _terminal(reason, {"max_output_tokens": FinishReason.LENGTH, "content_filter": FinishReason.REFUSAL,
+                                      "safety": FinishReason.REFUSAL})
     output, calls = [], []
     refusal = False
     for raw in _array(document.get("output")):
         item = _object(raw)
-        if item.get("status", "completed") != "completed":
+        partial_text = (item.get("type") == "message" and item.get("status") == "incomplete"
+                        and incomplete_finish == FinishReason.LENGTH)
+        if item.get("status", "completed") != "completed" and not partial_text:
             _error("response item is not complete")
         if item.get("type") == "message":
             if item.get("role") != "assistant":
@@ -637,7 +644,7 @@ def _decode_responses(document: Mapping[str, Any], profile: _Profile) -> ModelRe
                 part = _object(raw_part)
                 if part.get("type") == "output_text" and isinstance(part.get("text"), str):
                     output.append(ContentBlock("text", text=part["text"]))
-                elif part.get("type") == "refusal" and isinstance(part.get("refusal"), str):
+                elif not partial_text and part.get("type") == "refusal" and isinstance(part.get("refusal"), str):
                     refusal = True
                     output.append(ContentBlock("refusal", text=part["refusal"]))
                 else:
@@ -647,9 +654,7 @@ def _decode_responses(document: Mapping[str, Any], profile: _Profile) -> ModelRe
         else:
             _error("Responses reasoning/server-tool/output kind is unsupported", unsupported=True)
     if status == "incomplete":
-        reason = _object(document.get("incomplete_details", {})).get("reason")
-        finish = _terminal(reason, {"max_output_tokens": FinishReason.LENGTH, "content_filter": FinishReason.REFUSAL,
-                  "safety": FinishReason.REFUSAL})
+        finish = incomplete_finish
     else:
         finish = FinishReason.REFUSAL if refusal else FinishReason.TOOL_CALL if calls else FinishReason.COMPLETE
     if calls and (status != "completed" or refusal):

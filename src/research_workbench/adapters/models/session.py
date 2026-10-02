@@ -563,14 +563,30 @@ class IsolatedApiSessionRunner:
                 event_sink.record(kind, detached)
 
         def finish(status: ApiSessionStatus, reason: str) -> ApiSessionResult:
-            emit("session-summary", {
+            payload = {
                 "status": status.value, "stop_reason": reason,
                 "model_attempts": model_attempts, "successful_responses": len(responses),
                 "tool_invocations": tool_call_count,
                 "local_tool_history_assembled": local_history_assembled,
                 "tool_context_submission_attempts": tool_context_submission_attempts,
-            })
+            }
+            if reason == "trace-capture-gap":
+                try:
+                    emit("session-summary", payload)
+                except Exception:
+                    warnings.append("conformance-stop-summary-capture-failed")
+            else:
+                emit("session-summary", payload)
             return self._result(status, reason, provider_name, request.model, responses, tool_call_count, warnings)
+
+        def response_capture_gap() -> ApiSessionResult:
+            # Stopping capture is bounded best effort. A broken sink must not
+            # erase already received/validated responses or export its error.
+            try:
+                emit("capture-gap-summary", {"phase": "provider-response", "failure_code": "response-summary-capture-failed"})
+            except Exception:
+                warnings.append("conformance-gap-summary-capture-failed")
+            return finish(ApiSessionStatus.SAFE_PAUSED, "trace-capture-gap")
 
         def boundary_reason() -> str | None:
             try:
@@ -630,6 +646,9 @@ class IsolatedApiSessionRunner:
             except Exception:
                 warnings.append("provider exception category: unexpected")
                 return finish(ApiSessionStatus.FAILED, "provider-exception:unexpected")
+            # Provider facts are recorded after freezing/contract validation,
+            # before optional summary capture can fail and stop execution.
+            responses.append(response)
             if event_sink is not None:
                 try:
                     def token_value(value: object) -> int | None:
@@ -651,9 +670,7 @@ class IsolatedApiSessionRunner:
                         "cost_currency": response.usage.currency if response.usage.currency in {"USD", "CNY"} else None,
                     })
                 except Exception:
-                    emit("capture-gap-summary", {"phase": "provider-response", "failure_code": "response-summary-capture-failed"})
-                    return finish(ApiSessionStatus.SAFE_PAUSED, "trace-capture-gap")
-            responses.append(response)
+                    return response_capture_gap()
             warnings.extend(response.warnings)
             reason = boundary_reason()
             if reason is not None:

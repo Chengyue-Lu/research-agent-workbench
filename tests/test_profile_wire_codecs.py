@@ -267,6 +267,82 @@ class ProfileWireCodecTests(unittest.TestCase):
         raw.update(candidates=[], promptFeedback={"blockReason": "SAFETY"})
         self.assertEqual(decode_profile_response(request(), raw, profile("gemini-generate-content")).finish_reason, FinishReason.REFUSAL)
 
+    def test_responses_truncated_text_preserves_partial_output_and_usage(self):
+        for item_status in ("completed", "incomplete"):
+            raw = fixture("responses")
+            raw.update(status="incomplete", incomplete_details={"reason": "max_output_tokens"})
+            raw["output"][0]["status"] = item_status
+            raw["output"][0]["content"][0]["text"] = "synthetic partial text"
+            with self.subTest(item_status=item_status):
+                result = decode_profile_response(request(), raw, profile("responses"))
+                self.assertEqual(result.finish_reason, FinishReason.LENGTH)
+                self.assertEqual(tuple(block.text for block in result.output), ("synthetic partial text",))
+                self.assertEqual((result.usage.input_tokens, result.usage.output_tokens,
+                                  result.usage.total_tokens, result.usage.cached_input_tokens,
+                                  result.usage.reasoning_tokens), (12, 3, 15, 4, 0))
+                self.assertEqual((result.provider, result.model, result.response_id),
+                                 ("openai", "synthetic-model", "fixture-responses-1"))
+                self.assertEqual(result.tool_calls, ())
+
+    def test_responses_incomplete_message_exception_rejects_other_states(self):
+        cases = (
+            ("completed", None, "incomplete"),
+            ("incomplete", "max_output_tokens", "in_progress"),
+            ("incomplete", "max_output_tokens", "queued"),
+            ("incomplete", "max_output_tokens", "failed"),
+            ("incomplete", "max_output_tokens", None),
+            ("incomplete", "content_filter", "incomplete"),
+            ("incomplete", "safety", "incomplete"),
+            ("incomplete", "unknown-reason", "incomplete"),
+            ("incomplete", None, "incomplete"),
+        )
+        for top, reason, item in cases:
+            raw = fixture("responses")
+            raw.update(status=top, incomplete_details=None if reason is None else {"reason": reason})
+            raw["output"][0]["status"] = item
+            with self.subTest(top=top, reason=reason, item=item):
+                with self.assertRaises(ProviderError):
+                    decode_profile_response(request(), raw, profile("responses"))
+        raw = fixture("responses")
+        raw.update(status="incomplete", incomplete_details={"reason": "max_output_tokens"})
+        raw["output"][0].update(status="incomplete", content=[{"type": "refusal", "refusal": "synthetic refusal"}])
+        with self.assertRaises(ProviderError):
+            decode_profile_response(request(), raw, profile("responses"))
+
+    def test_responses_truncated_text_never_authorizes_complete_or_incomplete_tools(self):
+        req = request(tools=(TOOL,))
+        for item_status in ("completed", "incomplete", "in_progress"):
+            for with_text in (False, True):
+                raw = tool_response("responses")
+                raw.update(status="incomplete", incomplete_details={"reason": "max_output_tokens"})
+                raw["output"][0]["status"] = item_status
+                if with_text:
+                    message = fixture("responses")["output"][0]
+                    message["status"] = "incomplete"
+                    raw["output"].insert(0, message)
+                with self.subTest(item_status=item_status, with_text=with_text):
+                    with self.assertRaises(ProviderError):
+                        decode_profile_response(req, raw, profile("responses"))
+
+    def test_responses_truncated_text_configured_factory_roundtrip(self):
+        from tests.test_configured_provider import ConfiguredProviderTests
+
+        helper = ConfiguredProviderTests()
+        helper.setUp()
+        self.addCleanup(helper.doCleanups)
+        provider = helper.build("openai")
+        helper.transport.document.update(status="incomplete", incomplete_details={"reason": "max_output_tokens"})
+        helper.transport.document["output"][0]["status"] = "incomplete"
+        helper.transport.document["output"][0]["content"][0]["text"] = "synthetic partial text"
+        response = provider.generate(helper.request(provider))
+        self.assertEqual(response.finish_reason, FinishReason.LENGTH)
+        self.assertEqual(response.output[0].text, "synthetic partial text")
+        self.assertEqual((response.usage.input_tokens, response.usage.output_tokens, response.usage.total_tokens), (1, 1, 2))
+        self.assertEqual(helper.credential.presence_checks, 0)
+        self.assertEqual(helper.credential.resolutions, 1)
+        self.assertEqual(len(helper.transport.requests), 1)
+        self.assertEqual(response.tool_calls, ())
+
     def test_reasoning_and_signatures_are_not_captured_or_guessed(self):
         marker = "synthetic-private-reasoning"
         for family in FAMILIES:
