@@ -27,3 +27,15 @@
 
 真实 Provider/API 调用、真实 Key 值读取为 0；各冻结源的安装检查见对应 Attempt CHECKS。M5 Pilot、A4 admission、Phase C、
 Supply/Resolver/Skill 和科研判断的权威边界保持独立。
+
+## FOLLOWUP-004 驱动和报告
+
+- 显式 source-bound driver 只允许实际 UrllibTransport 与固定 body policy，启动前匹配 v3 manifest，
+  caller guard 返回后复验 graph/config。普通 None 路径保留原行为；CLI 仍仅离线计划。
+- 报告 1.1 保留已入场的 frozen refs，即使当前 helper 漂移或源码文件不可读取也能保留失败与用量。
+  cold reader 对 config/graph/profile/model/source、policy output 和明确 Attempt 的预占引用作一致性检查。
+  Unknown final accounting 保留已观察事实，不能由丢失的 cumulative snapshot 声称通过账本复核。
+- 实际 delegate 身份只在运行边界观察；归档不能独立证明 socket、外部 callback 全局变量、
+  native/dependency 行为、账户用量或 Windows context。caller-attested / windows-unaccepted 限定保持。
+- 旧 head982c43e hosted CI37048711145 的安装路径测试 ERROR 原样保存；修复将测试指向实际
+  loaded package root，原错误位置负例保持。新 head 的 CI 独立观察，不借旧绿色或抹去此失败。

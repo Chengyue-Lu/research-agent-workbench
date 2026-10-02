@@ -37,7 +37,10 @@
       "const": "profile_conformance_report"
     },
     "report_version": {
-      "const": "1.0.0"
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
     },
     "status": {
       "enum": [
@@ -744,6 +747,88 @@
           "capture-gap"
         ]
       }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_ref",
+        "implementation_closure_ref",
+        "body_policy",
+        "input_upper_tokens",
+        "session_policy",
+        "delegated_transport_class",
+        "attempt_ordinal"
+      ],
+      "properties": {
+        "manifest_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "implementation_closure_ref": {
+          "$ref": "common.schema.json#/$defs/fileRef"
+        },
+        "body_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy_version",
+            "max_output_tokens",
+            "max_body_bytes"
+          ],
+          "properties": {
+            "policy_version": {
+              "const": "1.0.0"
+            },
+            "max_output_tokens": {
+              "type": "integer",
+              "minimum": 16,
+              "maximum": 256
+            },
+            "max_body_bytes": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 4096
+            }
+          }
+        },
+        "input_upper_tokens": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000000
+          }
+        },
+        "session_policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policy_id",
+            "policy_version"
+          ],
+          "properties": {
+            "policy_id": {
+              "const": "profile-conformance-specific-none"
+            },
+            "policy_version": {
+              "const": "1.0.0"
+            }
+          }
+        },
+        "delegated_transport_class": {
+          "const": "research_workbench.adapters.models.http.UrllibTransport"
+        },
+        "attempt_ordinal": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "maximum": 3
+        }
+      }
     }
   },
   "allOf": [
@@ -847,6 +932,32 @@
           "stop_code": {
             "const": "accounting-failed"
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "report_version": {
+            "const": "1.1.0"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "binding"
+        ],
+        "properties": {
+          "config_ref": {
+            "$ref": "common.schema.json#/$defs/fileRef"
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "binding"
+          ]
         }
       }
     }

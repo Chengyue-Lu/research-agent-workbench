@@ -204,26 +204,27 @@ print(json.dumps({"module_count":receipt["module_count"],"product_imports":0,"ar
         self.assertEqual({"module_count": 4, "product_imports": 0, "archive_exec": 0}, json.loads(result.stdout))
 
     def test_actual_provider_graph_named_closed_registries_and_outside_seven_helper(self):
-        doc = closure.produce_source_closure(RUNTIME_ROOTS, source_root=ROOT / "src", project_root=self.root, archive_prefix="runtime")
+        source_root = Path(closure.__file__).resolve().parents[3]
+        doc = closure.produce_source_closure(RUNTIME_ROOTS, source_root=source_root, project_root=self.root, archive_prefix="runtime")
         modules = doc["modules"]
         self.assertGreaterEqual(len(modules), 32)
         for name in ("research_workbench", "research_workbench.adapters", "research_workbench.evaluation", "research_workbench.validation"):
             self.assertTrue(modules[name]["is_package"])
         self.assertEqual({"typing_only": "T"}, modules["research_workbench.contracts.common"]["claims"]["globals"]["T"])
         self.assertIn("FIXED_METRIC_SET", modules["research_workbench.evaluation.manifest"]["claims"]["globals"])
-        receipt = closure.verify_loaded_source_closure(doc, read_bytes=self.reader.read_bytes, source_root=ROOT / "src")
+        receipt = closure.verify_loaded_source_closure(doc, read_bytes=self.reader.read_bytes, source_root=source_root)
         self.assertGreater(receipt["checked"]["callables"], 400)
         pins = importlib.import_module("research_workbench.evaluation.pins")
         with patch.object(pins, "digest", lambda value: "outside-seven-drift"):
             with self.assertRaises(closure.SourceClosureError):
-                closure.verify_loaded_source_closure(doc, read_bytes=self.reader.read_bytes, source_root=ROOT / "src")
+                closure.verify_loaded_source_closure(doc, read_bytes=self.reader.read_bytes, source_root=source_root)
         metrics = importlib.import_module("research_workbench.evaluation.manifest")
         metric = metrics.FIXED_METRIC_SET[0]
         original = metric.definition
         object.__setattr__(metric, "definition", "synthetic-registry-drift")
         try:
             with self.assertRaisesRegex(closure.SourceClosureError, "global policy differs"):
-                closure.verify_loaded_source_closure(doc, read_bytes=self.reader.read_bytes, source_root=ROOT / "src")
+                closure.verify_loaded_source_closure(doc, read_bytes=self.reader.read_bytes, source_root=source_root)
         finally:
             object.__setattr__(metric, "definition", original)
 

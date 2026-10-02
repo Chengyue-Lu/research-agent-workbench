@@ -12,7 +12,7 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from research_workbench.adapters.models.conformance_journal import ConformanceUsageJournal
-from research_workbench.adapters.models.profile_conformance_report import write_profile_conformance_report
+from research_workbench.adapters.models.profile_conformance_report import verify_profile_conformance_report, write_profile_conformance_report
 from research_workbench.validation.schemas import SchemaCatalog
 from tests import test_profile_conformance as driver_helpers
 
@@ -109,6 +109,81 @@ class ProfileConformanceReportingTests(unittest.TestCase):
     def test_existing_directory_is_not_replaceable(self):
         with self.assertRaises(OSError):
             self.write(output=self.directory)
+
+    def bound_report(self):
+        report = copy.deepcopy(self.report)
+        report.update(report_version='1.1.0', config_ref={'path': 'binding/resolved-config.json', 'sha256': '1' * 64})
+        report['binding'] = {
+            'manifest_ref': {'path': 'binding/manifest.json', 'sha256': '2' * 64},
+            'implementation_closure_ref': {'path': 'binding/graph/closure.json', 'sha256': '3' * 64},
+            'attempt_ordinal': None,
+            'body_policy': {'policy_version': '1.0.0', 'max_output_tokens': 256, 'max_body_bytes': 4096},
+            'input_upper_tokens': [100, 100, 100],
+            'session_policy': {'policy_id': 'profile-conformance-specific-none', 'policy_version': '1.0.0'},
+            'delegated_transport_class': 'research_workbench.adapters.models.http.UrllibTransport',
+        }
+        return report
+
+    def test_legacy_report_does_not_read_binding_even_with_root(self):
+        with patch('research_workbench.adapters.models.profile_conformance_report.EvaluationInputs',
+                   side_effect=AssertionError('legacy reader must not touch bindings')):
+            result = verify_profile_conformance_report(self.report, root=self.directory, schema_root=ROOT / 'schemas')
+        self.assertEqual(result, self.report)
+        self.assertIsNot(result, self.report)
+
+    def test_bound_version_requires_archive_root_before_publication(self):
+        report = self.bound_report()
+        self.assertEqual(self.catalog.validate('profile_conformance_report', report), [])
+        with self.assertRaisesRegex(ValueError, 'requires its archive root') as raised:
+            self.write(report)
+        self.assertIsNone(raised.exception.__context__)
+        self.assertFalse(self.output.exists())
+
+    def test_legacy_version_cannot_smuggle_binding_field(self):
+        report = self.bound_report()
+        report['report_version'] = '1.0.0'
+        with self.assertRaisesRegex(ValueError, 'closed contract'):
+            self.write(report)
+        self.assertFalse(self.output.exists())
+
+    def test_bound_version_rejects_missing_null_and_unclosed_contract_fields(self):
+        mutations = (
+            lambda report: report.pop('binding'),
+            lambda report: report.update(config_ref=None),
+            lambda report: report['binding'].pop('implementation_closure_ref'),
+            lambda report: report['binding'].pop('attempt_ordinal'),
+            lambda report: report['binding'].update(attempt_ordinal=4),
+            lambda report: report['binding']['body_policy'].update(policy_version='0.0.0'),
+            lambda report: report['binding']['body_policy'].update(max_output_tokens=257),
+            lambda report: report['binding']['body_policy'].update(max_body_bytes=4097),
+            lambda report: report['binding'].update(input_upper_tokens=[100, 100]),
+            lambda report: report['binding'].update(input_upper_tokens=[100, 100, 10000001]),
+            lambda report: report['binding']['session_policy'].update(policy_id='caller-choice'),
+            lambda report: report['binding'].update(delegated_transport_class='synthetic.ArbitraryTransport'),
+            lambda report: report['binding'].update(private_response='SYNTHETIC-PRIVATE-DETAIL'),
+        )
+        for index, mutate in enumerate(mutations):
+            with self.subTest(index=index):
+                report = self.bound_report()
+                mutate(report)
+                with self.assertRaisesRegex(ValueError, 'closed contract'):
+                    write_profile_conformance_report(report, self.output, schema_root=ROOT / 'schemas', root=self.directory)
+                self.assertFalse(self.output.exists())
+
+    def test_unavailable_and_tampered_bound_archive_have_content_free_errors(self):
+        report = self.bound_report()
+        for raw in (None, b'SYNTHETIC-PRIVATE-ARCHIVE-DETAIL'):
+            with self.subTest(raw_present=raw is not None):
+                if raw is not None:
+                    path = self.directory / report['binding']['manifest_ref']['path']
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(raw)
+                with self.assertRaises(ValueError) as raised:
+                    write_profile_conformance_report(report, self.output, schema_root=ROOT / 'schemas', root=self.directory)
+                self.assertEqual(str(raised.exception), 'profile conformance report binding validation failed')
+                self.assertIsNone(raised.exception.__context__)
+                self.assertIsNone(raised.exception.__cause__)
+                self.assertFalse(self.output.exists())
 
     def driver_fixture(self):
         fixture = driver_helpers.ProfileConformanceTests()

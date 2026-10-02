@@ -91,7 +91,8 @@
         "test_profile_conformance",
         "test_conformance_transport",
         "test_profile_conformance_cli",
-        "test_profile_conformance_reporting"
+        "test_profile_conformance_reporting",
+        "test_profile_conformance_binding"
       ],
       "flags": [
         "smoke"
@@ -602,7 +603,8 @@
     ],
     "schemas/v0.1.0/profile-conformance-report.schema.json": [
       "test_profile_conformance",
-      "test_profile_conformance_reporting"
+      "test_profile_conformance_reporting",
+      "test_profile_conformance_binding"
     ],
     "src/research_workbench/cli.py": [
       "test_profile_conformance_cli"
