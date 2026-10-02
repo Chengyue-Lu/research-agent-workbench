@@ -415,6 +415,9 @@ succeeded; the parallel source CI was still in progress at this entry.
 Opened a separate [acceptance review](M5-007_ACCEPTANCE_REVIEW.md) from that exact
 source. Five historical input pins match their declared snapshot/archive, the M5-007
 Task row is unchanged from the accepted H5 head, and product source/Schema/trusted
-H5 helper bytes have no intervening Git diff. Focused current-source tests and
-archived cold replay are being checked independently. Task remains IN_PROGRESS,
-Issue55 OPEN, M5-008 BLOCKED; no live/admission/analysis authority was granted.
+H5 helper bytes have no intervening Git diff. Focused current-source H1–H5 tests
+passed 111/111 on Python 3.11.16; documentation/public-surface passed 23/23,
+and the original 454-file archive cold replay passed. Exact commands, results
+and output hash are in the [review Attempt](attempts/M5-007-ACCEPTANCE-REVIEW-001/README.md).
+Task remains IN_PROGRESS, Issue55 OPEN, M5-008 BLOCKED; no
+live/admission/analysis authority was granted.

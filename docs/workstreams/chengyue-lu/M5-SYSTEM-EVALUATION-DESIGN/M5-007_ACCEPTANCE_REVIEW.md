@@ -8,7 +8,8 @@
 ## 依赖与当前源码
 
 M5-006、M6-008、M11-004/006/007 在当前 Task 清单中均为 DONE；
-[Gate B](../M11-SKILL-CLOSEOUT-GATE/GATE.md) 为 SATISFIED。H1–H5 的六个实现切片
+[Gate A](BASELINE_TRANSPORT_GATE.md) 和 [Gate B](../M11-SKILL-CLOSEOUT-GATE/GATE.md)
+均为 SATISFIED。H1–H5 的六个实现切片
 分别由 [PR86](https://github.com/Chengyue-Lu/research-agent-workbench/pull/86)、
 [PR89](https://github.com/Chengyue-Lu/research-agent-workbench/pull/89)、
 [PR90](https://github.com/Chengyue-Lu/research-agent-workbench/pull/90)、
@@ -22,7 +23,7 @@ M5-006、M6-008、M11-004/006/007 在当前 Task 清单中均为 DONE；
 PR106 获审 head `68e612b353233bb8faf739d5012876739793cd84` 到本次基线间，
 `src/research_workbench/`、`schemas/`、受信 H5 replay helper/fixture/test 没有 Git 差异，
 M5-007 Task 验收行逐字相同；PR107 历史入口的五个哈希在各自声明的快照或保留 ZIP 上全部匹配。
-本次审查入口另有四个基线 Git blob 哈希，亦全部匹配。
+本次审查入口另有五个基线文件内容 SHA-256，亦全部匹配。
 H5 454 文件 proof ZIP 原字节 SHA-256 为
 `176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d`。
 历史输入 pins 属于 PR106 合入前快照，不冒充当前文档哈希。
@@ -49,8 +50,10 @@ Provider/Tool/Human/admission 的验收。H1–H5 各 PR 的接受只证明其�
 [独立冷回放](attempts/M5-007-ACCEPTANCE-REVIEW-001/evidence/archived-replay.json) PASS：
 四臂 8 cells / 10 pairs、8 completed / 1 post-call-failed / 7 not-started，
 13 指标均 unavailable/null，primary eligibility 为 false。
-Python 3.11 H1–H5 集中测试的最终结果须在
-[本次验证记录](attempts/M5-007-ACCEPTANCE-REVIEW-001/README.md)中锁定后再请求正式审查。
+Python 3.11.16 H1–H5 集中测试 111/111 PASS，耗时 1924.555 秒；原始输出与命令由
+[本次验证记录](attempts/M5-007-ACCEPTANCE-REVIEW-001/verification.json)及
+[测试日志](attempts/M5-007-ACCEPTANCE-REVIEW-001/evidence/focused-h1-h5.log)锁定。
+文档/公开接口测试另有 23/23 PASS。
 即使上述检查通过，也只能作为行为和身份依据，不能替代具名接受。
 
 PR107 的旧跨负责人批准在发布基线 rebase 后被 DISMISSED；它由路诚钺按直接指示合入，

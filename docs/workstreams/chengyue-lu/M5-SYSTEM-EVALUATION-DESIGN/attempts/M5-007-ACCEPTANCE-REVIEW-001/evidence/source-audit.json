@@ -1,6 +1,6 @@
 {
   "entry_baseline": "68e612b353233bb8faf739d5012876739793cd84",
-  "head": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+  "review_entry_source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
   "historical_input_checks": [
     {
       "path": "docs/TASKS.md",
@@ -52,6 +52,12 @@
       "match": true
     },
     {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+      "expected": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000",
+      "actual": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000",
+      "match": true
+    },
+    {
       "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_CLOSEOUT_PACKET.md",
       "expected": "f47dca74b50b968c680f9f81c41b61ecfeaf3bb56a300393964e333ae7a727ee",
       "actual": "f47dca74b50b968c680f9f81c41b61ecfeaf3bb56a300393964e333ae7a727ee",
@@ -80,6 +86,7 @@
     "M11-006": "DONE",
     "M11-007": "DONE"
   },
+  "gate_a_satisfied": true,
   "gate_b_satisfied": true,
   "pass": true
 }
