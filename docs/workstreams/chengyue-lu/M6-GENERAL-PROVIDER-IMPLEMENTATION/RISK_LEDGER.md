@@ -12,7 +12,8 @@
 | 定义或 CI 被误当具名接受 | Task 真值不变；保留未接受定义和隔离候选 | 正式产品 PR 等待合法集成基线，不自动 merge |
 | 主流模板覆盖被误当完整实现 | SiliconFlow/OpenRouter 保留 blocking；另行核实最小可运行政策 | 未闭合前不提议 M6-009 完成 |
 | 历史模型模板被当当前服务 | 官方 models/deprecations 已明确 Google2.0 Flash 关闭；新工厂在凭据前拒绝 | 原字节保留回放；新模型另立已核验 profile，不按日期臆测实际关闭日 |
+| Windows 换行导致 FileRef 与 Git 字节不一致 | 规范为已有 Git LF blob、重 pin 33 个正例；独立 working/Git 核查 | 原失败源/receipts 保留；此前双 Python 切片不是最终新 hash 的多平台安装证明 |
 | 过程留痕缺口 | 独占本地 archive 保留 dispatch、工作日志、原失败及 source receipts | 平台未暴露或未导出的完整工具事件不伪造；capture gap 保留 |
 
-真实 Provider/API 调用、真实 Key 值读取及安装为 0。M5 Pilot、A4 admission、Phase C、
+真实 Provider/API 调用、真实 Key 值读取为 0；根已在独立环境完成当前 wheel 安装检查。M5 Pilot、A4 admission、Phase C、
 Supply/Resolver/Skill 和科研判断的权威边界保持独立。

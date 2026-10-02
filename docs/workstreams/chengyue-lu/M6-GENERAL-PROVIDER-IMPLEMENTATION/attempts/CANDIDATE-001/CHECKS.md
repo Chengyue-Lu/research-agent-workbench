@@ -1,8 +1,9 @@
 # 候选检查范围
 
-以下均为离线候选验证，真实 API/Key 值读取/安装为 0。
+以下均为离线候选验证，真实 Provider/API 和 Key 值读取为 0。委派切片没有安装；
+根最终检查在本 worktree 的独立环境安装当前 wheel 与冻结版本的测试依赖，原有环境未修改。
 
-- 配置/profile：Python3.11 和 3.14 各 29 tests，其中 28 PASS、1 Windows 符号链接权限 skip；
+- 配置/profile：原切片 Python3.11 和 3.14 各 29 tests，其中 28 PASS、1 Windows 符号链接权限 skip；
   十一家 Schema/config 正例、77 独立反例，九家实际文本编解码通过、两家明确拒绝。
 - 协议：29/29 PASS；四协议、实际 profile、精确非思考控制、角色/Tool/Schema/usage/stops/安全错误反例。
 - 工厂：最新源 15/15 PASS，官方已关闭 Google 模型在凭据前拒绝。
@@ -12,13 +13,34 @@
 - Session：修复后 owner 离线检查 80/80 PASS，含 37 新政策、19 原 Session、22 原三家 Adapter 和 2 kernel。
   当前请求与 Tool 参数/结果在 capture 后重新校验；默认循环 AST 与起点相同。
   显式政策仅接收独立的闭集隐私摘要 sink，拒绝 generic AgentTraceRecorder，防止已发现的 raw dataclass Trace 缺口。
-  Tool context 的 local-history 事实与 Provider.generate submission attempts 分开计数；独立复验待最终 receipt。
+  Tool context 的 local-history 事实与 Provider.generate submission attempts 分开计数；
+  独立修复复验 7/7 有界 PASS，所复核源码字节与 owner 冻结一致。
 - 绑定：11/11 直接测试通过，含新 envelope 1.1 的 fake 执行、独立新进程 cold replay、篡改和使用前漂移；
   原 baseline 最终联合 56/56 PASS，source freeze receipt 已保存。
 
 分切片 receipt 位于本候选 worktree 的忽略目录 `.rwb/m6-general-prototype/` 的
 profiles、wire-codecs、factory、factory-review、binding、session 和 session-review。
-组件联合、repository/package/governance 的最终结果尚未列为 PASS，待冻结后按 exact head 检查。
+## 冻结源整合检查
+
+源提交 `02695d854d7bfd27a67feb375d4908dcc9cabced`，组件差异起点 `db46c8f`：
+
+- actual component：477 tests，**475 PASS、2 Windows skip、0 failure/error**，unknown paths 0，308.454 秒；
+- repository：**198 documents / 0 errors / 0 warnings**；直接新旧 Schema/配置分派、仓库与 CI 检查 **44/44 PASS**；
+- 当前 3.11 wheel 的独立安装 smoke **8/8 PASS**，10.343 秒；公共新接口导入、12 个改动源码与 Git blob 全等；
+  默认 v0.1 catalog 110 Schema，全部版本共 111，pip check 无破损依赖；
+- 11 profile / 33 正例 FileRef 与 working/Git HEAD 字节同 hash，独立有界复核 PASS；
+- 前一纯 public surface 检查 **13/13 PASS**；最终文档检查在证据摘要提交后补验。
+
+第一联合源 `a3fe48a` 的 471 tests 中 3 failures、2 skip，及 repository 的 66 errors 保留。
+实际原因是旧 adapter 字段校验、新 profile 类型分派及新 Schema inventory 未整合；已在当前源修复。
+另保存 CRLF profile pins 与 Git LF blob 不一致的原始候选，33 个正例引用已改为可移植字节。
+组件测试中的 `installed-component-smoke-v1: failure` 是故意失败的单元测试 stdout，不能当安装候选结果；
+当前 wheel smoke 有独立的 8 步成功 receipt。
+
+以真实 develop `1c9cef2` 作 feature 发布预检仍有 **5 个 Task-definition 错误**：
+未接受的 PR125 定义随候选源存在，不能合法混入产品 PR。该拒绝保留，未创建 implementation PR、
+未 merge，也未把本地组件 PASS 当具名接受。源/test 与最终摘要提交的字节等价需另核。
+当前仅验证一条 3.11 wheel 路径；profile 资源尚未纳入安装 catalog，未执行完整 direct/sdist、多 Python portable 验收。
 完整 full/coverage 或 remote live 证据不在本轮声称范围。
 
 初始 Runtime 资源缺失、profile/codec 政策不一致、测试 fixture 错误及独立审查原失败日志保留。
