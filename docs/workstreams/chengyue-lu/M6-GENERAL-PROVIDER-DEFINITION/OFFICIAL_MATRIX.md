@@ -27,7 +27,7 @@ Flash模型与价格：deepseek-flash当前标称DeepSeek-V4.1-Flash；每1M tok
 
 OpenRouter应保留网关身份与actual upstream；router metadata只作provider-reported路由/转换事实，不作weights认证。data_collection/ZDR与gateway/upstream日志及region共同匹配任务要求，缺证据即不进入exact Runtime binding。[metadata](https://openrouter.ai/docs/guides/features/router-metadata)、[upstream logging](https://openrouter.ai/docs/guides/privacy/provider-logging)、[ZDR](https://openrouter.ai/docs/guides/features/zdr)。
 
-现行M6-004 OpenAI谓词保持。协调者报告的未接受候选为M6-009通用四协议离线接入、M6-010独立Flash live；Task接受、exact implementation/config/预算和调用授权仍为独立条件。
+现行M6-004 OpenAI谓词保持。协调者报告的未接受候选为M6-009通用四协议离线接入、M6-010独立Flash live；定义协调者为Chengyue-Lu，workstream候选docs/workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION，黄毅M6维护不变。live总最多3次：指定Tool轮1＋真实純函数结果/text轮2形成Session，再Schema轮3；无额外probe/retry/fallback，失败计入，未执行。Task接受、exact实现/config/其他预算与调用授权仍是独立条件。
 
 ## Source receipts
 
