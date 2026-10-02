@@ -18,7 +18,7 @@ from pathlib import Path
 from types import CodeType, FunctionType, MappingProxyType
 from typing import Any
 
-from research_workbench.evaluation.pins import EvaluationInputs, digest, file_ref, require
+from research_workbench.evaluation.pins import EvaluationInputs, EvaluationValidationError, digest, file_ref, require
 
 
 POLICY = "provider-binding-v2"
