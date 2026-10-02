@@ -75,8 +75,10 @@
         "test_conformance_session_policy",
         "test_conformance_usage_ledger",
         "test_conformance_journal",
+        "test_conformance_budget_anchor",
         "test_profile_wire_codecs",
         "test_gemma_profile",
+        "test_provider_text_profiles",
         "test_provider_binding",
         "test_provider_profile_configuration",
         "test_provider_transport_security",
@@ -570,6 +572,9 @@
     ],
     "tests/fixtures/provider_profiles_gemma_v1/": [
       "test_gemma_profile"
+    ],
+    "tests/fixtures/provider_text_profiles_v1/": [
+      "test_provider_text_profiles"
     ],
     "schemas/v0.1.0/profile-conformance-report.schema.json": [
       "test_profile_conformance",

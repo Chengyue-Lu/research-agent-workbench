@@ -52,3 +52,6 @@ R3条目对应的原页SHA-256（用于独立对账）：
 - Azure OpenAI / azure-v1: 34de5e2ccd882d6622d7ae1a02fc171b20753a0f3d46b3506a849996dab2ddfc
 - Vertex AI / vertex-auth: b945ea72842320f2736b4cdf42484439385f0aa5ffad28561bb46d9b59e009e2
 - Bedrock / bedrock-endpoints: 4818a741f67e007b7bf1108d3b6204ab191776abc21e5c5c293530621bbd7f00
+
+
+[逐字段覆盖与待核清单](OFFICIAL_FIELD_COVERAGE.md)：十一家服务的计划字段、日期化事实、未决条件与后续官方来源入口。

@@ -39,7 +39,7 @@ class PublicSurfaceTests(unittest.TestCase):
         spec = json.loads(self.files['runtime-resources.json'])
         expected = {row['path'] for row in spec['catalogs']
                     if row['kind'] in {'provider_api_profile', 'provider_adapters_v2'}}
-        self.assertEqual(13, len(expected))
+        self.assertEqual(16, len(expected))
         policy = json.loads(self.files['.github/release-surface.yml'])['policies'][-1]
         actual = {row['path'] for row in policy['include'] if row['path'].startswith('registry/providers/')}
         self.assertEqual(expected, actual)
@@ -49,6 +49,10 @@ class PublicSurfaceTests(unittest.TestCase):
         config = json.loads(self.files['registry/providers/adapters-v2.disabled.json'])
         self.assertEqual(11, len(config['adapters']))
         self.assertTrue(all(adapter['enabled'] is False for adapter in config['adapters']))
+        text_config = json.loads(self.files['registry/providers/text-adapters-v2.disabled.json'])
+        self.assertEqual(3, len(text_config['adapters']))
+        self.assertTrue(all(adapter['enabled'] is False and adapter['capabilities'] == ['text']
+                            for adapter in text_config['adapters']))
 
     def test_public_navigation_and_support_have_one_source(self):
         for name in PUBLIC_PAGES:

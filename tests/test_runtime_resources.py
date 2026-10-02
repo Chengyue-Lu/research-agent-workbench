@@ -282,8 +282,8 @@ class RuntimeResourceTests(unittest.TestCase):
         spec = json.loads((ROOT / "runtime-resources.json").read_bytes())
         selected = [row for row in spec["catalogs"]
                     if row["kind"] in {"provider_api_profile", "provider_adapters_v2"}]
-        self.assertEqual(13, len(selected))
-        self.assertEqual(12, sum(row["kind"] == "provider_api_profile" for row in selected))
+        self.assertEqual(16, len(selected))
+        self.assertEqual(14, sum(row["kind"] == "provider_api_profile" for row in selected))
         self.put("schemas/v0.1.0/runtime-resource-manifest.schema.json",
                  (ROOT / "schemas/v0.1.0/runtime-resource-manifest.schema.json").read_bytes())
         for row in selected:
@@ -292,7 +292,7 @@ class RuntimeResourceTests(unittest.TestCase):
 
     def test_provider_catalog_preserves_bytes_disabled_templates_and_installed_resolution(self):
         from research_workbench.adapters.models.configured import build_profile_provider
-        from research_workbench.adapters.models.port import ProviderError
+        from research_workbench.adapters.models.port import Capability, ProviderError
         from research_workbench.adapters.models.profile_configuration import (
             load_profile_configurations, resolve_profile_configuration,
         )
@@ -300,7 +300,7 @@ class RuntimeResourceTests(unittest.TestCase):
         result = resource.validate_catalog()
         self.assertFalse(result["merge_eligible"])
         profiles = resource.documents("provider_api_profile")
-        self.assertEqual(12, len(profiles))
+        self.assertEqual(14, len(profiles))
         self.assertEqual(11, len({p["identity"]["provider"] for p in profiles}))
         for logical, entry in resource.entries.items():
             if entry["kind"] in {"provider_api_profile", "provider_adapters_v2"}:
@@ -308,6 +308,13 @@ class RuntimeResourceTests(unittest.TestCase):
         configs = load_profile_configurations(resource.path("registry/providers/adapters-v2.disabled.json"))
         self.assertEqual(11, len(configs))
         self.assertTrue(all(not c.enabled for c in configs))
+        text_configs = load_profile_configurations(resource.path("registry/providers/text-adapters-v2.disabled.json"))
+        self.assertEqual(3, len(text_configs))
+        self.assertTrue(all(not c.enabled and c.capabilities == frozenset({Capability.TEXT}) for c in text_configs))
+        for candidate in text_configs:
+            profile, resolved_text = resolve_profile_configuration(candidate, root=resource.catalog_root)
+            self.assertEqual(profile.document['model']['requested_id'], resolved_text['model'])
+            self.assertEqual(frozenset({Capability.TEXT}), profile.capabilities)
         config = next(c for c in configs if c.profile_ref["path"].endswith("deepseek-responses-v1.json"))
         selector = config.document["model_selector"]
         profile, resolved = resolve_profile_configuration(
@@ -428,7 +435,7 @@ class RuntimeResourceTests(unittest.TestCase):
         self.assertFalse((generated / "stale.txt").exists())
         resources = RuntimeResources(generated, expected_sha256=pin)
         self.assertEqual(0, resources.validate_catalog()["projections"])
-        self.assertEqual(13, sum(e["kind"] in {"provider_api_profile", "provider_adapters_v2"}
+        self.assertEqual(16, sum(e["kind"] in {"provider_api_profile", "provider_adapters_v2"}
                                  for e in resources.entries.values()))
         spec = json.loads((source / "runtime-resources.json").read_bytes())
         spec["catalogs"].append({"path": "registry/skills/accepted.json", "kind": "skill_asset"})

@@ -61,7 +61,7 @@ KINDS = {
     "capability_requirement": r"registry/capabilities/requirements/[^/]+\.yaml",
     "protocol_profile_index": r"registry/protocol-profiles\.json",
     "protocol_profile": r"registry/protocol-profiles/[^/]+\.yaml",
-    "provider_adapters_v2": r"registry/providers/adapters-v2\.disabled\.json",
+    "provider_adapters_v2": r"registry/providers/(?:adapters-v2|text-adapters-v2)\.disabled\.json",
     "provider_api_profile": r"registry/providers/profiles/[^/]+\.json",
     "skill_release_projection_index": r"registry/skills/release-projections\.json",
     "skill_release_projection": r"registry/skills/release-projections/[^/]+\.(?:yaml|json)",

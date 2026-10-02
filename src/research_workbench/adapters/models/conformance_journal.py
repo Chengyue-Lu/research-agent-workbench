@@ -1,8 +1,9 @@
 """Durable, caller-attested conformance token accounting, without Provider I/O.
 
 One SQLite file binds one explicit nonsecret UUID budget namespace and limits.
-The caller must freeze its unique path: another file, rollback/replacement, input
-upper-bound proof and truth of HTTP observations are outside this helper.
+Default journals are caller-attested. An explicit retained anchor adds local
+event-history checks under a trusted local user; coherent DB+anchor rollback,
+another selected anchor, input proof and HTTP truth remain caller boundaries.
 """
 
 from __future__ import annotations
@@ -16,6 +17,9 @@ from threading import RLock
 from typing import Any, NoReturn
 from uuid import UUID
 
+from research_workbench.adapters.models.conformance_budget_anchor import (
+    ConformanceBudgetAnchor, ConformanceBudgetAnchorError,
+)
 from research_workbench.adapters.models.conformance_ledger import (
     ConformanceLedgerError, ConformanceUsageLedger, ConformanceUsageLimits,
 )
@@ -25,6 +29,8 @@ _APPLICATION_ID = 0x52574243
 _MAX_EVENTS = 128
 _META_SQL = "CREATE TABLE meta (id INTEGER PRIMARY KEY CHECK(id=1), namespace TEXT NOT NULL, limits TEXT NOT NULL)"
 _EVENT_SQL = "CREATE TABLE events (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, payload TEXT NOT NULL)"
+# Explicit opt-in SQLite schema v2; legacy v1 has only meta and events.
+_IDENTITY_SQL = "CREATE TABLE budget_identity (id INTEGER PRIMARY KEY CHECK(id=1), identity TEXT NOT NULL)"
 
 
 class ConformanceJournalError(ValueError):
@@ -43,6 +49,23 @@ def _fail(code: str) -> NoReturn:
         error.__cause__ = None
         error.__context__ = None
         error.__suppress_context__ = True
+
+
+def _anchor_call(operation):
+    result = None
+    issue = None
+    try:
+        result = operation()
+    except ConformanceBudgetAnchorError as error:
+        issue = error.code if type(error.code) is str and error.code in {
+            "budget-anchor-conflict", "budget-anchor-corrupt", "budget-anchor-drift",
+            "budget-anchor-unavailable",
+        } else "budget-anchor-unavailable"
+    except (OSError, ValueError, TypeError, RuntimeError):
+        issue = "budget-anchor-unavailable"
+    if issue is not None:
+        _fail(issue)
+    return result
 
 
 def _json(value: object) -> str:
@@ -181,8 +204,10 @@ class ConformanceUsageJournal:
     recovery, reconciliation or retry. Close never releases a reservation.
     """
 
-    def __init__(self, connection: sqlite3.Connection, namespace: str, limits: ConformanceUsageLimits):
+    def __init__(self, connection: sqlite3.Connection, namespace: str, limits: ConformanceUsageLimits, *, anchor=None):
         if type(connection) is not sqlite3.Connection or type(limits) is not ConformanceUsageLimits:
+            _fail("invalid-journal-construction")
+        if anchor is not None and type(anchor) is not ConformanceBudgetAnchor:
             _fail("invalid-journal-construction")
         self._connection = connection
         self._namespace = _namespace(namespace)
@@ -191,16 +216,22 @@ class ConformanceUsageJournal:
         self._lock = RLock()
         self._owned: dict[int, ConformanceJournalReservation] = {}
         self._closed = False
+        self._anchor = anchor
 
     @classmethod
     def create(
         cls, path: str | Path, *, namespace: str, total_token_limit: int,
         max_attempts: int = 3, max_invocations_per_attempt: int = 3,
         max_output_tokens_per_invocation: int = 256,
+        anchor_path: str | Path | None = None,
     ) -> ConformanceUsageJournal:
         """Explicit first creation, refusing every existing target file."""
         namespace = _namespace(namespace)
         limits = _limits(total_token_limit, max_attempts, max_invocations_per_attempt, max_output_tokens_per_invocation)
+        anchor = None
+        if anchor_path is not None:
+            anchor = _anchor_call(lambda: ConformanceBudgetAnchor.create(anchor_path,
+                database_path=path, namespace=namespace, limits=_limit_mapping(limits)))
         failed = False
         try:
             target = Path(path).absolute()
@@ -211,7 +242,7 @@ class ConformanceUsageJournal:
         if failed:
             _fail("journal-create-refused")
         connection = cls._connect(target)
-        journal = cls(connection, namespace, limits)
+        journal = cls(connection, namespace, limits, anchor=anchor)
         issue = None
         try:
             connection.execute("BEGIN IMMEDIATE")
@@ -219,8 +250,17 @@ class ConformanceUsageJournal:
             connection.execute(_EVENT_SQL)
             connection.execute("INSERT INTO meta VALUES (1, ?, ?)", (namespace, _json(_limit_mapping(limits))))
             connection.execute(f"PRAGMA application_id={_APPLICATION_ID}")
-            connection.execute("PRAGMA user_version=1")
+            if anchor is None:
+                connection.execute("PRAGMA user_version=1")
+            else:
+                connection.execute(_IDENTITY_SQL)
+                connection.execute("INSERT INTO budget_identity VALUES (1, ?)", (anchor.identity,))
+                connection.execute("PRAGMA user_version=2")
+                _anchor_call(lambda: anchor.verify([]))
             connection.commit()
+        except ConformanceJournalError:
+            journal.close()
+            raise
         except sqlite3.Error:
             issue = "journal-storage-unavailable"
         if issue is not None:
@@ -233,12 +273,17 @@ class ConformanceUsageJournal:
         cls, path: str | Path, *, namespace: str, total_token_limit: int,
         max_attempts: int = 3, max_invocations_per_attempt: int = 3,
         max_output_tokens_per_invocation: int = 256,
+        anchor_path: str | Path | None = None,
     ) -> ConformanceUsageJournal:
         """Open an established file; SQLite mode=rw forbids implicit recreation."""
         namespace = _namespace(namespace)
         limits = _limits(total_token_limit, max_attempts, max_invocations_per_attempt, max_output_tokens_per_invocation)
+        anchor = None
+        if anchor_path is not None:
+            anchor = _anchor_call(lambda: ConformanceBudgetAnchor.open(anchor_path,
+                database_path=path, namespace=namespace, limits=_limit_mapping(limits)))
         connection = cls._connect(path)
-        journal = cls(connection, namespace, limits)
+        journal = cls(connection, namespace, limits, anchor=anchor)
         try:
             journal.snapshot()
         except ConformanceJournalError:
@@ -280,7 +325,18 @@ class ConformanceUsageJournal:
             try:
                 self._connection.execute("BEGIN IMMEDIATE")
                 state = self._read()
+                previous_count = state.event_count
                 result = action(state)
+                if self._anchor is not None:
+                    # Validate fresh transaction contents before making its
+                    # high-water checkpoint durable. Never rewind a checkpoint
+                    # if the following commit fails or has unknown outcome.
+                    self._read(check_anchor=False)
+                    events = self._events()
+                    _anchor_call(lambda: self._anchor.checkpoint(events, previous_count=previous_count))
+                    # Re-read after checkpoint I/O; a callback or local edit
+                    # during that I/O cannot silently change pending DB bytes.
+                    self._read()
                 self._connection.commit()
             except ConformanceJournalError:
                 self._rollback()
@@ -298,22 +354,32 @@ class ConformanceUsageJournal:
         except sqlite3.Error:
             pass
 
-    def _read(self) -> _Replay:
+    def _events(self):
+        return self._connection.execute("SELECT seq, kind, payload FROM events ORDER BY seq LIMIT ?", (_MAX_EVENTS + 1,)).fetchall()
+
+    def _read(self, *, check_anchor=True) -> _Replay:
         if self._connection.execute("PRAGMA journal_mode").fetchone()[0] != "wal" or self._connection.execute("PRAGMA synchronous").fetchone()[0] != 2:
             _fail("journal-durability-settings-drift")
         schema = self._connection.execute("SELECT name, sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'").fetchall()
-        if dict(schema) != {"meta": _META_SQL, "events": _EVENT_SQL}:
+        expected_schema = {"meta": _META_SQL, "events": _EVENT_SQL}
+        if self._anchor is not None:
+            expected_schema["budget_identity"] = _IDENTITY_SQL
+        if dict(schema) != expected_schema:
             _fail("invalid-journal-schema")
         if self._connection.execute("PRAGMA application_id").fetchone()[0] != _APPLICATION_ID:
             _fail("invalid-journal-schema")
-        if self._connection.execute("PRAGMA user_version").fetchone()[0] != 1:
+        if self._connection.execute("PRAGMA user_version").fetchone()[0] != (1 if self._anchor is None else 2):
             _fail("invalid-journal-schema")
+        if self._anchor is not None:
+            identity = self._connection.execute("SELECT id, identity FROM budget_identity").fetchall()
+            if identity != [(1, self._anchor.identity)]:
+                _fail("budget-anchor-conflict")
         metadata = self._connection.execute("SELECT id, namespace, limits FROM meta").fetchall()
         if len(metadata) != 1 or metadata[0][0] != 1:
             _fail("invalid-journal-state")
         if metadata[0][1] != self._namespace or metadata[0][2] != _json(_limit_mapping(self._limits)):
             _fail("budget-binding-conflict")
-        events = self._connection.execute("SELECT seq, kind, payload FROM events ORDER BY seq LIMIT ?", (_MAX_EVENTS + 1,)).fetchall()
+        events = self._events()
         if len(events) > _MAX_EVENTS:
             _fail("invalid-journal-state")
         state = _Replay(ConformanceUsageLedger(**_limit_mapping(self._limits)), {}, set(), set(), set(), {})
@@ -322,6 +388,8 @@ class ConformanceUsageJournal:
                 _fail("invalid-journal-state")
             self._apply(state, kind, _parse(payload))
             state.event_count += 1
+        if self._anchor is not None and check_anchor:
+            _anchor_call(lambda: self._anchor.verify(events))
         return state
 
     @staticmethod

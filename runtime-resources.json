@@ -22,7 +22,10 @@
     {"path": "registry/providers/profiles/openai-responses-v1.json", "kind": "provider_api_profile"},
     {"path": "registry/providers/profiles/openrouter-chat-completions-v1.json", "kind": "provider_api_profile"},
     {"path": "registry/providers/profiles/siliconflow-chat-completions-v1.json", "kind": "provider_api_profile"},
-    {"path": "registry/providers/profiles/zhipu-chat-completions-v1.json", "kind": "provider_api_profile"}
+    {"path": "registry/providers/profiles/zhipu-chat-completions-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/text-adapters-v2.disabled.json", "kind": "provider_adapters_v2"},
+    {"path": "registry/providers/profiles/siliconflow-chat-completions-text-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/openrouter-chat-completions-text-v1.json", "kind": "provider_api_profile"}
   ],
   "release_assets": []
 }

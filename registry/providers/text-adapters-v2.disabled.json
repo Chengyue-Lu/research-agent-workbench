@@ -1,0 +1,86 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "minimal-standard-text-profiles-disabled-v2",
+  "adapters": [
+    {
+      "adapter_id": "google-gemma4-text-minimal-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/google-gemma-content-v1.json",
+        "sha256": "f5e715622f645c033facdf1a9339b8fba46408ecc2249b3fe7708ac7b836bff7"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "gemma-4-26b-a4b-it"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "GEMINI_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "siliconflow-qwen25-text-standard-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/siliconflow-chat-completions-text-v1.json",
+        "sha256": "b54523352fc21f96df440061070a0a3f6402cd8192e6bb8fbdf518e2f594663d"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "Qwen/Qwen2.5-72B-Instruct"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "SILICONFLOW_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    },
+    {
+      "adapter_id": "openrouter-gpt41mini-text-standard-v1",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/openrouter-chat-completions-text-v1.json",
+        "sha256": "20cecdf40d6ab42e6a1188f969b398f45747960e280934933926cd423216a3bf"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "openai/gpt-4.1-mini"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "OPENROUTER_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 60,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

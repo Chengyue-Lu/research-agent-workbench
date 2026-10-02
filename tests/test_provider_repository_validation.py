@@ -30,7 +30,7 @@ class ProviderRepositoryValidationTests(unittest.TestCase):
 
     def test_current_and_historical_profiles_are_structurally_valid_without_live_acceptance(self):
         paths = sorted((ROOT / "registry/providers/profiles").glob("*.json"))
-        self.assertEqual(12, len(paths))
+        self.assertEqual(14, len(paths))
         self.assertEqual(11, len({json.loads(path.read_bytes())["identity"]["provider"] for path in paths}))
         for path in paths:
             with self.subTest(path=path.name):

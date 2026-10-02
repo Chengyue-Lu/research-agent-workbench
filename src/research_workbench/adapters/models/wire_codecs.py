@@ -27,6 +27,22 @@ POLICY_IDS = MappingProxyType({family: MappingProxyType({
     f"{kind}_policy_id": f"{family}:{kind}:v1"
     for kind in ("role", "tool", "schema", "usage", "finish", "error")}) for family in FAMILIES})
 PARAMETER_POLICY_IDS = MappingProxyType({family: f"{family}:parameters:v1" for family in FAMILIES})
+STANDARD_TEXT_BINDINGS = MappingProxyType({
+    "siliconflow-qwen25-text-standard-v1": ("siliconflow", "chat-completions", "Qwen/Qwen2.5-72B-Instruct", "standard"),
+    "openrouter-gpt41mini-text-standard-v1": ("openrouter", "chat-completions", "openai/gpt-4.1-mini", "standard"),
+})
+# Gateway identity remains OpenRouter. The base provider slug constrains the
+# allowed operator, not a physical endpoint, region or account data policy.
+STANDARD_TEXT_PARAMETERS = MappingProxyType({
+    ("siliconflow", "chat-completions", "Qwen/Qwen2.5-72B-Instruct", "standard"): MappingProxyType({}),
+    ("openrouter", "chat-completions", "openai/gpt-4.1-mini", "standard"): MappingProxyType({
+        "provider": MappingProxyType({"only": ("openai",), "allow_fallbacks": False, "require_parameters": True}),
+    }),
+})
+STANDARD_TEXT_TOKEN_FIELDS = MappingProxyType({
+    ("siliconflow", "chat-completions", "Qwen/Qwen2.5-72B-Instruct", "standard"): "max_tokens",
+    ("openrouter", "chat-completions", "openai/gpt-4.1-mini", "standard"): "max_completion_tokens",
+})
 GEMMA_TEXT_PROFILE_ID = "google-gemma4-text-minimal-v1"
 GEMMA_TEXT_MODEL = "gemma-4-26b-a4b-it"
 # Google documents minimal=off specifically for Gemma 4. Gemini 3 minimal is
@@ -197,6 +213,12 @@ def _profile(document: Mapping[str, object]) -> _Profile:
         _error("profile capability is not implemented", unsupported=True)
     if not supported <= _CODEC_CAPABILITIES:
         _error("profile claims capabilities outside this codec slice", unsupported=True)
+    text_binding = (provider, family, requested_model, mode)
+    if (document.get("profile_id") in STANDARD_TEXT_BINDINGS
+            or requested_model in {binding[2] for binding in STANDARD_TEXT_BINDINGS.values()}):
+        if (STANDARD_TEXT_BINDINGS.get(document.get("profile_id")) != text_binding
+                or supported != frozenset({Capability.TEXT})):
+            _error("standard Text policy requires its exact profile/provider/model/mode and Text-only capability", unsupported=True)
     if document.get("profile_id") == GEMMA_TEXT_PROFILE_ID or requested_model == GEMMA_TEXT_MODEL:
         if (document.get("profile_id") != GEMMA_TEXT_PROFILE_ID
                 or (provider, family, requested_model, mode) not in GEMMA_TEXT_PARAMETERS
@@ -244,7 +266,8 @@ def _strict_flag(request: ModelRequest, profile: _Profile) -> bool:
 
 
 def _validate_request(request: ModelRequest, profile: _Profile) -> None:
-    if profile.provider == "openrouter":
+    if (profile.provider == "openrouter"
+            and (profile.provider, profile.family, profile.model, profile.mode) not in STANDARD_TEXT_PARAMETERS):
         _error("OpenRouter requires an independently frozen upstream/routing policy not implemented by this slice", unsupported=True)
     if request.extensions or request.metadata or request.reasoning_effort is not None:
         _error("request extensions, metadata or public reasoning controls are outside this profile slice", unsupported=True)
@@ -414,10 +437,13 @@ def _encode_chat(request: ModelRequest, profile: _Profile) -> dict[str, object]:
         payload["response_format"] = {"type": "json_schema", "json_schema": schema_format}
     if request.max_output_tokens is not None:
         # The two APIs use different, documented budget parameter names.
-        payload["max_tokens" if profile.provider != "openai" else "max_completion_tokens"] = request.max_output_tokens
+        field = STANDARD_TEXT_TOKEN_FIELDS.get((profile.provider, profile.family, profile.model, profile.mode),
+                                               "max_tokens" if profile.provider != "openai" else "max_completion_tokens")
+        payload[field] = request.max_output_tokens
     if request.temperature is not None:
         payload["temperature"] = request.temperature
     payload.update(_json_value(NATIVE_PARAMETER_REGISTRY.get((profile.provider, profile.family, profile.mode), {})))
+    payload.update(_json_value(STANDARD_TEXT_PARAMETERS.get((profile.provider, profile.family, profile.model, profile.mode), {})))
     return payload
 
 
@@ -617,6 +643,13 @@ def _response(document: Mapping[str, Any], profile: _Profile, output: list[Conte
     model = _string(document.get("modelVersion" if gemini else "model"))
     # Keep only typed/safe metadata; never retain raw errors/reasoning/signatures.
     metadata = {"wire_family": profile.family, "usage_components": details}
+    if profile.provider == "openrouter":
+        reported = document.get("provider")
+        if reported not in (None, "openai", "OpenAI"):
+            _error("gateway reported an upstream outside the fixed provider policy")
+        metadata["gateway"] = {"operator": "OpenRouter", "requested_upstream": "openai",
+                               "reported_upstream": "openai" if reported is not None else None,
+                               "physical_endpoint": None, "deployment_region": None}
     return ModelResponse(identity, profile.provider, model, tuple(output), finish, tuple(calls), usage, warnings, metadata)
 
 
@@ -672,6 +705,11 @@ def _decode_chat(document: Mapping[str, Any], profile: _Profile) -> ModelRespons
         _error("Chat response role must be assistant")
     if message.get("reasoning_content") not in (None, "") or message.get("function_call") is not None:
         _error("Chat reasoning continuation/legacy function calling is unsupported", unsupported=True)
+    if (profile.provider, profile.family, profile.model, profile.mode) in STANDARD_TEXT_PARAMETERS:
+        if set(message) - {"role", "content", "refusal", "tool_calls", "reasoning_content"}:
+            _error("standard Text response contains unsupported reasoning/server content", unsupported=True)
+        if message.get("tool_calls") not in (None, []) or choice.get("finish_reason") == "tool_calls":
+            _error("standard Text profile cannot accept client tools", unsupported=True)
     output, calls = [], []
     content = message.get("content")
     if content is not None:

@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "openrouter-gpt41mini-text-standard-v1-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "openrouter-gpt41mini-text-standard-v1-fixture",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/openrouter-chat-completions-text-v1.json",
+        "sha256": "20cecdf40d6ab42e6a1188f969b398f45747960e280934933926cd423216a3bf"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "openai/gpt-4.1-mini"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_OPENROUTER_SYNTHETIC_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

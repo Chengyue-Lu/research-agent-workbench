@@ -13,13 +13,16 @@ Provider/Session 维护者仍为黄毅，路诚钺协调准备及共享语义复
 显式 conformance Session 政策只允许同 Session 的两轮 specific → 成功 Tool result → none。
 这条政策采用独立的隐私摘要 sink，仅发送闭集计数和状态；原默认 Session/Trace 路径保留。
 
-十二份 profile 覆盖十一家身份；工厂有九家离线 fake 正例。Google 新增独立的 Gemma Text-only profile，
-历史 Gemini2.0 Flash 仍在凭据前拒绝。SiliconFlow 的精确模式和 OpenRouter 的网关绑定保留阻断，
+十四份 profile 覆盖十一家身份；工厂有十一家离线 fake 正例。Google 使用独立的 Gemma Text-only profile，
+SiliconFlow Qwen 和 OpenRouter GPT-4.1 Mini 新增独立 standard Text 路径。OpenRouter 固定
+提供方限制、拒绝 fallback；未知上游端点/区域保持 unknown。历史 Gemini2.0 与原 SF/OR 阻断 profile 保留。
 所有正例只证明合成传输路径。进程内 ledger 和 SQLite 持久 journal 保留失败及未知用量；
 后续 [FOLLOWUP-001](attempts/FOLLOWUP-001/TASK.md) 补齐其余摘要异常处理、
 固定合成 Tool/session/Schema 驱动内核、版本化脱敏报告、离线 CLI 与安装资源。
 内核的 guard 和输入上界仍由调用者声明，源码回执仅覆盖新模块，transport entry 只证明委托方法入口。
-唯一预算文件、完整运行 source/config/helper/Windows/time 闭包、计费输入上界及具名运行接受继续待定；
+后续 [FOLLOWUP-002](attempts/FOLLOWUP-002/TASK.md) 加入显式 retained anchor，检测预算历史单边回退、
+同 anchor 换 DB 和未知提交状态；默认无 anchor 的旧语义保留。实际唯一预算选择、完整运行
+source/config/helper/Windows/time 闭包、输入预占依据接受与具名运行接受继续待定；
 当前没有 M6-009 DONE 或 M6-010 真实调用提议。
 
 安装版可读取默认禁用配置并输出离线计划：
@@ -29,6 +32,8 @@ rwb providers profile-conformance --config <adapters-v2.json> --adapter <adapter
 ```
 
 profile 引用默认相对安装资源目录；独立配置可显式传入 `--root`。
+安装资源另提供 `registry/providers/text-adapters-v2.disabled.json`，包含上述三家 Text-only 模板；
+全部禁用，Text-only 不满足三调用 Tool/Schema conformance 计划的能力要求。
 禁用或缺少能力时退出 1；提供显式 enabled/config/capabilities 只使计划结构 ready，
 仍然 `live_qualified=false`。没有执行开关。报告 writer 验证独立 1.0.0 闭集 Schema，
 只新建输出文件，保留失败后的已知用量；累计账本不可读时保留每轮事实并标为 blocked。
@@ -37,6 +42,8 @@ profile 引用默认相对安装资源目录；独立配置可显式传入 `--ro
 [交接](attempts/CANDIDATE-001/HANDOFF.md)、[风险](RISK_LEDGER.md)。
 后续检查和交接见 [FOLLOWUP-001 检查](attempts/FOLLOWUP-001/CHECKS.md)
 及 [FOLLOWUP-001 交接](attempts/FOLLOWUP-001/HANDOFF.md)；早期候选检查保留原 source 身份。
+最新检查见 [FOLLOWUP-002](attempts/FOLLOWUP-002/CHECKS.md)，逐厂商字段事实与待核项见
+[官方字段覆盖表](../M6-GENERAL-PROVIDER-DEFINITION/OFFICIAL_FIELD_COVERAGE.md)。
 预算及真实测试边界沿用 [定义计划](../M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)：
 用户累计输入＋输出上限 10,000,000 tokens，所有失败同计，只用 Flash，北京时间 18:00 后及官方空闲时窗。
 预算是停止上限，不是消耗目标。
