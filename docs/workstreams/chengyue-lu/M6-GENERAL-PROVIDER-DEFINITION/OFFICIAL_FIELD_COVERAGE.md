@@ -129,17 +129,17 @@ D表示官方正文给出该行限定范围内的明确事实；P表示有事实
 | F01 endpoint / API surface | D | Chat + Responses compatible-mode；Chat reference 固定 Virginia access origin。 | 本条为日期化文档事实；实际账户/远端结果另验。 | [Q1][Q1]、[Q2][Q2]、V1 |
 | F02 认证 | D | compatible-mode Chat使用Authorization Bearer DashScope Key；地区Key不同且workspace须匹配endpoint。 | 仅该surface认证形状；actual权限/Responses认证另绑。 | [Q1][Q1] |
 | F03 访问区域 / 部署区域 | P | Chat新文档endpoint含WorkspaceId，列北京cn-beijing/新加坡ap-southeast-1/香港cn-hongkong等maas地区hostname。 | access不认证推理/处理地域，旧入口与workspace迁移及actual账户待绑。 | [Q1][Q1]、[Q9][Q9] |
-| F04 model alias / revision | P | 官方 Tool 示例 qwen3.8-max，结构化指南列 Qwen3.8-Max。 | alias/revision、observed ID 与当前账户权限不能由示例认证。 | [Q1][Q1]、[Q3][Q3]、V1 |
-| F05 角色 | P | Chat例子system/user，输出assistant；Tool guide回传role=tool及tool_call_id。 | 完整developer/角色限制与Responses映射待核。 | [Q1][Q1]、[Q4][Q4] |
+| F04 model alias / revision | P | Chat示例与价格页独立列qwen3.8-max，价格页另列qwen3.8-max-0902；结构化指南列Qwen3.8-Max。 | 同价不证明alias与-0902等价；observed ID/revision和账户权限另验。 | [Q1][Q1]、[Q3][Q3]、[Q9][Q9]、V1；R6:qwen-selected |
+| F05 角色 | P | Chat普通参数表列system/user/assistant，system仅messages[0]，通常user/assistant交替且末条user；同页Tool例子使用tool并配tool_call_id。 | 普通表与Tool例子范围不同；developer、selected型号完整Tool白名单及Responses映射仍待核，不推断developer禁用。 | [Q1][Q1]、[Q4][Q4]；R6:qwen-selected |
 | F06 ToolChoice | P | qwen3.8-max非思考示例列auto/none/指定function；指南明确Qwen非思考required不能保证调用，思考模式不支持required。 | required代码示例为托管kimi/kimi-k3，不能借给Qwen；strict及其他exact型号表仍待核，指定函数不保证单call。 | [Q4][Q4]、[MX][MX] R5:qwen-tool-choice |
 | F07 Tool 往返 | P | Tool循环追加assistant输出，再以同tool_call.id写role=tool.tool_call_id并回传原始结果。 | 多call配对、停止/失败与所选Session边界另核。 | [Q4][Q4] |
 | F08 并行 Tool | P | qwen3.8-max+enable_thinking=false示例parallel_tool_calls=true允许无依赖Tool并行；有依赖用串行loop。 | false服务器保证与数量上限未核，不能从true例子推导。 | [Q4][Q4] |
 | F09 Schema / JSON | P | json_object/json_schema支持集合不同；Schema列string/number/integer/boolean/object/array/enum，strict例子容许optional字段。 | exact region/model keyword/enforcement另绑，不复制OpenAI全属性required规则。 | [Q3][Q3] |
 | F10 thinking / context 续传 | P | qwen3.8-max Tool 示例发送 enable_thinking=false。 | 不得推广至全 Qwen；reasoning/context 续传未由 off 请求证明。 | [Q4][Q4]、[Q5][Q5]、V1 |
 | F11 stream / cancellation | P | Chat include_usage=true最后chunk给usage且choices=[]，此前文本delta累积。 | exact取消/断连/结束与charge未知；最后空choices不索引文本。 | [Q1][Q1]、[Q6][Q6] |
-| F12 usage / cache / reasoning | P | Chat表明prompt为input、completion为output、total为二者和；stream最后chunk可返三项。 | cache/reasoning与失败/截断计数另核，不从非思考请求填0。 | [Q1][Q1] |
+| F12 usage / cache / reasoning | P | Chat定义prompt=input、completion=generated output、total=两者和；include_usage最后chunk返用量。selected价格表output包含思考和答案。 | Chat正文未定义cache/reasoning分项子集；价格口径不补成usage契约，exact mode与失败/截断另验，missing不填0。 | [Q1][Q1]、[Q9][Q9]；R6:qwen-selected |
 | F13 error / retry / rate | P | rate按model/region列RPM/TPM（input+output），秒级RPS/TPS可能按分钟限额/60。 | actual workspace/model quota未知；未调用quota API，错误/重试按surface另绑。 | [Q8][Q8]、[Q7][Q7] |
-| F14 价格 / 时间窗 | P | International qwen-plus（对应2025-12-01）≤256k USD/1M input0.40/nonthinking output1.20/thinking4；其他region/context另价。 | 所选qwen3.8-max须对具体价行；某些qwen3.7夜价不推广qwen-plus/3.8。 | [Q9][Q9] |
+| F14 价格 / 时间窗 | P | qwen3.8-max两模式，单次input档0<Token≤1M；每百万tokens Singapore/International input $2/output $6，北京 $1.65/$4.951，香港/法兰克福/弗吉尼亚/东京Global同价。各行有cache标签，北京另有Batch 50%标签。 | 表价排除cache，精确缓存价在未抓取链接；selected行无夜价标签/截止日，一般22–08时说明不推广。币种原文仅$，不借其他型号USD文字；actual region/account/优惠/账单另核。输入计费档不是总context/output上限。 | [Q9][Q9]；R6:qwen-selected |
 | F15 账户数据控制 | P | Model Studio FAQ承诺不使用客户数据训练模型，说明传输/存储加密。 | actual region/workspace留存期限/跨境/例外未取得，加密不是ZDR。 | [Q10][Q10] |
 
 ## Zhipu GLM / Z.AI / 智谱
@@ -229,12 +229,12 @@ D表示官方正文给出该行限定范围内的明确事实；P表示有事实
 | F01 endpoint / API surface | D | BytePlus Chat实际HTML内MDContent明确api/v3/chat/completions，函数示例origin ark.ap-southeast.bytepluses.com。 | 此前JS/search局限本轮正文补强；Responses/中国Volcengine另绑。 | [A2][A2]、[A4][A4] |
 | F02 认证 | P | BytePlus函数正文例子Bearer Key访问Singapore Chat；中国/Access-Key签名另列。 | 不推广全部签名Endpoint ID/中国账户/其他surface权限。 | [A2][A2]、[A4][A4]、[A1][A1] |
 | F03 访问区域 / 部署区域 | P | BytePlus例子Singapore access；Data Processing正文列部署/处理可在Malaysia、Indonesia及EU/EEA，content-filter触发内容另存Malaysia。 | access/推理deployment/安全存储不同，actual region/策略未知，中国Ark不继承。 | [A4][A4]、[A8][A8] |
-| F04 model alias / revision | P | 函数正文例子seed-2-0-lite-260228；Chat按该及后续version区分encrypted_content。 | 本轮有entity/嵌入MD hash，仍非actual serving/immutable weights/权限。 | [A2][A2]、[A4][A4] |
+| F04 model alias / revision | P | 函数正文例子seed-2-0-lite-260228；Chat按该及后续version区分encrypted_content。beta Schema指南另用dola-seed-2-1-turbo-260628/off。 | 已捕获指南实际model-list外链，但为SPA shell，selected seed2lite/off能力表未提取；另一型号例子不证明支持，actual serving/immutable weights/权限另验。 | [A2][A2]、[A4][A4]、[A12][A12]、[A13][A13]；R6:byteplus-schema |
 | F05 角色 | D | BytePlus Chat定义system/user/assistant/tool四类，tool须tool_call_id。 | 仅Chat正文形状，不复制为Responses developer。 | [A2][A2] |
 | F06 ToolChoice | P | BytePlus Chat列none/auto/required/指定function；required一或多call，默认无tools为none、有tools为auto。 | exact seed2lite off/strict须模型表与远端另验。 | [A2][A2] |
 | F07 Tool 往返 | P | tool结果须附模型生成的同一tool_call_id，client执行并回传。 | 全部call配对/错误终态/selected off Session边界待验，例子不授本地执行资格。 | [A2][A2]、[A4][A4] |
 | F08 并行 Tool | P | parallel_tool_calls默认true；false限制至多一call，guide明确仅模型支持该控制时成立。 | selected seed2lite/模式控制与返回上限分别核验。 | [A2][A2]、[A4][A4] |
-| F09 Schema / JSON | P | Chat列text/json_object/json_schema；strict默认false，true遵schema，但有model/beta边界。 | selected keyword/enforcement待核；Schema guide未提正文，不把HTTP200当通过。 | [A2][A2]、[A5][A5] |
+| F09 Schema / JSON | P | BytePlus Chat/beta指南区分json_schema/json_object；7种type及local # $ref、$defs/const/enum/anyOf/oneOf/allOf、array/object keyword表。oneOf/allOf精确语义不严格保证；strict默认false，additionalProperties=false配合required为建议，sampling组合有警告。 | 实际model-list外链返回SPA shell，selected seed2lite/off支持表未提取；JSON Object不保证custom Schema，输出截断/复杂度与具名unsupported清单/enforcement另核。原A5是shell，canonical A12取得正文；不推广Responses/中国Ark。 | [A2][A2]、[A5][A5]、[A12][A12]、[A13][A13]；R6:byteplus-schema |
 | F10 thinking / context 续传 | P | Chat有thinking enabled/disabled/auto，支持/默认依模型；encrypted_content与reasoning_content续传不同。 | selected off及加密/明文历史独立，参数存在不证明全型号off。 | [A2][A2]、[A3][A3] |
 | F11 stream / cancellation | P | Chat SSE以[DONE]终止；chunk_include_usage=true可给每chunk累计usage，另有最终usage选项。 | 累计值不能逐chunk相加，取消/断连final charge未知。 | [A2][A2] |
 | F12 usage / cache / reasoning | P | usage total=input+output；prompt细分cached、completion细分reasoning；max_tokens管答案，max_completion_tokens管reasoning+答案。 | 缺失/失败/取消unknown，预算不重复加或忽略reasoning。 | [A2][A2] |
@@ -412,3 +412,9 @@ OpenRouter 的 full endpoint slug 在要求具体 upstream 变体时才有相应
 [OR12]: https://openrouter.ai/openai/gpt-4.1-mini "OpenRouter GPT-4.1-mini prices"
 [OR13]: https://openrouter.ai/docs/api_reference/limits "OpenRouter credit rate limits"
 [OR14]: https://openrouter.ai/docs/cookbook/administration/usage-accounting "OpenRouter usage accounting"
+
+[A12]: https://docs.byteplus.com/en/docs/modelark/structured-output-beta "BytePlus beta structured output canonical guide"
+
+R6为FOLLOWUP-008的两组公开补充：Qwen所选型号价行/普通角色/usage及BytePlus beta Schema正文；日期为2026-10-02 UTC。原R4/R5收据身份保持，六行继续P，D31/P129/U5不变。BytePlus原A5的200/null-document/零正文与实际canonical href另存；支持表未取得是not extracted，不是服务不支持。实体hash与限定范围见[本轮检查](../M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-008/CHECKS.md)。
+
+[A13]: https://ai.byteplus.com/ark/region:ap-southeast-1/docs/ModelArk/model-list#86588b72 "BytePlus observed model-list href, SPA shell only"
