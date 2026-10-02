@@ -1,0 +1,38 @@
+{
+  "task_id": "M5-007",
+  "entry_source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+  "entry_tree": "40ca78704694351f84ea64fd93f06ec07e31187a",
+  "accepted_h5_head": "68e612b353233bb8faf739d5012876739793cd84",
+  "historical_entry_baseline": "68e612b353233bb8faf739d5012876739793cd84",
+  "input_refs": [
+    {
+      "path": "docs/TASKS.md",
+      "sha256": "a6f3d690eb4cb6c198952be9846d8a71c0dab67d0e8dc554340b89f752fda8b6"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md",
+      "sha256": "bf260f2c5fa23f9d927b75ef30866a07f0e40c44632d5829395702677111db44"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+      "sha256": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_CLOSEOUT_PACKET.md",
+      "sha256": "f47dca74b50b968c680f9f81c41b61ecfeaf3bb56a300393964e333ae7a727ee"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip",
+      "sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d"
+    }
+  ],
+  "merged_slices": {
+    "H1_H2": "51dc3ab477f21f18ac3829bf553b5b779d49a4fe",
+    "H3": "171d4654f88e926f239cdf25bc8168109b81f391",
+    "H4a": "a542a06f781b4b4bce6696a2e6a888f4243f66c0",
+    "H4b": "97d3b3d3141419b34ad47e0f42d9f01d0dfbd535",
+    "H4c": "26eca5742ba08d504d273423471fd7aab876a6d5",
+    "H5": "81a058b228a5da2a6f46192a954f62efc72895e3",
+    "preparation": "2618ef4fa7a1b16722e097af9a91b00b40ec700a"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-02",
+  "review_entry_source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+  "python": "3.11.16",
+  "platform": "Windows",
+  "focused_h1_h5": {
+    "command": "python -m unittest tests.test_evaluation_harness_plan tests.test_evaluation_harness_preflight tests.test_evaluation_harness_execution tests.test_evaluation_harness_evidence tests.test_evaluation_harness_review tests.test_evaluation_harness_analysis tests.test_evaluation_harness_proof -v",
+    "passed": 111,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1924.555,
+    "log": "evidence/focused-h1-h5.log",
+    "log_sha256": "10532fb4c1a591ef0c7021b7d6050199ba24bbc6ac13888053979f8add0a5b46",
+    "log_hash_scope": "LF-normalized committed Git content"
+  },
+  "documentation_and_public_surface": {
+    "command": "python -m unittest tests.test_documentation tests.test_public_surface",
+    "passed": 23,
+    "failures": 0,
+    "errors": 0
+  },
+  "source_identity": {
+    "evidence": "evidence/source-audit.json",
+    "historical_input_sha256_matches": 5,
+    "review_entry_sha256_matches": 5,
+    "product_schema_trusted_proof_diff_since_h5": 0,
+    "m5_007_task_row_unchanged": true,
+    "gate_a_satisfied": true,
+    "gate_b_satisfied": true
+  },
+  "archived_cold_replay": {
+    "evidence": "evidence/archived-replay.json",
+    "pass": true,
+    "archive_members": 454,
+    "primary_confirmatory_eligible": false
+  },
+  "hosted_protected_develop": {
+    "component_run": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201813",
+    "component_conclusion": "success",
+    "source_run": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201792",
+    "source_status_at_capture": "in_progress",
+    "source_capture_time_utc": "2026-10-02T03:06:36Z",
+    "source_final_status": "completed",
+    "source_final_conclusion": "success",
+    "source_final_jobs_success": 12,
+    "source_final_observed_at_utc": "2026-10-02T03:15:17Z"
+  },
+  "task_status_changed": false,
+  "issue_closed": false,
+  "scope_note": "Current-source synthetic contract verification and evidence audit only; named whole-Task R2 acceptance and live evaluation remain separate."
+}

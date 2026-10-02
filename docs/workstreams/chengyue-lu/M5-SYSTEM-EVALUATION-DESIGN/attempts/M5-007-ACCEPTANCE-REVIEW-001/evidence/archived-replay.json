@@ -1,0 +1,31 @@
+{
+  "source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+  "archive_sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+  "archive_members": 454,
+  "original_inventory_ref": {
+    "path": "proof-inventory.json",
+    "sha256": "c794fabd85e79cca382c03465f5cf9b2065c642fd2bcf4eb869fd173bb0c240f"
+  },
+  "command": "python -m tests.harness_proof replay --root <verified-empty-extraction> --schemas schemas --inventory-ref <original-inventory-ref>",
+  "exit_code": 0,
+  "summary": {
+    "all_metrics_unavailable": true,
+    "analysis_id": "H4C-ANALYSIS",
+    "arms": [
+      "mode-candidate-skill",
+      "mode-no-skill",
+      "plain-agent",
+      "plain-agent-tool"
+    ],
+    "cells": 8,
+    "lifecycles": {
+      "completed": 8,
+      "not-started": 7,
+      "post-call-failed": 1
+    },
+    "pairs": 10,
+    "primary_confirmatory_eligible": false,
+    "purpose": "synthetic-contract-proof"
+  },
+  "pass": true
+}
