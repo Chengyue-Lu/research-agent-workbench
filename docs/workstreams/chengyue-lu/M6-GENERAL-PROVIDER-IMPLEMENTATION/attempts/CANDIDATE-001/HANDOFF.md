@@ -30,3 +30,5 @@ SQLite journal 已追加持久 intent/entry/预占、Windows crash/reopen 和双
 当前未执行真实调用，不运行 M5 Pilot 或 A4 admission。
 
 最新完整源 `b1c5679`：component551 PASS+2 Windows skip、repository199/0/0、当前wheel8/8、15产品源码与Git blob全等、R2治理0error0warning。原026/b911证据仍按原source范围保留。定义已接受，本实现仍待draft独立R2审查；真实调用0。
+
+PR127两个P2后续源 `a4d7633`：合法截断文本保留LENGTH/Usage；摘要故障返回已验证响应/用量并SAFE_PAUSED，停止摘要各一次best-effort。新component560PASS+2Windows skip、repository199/0/0、当前wheel8/8、15产品source blobs全等、R2治理0error0warning；独立11workflows/75direct PASS，非显式Session模块AST原样。新的BEFORE/AFTER和所有失败见CHECKS及review-repair-127 archive，原源发现/证据不覆盖。

@@ -82,3 +82,18 @@ PR126 正式 cross-owner APPROVED 后正常 squash 合入 `f5afc4b`；PR125 按�
 当前归档为 `.rwb/m6-general-prototype/accepted-base-integration/`；各切片冻结 source/hash、dispatch、Handoff与独立复核见 `journal/`、`journal-review/`、`gemma-profile/`、`reference-error-repair/`。Gemma 首轮断言不符和 journal review runner 的初始子进程/import/escaping 失败均保留。根 component 首次传短 SHA 被预检拒绝，改完整 SHA；首次调用无 main 的 cli module 是空 no-op，实际 package main 复验199/0/0。它们没有修改产品来规避检查，不能记初轮 PASS。
 
 用户最新决定覆盖此前费用暂停建议：费用/币种/账单不可得为 unknown，不阻断；未知 token 仍保留预占并停止。SQLite journal 不认证实际发送、input计费上界、另一DB或文件替换/回滚；实际 driver、唯一预算路径、完整运行 source closure、报告/CLI及 profile 安装 catalog 仍未完成。本轮无 full/global coverage、多Python/sdist最终资格或真实 Provider/API/Key/presence 证据；M6-009仅IN_PROGRESS，M6-010仍BLOCKED。
+
+## PR127 两处 P2 修复
+
+用户提供的私密审查固定在 `68b79bb1`；两个离线 BEFORE 反例均保留，公开comment/thread当时为空，不伪造评论关闭或owner接受。本轮修复源 `a4d76337b69a260582fc1f083ce0adf40191275e`，base `64c93c0`。
+
+- Responses新增合法 `incomplete/max_output_tokens` 的 assistant `output_text` 消息处理，保留部分文本、LENGTH及Usage；in_progress、未知原因、未完成/混合Tool继续拒绝。原completed顶层可选details语义保持。官方 [SDK消息状态类型](https://github.com/openai/openai-python/blob/main/src/openai/types/responses/response_output_message.py) 的公开核对只支持类型解释，不认证实际服务。
+- 已freeze/validate响应在摘要捕获前入账；第一次捕获失败返回1轮/7tokens，第二次返回2轮/14tokens。持续response/gap/stop写入故障仍SAFE_PAUSED/trace-capture-gap，各停止摘要只做一次best-effort、固定warning，无更多Tool/模型；unknown Usage保持unknown。除显式 `_run_conformance_session` 外，整个模块AST与原源相同。
+- owner codec/factory/Gemma **61/61 PASS**，Session/default/facade **83/83 PASS**；独立 **11 workflows＋75 direct PASS**，冻结源码哈希稳定。
+- actual component **562 = 560 PASS＋2 Windows skip，0failure/error**，433.106秒，unknown paths0；repository **199/0/0**。
+- 3.11当前非editable wheel smoke **8/8 PASS**，11.203秒；15产品source wheel/installed/Git blob全等，pipcheck PASS；default110/allversions111 Schema。
+- exact source R2治理 **0errors/0warnings**；最终文档/public和head资格另核。原b1/026检查保持原source身份，不挪用新源资格。
+
+归档 `.rwb/m6-general-prototype/review-repair-127/` 保留纯finding/截图hash、BEFORE/AFTER、两owner/独立/root receipt。Responses初轮测试属性名、Session wrapper导入及一次只读Git诊断范围偏差、root首轮AST checker方法名错误均保留；只纠正wrapper/断言，不覆盖初始失败。完整底层事件未导出capture gap保留。
+
+真实Provider/API/Key/presence为0；本轮无full/global coverage、多Python/sdist或真实conformance声明。M6-009仅IN_PROGRESS、PR127保持Draft、M6-010 BLOCKED；driver/完整运行closure/报告和独立接受仍未完成。用户累计10m/Flash/北京时间18+/官方闲时及unknown费用不阻断、unknown tokens预占停止保持。
