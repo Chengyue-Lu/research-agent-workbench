@@ -9,11 +9,12 @@ Provider/Session owner：黄毅；协调准备：路诚钺。用户授权通用 
 
 读集：AGENTS、README、DEVELOPMENT、Task M6-009/010、定义 PLAN/PREPARATION、
 ADR0003/0007 与 Provider Adapter plan，M6 Port/base/http/配置/协议/Session，
-baseline producer/envelope/replay 的直接消费接口，以及相关 Schema/tests/fixtures 和已核验官方资料。
+baseline producer/envelope/replay 的直接消费接口，以及相关 Schema/tests/fixtures、
+CI component plan 和 tests/ci_components.json 的直接输入映射，以及已核验官方资料。
 
 写域：新 configured/profile_configuration/wire_codecs/provider_binding/session_policy，
 显式 optional Session 分支、baseline 的 manifest 直接消费者、对应新 Schema/profile/禁用模板/
-测试和本 workstream。协议、配置、绑定、Session 委派写域互斥；协调者串行整合。
+测试、组件 CI 的直接测试/fixture 输入映射和本 workstream。协议、配置、绑定、Session 委派写域互斥；协调者串行整合。
 不修改旧三 facade/Port、M5/M11/Resolver/Skill 实现或 Task 完成状态。
 
 预算：各实现切片 30～45 分钟，补充复核限 20 分钟；均 0 Provider/API、真实凭据读取、安装。

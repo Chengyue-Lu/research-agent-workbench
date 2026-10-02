@@ -49,7 +49,8 @@
         "test_baseline_replay_integrity",
         "test_skill_runtime_extension",
         "test_skill_execution_closeout",
-        "test_skill_closeout_review"
+        "test_skill_closeout_review",
+        "test_provider_binding"
       ],
       "flags": [
         "smoke"
@@ -69,7 +70,13 @@
         "test_provider_conformance",
         "test_provider_contract_branches",
         "test_model_pool",
-        "test_api_session_runner"
+        "test_api_session_runner",
+        "test_configured_provider",
+        "test_conformance_session_policy",
+        "test_profile_wire_codecs",
+        "test_provider_binding",
+        "test_provider_profile_configuration",
+        "test_provider_transport_security"
       ],
       "flags": [
         "smoke"
@@ -543,6 +550,13 @@
       "test_pr_governance",
       "test_release_governance",
       "test_release_install"
+    ],
+    "tests/fixtures/profile_wire_codecs/": [
+      "test_profile_wire_codecs"
+    ],
+    "tests/fixtures/provider_profile_configuration/": [
+      "test_provider_profile_configuration",
+      "test_profile_wire_codecs"
     ]
   },
   "nearest_components": {
