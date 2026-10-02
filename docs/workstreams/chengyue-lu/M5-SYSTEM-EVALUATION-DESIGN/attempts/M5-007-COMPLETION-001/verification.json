@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-02",
+  "entry_source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+  "candidate_scope": "Documentation and M5-007 status only; Task definition and other Task rows unchanged",
+  "identity_and_task_transition": {
+    "evidence": "evidence/identity-status.json",
+    "pass": true,
+    "input_content_hashes_checked": 19,
+    "retained_attempts_unchanged": 22,
+    "only_task_transition": "M5-007: IN_PROGRESS -> DONE",
+    "task_acceptance_and_dependencies_unchanged": true,
+    "gate_a_satisfied": true,
+    "gate_b_satisfied": true,
+    "downstream_live_tasks_still_blocked": true
+  },
+  "current_documentation_public_surface_governance": {
+    "command": "python -m unittest tests.test_documentation tests.test_public_surface tests.test_pr_governance -v",
+    "status": "passed",
+    "initial_check": "113 tests ran; one link test failed because this verification record had not yet been created. No product or assertion change.",
+    "passed": 113,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 0.892,
+    "log": "evidence/documentation-governance.log",
+    "log_sha256": "cc96b05742ed8c55a8e2e5e558ab73550b81b43bb7dda8890d636fbcd66b84bc",
+    "log_hash_scope": "LF-normalized committed Git content"
+  },
+  "reused_harness_verification": {
+    "source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+    "record": "../M5-007-ACCEPTANCE-REVIEW-001/verification.json",
+    "focused_h1_h5_passed": 111,
+    "focused_failures": 0,
+    "focused_errors": 0,
+    "focused_skipped": 0,
+    "focused_log_sha256": "10532fb4c1a591ef0c7021b7d6050199ba24bbc6ac13888053979f8add0a5b46",
+    "focused_log_hash_scope": "LF-normalized committed Git content",
+    "original_archive_cold_replay_pass": true,
+    "original_archive_files": 454,
+    "original_archive_sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+    "basis": "Product/Schema/trusted H5 helper bytes equal the accepted H5 head and the original test source; this PR changes none of them",
+    "rerun_in_this_attempt": false,
+    "synthetic_metrics": "All 13 unavailable/null; primary_confirmatory_eligible=false"
+  },
+  "hosted_ci": {
+    "prior_complete_source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+    "prior_complete_source_run": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201792",
+    "prior_complete_source_conclusion": "success",
+    "entry_component_run": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36959911874",
+    "entry_component_conclusion": "success",
+    "entry_source_run": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36959911917",
+    "entry_source_status_at_entry": "in_progress",
+    "candidate_checks": "pending PR creation; retain exact base/head/run identity separately"
+  },
+  "authority": {
+    "named_whole_task_review": "pending",
+    "shared_status_before_merge": "M5-007 IN_PROGRESS; Issue55 OPEN; M5-008 BLOCKED",
+    "owner_authorized_closeout_preparation": true,
+    "new_cross_owner_approval_claimed": false,
+    "reviewer_unavailable_claimed": false,
+    "live_or_release_authorization": false
+  },
+  "capture_scope": "One non-delegated actor. This Attempt preserves input/source/status checks and verification commands/results. Initial context recovery reads are not a complete runtime event capture; existing H5 Trace capture-gap warning is retained."
+}

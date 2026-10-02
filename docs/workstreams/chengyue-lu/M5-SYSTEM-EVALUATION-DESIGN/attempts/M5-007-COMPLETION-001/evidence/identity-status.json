@@ -1,0 +1,206 @@
+{
+  "observed_at_utc": "2026-10-02T03:53:42.263126+00:00",
+  "entry_source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+  "candidate_scope": "Working docs and Task status; unrelated local .codex/config.toml excluded",
+  "input_checks": [
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "docs/TASKS.md",
+      "expected": "a6f3d690eb4cb6c198952be9846d8a71c0dab67d0e8dc554340b89f752fda8b6",
+      "actual": "a6f3d690eb4cb6c198952be9846d8a71c0dab67d0e8dc554340b89f752fda8b6",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "docs/STATUS.md",
+      "expected": "ce9775545b2619d9c9da57a3f36a559de38a97dbbe45ae3516ceec7670db51ab",
+      "actual": "ce9775545b2619d9c9da57a3f36a559de38a97dbbe45ae3516ceec7670db51ab",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+      "expected": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000",
+      "actual": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md",
+      "expected": "bf260f2c5fa23f9d927b75ef30866a07f0e40c44632d5829395702677111db44",
+      "actual": "bf260f2c5fa23f9d927b75ef30866a07f0e40c44632d5829395702677111db44",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ACCEPTANCE_REVIEW.md",
+      "expected": "92080dec2696ecead843bb1f2a68a0a51ce8fd3de75b1ad6570a592930c27c3c",
+      "actual": "92080dec2696ecead843bb1f2a68a0a51ce8fd3de75b1ad6570a592930c27c3c",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-ACCEPTANCE-REVIEW-001/verification.json",
+      "expected": "fd2af671e742a2dce134065b20866b6d9ed0f7df0c7082030e9bd8e11c13bb29",
+      "actual": "fd2af671e742a2dce134065b20866b6d9ed0f7df0c7082030e9bd8e11c13bb29",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip",
+      "expected": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+      "actual": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": "tests/coverage_policy.yaml",
+      "expected": "28cee3799b181f639a73fc67b57cc82a319471ad3b56b680e18c7a63fc9e5047",
+      "actual": "28cee3799b181f639a73fc67b57cc82a319471ad3b56b680e18c7a63fc9e5047",
+      "match": true
+    },
+    {
+      "scope": "completion_entry",
+      "source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+      "path": ".github/governance-policy.json",
+      "expected": "05bc5290787655ca97ac74a1501e9c9cc5e690d45761d0baf5b5e3e3f9a3744c",
+      "actual": "05bc5290787655ca97ac74a1501e9c9cc5e690d45761d0baf5b5e3e3f9a3744c",
+      "match": true
+    },
+    {
+      "scope": "review_entry",
+      "source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+      "path": "docs/TASKS.md",
+      "expected": "a6f3d690eb4cb6c198952be9846d8a71c0dab67d0e8dc554340b89f752fda8b6",
+      "actual": "a6f3d690eb4cb6c198952be9846d8a71c0dab67d0e8dc554340b89f752fda8b6",
+      "match": true
+    },
+    {
+      "scope": "review_entry",
+      "source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+      "path": "docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md",
+      "expected": "bf260f2c5fa23f9d927b75ef30866a07f0e40c44632d5829395702677111db44",
+      "actual": "bf260f2c5fa23f9d927b75ef30866a07f0e40c44632d5829395702677111db44",
+      "match": true
+    },
+    {
+      "scope": "review_entry",
+      "source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+      "expected": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000",
+      "actual": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000",
+      "match": true
+    },
+    {
+      "scope": "review_entry",
+      "source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_CLOSEOUT_PACKET.md",
+      "expected": "f47dca74b50b968c680f9f81c41b61ecfeaf3bb56a300393964e333ae7a727ee",
+      "actual": "f47dca74b50b968c680f9f81c41b61ecfeaf3bb56a300393964e333ae7a727ee",
+      "match": true
+    },
+    {
+      "scope": "review_entry",
+      "source": "2618ef4fa7a1b16722e097af9a91b00b40ec700a",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip",
+      "expected": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+      "actual": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+      "match": true
+    },
+    {
+      "scope": "historical_entry",
+      "source": "68e612b353233bb8faf739d5012876739793cd84",
+      "path": "docs/TASKS.md",
+      "expected": "a38daa21f291719a6df93615c207752e558252607f159c4509a47bfe5a322398",
+      "actual": "a38daa21f291719a6df93615c207752e558252607f159c4509a47bfe5a322398",
+      "match": true
+    },
+    {
+      "scope": "historical_entry",
+      "source": "68e612b353233bb8faf739d5012876739793cd84",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md",
+      "expected": "0cd9f41c93714718c11c08e2b2ed426107ff7f193b7bd21ff7fcd287541efc3c",
+      "actual": "0cd9f41c93714718c11c08e2b2ed426107ff7f193b7bd21ff7fcd287541efc3c",
+      "match": true
+    },
+    {
+      "scope": "historical_entry",
+      "source": "68e612b353233bb8faf739d5012876739793cd84",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md",
+      "expected": "1ce8787fc38a541c5e0b5eb37830625630070ef53e028e9d5e82f50ea1c2b450",
+      "actual": "1ce8787fc38a541c5e0b5eb37830625630070ef53e028e9d5e82f50ea1c2b450",
+      "match": true
+    },
+    {
+      "scope": "historical_entry",
+      "source": "68e612b353233bb8faf739d5012876739793cd84",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/README.md",
+      "expected": "a79b4e689dbe13361006a649354aaae12e3c760d91b8abfc9d71a7dcc385954e",
+      "actual": "a79b4e689dbe13361006a649354aaae12e3c760d91b8abfc9d71a7dcc385954e",
+      "match": true
+    },
+    {
+      "scope": "historical_entry",
+      "source": "68e612b353233bb8faf739d5012876739793cd84",
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip",
+      "expected": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+      "actual": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+      "match": true
+    }
+  ],
+  "source_paths_checked_since_h5": [
+    "src/research_workbench",
+    "schemas",
+    "tests/harness_proof.py",
+    "tests/harness_analysis_fixtures.py",
+    "tests/test_evaluation_harness_proof.py"
+  ],
+  "source_diff_since_accepted_h5": [],
+  "candidate_product_schema_test_ci_diff": [],
+  "retained_attempt_dirs_checked": 22,
+  "retained_attempt_diff": [],
+  "changed_task_rows": [
+    "M5-007"
+  ],
+  "only_m5_007_status_changed": true,
+  "original_acceptance_unchanged_since_h5": true,
+  "dependency_statuses": {
+    "M5-006": "DONE",
+    "M6-008": "DONE",
+    "M11-004": "DONE",
+    "M11-006": "DONE",
+    "M11-007": "DONE"
+  },
+  "downstream_statuses": {
+    "M5-001": "BLOCKED",
+    "M5-002": "BLOCKED",
+    "M5-004": "BLOCKED",
+    "M5-005": "BLOCKED",
+    "M5-008": "BLOCKED",
+    "M6-004": "BLOCKED"
+  },
+  "gate_a_satisfied": true,
+  "gate_b_satisfied": true,
+  "focused_log_git_content_sha256": "10532fb4c1a591ef0c7021b7d6050199ba24bbc6ac13888053979f8add0a5b46",
+  "focused_log_hash_matches": true,
+  "original_archive_sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d",
+  "original_archive_files": 454,
+  "task_transition_governance_has_errors": false,
+  "effective_risk": "R2",
+  "governance_findings": [
+    {
+      "severity": "INFO",
+      "code": "TASK-TRANSITION",
+      "message": "valid transition M5-007: IN_PROGRESS -> DONE"
+    }
+  ],
+  "pass": true
+}

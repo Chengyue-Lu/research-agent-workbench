@@ -49,7 +49,7 @@ family 为什么存在、由什么 authority boundary 约束、何时允许启�
 | Phase A | Method/Core 与 Authority Rule Eligibility；不产生执行或 Human Decision | M8 | 已收口 |
 | Phase B | Capability demand/supply、Skill evolution、Protocol；不授予 Runtime authority | M9 | 已收口 |
 | Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | bounded machine DAG 已实现；Human/R2 semantic closeout 仍独立 pending |
-| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M6-008 已 DONE，M5-007 IN_PROGRESS；M5-008 BLOCKED，作为 M5-004 前的四臂 live 工程验收；真实 case/provenance/live execution/Human review 保持独立 Gate |
+| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M6-008 与 M5-007 bounded synthetic Harness 已 DONE；M5-008 BLOCKED，作为 M5-004 前的四臂 live 工程验收；真实 case/provenance/live execution/Human review 保持独立 Gate |
 | Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
 | Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
 | Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |

@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-10-01
+更新：2026-10-02
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -15,7 +15,7 @@ production runtime-execution binding、Human Decision、科学有效性或端到
 
 M4-001～004 已全部 accepted / merged：Source Admission、Artifact Promotion、Claim evidence localization
 与 bounded Run reconstruction 构成已实现的 provenance 链。M5-006 Protocol 与资格校验器已实现，
-M11-007 Skill closeout 与 Gate B 已按 PR81 实现及具名证据接受收口；M6-008 baseline envelope/closeout 已由 PR75 接受并收口，后继开发节点为 M5-007 synthetic Harness；
+M11-007 Skill closeout 与 Gate B 已按 PR81 实现及具名证据接受收口；M6-008 baseline envelope/closeout 已由 PR75 接受并收口。M5-007 H1–H5 bounded synthetic Harness 已完成，整项验收与证据映射见[收口记录](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)；后继 M5-008 live pilot 仍受 M6-004、真实 A4 admission 和专项授权阻断。
 M4 的 bounded 验收不替代真实 Case Dossier、live Provider/session conformance 或正式系统评价。
 
 Issue #57 / ADR-0021 的 M14-001～005 已完成首个 curated release：M14-001～004 提供受信
@@ -89,7 +89,7 @@ release；当前 release branch 不回并 develop，原 tag/附件保持不变�
 | Claim evidence localization（M4-003） | 只验证声明关系和文件位置；limitation 定位于 Claim 文本，不虚构独立来源；不判定 locator 科学含义、不接受 Claim、不证明历史运行或科学正确性 |
 | Skill 价值 | 现有 Registry 条目不构成已证明的普适研究增益；新任务可优先 no-Skill / direct-tool |
 | Skill new-binding | 生产 projection index 仍为空；M11-005/006 只证明可选 publication/mapping contract，未重新准入任何 legacy Skill，也未证明真实 trial、Provider 可用性或科研净增量 |
-| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 A1/A2→M6、A3/A4→M11 的双传输；M5-006 Protocol 与 qualification/overlap/overlay/pairwise 校验器已实现。M11-007 [Skill closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 已由 PR81 合入，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 绑定 exact implementation/replay/CI 和具名接受，状态 SATISFIED。M6-008 baseline envelope/replay closeout 已由 PR75 接受，Task 按[收口证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 为 DONE；M5-007 synthetic Harness IN_PROGRESS，[H1/H2](implementation/SYSTEM_EVALUATION_HARNESS.md) 已由 PR86 接受，提供确定性非执行 plan 与独立 preflight；H3 四臂 synthetic execution/cold replay 与整臂 dispatch deadline 修复已由 PR89 接受并合入；[H4](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md) H4a actual evidence 已由 PR90 接受并合入；H4b synthetic 盲审/具名冻结/受控揭盲已由 PR96 使用单次维护者审核例外合入，actual develop push CI SUCCESS；[H4c measurement/analysis](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 关联/方法/观察记录及独立配对输入已由 PR104 具名 R2 接受并合入 develop@26eca5742ba08d504d273423471fd7aab876a6d5（原始[验证](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md)）；[H5 持久化证明](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 的 PR106 已获黄毅 exact-head R2 接受并正常合入 develop@81a058b228a5da2a6f46192a954f62efc72895e3；H1–H5 实现切片均已接受，M5-007 整体验收仍为 IN_PROGRESS；真实 M5-004 execution 仍受原 live/case/admission Gate 约束，并新增 [M5-008 Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md) 作为正式评价前的工程验收任务；M5-008 BLOCKED，当前没有该任务的 live 验证或 confirmatory net-benefit evidence |
+| Phase D evaluation entry | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 A1/A2→M6、A3/A4→M11 的双传输；M5-006 Protocol 与 qualification/overlap/overlay/pairwise 校验器已实现。M11-007 [Skill closeout 1.0.0](implementation/SKILL_EXECUTION_CLOSEOUT.md) 已由 PR81 合入，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 绑定 exact implementation/replay/CI 和具名接受，状态 SATISFIED。M6-008 baseline envelope/replay closeout 已由 PR75 接受，Task 按[收口证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 为 DONE；M5-007 bounded synthetic Harness DONE，[H1/H2](implementation/SYSTEM_EVALUATION_HARNESS.md) 已由 PR86 接受，提供确定性非执行 plan 与独立 preflight；H3 四臂 synthetic execution/cold replay 与整臂 dispatch deadline 修复已由 PR89 接受并合入；[H4](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4_PACKET.md) H4a actual evidence 已由 PR90 接受并合入；H4b synthetic 盲审/具名冻结/受控揭盲已由 PR96 使用单次维护者审核例外合入，actual develop push CI SUCCESS；[H4c measurement/analysis](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H4C_PACKET.md) 关联/方法/观察记录及独立配对输入已由 PR104 具名 R2 接受并合入 develop@26eca5742ba08d504d273423471fd7aab876a6d5（原始[验证](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H4C-001/README.md)）；[H5 持久化证明](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_H5_PACKET.md) 的 PR106 已获黄毅 exact-head R2 接受并正常合入 develop@81a058b228a5da2a6f46192a954f62efc72895e3；H1–H5 整项收口见[验收与 Issue #55 条款](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)，原 454 文件证明与当前源码 111/111 测试分别保留身份；synthetic 13 指标全 unavailable/null、primary eligibility=false；真实 M5-004 execution 仍受原 live/case/admission Gate 约束，并新增 [M5-008 Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md) 作为正式评价前的工程验收任务；M5-008 BLOCKED，当前没有该任务的 live 验证或 confirmatory net-benefit evidence |
 | 发布 | M14-001～005 DONE；#116 经最终 R2 审核正常 merge，`v0.1.0` GitHub alpha prerelease 的五个附件下载 hash/size 核验通过。八个 actual-main 双 Python 安装探针通过；source/main/tag/manifest/provenance 闭包见[完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)。后续发行保留独立 R2/CI/维护者决定 |
 | 产品体验 | scaffold 支持离线项目入口；可视化、协作 UI 和运维流程仍待完善 |
 

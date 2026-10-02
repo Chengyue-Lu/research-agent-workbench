@@ -1,5 +1,9 @@
 # M5-007 H1–H5 整体验收准备
 
+当前接续：[整项收口候选](M5-007_COMPLETION.md)以 PR121 合入后的 `develop@30600f2` 为基线，
+同一 PR 提出整项 R2 验收、M5-007 DONE 与 Issue #55 关闭条件；下文保留 PR107 准备阶段记录。
+PR107/121 的文档合入均不追记为整项接受，H5 原始 Attempt 和 pins 保持不变。
+
 首次记录：2026-09-28；更新：2026-10-02。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
 状态：PR106 H5 已具名 R2 接受并合入；PR107 准备文档已合入 `develop@2618ef4fa7a1b16722e097af9a91b00b40ec700a`。
 M5-007 仍为 IN_PROGRESS，Issue55 仍 OPEN，整体验收尚未作出。

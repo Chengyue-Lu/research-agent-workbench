@@ -186,3 +186,15 @@ passing tests still cannot authorize real Provider/Human/admission, assert numer
 net benefit, or change M5-007 status by themselves. Failures or identity drift
 block acceptance and require the affected slice's evidence to be repaired, not
 a replacement of the retained proof. M5-008 and formal M5-004/005 stay gated.
+
+## M5-007 whole-Task completion candidate (2026-10-02)
+
+| Risk | Current control | Remaining acceptance |
+|---|---|---|
+| Task status inferred from slice merges or passing CI | [Completion packet](M5-007_COMPLETION.md) maps the original whole-Task and twelve Issue #55 criteria; only the M5-007 status column changes | Current named whole-Task R2 review and required CI; merged develop stays IN_PROGRESS until integration |
+| Historical approval, proof or coverage relabeled as current evidence | Preserve original Attempts, source pins, H5 ZIP and capture gaps; independently check source equality before reusing 111-test/replay results | This PR's documentation/governance evidence is recorded separately; source CI observations retain their exact SHA and capture status |
+| Completion silently activates live execution or scientific claims | M5-008 stays BLOCKED on M6-004, A4 admission and pilot authorization; all 13 synthetic metrics remain unavailable/null and primary eligibility false | Fresh named account/budget/data/Tool and real pilot evidence are required downstream |
+
+The owner's instruction authorizes preparing this closeout. It does not invent a
+cross-owner approval or reviewer-unavailable confirmation. No historical gate or
+Task acceptance is redefined, and Issue #55 is closed only after accepted integration.
