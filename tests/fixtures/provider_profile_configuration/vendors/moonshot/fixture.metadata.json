@@ -5,7 +5,7 @@
   "provider": "moonshot",
   "profile_ref": {
     "path": "registry/providers/profiles/moonshot-chat-completions-v1.json",
-    "sha256": "d250e781d8321690bd9e8f490633694375cd50e620da7524349cbf086d2252f2"
+    "sha256": "4d23fa32817e231729bc352097dd72cc42756cbc715a07bcd366f42e707856cf"
   },
   "requested_id": "kimi-k2.6",
   "live_accepted": false,

@@ -9,7 +9,7 @@
       "enabled": true,
       "profile_ref": {
         "path": "registry/providers/profiles/google-gemini-generate-content-v1.json",
-        "sha256": "0d9270551119ba2998385acea6df169c7f068f90c987bb02af04003c49d65d70"
+        "sha256": "6a61e066c9a70597193f24c039da06ef51f2f3d3fa8bf877ecc4ce26b5a3ed6d"
       },
       "model_selector": {
         "kind": "literal",

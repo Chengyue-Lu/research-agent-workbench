@@ -5,7 +5,7 @@
   "provider": "zhipu",
   "profile_ref": {
     "path": "registry/providers/profiles/zhipu-chat-completions-v1.json",
-    "sha256": "9a08fca7f71b68cb3e3f7174021084294f45fafbb3335f70dd6aeef5bb50a860"
+    "sha256": "8781d48f765de8107dde8e6a82619d5f60ab232efd7c3a8d6364be5a0af9f1cd"
   },
   "requested_id": "glm-5.2",
   "live_accepted": false,

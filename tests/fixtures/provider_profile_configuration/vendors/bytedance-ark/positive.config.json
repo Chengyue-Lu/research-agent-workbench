@@ -9,7 +9,7 @@
       "enabled": true,
       "profile_ref": {
         "path": "registry/providers/profiles/bytedance-ark-chat-completions-v1.json",
-        "sha256": "dbbb3c5ef7ec76b007e4dadd481db70b6b7c64e4ce06e988691d0cde0989413d"
+        "sha256": "27bbbd1ed99c2110dc0dafda1ca15d00417e099430b31abe8824c6cbbd1871d5"
       },
       "model_selector": {
         "kind": "literal",

@@ -9,7 +9,7 @@
       "enabled": true,
       "profile_ref": {
         "path": "registry/providers/profiles/siliconflow-chat-completions-v1.json",
-        "sha256": "896bf03d22008fff83d75ed02931f960bf1696d0e3cb6eba310e929d0cbd652a"
+        "sha256": "3178a891b5d04486e42b8f58453e82eec004492ac4c7754a53d40038f36a6e24"
       },
       "model_selector": {
         "kind": "literal",

@@ -5,7 +5,7 @@
   "provider": "openrouter",
   "profile_ref": {
     "path": "registry/providers/profiles/openrouter-chat-completions-v1.json",
-    "sha256": "e6779dc4562519596af18a917ea71f7b04cd7e120b76c5aacbd8ac0270cdc563"
+    "sha256": "34b980a0775ec908347817b82b15c091d9b3653e1e71d23e7a44d4a91c93da36"
   },
   "requested_id": "openai/gpt-5.2",
   "live_accepted": false,

@@ -9,7 +9,7 @@
       "enabled": true,
       "profile_ref": {
         "path": "registry/providers/profiles/openai-responses-v1.json",
-        "sha256": "56d2017ae8a423e82a9de240dcb0cde215a718b08122dbdb3dcc70ed87a20872"
+        "sha256": "2680b3e3e14d6cd54d7c34e3945775b1e54b44072f08b582e0e3d55c6472d1ab"
       },
       "model_selector": {
         "kind": "literal",

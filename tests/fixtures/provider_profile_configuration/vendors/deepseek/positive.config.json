@@ -9,7 +9,7 @@
       "enabled": true,
       "profile_ref": {
         "path": "registry/providers/profiles/deepseek-responses-v1.json",
-        "sha256": "9f5bae5cab4fa8b3be85802b12aa1c9fb857899143956e945375dfaa9c295e86"
+        "sha256": "aeb383c278bfb974c6998683ce8d6caab859a60880a76d880142c008585f12f0"
       },
       "model_selector": {
         "kind": "literal",

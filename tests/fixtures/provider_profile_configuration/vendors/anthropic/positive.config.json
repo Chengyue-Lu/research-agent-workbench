@@ -9,7 +9,7 @@
       "enabled": true,
       "profile_ref": {
         "path": "registry/providers/profiles/anthropic-anthropic-messages-v1.json",
-        "sha256": "0c23690b4a1b8bcbde2863e438f27b9a7fa551f50bbbd03fda6a548410fb5b7e"
+        "sha256": "081e649b06b466a9bfd9fa61189c64bbfb190f3979b771c984ca7f7867ed6d58"
       },
       "model_selector": {
         "kind": "literal",

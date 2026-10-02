@@ -9,7 +9,7 @@
       "enabled": true,
       "profile_ref": {
         "path": "registry/providers/profiles/alibaba-dashscope-chat-completions-v1.json",
-        "sha256": "91bc9364a9240195c736a4220bcfb2f8ea59c6bea9cfb994ed228d55bb58fb03"
+        "sha256": "6235f606f04e25888f3863d1bffb262bee58ecf9b5ceda6271cae84bde58678a"
       },
       "model_selector": {
         "kind": "literal",

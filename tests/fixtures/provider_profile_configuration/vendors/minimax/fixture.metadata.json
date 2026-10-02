@@ -5,7 +5,7 @@
   "provider": "minimax",
   "profile_ref": {
     "path": "registry/providers/profiles/minimax-responses-v1.json",
-    "sha256": "3fdc0edc8d146bb2e512b97e633d1efe11bf0b99628e990cdad6eaa5366ec4f7"
+    "sha256": "7d3be3ec91e5995d11662527532f399c7b2d67382d00094169e56c219099dc20"
   },
   "requested_id": "MiniMax-M3",
   "live_accepted": false,
