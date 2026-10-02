@@ -1,4 +1,8 @@
-# M5-007 H1–H5 整体验收复核候选
+# M5-007 H1–H5 整体验收复核
+
+当前接续：[整项收口候选](M5-007_COMPLETION.md)在 `develop@30600f2` 上将具名验收、
+Task DONE 提案与 Issue #55 关闭条件放在同一 PR 中审查；原复核 Attempt 保留。
+下文是 PR121 的 2026-10-02 复核记录，原基线、验证身份及当时 pending 状态不改写。
 
 日期：2026-10-02。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
 审查基线：`develop@2618ef4fa7a1b16722e097af9a91b00b40ec700a`。本文件提出整体验收所需的
@@ -62,7 +66,7 @@ PR107 的旧跨负责人批准在发布基线 rebase 后被 DISMISSED；它由�
 本次整体验收审核应把 PR107 文档及冲突解决一并纳入，而不能把旧批准复用为当前批准。
 H5 的 Agent Trace capture-gap warning 继续保留。
 
-## 请求的决定与下游边界
+## PR121 当时请求的决定与下游边界
 
 请黄毅复核 Execution 接口、actual facts/Receipt、Gate B 消费与当前 source/proof 身份；
 请路诚钺核对 Task 全部验收、评价解释、失败/缺测量及后继 Gate。对未闭合条款保留具体反例，

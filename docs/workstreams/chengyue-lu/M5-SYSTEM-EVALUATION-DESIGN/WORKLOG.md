@@ -423,3 +423,18 @@ The actual protected-develop source CI for `2618ef4` later completed SUCCESS wit
 12 jobs successful; the earlier in-progress observation remains a dated entry fact.
 Task remains IN_PROGRESS, Issue55 OPEN, M5-008 BLOCKED; no
 live/admission/analysis authority was granted.
+
+## M5-007 whole-Task completion candidate (2026-10-02)
+
+PR121's audit documents were merged as `develop@30600f2e9ae25852289f1d0ca12f114291c31457`;
+that integration did not accept the whole Task. On the user's instruction to close
+M5-007 first, one feature/R2 candidate now combines whole-Task acceptance, the
+IN_PROGRESS-to-DONE status proposal, STATUS/derived navigation and the original
+Issue #55 closure checklist. Scope and source pins are in the
+[new completion Attempt](attempts/M5-007-COMPLETION-001/README.md).
+
+Retained H1–H5 implementation/proof bytes and the existing 111-test/replay result
+keep their original identities. Current documentation/governance and Task-row
+checks are recorded separately. The twelve Issue criteria have evidence mappings;
+named whole-Task review and merge remain the final closeout conditions. M5-008,
+real case/admission/live/Human gates stay BLOCKED; no real calls or release action.

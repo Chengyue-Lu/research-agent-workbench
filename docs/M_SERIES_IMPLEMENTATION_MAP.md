@@ -102,7 +102,7 @@ flowchart LR
         M5001["M5-001 BLOCKED<br/>evidence dossier"] --> M5004["M5-004 BLOCKED<br/>real system evaluation"]
         M5002["M5-002 BLOCKED<br/>theory/simulation dossier"] --> M5004
         M5003["M5-003 DONE<br/>non-executing plan"] --> M5006["M5-006 DONE<br/>Protocol + validators"]
-        M5006 --> M5007["M5-007 IN_PROGRESS<br/>synthetic evaluation harness"]
+        M5006 --> M5007["M5-007 DONE<br/>synthetic evaluation harness"]
         M5003 -. "candidate + evaluation" .-> A4G["A4-RUNTIME-ADMISSION-GATE<br/>external / unsatisfied"]
         A4G --> M5004
         M5003 --> M5004
@@ -134,9 +134,9 @@ flowchart LR
 
 M4-001～004 已闭合 bounded admission、promotion、Claim evidence localization 与 Run reconstruction；
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
-`M5-006 DONE → M6-008 DONE → M5-007 IN_PROGRESS`；路诚钺按 [Harness 进入计划](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md) 从冻结 plan / 评价侧 preflight 开始。
+`M5-006 DONE → M6-008 DONE → M5-007 DONE`；H1–H5 bounded synthetic Harness 的[整项收口](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)保留验收、失败/缺测量与冷回放边界。后继入口是仍受外部 Gate 阻断的 M5-008 live pilot。
 M5-004 的 M4 provenance 链、M5-003 计划契约、M11-006 mapping 机制、M6-008 baseline closeout 与 Skill replay Gate 已满足；
-仍等待两个 Human-approved public/private Case Dossier、M5-007 Harness、M5-008 live pilot 验收、真实 A4 admission 与 M6-004 live
+M5-007 synthetic Harness 已闭合；仍等待两个 Human-approved public/private Case Dossier、M5-008 live pilot 验收、真实 A4 admission 与 M6-004 live
 Provider/session Gate。M5-008 使用独立获批的 pilot dossier，在完整 Harness、live conformance、A4 admission
 与专项授权闭合后验证四臂真实 Provider/Tool execution；当前 BLOCKED。验收只证明 exact source/config 的
 live 工程闭包，pilot runs 不进入 primary confirmatory run set；pilot 观察或调参影响的案例不能重新标为

@@ -1,0 +1,51 @@
+{
+  "task_id": "M5-007",
+  "entry_source": "30600f2e9ae25852289f1d0ca12f114291c31457",
+  "entry_tree": "641031e3ae6436f7ca1f764fcb791fac53affc43",
+  "hash_scope": "Raw git show file-content bytes at entry_source, not Windows checkout bytes",
+  "accepted_h5_head": "68e612b353233bb8faf739d5012876739793cd84",
+  "task_transition": "M5-007: IN_PROGRESS -> DONE",
+  "input_refs": [
+    {
+      "path": "docs/TASKS.md",
+      "sha256": "a6f3d690eb4cb6c198952be9846d8a71c0dab67d0e8dc554340b89f752fda8b6"
+    },
+    {
+      "path": "docs/STATUS.md",
+      "sha256": "ce9775545b2619d9c9da57a3f36a559de38a97dbbe45ae3516ceec7670db51ab"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md",
+      "sha256": "129c75691e5bbfcf513d15176f285f9fe54c80225cba8755f019378aad015000"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md",
+      "sha256": "bf260f2c5fa23f9d927b75ef30866a07f0e40c44632d5829395702677111db44"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ACCEPTANCE_REVIEW.md",
+      "sha256": "92080dec2696ecead843bb1f2a68a0a51ce8fd3de75b1ad6570a592930c27c3c"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-ACCEPTANCE-REVIEW-001/verification.json",
+      "sha256": "fd2af671e742a2dce134065b20866b6d9ed0f7df0c7082030e9bd8e11c13bb29"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/attempts/M5-007-H5-001/vertical-proof.zip",
+      "sha256": "176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7d0c7601a063b2d"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "sha256": "28cee3799b181f639a73fc67b57cc82a319471ad3b56b680e18c7a63fc9e5047"
+    },
+    {
+      "path": ".github/governance-policy.json",
+      "sha256": "05bc5290787655ca97ac74a1501e9c9cc5e690d45761d0baf5b5e3e3f9a3744c"
+    }
+  ],
+  "human_instruction": {
+    "accountable_owner": "Chengyue-Lu",
+    "text": "可以，先收口",
+    "scope": "Prepare one M5-007 whole-Task completion PR; no fabricated approval or reviewer-unavailable finding"
+  }
+}
