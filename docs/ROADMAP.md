@@ -332,7 +332,7 @@ promotion/pruning/Human judgement。
 
 M4-001～004 的 bounded provenance chain 已实现并合入，M5-003 计划契约与 M11-006 Skill mapping 也已具备。
 M5-008 [Live Evaluation Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)
-补足 synthetic Harness 与正式评价之间的 live 工程验收：在完整 M5-007、M6-004、真实 A4 admission 和
+补足 synthetic Harness 与正式评价之间的 live 工程验收：在完整 M5-007、M6-010、真实 A4 admission 和
 pilot 专项授权闭合后，使用独立获批 pilot dossier 执行 A1/A2→M6、A3→M11 Core、A4→M11 Skill 的真实
 Provider/Tool 路径，并接受 actual facts、失败/retry、cold replay、盲审和分析输入闭包。当前 BLOCKED；
 pilot 不等待 M5-001/002，但不关闭其正式案例 Gate。pilot observations 不产生 confirmatory net-benefit
@@ -340,7 +340,7 @@ conclusion，也不进入 primary confirmatory run set；被观察或调参影�
 
 M5-004 的正式 system-level execution 仍须等待两个 Human-approved dossier 及其真实案例 provenance、
 M5-006 Protocol、M5-007 Harness（含 M6-008 baseline transport 与 Skill closeout Gate）、M5-008 的具名 live pilot 验收、
-M6-004 live Provider/session conformance，以及 `A4-RUNTIME-ADMISSION-GATE`。A4 保持 M5-003 v0.1 的
+M6-010 的 exact DeepSeek Flash live Provider/session conformance，以及 `A4-RUNTIME-ADMISSION-GATE`。A4 保持 M5-003 v0.1 的
 `mode-candidate-skill` identity，其正式含义是 candidate-origin treatment + admitted Runtime execution；M5-006
 定义独立、版本化的 execution-qualification overlay，不回写 frozen Manifest。该 Gate 必须 exact-pin
 candidate binding→`skill_evaluation_ref`→具名 Human Admission Decision→immutable accepted Release→
@@ -375,6 +375,8 @@ M6-003 保留为历史 compatibility seam，不再充当执行
 umbrella。M6-004 只验证 Provider/isolated session 的 live conformance，在 M6-001/002 后由具名 live
 authorization 解阻；它不 hard-depend M11-004，也不替代已接受的 Task→View→Host→generic
 Receipt bounded Gate。
+
+通用 API Key 接入由 [M6-009/010 计划](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)定义：M6-009先完成真实vendor/profile与四类协议的离线合同；M6-010再对用户选定的DeepSeek Flash进行独立Windows部件验收。原M6-004 OpenAI live范围与BLOCKED事实保留；当前M5-008/M5-004显式消费M6-010的同一exact binding，换配置/模型/协议需重验。非DeepSeek仍pending-live，不能由资料兼容或一家的PASS推导全部账户可用。
 
 ## 7. Product / Release Closure
 
