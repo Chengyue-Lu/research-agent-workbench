@@ -1,8 +1,10 @@
 # M5-007 H1–H5 整体验收准备
 
-首次记录：2026-09-28；更新：2026-10-01。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
-状态：PR106 H5 已具名 R2 接受并合入；PR107 收口审查候选已 rebase 到最新 `develop@54192efed0fe68ab7b7bd2fb5005c8710b16535a`。
+首次记录：2026-09-28；更新：2026-10-02。Task / Evaluation owner：路诚钺；Execution 接口复核：黄毅。风险：R2。
+状态：PR106 H5 已具名 R2 接受并合入；PR107 准备文档已合入 `develop@2618ef4fa7a1b16722e097af9a91b00b40ec700a`。
 M5-007 仍为 IN_PROGRESS，Issue55 仍 OPEN，整体验收尚未作出。
+[当前整体验收复核候选](M5-007_ACCEPTANCE_REVIEW.md)另行审计现行源码、Task 与历史证明；
+PR107 的旧审批因 rebase 失效，本次复核不得把它当作具名 R2 接受。
 
 ## 目标与输入
 
@@ -43,7 +45,8 @@ H5 proof 的 ZIP SHA-256 为 `176c47b3ebbc8e71d3cdb27f835d82a8e5af2ac876638d7ca7
    `docs/TASKS.md` 的 M5-007 `IN_PROGRESS → DONE`；Issue55 是否关闭须再核对其独立
    Gate 与内部 acceptance，不能因 PR106 CI 绿灯自动关闭。
 
-本审查候选仅同步已接受 H5 的实现状态，不修改 `docs/TASKS.md` 或 Issue55，也不自行合并。
+PR107 仅同步已接受 H5 的实现状态，已按用户直接指示合入；它没有修改 `docs/TASKS.md`
+或 Issue55，也没有完成 M5-007 的具名 R2 整体验收。
 旧 H5 proof 只在其 pinned source/Schema/helper 身份下有效；若接受中的源码身份变化，
 必须生成新的证据，不能改写旧 archive 的 hashes。
 

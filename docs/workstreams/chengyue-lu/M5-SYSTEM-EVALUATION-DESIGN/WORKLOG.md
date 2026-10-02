@@ -402,3 +402,19 @@ Python 3.11 related documentation/public-surface/CI/governance tests ran 138:
 candidate validated the repository examples/registry at 186/0/0; diff check
 passed. Huang Yi's prior PR107 approval was bound to the old base/head and
 must be refreshed for this rebased candidate.
+
+## M5-007 whole-Task review entry (2026-10-02)
+
+PR107's docs-only preparation was squash-merged by direct owner instruction as
+`develop@2618ef4fa7a1b16722e097af9a91b00b40ec700a`. The earlier cross-owner
+approval had been dismissed after rebase; there was no new-head approval or recorded
+reviewer-unavailable decision. It is not whole-Task R2 acceptance. The actual
+[component push](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/36955201813)
+succeeded; the parallel source CI was still in progress at this entry.
+
+Opened a separate [acceptance review](M5-007_ACCEPTANCE_REVIEW.md) from that exact
+source. Five historical input pins match their declared snapshot/archive, the M5-007
+Task row is unchanged from the accepted H5 head, and product source/Schema/trusted
+H5 helper bytes have no intervening Git diff. Focused current-source tests and
+archived cold replay are being checked independently. Task remains IN_PROGRESS,
+Issue55 OPEN, M5-008 BLOCKED; no live/admission/analysis authority was granted.

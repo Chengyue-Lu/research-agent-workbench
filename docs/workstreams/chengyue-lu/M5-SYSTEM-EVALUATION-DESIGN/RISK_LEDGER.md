@@ -172,3 +172,17 @@ The historical entry Attempt still pins the pre-merge snapshot; it is not a
 current-head hash claim. The remaining R2 risk is whole-Task H1–H5 evidence and
 acceptance, separate from H5 slice review. M5-007 stays IN_PROGRESS, Issue55 OPEN
 and M5-008 BLOCKED; no live, admission or scientific gate changes.
+
+## Whole-Task acceptance review candidate (2026-10-02)
+
+PR107's preparation document was integrated on direct owner instruction, but its
+old cross-owner approval was dismissed after rebase. This is a review gap, not
+a new R2 acceptance or a Section 5.4 reviewer-unavailable exception. The
+[whole-Task matrix](M5-007_ACCEPTANCE_REVIEW.md) therefore includes PR107's
+merged wording as well as H1–H5 behavior and asks for current named review.
+
+Historical H5 archive hashes and current-source equality are independently checked;
+passing tests still cannot authorize real Provider/Human/admission, assert numeric
+net benefit, or change M5-007 status by themselves. Failures or identity drift
+block acceptance and require the affected slice's evidence to be repaired, not
+a replacement of the retained proof. M5-008 and formal M5-004/005 stay gated.

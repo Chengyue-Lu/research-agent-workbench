@@ -10,8 +10,9 @@ H4c 的历史 [Attempt 与验证](attempts/M5-007-H4C-001/README.md) 保留；PR
 后继 [H5 持久化证明](M5-007_H5_PACKET.md) 的 PR106 已获黄毅 exact-head R2 接受并合入 `develop@81a058b228a5da2a6f46192a954f62efc72895e3`；
 [Attempt](attempts/M5-007-H5-001/README.md) 保存原始证明。H5 已接受，整体 M5-007 接受仍待审核。
 
-[M5-007 整体验收准备](M5-007_CLOSEOUT_PACKET.md) 已在独立 PR107 中 rebase 到最新 `develop@54192ef`，汇总 H1–H5
-身份、证据与待审条件；此入口不改变 M5-007 IN_PROGRESS 或后继 live Gate。
+[M5-007 整体验收准备](M5-007_CLOSEOUT_PACKET.md) 已由 PR107 合入 `develop@2618ef4`；
+[当前整体验收复核](M5-007_ACCEPTANCE_REVIEW.md) 对照现行 Task、源码与 H1–H5 证明请求独立具名 R2 审查。
+两者均不改变 M5-007 IN_PROGRESS 或后继 live Gate。
 
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
