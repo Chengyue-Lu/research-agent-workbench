@@ -1,0 +1,18 @@
+{
+  "id": "synthetic-response",
+  "model": "seed-2-0-lite-260228",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "synthetic profile answer"
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 2,
+    "completion_tokens": 3
+  }
+}

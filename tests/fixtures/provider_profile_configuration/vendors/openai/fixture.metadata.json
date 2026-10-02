@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "public-vendor-profile-configuration",
+  "schema_positive": true,
+  "resolve_expected": "resolve-nonsecret-only",
+  "provider": "openai",
+  "profile_ref": {
+    "path": "registry/providers/profiles/openai-responses-v1.json",
+    "sha256": "56d2017ae8a423e82a9de240dcb0cde215a718b08122dbdb3dcc70ed87a20872"
+  },
+  "requested_id": "gpt-4o-mini-2024-07-18",
+  "live_accepted": false,
+  "credential_reads": 0,
+  "presence_checks": 0,
+  "network_calls": 0,
+  "notes": [
+    "Positive means schema/config structure only; it does not prove current account availability or live acceptance.",
+    "All negative patches use array paths; apply to a deep copy of the indicated positive document."
+  ]
+}

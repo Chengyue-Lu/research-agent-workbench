@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "public-vendor-profile-configuration",
+  "schema_positive": true,
+  "resolve_expected": "reject-blocking-gap-before-model-or-credential",
+  "provider": "openrouter",
+  "profile_ref": {
+    "path": "registry/providers/profiles/openrouter-chat-completions-v1.json",
+    "sha256": "e6779dc4562519596af18a917ea71f7b04cd7e120b76c5aacbd8ac0270cdc563"
+  },
+  "requested_id": "openai/gpt-5.2",
+  "live_accepted": false,
+  "credential_reads": 0,
+  "presence_checks": 0,
+  "network_calls": 0,
+  "notes": [
+    "Positive means schema/config structure only; it does not prove current account availability or live acceptance.",
+    "All negative patches use array paths; apply to a deep copy of the indicated positive document."
+  ]
+}

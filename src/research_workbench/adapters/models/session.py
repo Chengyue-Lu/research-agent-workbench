@@ -8,6 +8,7 @@ and never changes provider or model automatically.
 from __future__ import annotations
 
 import json
+import math
 import time
 from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, replace
@@ -27,6 +28,12 @@ from research_workbench.adapters.models.port import (
     ToolCall,
     ToolDefinition,
     Usage,
+)
+from research_workbench.adapters.models.session_policy import (
+    ConformanceSessionPolicy, ConformanceSessionSummarySink,
+    freeze_json, freeze_request, freeze_response,
+    json_content_sha256, request_content_sha256, response_content_sha256,
+    validate_summary_event,
 )
 
 
@@ -144,8 +151,15 @@ class IsolatedApiSessionRunner:
         request: ModelRequest,
         limits: ApiSessionLimits,
         cancel_requested: Callable[[], bool] | None = None,
-        event_sink: SessionEventSink | None = None,
+        event_sink: SessionEventSink | ConformanceSessionSummarySink | None = None,
+        tool_choice_transition: ConformanceSessionPolicy | None = None,
     ) -> ApiSessionResult:
+        if tool_choice_transition is not None:
+            return self._run_conformance_session(
+                provider_name=provider_name, request=request, limits=limits,
+                cancel_requested=cancel_requested, event_sink=event_sink,
+                policy=tool_choice_transition,
+            )
         declared = {tool.name for tool in request.tools}
         missing_handlers = sorted(declared - set(self._tools))
         unused_handlers = sorted(set(self._tools) - declared)
@@ -446,6 +460,313 @@ class IsolatedApiSessionRunner:
                 warnings,
                 event_sink,
             )
+
+    def _run_conformance_session(
+        self,
+        *,
+        provider_name: str,
+        request: ModelRequest,
+        limits: ApiSessionLimits,
+        cancel_requested: Callable[[], bool] | None,
+        event_sink: SessionEventSink | ConformanceSessionSummarySink | None,
+        policy: ConformanceSessionPolicy,
+    ) -> ApiSessionResult:
+        """Opt-in, two-attempt specific -> successful Tool result -> none path.
+
+        The default loop above is deliberately unchanged. Policy does not score
+        probe business success: the caller must validate the final synthetic
+        assertion independently. A versioned privacy summary sink receives only
+        detached primitives; generic Agent Trace is not compatible with this
+        policy. Callers own their cross-probe actual-send invocation ledger.
+        """
+        if type(policy) is not ConformanceSessionPolicy:
+            raise ValueError("tool_choice_transition requires an immutable conformance Session policy")
+        if event_sink is not None and getattr(event_sink, "conformance_summary_version", None) != "1.0.0":
+            raise ValueError("explicit conformance policy requires a versioned privacy summary sink")
+        frozen_policy = ConformanceSessionPolicy.from_mapping(policy.to_mapping())
+        policy_hash = frozen_policy.sha256
+        # Capture a private ceiling snapshot: even reflective mutations of the
+        # caller's frozen dataclass cannot enlarge this invocation's budget.
+        limits = replace(limits, allowed_tool_side_effects=frozenset(limits.allowed_tool_side_effects))
+        if (
+            any(type(value) is not int for value in (
+                limits.max_model_turns, limits.max_tool_calls, limits.max_parallel_tool_calls,
+                limits.max_tool_result_chars, limits.max_output_tokens_per_turn,
+            ))
+            or not math.isfinite(limits.max_seconds)
+            or (limits.max_total_tokens is not None and type(limits.max_total_tokens) is not int)
+            or (limits.max_provider_reported_cost is not None and (
+                type(limits.max_provider_reported_cost) not in {int, float}
+                or not math.isfinite(limits.max_provider_reported_cost)
+            ))
+            or limits.max_model_turns != frozen_policy.max_model_turns
+            or limits.max_tool_calls != frozen_policy.max_tool_calls
+            or limits.max_parallel_tool_calls != 1
+            or limits.allowed_tool_side_effects != frozenset({"read-only"})
+        ):
+            raise ValueError("conformance Session limits must match the frozen policy ceilings")
+        bounded_request = freeze_request(replace(
+            request,
+            max_output_tokens=min(
+                request.max_output_tokens or limits.max_output_tokens_per_turn,
+                limits.max_output_tokens_per_turn,
+            ),
+        ))
+        if (
+            len(bounded_request.tools) != 1
+            or bounded_request.tools[0].name != frozen_policy.expected_tool_name
+            or bounded_request.tool_choice != frozen_policy.initial_choice
+            or bounded_request.response_format.kind != "text"
+            or bounded_request.response_format.schema is not None
+            or bool(bounded_request.metadata)
+            or bool(bounded_request.extensions)
+            or any(block.kind in {"tool_call", "tool_result"}
+                   for message in bounded_request.messages for block in message.content)
+        ):
+            raise ValueError("conformance Session request must select its one fresh client Tool with empty metadata/extensions")
+        if set(self._tools) != {frozen_policy.expected_tool_name}:
+            raise ValueError("conformance Session must bind exactly its declared client Tool")
+        tool = self._tools[frozen_policy.expected_tool_name]
+        if tool.side_effect != "read-only" or tool.definition != bounded_request.tools[0]:
+            raise ValueError("conformance Session handler definition or read-only ceiling differs")
+        execute_tool = tool.execute
+        request_hash = request_content_sha256(bounded_request)
+        provider = self._providers.require(provider_name, bounded_request)
+        identity = provider.capabilities()
+        if not identity.models or bounded_request.model not in identity.models:
+            raise ValueError("conformance Session requires an explicitly configured model identity")
+        started = self._clock()
+        cancelled = cancel_requested or (lambda: False)
+        messages = list(bounded_request.messages)
+        responses: list[ModelResponse] = []
+        warnings: list[str] = []
+        tool_call_count = 0
+        model_attempts = 0
+        local_history_assembled = False
+        tool_context_submission_attempts = 0
+        current: ModelRequest | None = None
+        current_hash: str | None = None
+        response: ModelResponse | None = None
+        response_hash: str | None = None
+
+        def emit(kind: str, payload: Mapping[str, object]) -> None:
+            if event_sink is not None:
+                # Only detached JSON primitives leave this boundary. Content
+                # hashes used for private drift guards are never exposed: those
+                # values could contain accidentally supplied credentials.
+                detached = json.loads(json.dumps({
+                    "summary_version": "1.0.0", "policy_id": frozen_policy.policy_id,
+                    "policy_version": frozen_policy.version, "policy_sha256": policy_hash,
+                    **payload,
+                }, ensure_ascii=False, allow_nan=False))
+                validate_summary_event(kind, detached)
+                event_sink.record(kind, detached)
+
+        def finish(status: ApiSessionStatus, reason: str) -> ApiSessionResult:
+            emit("session-summary", {
+                "status": status.value, "stop_reason": reason,
+                "model_attempts": model_attempts, "successful_responses": len(responses),
+                "tool_invocations": tool_call_count,
+                "local_tool_history_assembled": local_history_assembled,
+                "tool_context_submission_attempts": tool_context_submission_attempts,
+            })
+            return self._result(status, reason, provider_name, request.model, responses, tool_call_count, warnings)
+
+        def boundary_reason() -> str | None:
+            try:
+                if policy.sha256 != policy_hash or frozen_policy.sha256 != policy_hash:
+                    return "conformance-session-policy-drift"
+                if request_content_sha256(bounded_request) != request_hash:
+                    return "conformance-session-request-drift"
+                if current is not None and request_content_sha256(current) != current_hash:
+                    return "conformance-session-request-drift"
+                if response is not None and response_content_sha256(response) != response_hash:
+                    return "conformance-session-response-drift"
+            except (ValueError, TypeError, AttributeError):
+                return "conformance-session-content-drift"
+            if cancelled():
+                return "cancellation-requested"
+            observed_time = self._clock()
+            if not math.isfinite(started) or not math.isfinite(observed_time) or observed_time < started:
+                return "wall-time-clock-invalid"
+            if observed_time - started >= limits.max_seconds:
+                return "wall-time-budget"
+            return None
+
+        for turn in range(frozen_policy.max_model_turns):
+            reason = boundary_reason()
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            current = replace(
+                bounded_request, messages=tuple(messages),
+                tool_choice=(frozen_policy.initial_choice if turn == 0
+                             else frozen_policy.after_successful_tool_result),
+            )
+            current_hash = request_content_sha256(current)
+            emit("request-summary", {
+                "phase": "specific-tool" if turn == 0 else "result-text",
+                "provider": identity.provider, "requested_model": bounded_request.model,
+                "tool_choice_kind": current.tool_choice.kind,
+                "tool_choice_name": current.tool_choice.name,
+                "model_attempt": turn + 1, "history_message_count": len(current.messages),
+                "tool_result_in_local_history": local_history_assembled,
+            })
+            reason = boundary_reason()
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            try:
+                model_attempts += 1
+                if turn == 1:
+                    tool_context_submission_attempts += 1
+                response = validate_response_contract(current, freeze_response(provider.generate(current)))
+                response_hash = response_content_sha256(response)
+            except ProviderError as exc:
+                category = exc.category if isinstance(exc.category, ProviderErrorCategory) else ProviderErrorCategory.UNKNOWN
+                warnings.append(f"provider error category: {category}")
+                return finish(
+                    ApiSessionStatus.SAFE_PAUSED if category == ProviderErrorCategory.CANCELLED else ApiSessionStatus.FAILED,
+                    "provider-cancelled" if category == ProviderErrorCategory.CANCELLED else f"provider-error:{category}",
+                )
+            except Exception:
+                warnings.append("provider exception category: unexpected")
+                return finish(ApiSessionStatus.FAILED, "provider-exception:unexpected")
+            if event_sink is not None:
+                try:
+                    def token_value(value: object) -> int | None:
+                        return value if type(value) is int and value >= 0 else None
+
+                    reported_cost = response.usage.provider_reported_cost
+                    cost_value = reported_cost if (
+                        type(reported_cost) in {int, float} and math.isfinite(reported_cost) and reported_cost >= 0
+                    ) else None
+                    emit("response-summary", {
+                        "model_attempt": model_attempts, "tool_call_count": len(response.tool_calls),
+                        "output_kinds": sorted({"text" if block.kind == "text" else "unsupported" for block in response.output}),
+                        "finish_reason": response.finish_reason.value if isinstance(response.finish_reason, FinishReason) else FinishReason.UNKNOWN.value,
+                        "input_tokens": token_value(response.usage.input_tokens),
+                        "output_tokens": token_value(response.usage.output_tokens),
+                        "cached_input_tokens": token_value(response.usage.cached_input_tokens),
+                        "reasoning_tokens": token_value(response.usage.reasoning_tokens),
+                        "provider_reported_cost": cost_value,
+                        "cost_currency": response.usage.currency if response.usage.currency in {"USD", "CNY"} else None,
+                    })
+                except Exception:
+                    emit("capture-gap-summary", {"phase": "provider-response", "failure_code": "response-summary-capture-failed"})
+                    return finish(ApiSessionStatus.SAFE_PAUSED, "trace-capture-gap")
+            responses.append(response)
+            warnings.extend(response.warnings)
+            reason = boundary_reason()
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            if any(type(value) is not int or value < 0 for value in (
+                response.usage.input_tokens, response.usage.output_tokens
+            )):
+                return finish(ApiSessionStatus.SAFE_PAUSED, "token-usage-unavailable")
+            cost = response.usage.provider_reported_cost
+            if cost is not None and (
+                type(cost) not in {int, float} or not math.isfinite(cost) or cost < 0
+            ):
+                return finish(ApiSessionStatus.SAFE_PAUSED, "cost-usage-unavailable")
+            reason = _usage_budget_reason(responses, limits)
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            if any(block.kind != "text" for block in response.output):
+                return finish(ApiSessionStatus.FAILED, "conformance-output-kind-unsupported")
+            if turn == 1:
+                status, terminal_reason = _terminal_status(response.finish_reason)
+                if status != ApiSessionStatus.COMPLETED:
+                    return finish(status, terminal_reason)
+                if not any(block.kind == "text" and (block.text or "").strip() for block in response.output):
+                    return finish(ApiSessionStatus.FAILED, "conformance-result-text-empty")
+                return finish(status, terminal_reason)
+            if (
+                response.finish_reason != FinishReason.TOOL_CALL
+                or len(response.tool_calls) != frozen_policy.expected_tool_calls
+                or any(call.name != frozen_policy.expected_tool_name
+                       or call.executed_by != "client"
+                       or not isinstance(call.call_id, str) or not call.call_id.strip()
+                       for call in response.tool_calls)
+            ):
+                return finish(ApiSessionStatus.FAILED, "conformance-expected-one-tool")
+            call = response.tool_calls[0]
+            arguments_hash = json_content_sha256(call.arguments)
+            reason = boundary_reason()
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            emit("tool-attempt-summary", {
+                "tool_ordinal": 1, "tool_name": frozen_policy.expected_tool_name,
+                "handler_invoked": False,
+            })
+            reason = boundary_reason()
+            if json_content_sha256(call.arguments) != arguments_hash:
+                reason = "conformance-tool-arguments-drift"
+            if reason is not None:
+                # The attempt was durably announced, but no handler ran.
+                # No Tool result or transition is fabricated.
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            # Revalidate after the capture boundary before the one invocation.
+            validate_response_contract(current, response)
+            tool_call_count += 1  # Failed handlers consume the one Tool budget.
+            try:
+                output = freeze_json(execute_tool(call.arguments))
+                rendered = output if isinstance(output, str) else json.dumps(
+                    output, ensure_ascii=False, separators=(",", ":"), allow_nan=False,
+                )
+                is_error = False
+                output_hash = json_content_sha256(output)
+            except Exception as exc:
+                output = {"error": type(exc).__name__}
+                rendered = ""
+                is_error = True
+                output_hash = None
+            reason = boundary_reason()
+            if json_content_sha256(call.arguments) != arguments_hash:
+                reason = "conformance-tool-arguments-drift"
+            if not is_error and len(rendered) > limits.max_tool_result_chars:
+                reason = "tool-result-size-budget"
+            deliverable = not is_error and reason is None
+            if event_sink is not None:
+                try:
+                    emit("tool-result-summary", {
+                        "tool_ordinal": 1, "tool_name": frozen_policy.expected_tool_name,
+                        "status": "failed" if is_error else "succeeded",
+                        "handler_invoked": True,
+                        "result_eligible_for_local_history": deliverable,
+                    })
+                except Exception:
+                    emit("capture-gap-summary", {"phase": "tool-result", "failure_code": "tool-summary-capture-failed"})
+                    return finish(ApiSessionStatus.SAFE_PAUSED, "trace-capture-gap")
+            if is_error:
+                return finish(ApiSessionStatus.FAILED, "conformance-tool-handler-failed")
+            # Capture may be slow, cancel execution, or reflectively mutate
+            # another runtime reference. Recheck content and budgets afterwards.
+            reason = boundary_reason() or reason
+            if json_content_sha256(call.arguments) != arguments_hash:
+                reason = "conformance-tool-arguments-drift"
+            if json_content_sha256(output) != output_hash:
+                reason = "conformance-tool-result-drift"
+            rendered_after_capture = output if isinstance(output, str) else json.dumps(
+                output, ensure_ascii=False, separators=(",", ":"), allow_nan=False,
+            )
+            if len(rendered_after_capture) > limits.max_tool_result_chars:
+                reason = "tool-result-size-budget"
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            messages.append(Message("assistant", tuple([
+                *response.output, _tool_call_block(call),
+            ])))
+            messages.append(Message("tool", (ContentBlock(
+                kind="tool_result", data=freeze_json({
+                    "call_id": call.call_id, "name": call.name, "output": output, "is_error": False,
+                }),
+            ),)))
+            local_history_assembled = True
+            emit("tool-context-summary", {
+                "tool_ordinal": 1, "tool_name": frozen_policy.expected_tool_name,
+                "local_history_assembled": True, "result_entered_context": True,
+                "context_scope": "local-history",
+            })
+        return finish(ApiSessionStatus.FAILED, "conformance-session-terminal-missing")
 
     @classmethod
     def _finish(

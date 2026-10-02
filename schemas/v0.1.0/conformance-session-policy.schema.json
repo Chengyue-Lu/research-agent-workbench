@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.1.0/conformance-session-policy.schema.json",
+  "title": "Conformance Session Policy 1.0.0",
+  "x-rwb-document-kind": "conformance_session_policy",
+  "type": "object",
+  "required": ["policy_id", "version", "initial_choice", "after_successful_tool_result", "expected_tool_name", "expected_tool_calls", "max_model_turns", "max_tool_calls"],
+  "properties": {
+    "policy_id": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9._-]{0,127}$"},
+    "version": {"const": "1.0.0"},
+    "initial_choice": {
+      "type": "object",
+      "required": ["kind", "name"],
+      "properties": {"kind": {"const": "specific"}, "name": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_-]{0,127}$"}},
+      "additionalProperties": false
+    },
+    "after_successful_tool_result": {
+      "type": "object",
+      "required": ["kind", "name"],
+      "properties": {"kind": {"const": "none"}, "name": {"type": "null"}},
+      "additionalProperties": false
+    },
+    "expected_tool_name": {"type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_-]{0,127}$"},
+    "expected_tool_calls": {"type": "integer", "const": 1},
+    "max_model_turns": {"type": "integer", "const": 2},
+    "max_tool_calls": {"type": "integer", "const": 1}
+  },
+  "additionalProperties": false
+}

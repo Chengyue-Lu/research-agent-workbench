@@ -84,6 +84,7 @@ def _replay_transport(inputs, envelope, envelope_ref, directory, facts, events, 
         public_payload_ref=metadata["public_payload_ref"], arm_id=metadata["arm_id"],
         envelope_id=envelope["envelope_id"], accountable_owner=metadata["accountable_owner"],
         qualification_ref=metadata["qualification_ref"],
+        provider_binding_manifest_ref=metadata.get("provider_binding_manifest_ref"),
     )
     # Replay applies the v1 contract to historical bytes; the recorded compiler
     # identifies the producer, and need not be installed on this replay host.

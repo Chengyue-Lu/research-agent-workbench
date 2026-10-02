@@ -1,0 +1,21 @@
+{
+  "id": "synthetic-response",
+  "model": "deepseek-flash",
+  "status": "completed",
+  "output": [
+    {
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "output_text",
+          "text": "synthetic profile answer"
+        }
+      ]
+    }
+  ],
+  "usage": {
+    "input_tokens": 2,
+    "output_tokens": 3
+  }
+}

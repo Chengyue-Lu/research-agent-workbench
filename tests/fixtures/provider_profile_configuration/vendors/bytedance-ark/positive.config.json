@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "bytedance-ark-profile-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "bytedance-ark-profile-fixture",
+      "enabled": true,
+      "profile_ref": {
+        "path": "registry/providers/profiles/bytedance-ark-chat-completions-v1.json",
+        "sha256": "dbbb3c5ef7ec76b007e4dadd481db70b6b7c64e4ce06e988691d0cde0989413d"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "seed-2-0-lite-260228"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_FIXTURE_API_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

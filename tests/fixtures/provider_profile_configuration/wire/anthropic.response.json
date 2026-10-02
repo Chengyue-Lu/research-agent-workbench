@@ -1,0 +1,19 @@
+{
+  "id": "synthetic-response",
+  "model": "claude-sonnet-4-6",
+  "type": "message",
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "synthetic profile answer"
+    }
+  ],
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 2,
+    "output_tokens": 3,
+    "cache_read_input_tokens": 0,
+    "cache_creation_input_tokens": 0
+  }
+}

@@ -189,6 +189,7 @@ def compile_baseline_envelope(
     envelope_id: str,
     accountable_owner: str,
     qualification_ref: Mapping[str, Any] | None = None,
+    provider_binding_manifest_ref: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Use explicit public projection; all treatment controls remain metadata."""
     require(arm_id in {"plain-agent", "plain-agent-tool"}, "baseline supports only A1/A2")
@@ -219,10 +220,22 @@ def compile_baseline_envelope(
         payload["tools"] = _a2_tools(inputs, qualification_ref, protocol_ref, task_ref)
     budget = copy.deepcopy(frozen["budget"])
     budget["max_seconds"] = protocol["execution_time_budget_seconds"]
+    from research_workbench.adapters.models.provider_binding import CONFIGURED_CLASS, read_provider_binding_manifest
+    configured = protocol["execution_binding"]["adapter"]["ref"] == CONFIGURED_CLASS
+    require(configured == (provider_binding_manifest_ref is not None),
+            "configured Protocol requires an explicit Provider binding manifest; legacy Protocol keeps v1")
+    if provider_binding_manifest_ref is not None:
+        provider_manifest = read_provider_binding_manifest(
+            inputs, provider_binding_manifest_ref, expected_adapter=protocol["execution_binding"]["adapter"],
+        ).to_mapping()
+        require(protocol["execution_binding"]["provider"]["ref"] == provider_manifest["provider_identity"]["provider"]
+                and protocol["execution_binding"]["provider"]["version"] == provider_manifest["adapter_version"]
+                and protocol["execution_binding"]["model"]["ref"] == provider_manifest["model_policy"]["requested_id"],
+                "Provider manifest identity differs from the already-selected Protocol binding")
     document = {
         "schema_version": "0.1.0",
         "record_kind": KIND,
-        "version": "1.0.0",
+        "version": "1.1.0" if configured else "1.0.0",
         "envelope_id": envelope_id,
         "provider_visible_payload": payload,
         "transport_enforcement_metadata": {
@@ -242,6 +255,8 @@ def compile_baseline_envelope(
         },
         "boundaries": dict(BOUNDARIES),
     }
+    if provider_binding_manifest_ref is not None:
+        document["transport_enforcement_metadata"]["provider_binding_manifest_ref"] = file_ref(provider_binding_manifest_ref)
     inputs.validate(KIND, document)
     inputs.recheck()
     return document
@@ -269,6 +284,7 @@ def validate_baseline_envelope(
         envelope_id=envelope["envelope_id"],
         accountable_owner=metadata["accountable_owner"],
         qualification_ref=metadata["qualification_ref"],
+        provider_binding_manifest_ref=metadata.get("provider_binding_manifest_ref"),
     )
     require(envelope == expected, "baseline envelope differs from frozen input compilation")
     return expected

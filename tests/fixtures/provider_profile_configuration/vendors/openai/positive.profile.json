@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1.0",
+  "record_kind": "provider_api_profile",
+  "version": "1.0.0",
+  "profile_id": "openai-responses-standard-v1",
+  "identity": {
+    "provider": "openai",
+    "operator": "OpenAI",
+    "service": "OpenAI API",
+    "model_publisher": "OpenAI",
+    "access_region": null,
+    "deployment_region": null
+  },
+  "protocol": {
+    "family": "responses",
+    "revision": "1.0.0"
+  },
+  "endpoint": {
+    "origin": "https://api.openai.com",
+    "base_path": "/v1",
+    "operation_path": "/responses",
+    "api_version": null
+  },
+  "auth": {
+    "kind": "api-key-header",
+    "header_name": "Authorization",
+    "prefix": "Bearer ",
+    "public_parameters": {}
+  },
+  "model": {
+    "requested_id": "gpt-4o-mini-2024-07-18",
+    "publisher": "OpenAI",
+    "observed_policy": "exact",
+    "allowed_observed_ids": [
+      "gpt-4o-mini-2024-07-18"
+    ],
+    "documented_revision": "2024-07-18"
+  },
+  "generation": {
+    "mode": "standard",
+    "parameter_profile_id": "responses:parameters:v1",
+    "continuation_policy": "local-messages-only"
+  },
+  "mapping": {
+    "role_policy_id": "responses:role:v1",
+    "tool_policy_id": "responses:tool:v1",
+    "schema_policy_id": "responses:schema:v1",
+    "usage_policy_id": "responses:usage:v1",
+    "finish_policy_id": "responses:finish:v1",
+    "error_policy_id": "responses:error:v1"
+  },
+  "implementation": {
+    "adapter_version": "1.0.0",
+    "codec_version": "1.0.0",
+    "capabilities": [
+      "text",
+      "tools",
+      "structured_output"
+    ],
+    "limits": {
+      "max_output_tokens": 256,
+      "max_tools": 8
+    },
+    "known_gaps": [
+      "parallel-tools-exact-model-evidence-not-frozen",
+      "pending-live-exact-binding",
+      "data-policy-evidence-unavailable"
+    ],
+    "binding_policy_version": "provider-binding-v2"
+  },
+  "data_policy_evidence": {
+    "regions_ref": null,
+    "controls_ref": null
+  },
+  "documentation_refs": [
+    "https://developers.openai.com/api/reference/python/resources/responses/methods/create",
+    "https://developers.openai.com/api/docs/guides/structured-outputs"
+  ]
+}

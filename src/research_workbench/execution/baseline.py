@@ -10,7 +10,7 @@ import socket
 import sys
 import time
 from collections.abc import Callable, Mapping
-from dataclasses import asdict, is_dataclass
+from dataclasses import fields, is_dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -33,7 +33,7 @@ from research_workbench.observability.trace import AgentTraceRecorder, sanitize_
 
 def _plain(value: Any) -> Any:
     if is_dataclass(value):
-        return _plain(asdict(value))
+        return {field.name: _plain(getattr(value, field.name)) for field in fields(value)}
     if isinstance(value, Mapping):
         return {key: _plain(item) for key, item in value.items()}
     if isinstance(value, (tuple, list)):
@@ -54,7 +54,9 @@ def _source(function: Callable) -> Path:
 
 
 def observe_baseline_binding(
-    provider: ModelProvider, *, model: str, model_slot: str
+    provider: ModelProvider, *, model: str, model_slot: str,
+    inputs: EvaluationInputs | None = None,
+    provider_binding_manifest_ref: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Observe the actual local transport before freezing the Protocol.
 
@@ -62,14 +64,21 @@ def observe_baseline_binding(
     not model weights or an independently authenticated remote deployment.
     """
     caps = provider.capabilities()
-    adapter_hash = _hash(_source(provider.generate))
     adapter_name = f"{type(provider).__module__}.{type(provider).__qualname__}"
+    from research_workbench.adapters.models.provider_binding import CONFIGURED_CLASS, observe_provider_binding
+    if adapter_name == CONFIGURED_CLASS:
+        require(inputs is not None and provider_binding_manifest_ref is not None,
+                "configured Provider requires an explicit binding manifest")
+        adapter = observe_provider_binding(provider, inputs=inputs, manifest_ref=provider_binding_manifest_ref)
+    else:
+        require(provider_binding_manifest_ref is None, "legacy Provider cannot consume a configured binding manifest")
+        adapter = {"ref": adapter_name, "version": caps.adapter_version,
+                   "content_hash": _hash(_source(provider.generate))}
     host = {"machine": socket.gethostname(), "platform": platform.platform()}
     return {
         "provider": {"ref": caps.provider, "version": caps.adapter_version,
                      "content_hash": digest(_plain(caps))},
-        "adapter": {"ref": adapter_name, "version": caps.adapter_version,
-                    "content_hash": adapter_hash},
+        "adapter": adapter,
         "model": {"ref": model, "version": "provider-capability-descriptor-v1",
                   "content_hash": digest({"capabilities": _plain(caps), "model": model}),
                   "model_class": "provider-reported", "slot": model_slot,
@@ -164,7 +173,11 @@ class _BaselineSink:
 
     def _observed(self, model=None):
         expected = self.metadata["execution_binding"]["model"]
-        return observe_baseline_binding(self.provider, model=model or expected["ref"], model_slot=expected["slot"])
+        return observe_baseline_binding(
+            self.provider, model=model or expected["ref"], model_slot=expected["slot"],
+            inputs=self.inputs,
+            provider_binding_manifest_ref=self.metadata.get("provider_binding_manifest_ref"),
+        )
 
     def preflight(self, tool_name=None):
         require(self.clock() - self.started < self.metadata["budget"]["max_seconds"], "pre-call time budget")

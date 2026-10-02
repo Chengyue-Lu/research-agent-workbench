@@ -1,0 +1,1 @@
+{"responseId":"fixture-gemini-1","modelVersion":"synthetic-model","candidates":[{"content":{"role":"model","parts":[{"text":"OK"}]},"finishReason":"STOP"}],"usageMetadata":{"promptTokenCount":12,"candidatesTokenCount":3,"thoughtsTokenCount":0,"cachedContentTokenCount":4,"totalTokenCount":15}}

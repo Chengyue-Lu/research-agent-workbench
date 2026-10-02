@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "public-vendor-profile-configuration",
+  "schema_positive": true,
+  "resolve_expected": "resolve-nonsecret-only",
+  "provider": "anthropic",
+  "profile_ref": {
+    "path": "registry/providers/profiles/anthropic-anthropic-messages-v1.json",
+    "sha256": "0c23690b4a1b8bcbde2863e438f27b9a7fa551f50bbbd03fda6a548410fb5b7e"
+  },
+  "requested_id": "claude-sonnet-4-6",
+  "live_accepted": false,
+  "credential_reads": 0,
+  "presence_checks": 0,
+  "network_calls": 0,
+  "notes": [
+    "Positive means schema/config structure only; it does not prove current account availability or live acceptance.",
+    "All negative patches use array paths; apply to a deep copy of the indicated positive document."
+  ]
+}

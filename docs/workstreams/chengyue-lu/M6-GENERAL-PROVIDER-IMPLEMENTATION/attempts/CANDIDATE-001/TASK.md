@@ -1,0 +1,22 @@
+# 隔离候选 Task Packet
+
+身份：M6-009 candidate / CANDIDATE-001。Profile：Provider factory integrator；Required Skills：[]。
+Provider/Session owner：黄毅；协调准备：路诚钺。用户授权通用 API Key 层、完整主流资料、
+先以 DeepSeek Flash 测试并继续推进目标；本候选不代填 owner 接受。
+
+起点：定义候选 badbf2489235d6539ca875208ffe9cd23e735680，加 PR126 两个维护提交的 cherry-pick，
+本分支起始 db46c8fa6e0767bf5a44968fa1fb5efd4cba37e7。产品集成基线仍为 develop。
+
+读集：AGENTS、README、DEVELOPMENT、Task M6-009/010、定义 PLAN/PREPARATION、
+ADR0003/0007 与 Provider Adapter plan，M6 Port/base/http/配置/协议/Session，
+baseline producer/envelope/replay 的直接消费接口，以及相关 Schema/tests/fixtures 和已核验官方资料。
+
+写域：新 configured/profile_configuration/wire_codecs/provider_binding/session_policy，
+显式 optional Session 分支、baseline 的 manifest 直接消费者、对应新 Schema/profile/禁用模板/
+测试和本 workstream。协议、配置、绑定、Session 委派写域互斥；协调者串行整合。
+不修改旧三 facade/Port、M5/M11/Resolver/Skill 实现或 Task 完成状态。
+
+预算：各实现切片 30～45 分钟，补充复核限 20 分钟；均 0 Provider/API、真实凭据读取、安装。
+停止条件：Core identity、Runtime ownership、Human authority 或未声明消费者需要变化时只提出问题。
+输出：可重现的离线候选、原失败与最终源哈希、独立有界复核、检查和 Compact Handoff。
+正式 feature PR 需合法 base 和原风险/审核门禁；不把依赖 PR 的未接受定义混入 develop 产品 PR。

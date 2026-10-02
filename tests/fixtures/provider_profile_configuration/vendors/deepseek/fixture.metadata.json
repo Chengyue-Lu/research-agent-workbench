@@ -1,0 +1,19 @@
+{
+  "fixture_kind": "public-vendor-profile-configuration",
+  "schema_positive": true,
+  "resolve_expected": "resolve-nonsecret-only",
+  "provider": "deepseek",
+  "profile_ref": {
+    "path": "registry/providers/profiles/deepseek-responses-v1.json",
+    "sha256": "9f5bae5cab4fa8b3be85802b12aa1c9fb857899143956e945375dfaa9c295e86"
+  },
+  "requested_id": "deepseek-flash",
+  "live_accepted": false,
+  "credential_reads": 0,
+  "presence_checks": 0,
+  "network_calls": 0,
+  "notes": [
+    "Positive means schema/config structure only; it does not prove current account availability or live acceptance.",
+    "All negative patches use array paths; apply to a deep copy of the indicated positive document."
+  ]
+}
