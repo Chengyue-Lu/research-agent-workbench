@@ -81,3 +81,10 @@ profile 引用默认相对安装资源目录；独立配置可显式传入 `--ro
 预算是停止上限，不是消耗目标。
 
 费用、币种或账单不可得时记录 unknown，不作为停止条件；未知 token 用量仍保留预占并停止。
+
+2026-10-03 的真实进度已另存 [PR #130](https://github.com/Chengyue-Lu/research-agent-workbench/pull/130)：
+四份响应成功，Tool/result text 通过，Schema 发送前 deadline 停止；三组累计 1205 tokens，完整验收失败。
+用户随后授权累计十组（含已用三组），token 上限不变。[FOLLOWUP-022](attempts/FOLLOWUP-022/TASK.md)
+实现显式单次 append-only grant、accounting1.1/report1.2 冷读与共享剩余时限。
+默认初始三组和 120 秒合同保留，扩限需要 exact decision/prefix/grant 引用，不能仅改启动参数。
+真实预算尚未迁移，新安装、socket180 配置、helper 与 Windows context 尚未冻结；M6-010 仍 BLOCKED。

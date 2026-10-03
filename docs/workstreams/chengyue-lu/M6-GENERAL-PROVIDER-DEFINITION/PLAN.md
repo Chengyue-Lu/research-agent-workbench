@@ -84,9 +84,16 @@ source/config/validator/Windows Host/Tool implementation 与界面、官方价�
 Tool call，第2轮携带经验证的Tool结果并验证text，另1次验证Schema；前2轮同时构成bounded
 Tool Session，不在三次shape probes之外追加往返。用户已批准累计 input+output 不超过
 10,000,000 tokens，所有成功和失败调用同计，cache/reasoning 子项不重复相加。该上限是停止
-条件，不是消耗目标。执行计划采用每次最多 256 output tokens、每 Attempt 最多一次确定性
-无副作用 Tool、120 秒、0 自动 retry/fallback；初始 Attempt 失败即停，诊断、离线修复、重新冻结
-后才可建立 fresh Attempt，最多预留两次修复复验。上述小批数值是实施计划，不冒称用户逐项指定。
+条件，不是消耗目标。每次最多 256 output tokens、每 Attempt 最多一次确定性无副作用 Tool，
+0 自动 retry/fallback；失败即停，诊断、离线修复、重新冻结后才可建立 fresh Attempt。
+原实施计划为 120 秒、初始加最多两次修复；三组历史已保留。2026-10-03 用户直接将累计
+Attempt 上限扩大到 10 次，包含已用 3 次，最多剩余 7 次，token 上限不变。
+后继有界时间候选为整组 360 秒、单请求 socket timeout 180 秒，Session 与各阶段消费同一
+原始 deadline 的剩余时间；外层 Windows 600 秒与 teardown 余量另行固定。这些时间数值是
+实施选择，不冒称用户指定或无限等待。默认/历史 120 秒合同保留；真实账本需要在同一
+namespace/identity 上追加 exact-pin grant，不能改旧 header、重置历史或另建空预算。
+新安装源码、报告/配置/helper、Windows context 与剩余外层时间必须重新冻结；授权扩限不等于
+原三组入口可直接重跑。新实现与检查见 [FOLLOWUP-022](../M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-022/TASK.md)。
 原 US$0.01 只是询问候选，未记作批准的金额上限；按冻结官方价格保留可得估价。
 用户进一步确认账户余额充足，计费币种和账单查询不是本次测试前置条件；
 费用不可得时记录 unknown，不推断币种、实际收费或账单已核对，不因此阻断请求。

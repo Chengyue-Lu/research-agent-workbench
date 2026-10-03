@@ -1,5 +1,19 @@
 # 风险与剩余范围
 
+## FOLLOWUP-022 累计扩限与等待
+
+用户直接授权总计十组，包含保留的三组；所有成功/失败 input+output 仍最多 10,000,000。
+单次 grant 追加到同一 anchor/journal，meta/header/namespace/identity/旧事件保持；open 必须显式选择
+同一 grant hash。accounting1.1/report1.2 重放原 prefix，核对 baseline/effective、decision 与累计事实。
+默认三组/旧报告/120 秒路径保持兼容。事件 ceiling128 仍 fail closed，选定前缀的容量检查不保证
+任意十组 lifecycle 或额外 reconciliation 都可容纳。两个独立反例（累计计数伪造、收响应后关闭账本
+导致报告丢失）及修复复验见 [CHECKS](attempts/FOLLOWUP-022/CHECKS.md)。
+
+整组360秒候选包含本地准备；Session、Tool 和 Schema 完成断言服从原共享 deadline。
+同步请求返回后先保存用量，超时不再执行 Tool/下一请求；socket180 与外层600秒仍有边界，
+不能承诺无限等待或绝不中断。真实扩限迁移与新安装/helper/Windows source freeze 尚未执行，
+四份历史响应成功不等于完整 conformance/具名接受。Provider owner 黄毅，M6-010 BLOCKED 保持。
+
 当前离线完成判断见 [M6-009 收口](M6-009_COMPLETION.md)，绑定 PR128 合入 source3e01158。
 下表及后续 Attempt 的候选/未完成表述保留其历史阶段和 source 范围；真实 Windows/Provider 验收继续由
 M6-010 承担。报告最新用量一致性修复和原失败见 [FOLLOWUP-013](attempts/FOLLOWUP-013/CHECKS.md)。

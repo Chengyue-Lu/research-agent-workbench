@@ -9,6 +9,7 @@ another selected anchor, input proof and HTTP truth remain caller boundaries.
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import sqlite3
 from dataclasses import dataclass
@@ -24,6 +25,7 @@ from research_workbench.adapters.models.conformance_ledger import (
     ConformanceLedgerError, ConformanceUsageLedger, ConformanceUsageLimits,
 )
 from research_workbench.adapters.models.port import Usage
+from research_workbench.adapters.models import conformance_budget_grant as grant_policy
 
 _APPLICATION_ID = 0x52574243
 _MAX_EVENTS = 128
@@ -161,6 +163,7 @@ class _Replay:
     failed_attempts: set[int]
     usage_issues: dict[int, str]
     event_count: int = 0
+    grant: dict[str, object] | None = None
 
     def snapshot(self) -> dict[str, Any]:
         result = self.ledger.snapshot()
@@ -217,6 +220,8 @@ class ConformanceUsageJournal:
         self._owned: dict[int, ConformanceJournalReservation] = {}
         self._closed = False
         self._anchor = anchor
+        self._grant_selection = None
+        self._extension_metadata = None
 
     @classmethod
     def create(
@@ -274,6 +279,7 @@ class ConformanceUsageJournal:
         max_attempts: int = 3, max_invocations_per_attempt: int = 3,
         max_output_tokens_per_invocation: int = 256,
         anchor_path: str | Path | None = None,
+        grant_root: str | Path | None = None, expected_grant_sha256: str | None = None,
     ) -> ConformanceUsageJournal:
         """Open an established file; SQLite mode=rw forbids implicit recreation."""
         namespace = _namespace(namespace)
@@ -284,8 +290,16 @@ class ConformanceUsageJournal:
                 database_path=path, namespace=namespace, limits=_limit_mapping(limits)))
         connection = cls._connect(path)
         journal = cls(connection, namespace, limits, anchor=anchor)
+        if (grant_root is None) != (expected_grant_sha256 is None):
+            journal.close()
+            _fail("attempt-limit-grant-refused")
+        if grant_root is not None:
+            journal._grant_selection = (Path(grant_root).resolve(), expected_grant_sha256)
         try:
-            journal.snapshot()
+            snapshot = journal.snapshot()
+            if snapshot["journal_version"] == "1.1.0":
+                journal._extension_metadata = {key: snapshot[key] for key in
+                    ("baseline_limits", "effective_limits", "attempt_limit_grant")}
         except ConformanceJournalError:
             journal.close()
             raise
@@ -386,14 +400,30 @@ class ConformanceUsageJournal:
         for seq, kind, payload in events:
             if type(seq) is not int or seq != state.event_count + 1 or type(kind) is not str:
                 _fail("invalid-journal-state")
-            self._apply(state, kind, _parse(payload))
+            parsed = _parse(payload)
+            if kind == "attempt-limit-grant":
+                if self._anchor is None or self._grant_selection is None or state.grant is not None:
+                    _fail("attempt-limit-grant-refused")
+                grant_root, selected_hash = self._grant_selection
+                if grant_policy.digest(parsed) != selected_hash:
+                    _fail("attempt-limit-grant-refused")
+                self._validate_grant(state, parsed, root=grant_root, events=events[:state.event_count])
+            self._apply(state, kind, parsed)
             state.event_count += 1
+        if self._grant_selection is not None and state.grant is None:
+            _fail("attempt-limit-grant-refused")
         if self._anchor is not None and check_anchor:
             _anchor_call(lambda: self._anchor.verify(events))
         return state
 
     @staticmethod
     def _apply(state: _Replay, kind: str, payload: dict[str, object]) -> str | None:
+        if kind == "attempt-limit-grant":
+            if state.grant is not None or set(payload) != grant_policy.GRANT_FIELDS:
+                _fail("attempt-limit-grant-refused")
+            state.ledger._extend_attempt_limit(maximum=payload["new_max_attempts"])
+            state.grant = json.loads(_json(payload))
+            return None
         fields = {
             "attempt": {"ordinal", "refreeze"}, "reserve": {"ordinal", "attempt", "input", "output"},
             "intent": {"ordinal"}, "entry": {"ordinal"}, "release": {"ordinal"},
@@ -498,6 +528,8 @@ class ConformanceUsageJournal:
         if type(repair_refreeze_confirmed) is not bool:
             _fail("invalid-refreeze-assertion")
         def action(state):
+            if state.grant is not None and state.event_count + 14 > _MAX_EVENTS:
+                _fail("journal-event-ceiling")
             ordinal = len(state.snapshot()["attempts"]) + 1
             self._append(state, "attempt", {"ordinal": ordinal, "refreeze": repair_refreeze_confirmed})
             return ordinal
@@ -606,8 +638,104 @@ class ConformanceUsageJournal:
                 not call["settled"] and call["ordinal"] not in self._owned
                 for call in result["calls"]
             )
+            if state.grant is not None:
+                result.update(ledger_version="1.1.0", journal_version="1.1.0",
+                    baseline_limits=_limit_mapping(self._limits), effective_limits=dict(result["limits"]),
+                    attempt_limit_grant={"payload": state.grant, "sha256": grant_policy.digest(state.grant)})
             return result
         return self._transaction(action)
+
+    @staticmethod
+    def _grant_read(root, reference, *, canonical_required=True):
+        result = None
+        try:
+            grant_policy.reference(reference)
+            project = Path(root).resolve()
+            target = (project / reference["path"]).resolve()
+            if not target.is_relative_to(project):
+                _fail("attempt-limit-grant-refused")
+            with target.open("rb") as stream:
+                raw = stream.read(262145)
+            if len(raw) > 262144 or hashlib.sha256(raw).hexdigest() != reference["sha256"]:
+                _fail("attempt-limit-grant-refused")
+            candidate = json.loads(raw)
+            if canonical_required and raw != (grant_policy.canonical(candidate) + "\n").encode("ascii"):
+                _fail("attempt-limit-grant-refused")
+            result = candidate
+        except Exception:
+            pass
+        if result is None:
+            _fail("attempt-limit-grant-refused")
+        return result
+
+    def _validate_grant(self, state, grant, *, root, events):
+        valid = False
+        try:
+            prefix = self._grant_read(root, grant["prefix_ref"])
+            decision = self._grant_read(root, grant["decision_ref"])
+            self._grant_read(root, decision["user_input_ref"], canonical_required=False)
+            if (prefix["anchor_header"] == json.loads(self._anchor._header_bytes)
+                    and prefix["events"] == [list(event) for event in events]):
+                grant_policy.validate_grant(grant, namespace=self._namespace, identity=self._anchor.identity,
+                    snapshot=state.snapshot(), event_count=state.event_count,
+                    chain=grant_policy.prefix_chain(prefix), decision=decision)
+                valid = True
+        except Exception:
+            pass
+        if not valid:
+            _fail("attempt-limit-grant-refused")
+
+    def budget_extension_prefix(self):
+        """Nonsecret, caller-selected archive input; this does not grant capacity."""
+        def action(state):
+            if self._anchor is None or state.grant is not None:
+                _fail("attempt-limit-grant-refused")
+            return {"record_kind": "conformance_budget_prefix", "version": "1.0.0",
+                "budget_namespace": self._namespace, "journal_identity": self._anchor.identity,
+                "anchor_header": json.loads(self._anchor._header_bytes),
+                "events": [list(event) for event in self._events()]}
+        return self._transaction(action)
+
+    def extend_attempt_limit(self, *, root, decision_ref, prefix_ref):
+        """Append one selected 3-to-10 grant; no history rewrite or automatic retry."""
+        def action(state):
+            if self._anchor is None or state.grant is not None or self._grant_selection is not None:
+                _fail("attempt-limit-grant-refused")
+            prefix = self._grant_read(root, prefix_ref)
+            chain = None
+            try:
+                chain = grant_policy.prefix_chain(prefix)
+            except Exception:
+                pass
+            if chain is None:
+                _fail("attempt-limit-grant-refused")
+            grant = {"record_kind": "conformance_attempt_limit_grant", "grant_version": "1.0.0",
+                "budget_namespace": self._namespace, "journal_identity": self._anchor.identity,
+                "previous_events": state.event_count, "previous_chain_sha256": chain,
+                "baseline_limits": _limit_mapping(self._limits), "new_max_attempts": 10,
+                "decision_ref": decision_ref, "prefix_ref": prefix_ref,
+                "retained_state_sha256": grant_policy.digest(grant_policy.retained_state(state.snapshot()))}
+            self._validate_grant(state, grant, root=root, events=self._events())
+            self._grant_selection = (Path(root).resolve(), grant_policy.digest(grant))
+            self._append(state, "attempt-limit-grant", grant)
+            return {"payload": grant, "sha256": grant_policy.digest(grant)}
+        with self._lock:
+            previous_selection = self._grant_selection
+            try:
+                receipt = self._transaction(action)
+            except Exception:
+                self._grant_selection = previous_selection
+                raise
+            self._extension_metadata = {"baseline_limits": dict(grant_policy.BASELINE),
+                "effective_limits": {**grant_policy.BASELINE, "max_attempts": 10}, "attempt_limit_grant": receipt}
+            return receipt
+
+    def extension_metadata(self):
+        """Previously verified grant facts survive a later unavailable snapshot."""
+        with self._lock:
+            if self._closed:
+                _fail("journal-closed")
+            return None if self._extension_metadata is None else json.loads(_json(self._extension_metadata))
 
     def close(self) -> None:
         failed = False

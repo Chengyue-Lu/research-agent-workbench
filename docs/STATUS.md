@@ -40,9 +40,12 @@ release；当前 release branch 不回并 develop，原 tag/附件保持不变�
 版本化源码绑定、显式两轮 Session 政策和脱敏报告均有离线验证；条款与接受来源见
 [整项收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-009_COMPLETION.md)。
 默认禁用模板和官方矩阵中的未核实条件不产生厂商 live 资格。M6-010 独立验收 DeepSeek Flash；
-2026-10-03 的真实部件运行已验证一次 Tool 执行及结果往返文本；Schema 步骤在发送前因
-deadline 停止，累计四个响应、1,205 tokens。三组有界 Attempt 已耗尽，保持 BLOCKED；
-完整 conformance、运行接受与后续计划仍待闭合，见[部件进度](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)。
+2026-10-03 的前三组真实部件运行已验证一次 Tool 执行及结果往返文本；Schema 请求因本地
+共享 deadline 耗尽未发出，完整 conformance 未通过。累计四份响应、input1057/output148=1205
+tokens、held0；原失败与停止保留在[部件进度](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)。
+用户于 2026-10-03 将累计 Attempt 授权扩到 10 次（含已用 3 次），token 上限仍 10,000,000。
+后继 append-only 预算扩限与有界等待候选见 [FOLLOWUP-022](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-022/TASK.md)；
+真实账本迁移、exact 新安装/配置/helper/Windows 运行闭包仍待冻结，保持 BLOCKED，无完整 live PASS。
 原 M6-004 OpenAI 验收仍 BLOCKED；保存本地 Key 和晚间时间安排不证明 Provider 或 Pilot 已可用。
 
 ## 已实现

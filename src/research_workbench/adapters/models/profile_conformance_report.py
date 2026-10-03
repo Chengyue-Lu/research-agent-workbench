@@ -63,9 +63,99 @@ def _verify_call_usage(reservation, call):
     return all(call[field] is None for field in _TOKEN_FIELDS)
 
 
+def _verify_extended_accounting(accounting):
+    """Derive cumulative facts from every retained reservation, including STOPs."""
+    calls, attempts = accounting["calls"], accounting["attempts"]
+    if (len(attempts) > 10 or len(calls) > 30
+            or [attempt["ordinal"] for attempt in attempts] != list(range(1, len(attempts) + 1))
+            or [call["ordinal"] for call in calls] != list(range(1, len(calls) + 1))
+            or any(type(attempt["ordinal"]) is not int for attempt in attempts)
+            or any(type(call["ordinal"]) is not int or type(call["attempt_ordinal"]) is not int
+                   or not 1 <= call["attempt_ordinal"] <= len(attempts) for call in calls)
+            or [call["attempt_ordinal"] for call in calls] != sorted(call["attempt_ordinal"] for call in calls)
+            or not _verify_accounting_usage(accounting)):
+        return False
+    for attempt in attempts:
+        selected = [call for call in calls if call["attempt_ordinal"] == attempt["ordinal"]]
+        if (len(selected) > 3 or type(attempt["provider_invocations"]) is not int
+                or attempt["provider_invocations"] != len(selected)):
+            return False
+    for call in calls:
+        if (call["http_entry_observed"] != call["send_attempted"]
+                or call["may_have_sent"] != call["send_intent_durable"]
+                or call["send_attempted"] and not call["send_intent_durable"]
+                or call["response_received"] and not call["send_attempted"]
+                or call["successful_reported"] and not call["response_received"]):
+            return False
+    counts = {"provider_invocations": len(calls),
+        "http_send_attempts": sum(call["send_attempted"] for call in calls),
+        "responses_received": sum(call["response_received"] for call in calls),
+        "successful_responses": sum(call["successful_reported"] and call["response_received"] for call in calls),
+        "failed_invocations": sum(call["outcome"] in {"failed", "failed-before-send"} for call in calls),
+        "durable_send_intents": sum(call["send_intent_durable"] for call in calls),
+        "http_entry_observations": sum(call["http_entry_observed"] for call in calls)}
+    if any(type(accounting[key]) is not int or accounting[key] != value for key, value in counts.items()):
+        return False
+    held = 0
+    for call in calls:
+        if call["accounting_status"] in {"reserved", "unresolved", "reservation-exceeded", "total-limit-exceeded"}:
+            usage = call["reported_usage"]
+            known = 0 if usage is None else usage["input_tokens"] + usage["output_tokens"]
+            held += max(0, call["input_upper_tokens"] + call["output_upper_tokens"] - known)
+    return (type(accounting["unresolved_reserved_tokens"]) is int
+            and accounting["unresolved_reserved_tokens"] == held
+            and type(accounting["remaining_token_capacity"]) is int
+            and accounting["remaining_token_capacity"] == max(0,
+                accounting["limits"]["total_token_limit"] - accounting["known_total_tokens"] - held))
+
+
+def _verify_extension(report, inputs):
+    """Replay the original prefix under3 before deriving the single grant10."""
+    from research_workbench.adapters.models import conformance_budget_grant as policy
+    from research_workbench.adapters.models.conformance_journal import ConformanceUsageJournal, _Replay, _parse
+    from research_workbench.adapters.models.conformance_ledger import ConformanceUsageLedger
+    extension = report["budget_extension"]
+    receipt = extension["attempt_limit_grant"]
+    grant = receipt["payload"]
+    prefix = inputs.read(grant["prefix_ref"])
+    decision = inputs.read(grant["decision_ref"])
+    if (inputs.read_bytes(grant["prefix_ref"]) != (policy.canonical(prefix) + "\n").encode("ascii")
+            or inputs.read_bytes(grant["decision_ref"]) != (policy.canonical(decision) + "\n").encode("ascii")):
+        return False
+    inputs.read_bytes(decision["user_input_ref"])
+    chain = policy.prefix_chain(prefix)
+    state = _Replay(ConformanceUsageLedger(**policy.BASELINE), {}, set(), set(), set(), {})
+    for sequence, kind, payload in prefix["events"]:
+        if kind == "attempt-limit-grant" or sequence != state.event_count + 1:
+            return False
+        ConformanceUsageJournal._apply(state, kind, _parse(payload))
+        state.event_count += 1
+    retained = state.snapshot()
+    policy.validate_grant(grant, namespace=prefix["budget_namespace"], identity=prefix["journal_identity"],
+        snapshot=retained, event_count=state.event_count, chain=chain, decision=decision)
+    if (receipt["sha256"] != policy.digest(grant) or extension["baseline_limits"] != policy.BASELINE
+            or extension["effective_limits"] != {**policy.BASELINE, "max_attempts": 10}):
+        return False
+    accounting = report["accounting"]
+    if accounting is not None:
+        if (any(accounting[key] != extension[key] for key in extension)
+                or accounting["limits"] != extension["effective_limits"]
+                or accounting["budget_namespace"] != prefix["budget_namespace"]
+                or accounting["events_committed"] < state.event_count + 1
+                or accounting["attempts"][:3] != retained["attempts"]
+                or accounting["calls"][:len(retained["calls"])] != retained["calls"]):
+            return False
+        if not _verify_extended_accounting(accounting):
+            return False
+    inputs.recheck()
+    return True
+
+
 def _verify_binding(report, *, root, schema_root):
     """Derive archived pins without loading archived code or resolving a Key."""
     inputs = EvaluationInputs(root, schema_root)
+    if report["report_version"] == "1.2.0" and not _verify_extension(report, inputs):
+        return False
     binding = report["binding"]
     manifest = read_provider_binding_manifest(inputs, binding["manifest_ref"]).to_mapping()
     if (manifest["version"] != "1.1.0" or manifest["binding_policy_version"] != GRAPH_POLICY
@@ -137,7 +227,7 @@ def verify_profile_conformance_report(
     detached = json.loads(serialized)
     if SchemaCatalog(schema_root).validate("profile_conformance_report", detached):
         raise ValueError("profile conformance report violates its closed contract")
-    if detached["report_version"] == "1.1.0":
+    if detached["report_version"] in {"1.1.0", "1.2.0"}:
         if root is None:
             raise ValueError("bound profile conformance report requires its archive root")
         valid = False
