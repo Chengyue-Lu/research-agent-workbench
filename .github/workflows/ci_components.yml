@@ -31,6 +31,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       python_versions: ${{ steps.plan.outputs.python_versions }}
+      execution_matrix: ${{ steps.plan.outputs.execution_matrix }}
       install: ${{ steps.plan.outputs.install }}
       smoke: ${{ steps.plan.outputs.smoke }}
     steps:
@@ -56,14 +57,14 @@ jobs:
           if-no-files-found: error
 
   execute:
-    name: Component (${{ matrix.python }})
+    name: Component (${{ matrix.python }}, shard ${{ matrix.shard_index }})
     needs: plan
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        python: ${{ fromJSON(needs.plan.outputs.python_versions) }}
+        include: ${{ fromJSON(needs.plan.outputs.execution_matrix) }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -100,11 +101,11 @@ jobs:
         if: needs.plan.outputs.smoke == 'true'
         run: python .github/scripts/ci_component_smoke.py --python "$(command -v python)" --output .rwb/smoke.json
       - name: Run selected component tests
-        run: python .github/scripts/run_component_ci.py run --plan .rwb/plan.json --output .rwb/result.json
+        run: python .github/scripts/run_component_ci.py run --plan .rwb/plan.json --output .rwb/result.json --shard-index "${{ matrix.shard_index }}" --shard-count "${{ matrix.shard_count }}"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: component-result-${{ matrix.python }}
+          name: ${{ matrix.artifact_name }}
           path: |
             .rwb/plan.json
             .rwb/result.json

@@ -76,6 +76,7 @@
         "test_conformance_session_policy",
         "test_conformance_usage_ledger",
         "test_conformance_journal",
+        "test_conformance_budget_extension",
         "test_conformance_budget_anchor",
         "test_profile_wire_codecs",
         "test_gemma_profile",
@@ -93,7 +94,9 @@
         "test_profile_conformance_cli",
         "test_profile_conformance_reporting",
         "test_profile_conformance_binding",
-        "test_profile_conformance_usage_consistency"
+        "test_profile_conformance_usage_consistency",
+        "test_profile_conformance_deadlines",
+        "test_profile_conformance_extended_binding"
       ],
       "flags": [
         "smoke"
@@ -606,13 +609,17 @@
       "test_profile_conformance",
       "test_profile_conformance_reporting",
       "test_profile_conformance_binding",
-      "test_profile_conformance_usage_consistency"
+      "test_profile_conformance_usage_consistency",
+      "test_conformance_budget_extension",
+      "test_profile_conformance_extended_binding"
     ],
     "tests/test_profile_conformance_binding.py": [
-      "test_profile_conformance_usage_consistency"
+      "test_profile_conformance_usage_consistency",
+      "test_profile_conformance_extended_binding"
     ],
     "tests/test_profile_conformance_reporting.py": [
-      "test_profile_conformance_usage_consistency"
+      "test_profile_conformance_usage_consistency",
+      "test_conformance_budget_extension"
     ],
     "src/research_workbench/cli.py": [
       "test_profile_conformance_cli"
@@ -627,6 +634,12 @@
     ],
     "schemas/v0.1.0/runtime-resource-manifest.schema.json": [
       "test_runtime_resources"
+    ],
+    "tests/test_profile_conformance.py": [
+      "test_profile_conformance_deadlines"
+    ],
+    "tests/test_conformance_budget_extension.py": [
+      "test_profile_conformance_extended_binding"
     ]
   },
   "nearest_components": {

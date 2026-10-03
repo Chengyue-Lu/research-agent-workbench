@@ -165,6 +165,17 @@ class ConformanceUsageLedger:
         self._calls: list[_Call] = []
         self._handles: dict[int, _Call] = {}
         self._active: _Call | None = None
+        self._effective_attempt_limit = self._limits.max_attempts
+
+    def _extend_attempt_limit(self, *, maximum: int) -> None:
+        """Journal-replayed grant only; initial immutable limits remain unchanged."""
+        with self._lock:
+            if (type(maximum) is not int or maximum != 10 or self._effective_attempt_limit != 3
+                    or self._limits.max_attempts != 3 or len(self._attempts) != 3
+                    or self._active is not None or any(attempt.status == "open" for attempt in self._attempts)
+                    or self._blocked_reason() is not None):
+                _fail("attempt-limit-grant-refused")
+            self._effective_attempt_limit = maximum
 
     @property
     def limits(self) -> ConformanceUsageLimits:
@@ -184,7 +195,7 @@ class ConformanceUsageLedger:
                 _fail("attempt-still-active")
             if self._blocked_reason() is not None:
                 _fail("accounting-blocked")
-            if len(self._attempts) >= self._limits.max_attempts:
+            if len(self._attempts) >= self._effective_attempt_limit:
                 _fail("attempt-budget-exhausted")
             if self._attempts and not repair_refreeze_confirmed:
                 _fail("fresh-refreeze-assertion-required")
@@ -352,7 +363,7 @@ class ConformanceUsageLedger:
                 "ledger_version": "1.0.0", "scope": "process-local-caller-attested",
                 "limits": {
                     "total_token_limit": self._limits.total_token_limit,
-                    "max_attempts": self._limits.max_attempts,
+                    "max_attempts": self._effective_attempt_limit,
                     "max_invocations_per_attempt": self._limits.max_invocations_per_attempt,
                     "max_output_tokens_per_invocation": self._limits.max_output_tokens_per_invocation,
                 },

@@ -272,7 +272,7 @@ M13 不等于 strategy framework approval。
 | `M6-005` | 黄毅 | R1～R2 | deferred F | Topic 4 | 真实需求/平台选择前 PARKED |
 | `M6-008` | 黄毅 | R2 | D / F | Evaluation + Topic 4 + Artifact/Trace | PR75 实现已接受并合入；A1/A2 public projection、qualification、use-boundary facts、三态 closeout 与独立 replay 已收口；[接受证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 绑定当前源码/Schema/CI，不授予正式 live/case/admission 权威 |
 | `M6-009` | 黄毅；路诚钺复核共享语义 | R2 | F | Topic 4 + Credential/DataPolicy | 通用 API Key 离线合同 DONE；四协议/十一家 profile、晚解析凭据、官方矩阵及版本化 binding/Session/report 已接受；[整项收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-009_COMPLETION.md)，0真实API |
-| `M6-010` | 黄毅 | R2 | F / D prerequisite | Topic 4 | DeepSeek Flash独立真实验收；M6-009已DONE；真实Tool往返文本通过，Schema发送前deadline停止，3组Attempt已耗尽，BLOCKED；[部件进度与下一步](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)；仅北京时间18:00后和官方闲时窗，不能替代原OpenAI M6-004 |
+| `M6-010` | 黄毅 | R2 | F / D prerequisite | Topic 4 | DeepSeek Flash独立真实验收；M6-009已DONE；[原三组失败与1205tokens](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)保留，后继第四组Tool/text/Schema部件断言全通过，累计4组durable Attempt/7响应/1744tokens/held0；[最新证据](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-023/CHECKS.md)绑定未合入PR131，正式BLOCKED/具名接受待收口；仅北京时间18:00后和官方闲时窗，不能替代原OpenAI M6-004 |
 | `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution | evidence-driven trials PARKED |
 | `M7-007` | 路诚钺 | R2 | E | Research Control / Mode | 真实案例证明 Mode gap 前 PARKED |
 | `M14-001` | 路诚钺 | R2 | Product / Release | Release Governance | dormant curated release topology/source trust seam 已实现并保持 fail closed，DONE |

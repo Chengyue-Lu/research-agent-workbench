@@ -244,6 +244,8 @@ class ConformanceTransportTests(unittest.TestCase):
                 transport.send(self.request())
         self.assertEqual(transport.received_response.body, b"{}")
         self.assertTrue(transport.intent_durable)
+        self.assertTrue(transport.entry_observed)
+        self.assertFalse(transport.entry_recorded)
         snapshot = self.journal.snapshot()
         self.assertEqual(snapshot["http_entry_observations"], 0)
         self.assertEqual(snapshot["unresolved_reserved_tokens"], 50)

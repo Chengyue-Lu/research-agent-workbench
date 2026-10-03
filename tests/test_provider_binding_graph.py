@@ -7,6 +7,7 @@ import importlib.util
 import json
 from pathlib import Path
 from types import SimpleNamespace
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -43,6 +44,21 @@ def _unexpected(*args, **kwargs):
 
 
 class ProviderBindingGraphTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from test_provider_binding import configured_fixture
+        cls.template = tempfile.TemporaryDirectory(prefix="rwb-provider-graph-template-")
+        cls.addClassCleanup(cls.template.cleanup)
+        cls.template_root = Path(cls.template.name)
+        original = configured_fixture(cls.template_root)
+        module = _components()
+        provider = ConfiguredProvider(original.profile, original.resolved_config,
+            module.SyntheticCredential(), module.SyntheticTransport(), cls.template_root)
+        # Every graph case selects this same v1.1 conformance closure. Produce it
+        # once; each case still verifies its own files and current runtime state.
+        cls.reference = stage_provider_binding(provider, root=cls.template_root,
+            destination="graph-binding", source_closure=True, include_conformance=True)
+
     def setUp(self):
         from test_provider_binding import configured_fixture
         temporary = tempfile.TemporaryDirectory(prefix="rwb-provider-graph-")
@@ -52,13 +68,13 @@ class ProviderBindingGraphTests(unittest.TestCase):
         module = _components()
         self.provider = ConfiguredProvider(original.profile, original.resolved_config,
             module.SyntheticCredential(), module.SyntheticTransport(), self.root)
+        shutil.copytree(self.template_root / "graph-binding", self.root / "graph-binding")
 
     def inputs(self):
         return EvaluationInputs(self.root, ROOT / "schemas")
 
     def stage(self):
-        return stage_provider_binding(self.provider, root=self.root, destination="graph-binding",
-                                      source_closure=True, include_conformance=True)
+        return dict(self.reference)
 
     def bound(self, reference):
         manifest = read_provider_binding_manifest(self.inputs(), reference).to_mapping()

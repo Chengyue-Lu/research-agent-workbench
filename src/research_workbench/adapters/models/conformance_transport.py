@@ -62,7 +62,7 @@ class GuardedConformanceTransport:
     """
 
     __slots__ = ("_delegate", "_journal", "_guard", "_clock", "_deadline", "_binding",
-                 "_active", "_used", "_intent_attempted", "_intent_durable", "_entry",
+                 "_active", "_used", "_intent_attempted", "_intent_durable", "_entry", "_entry_observed",
                  "_response", "_maximum", "_last_time", "_failure_code", "_body_policy",
                  "_body_policy_pin", "_body_admission", "_body_state")
 
@@ -89,7 +89,7 @@ class GuardedConformanceTransport:
                             ("_clock", actual_clock), ("_deadline", float(deadline)),
                             ("_maximum", maximum), ("_binding", binding), ("_active", None),
                             ("_used", False), ("_intent_attempted", False),
-                            ("_intent_durable", False), ("_entry", False), ("_response", None),
+                            ("_intent_durable", False), ("_entry", False), ("_entry_observed", False), ("_response", None),
                             ("_last_time", observed_time), ("_failure_code", None),
                             ("_body_policy", body_policy), ("_body_policy_pin", body_pin),
                             ("_body_admission", None), ("_body_state", None)):
@@ -113,6 +113,11 @@ class GuardedConformanceTransport:
     @property
     def entry_recorded(self):
         return self._entry
+
+    @property
+    def entry_observed(self):
+        # This process's observation survives a failed durable receipt write.
+        return self._entry_observed
 
     @property
     def received_response(self):
@@ -187,7 +192,7 @@ class GuardedConformanceTransport:
         if type(reservation) is not ConformanceJournalReservation or self._active is not None:
             _fail("transport-protocol-failed")
         for name, value in (("_used", False), ("_intent_attempted", False),
-                            ("_intent_durable", False), ("_entry", False), ("_response", None), ("_failure_code", None)):
+                            ("_intent_durable", False), ("_entry", False), ("_entry_observed", False), ("_response", None), ("_failure_code", None)):
             object.__setattr__(self, name, value)
         self._verify()
         self._journal._owned_values(reservation)
@@ -264,5 +269,6 @@ class GuardedConformanceTransport:
         finally:
             # The delegated method was invoked, even when it raised before a
             # socket operation. This is a caller-observed entry, not wire proof.
+            object.__setattr__(self, "_entry_observed", True)
             self._journal.record_http_entry(self._active)
             object.__setattr__(self, "_entry", True)

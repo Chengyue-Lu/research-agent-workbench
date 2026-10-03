@@ -1,0 +1,19 @@
+# FOLLOWUP-025 检查
+
+固定输入review dbe1836/base3579e67：产品未发现blocking defect，required component45分钟超时与metadata计划竞态阻断。旧超时和缺result工件已归档；当前dbe的运行终态另核。
+
+Root新增真实四模块/八用例的分片验证：完整collect、源码/类/方法去重、imported alias不重复执行、同模块fixture只初始化一次、分片records完整覆盖库存。故意漏片、重复/外来case、旧版本/错误head或plan/index/count、重算digest的库存漂移、失败/subtest失败均拒绝。小型计划/串行checkpoint和额外版本smoke的原职责保留。
+
+CI_FOCUSED_001的36项有1error：小型docs+smoke被误分片；改为依据主测试模块数，CI_FOCUSED_002的36/36 PASS5.196秒。CI_CONSUMERS_001有一个attempt漂移反例的两项assertion失败：API的可变run对象导致pin被同改；冻结run字典和PR tuple后CI_CONSUMERS_002运行62项，61PASS+1 Windows skip，16.643秒。最初的编排字符串语法错误未执行patch、无文件副作用；原失败保留。
+
+metadata测试使用虚拟clock与fake GitHub API：迟到计划等待后绑定但不宣称执行success，7秒预算按5+2耗尽，completed/missing、expired/ambiguous立即拒绝，head/attempt变化与非法等待预算拒绝。真实GitHub读取仅用于PR/CI核验，不是Provider调用。
+
+开发2提供的7d19提交只含两个旧Provider测试文件；Root核对diff及Git对象后cherry-pick6f382。其18例本地PASS、coverage单pair197.071647→182.098508秒为peer证据，不当最终组合head或全量提速。Root真实组合源码绑定/冷回放、最终文档/治理/仓库和新head hosted结果在本档后续记录；未执行内容不补为PASS。
+
+Root固定实现提交bdecc98486537fa9f9b9bc7e7667f8b4e9ee7ab2后，四个独立Python3.11.16子进程执行普通binding7例、extended-binding6例、graph11例与真实aggregate7例，31/31 PASS；总wall344.094秒。每片收集完整31项库存，实际records恰好覆盖分配并经真实summarize合并；原setUpClass、真实checker、负例和cold report保留。这是合成离线组合验证，required_ci_authority=false；不将与62项消费者重叠的aggregate7例重复统计为独立用例，也不冒充45模块hosted执行。真实Provider、Key、native conformance launcher及真实预算操作均为0。
+
+同一Git候选的完整component计划选45个主测试模块；仅collection核对594项唯一实际case，四片146/167/148/133且库存并集完整，不运行这些594项。计划policy/digest和可移植case ID通过；collection不能代替执行。旧dbe run37134455045最终Component在45分15秒取消，CI result拒绝cancelled producer，原日志保留。最终候选的required component与governance必须独立读取本PR checks；本档不提前宣称绿色。
+
+开发2独立Draft [PR132](https://github.com/Chengyue-Lu/research-agent-workbench/pull/132)负责全量单test成本，Provider切片7d19已接入本PR，M5切片未接入。其base3579全量coverage运行的三个post-call budget失败和3.13的repr错误为另一检查范围；18例及后继三例本地通过不等于修复全量CI，不通过调低断言、删除case或修改产品time guard获得本轮资格。
+
+收尾repository validation=202/errors=0/warnings=0，R2本地governance PASS。文档复验首轮误写不存在的test_public_surface_helpers模块，保留10例通过与1个import error的原日志；核对实际test_public_surface后24/24 PASS。后继仅证据文档提交保留与bdecc98相同的实现/测试Git对象；最终head和PR body的治理检查在私有回执绑定，hosted结果仍独立。

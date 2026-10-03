@@ -125,8 +125,59 @@ def load_plan(path, repo):
     return value
 
 
-def execute_modules(repo, names, *, stream=None):
+def execution_names(value, current):
+    baseline = current == '3.11' or value['profile'] == 'release-checkpoint'
+    names = set(value['selected_tests']) if baseline else set()
+    if value.get('docs', False) and baseline:
+        names.add('test_documentation')
+    if value.get('smoke', False) and baseline:
+        names.update(SHORT_REGRESSIONS)
+    return sorted(names)
+
+
+def execution_matrix(value):
+    """Keep checkpoint profiles serial; split daily component modules only."""
+    rows = []
+    for version in value['python_versions']:
+        owners = ({name.split('.', 1)[0] for name in value['selected_tests']}
+                  if version == '3.11' else set())
+        count = 4 if value['profile'] == 'component' and len(owners) >= 4 else 1
+        for index in range(count):
+            artifact = 'component-result-' + version
+            if count > 1:
+                artifact += '-shard-' + str(index)
+            rows.append(dict(python=version, shard_index=index, shard_count=count,
+                             artifact_name=artifact))
+    return rows
+
+
+def canonical_record_id(value):
+    if not isinstance(value, str):
+        raise ValueError('invalid native test identity')
+    if value.startswith('tests.'):
+        value = value[6:]
+    if not re.fullmatch(r'test_[A-Za-z0-9_]+\.[A-Za-z0-9_.]+', value):
+        raise ValueError('invalid native test identity')
+    return value
+
+
+def shard_inventory(inventory, index, count):
+    """Keep every case from one collected module in the same producer."""
+    if (type(index) is not int or type(count) is not int or not 1 <= count <= 4
+            or not 0 <= index < count or not isinstance(inventory, list)
+            or any(canonical_record_id(item) != item for item in inventory)
+            or inventory != sorted(set(inventory))):
+        raise ValueError('invalid shard inventory or identity')
+    owners = sorted({item.split('.', 1)[0] for item in inventory})
+    assignments = {owner: ordinal % count for ordinal, owner in enumerate(owners)}
+    return [item for item in inventory if assignments[item.split('.', 1)[0]] == index]
+
+
+def execute_modules(repo, names, *, stream=None, shard_index=0, shard_count=1):
     """Reuse the existing timing recorder, not its selection/coverage machinery."""
+    if (type(shard_index) is not int or type(shard_count) is not int
+            or not 1 <= shard_count <= 4 or not 0 <= shard_index < shard_count):
+        raise ValueError('invalid shard identity')
     tests = Path(repo) / 'tests'
     original_path = sys.path[:]
     sys.path[:0] = [str(Path(repo)), str(tests)]
@@ -143,32 +194,53 @@ def execute_modules(repo, names, *, stream=None):
                 raise ValueError('declared selection collected no tests: ' + name)
             for test in discovered:
                 unique.setdefault(_canonical_test_id(test), test)
+        selected = list(unique.values())
+        inventory = None
+        if shard_count > 1:
+            by_id = {canonical_record_id(test.id()): test for test in selected}
+            if len(by_id) != len(selected):
+                raise ValueError('ambiguous collected test identities')
+            inventory = sorted(by_id)
+            assigned = shard_inventory(inventory, shard_index, shard_count)
+            selected = [by_id[identity] for identity in assigned]
         started = time.perf_counter()
         result = unittest.TextTestRunner(stream=stream or sys.stderr, verbosity=2,
-                                        resultclass=TimedTextResult).run(unittest.TestSuite(unique.values()))
-        return {'success': result.wasSuccessful(), 'tests_run': result.testsRun,
+                                        resultclass=TimedTextResult).run(unittest.TestSuite(selected))
+        value = {'success': result.wasSuccessful(), 'tests_run': result.testsRun,
                 'failures': len(result.failures), 'errors': len(result.errors),
                 'skipped': len(result.skipped), 'elapsed_seconds': time.perf_counter() - started,
                 'records': list(result.records.values())}
+        if inventory is not None:
+            value.update(inventory=inventory,
+                         inventory_sha256=hashlib.sha256(canonical(inventory)).hexdigest())
+        return value
     finally:
         sys.path[:] = original_path
 
 
-def execute_plan(repo, value, *, python_version=None, execute=execute_modules):
+def execute_plan(repo, value, *, python_version=None, execute=execute_modules,
+                 shard_index=None, shard_count=None):
     current = python_version or f'{sys.version_info.major}.{sys.version_info.minor}'
     if current not in value['python_versions']:
         raise ValueError('Python version is outside plan')
-    baseline = current == '3.11' or value['profile'] == 'release-checkpoint'
-    names = set(value['selected_tests']) if baseline else set()
-    if value['docs'] and baseline:
-        names.add('test_documentation')
-    if value['smoke'] and baseline:
-        names.update(SHORT_REGRESSIONS)
-    result = execute(repo, sorted(names))
-    return dict(kind='component_ci_result', schema_version='0.1.0', profile=value['profile'],
+    names = execution_names(value, current)
+    sharded = False
+    if shard_index is not None or shard_count is not None:
+        rows = [row for row in execution_matrix(value) if row['python'] == current]
+        if (type(shard_index) is not int or type(shard_count) is not int
+                or shard_count != len(rows) or not 0 <= shard_index < shard_count):
+            raise ValueError('shard identity differs from the planned matrix')
+        sharded = shard_count > 1
+    result = (execute(repo, names, shard_index=shard_index, shard_count=shard_count)
+              if sharded else execute(repo, names))
+    native = dict(kind='component_ci_result', schema_version='0.2.0' if sharded else '0.1.0',
+                profile=value['profile'],
                 authority='profile-result-only', python=current, head_sha=value['head_sha'],
-                plan_sha256=value['plan_sha256'], selections=sorted(names), coverage='not-collected',
+                plan_sha256=value['plan_sha256'], selections=names, coverage='not-collected',
                 behavior=result)
+    if sharded:
+        native.update(shard_index=shard_index, shard_count=shard_count)
+    return native
 
 
 def aggregate(plan_status, execution_status):
@@ -190,6 +262,8 @@ def main(argv=None):
     p.add_argument('--repo', type=Path, default=Path.cwd())
     p.add_argument('--plan', required=True)
     p.add_argument('--output', required=True)
+    p.add_argument('--shard-index', type=int)
+    p.add_argument('--shard-count', type=int)
     p = commands.add_parser('aggregate')
     p.add_argument('--plan-status', required=True)
     p.add_argument('--execution-status', required=True)
@@ -200,13 +274,15 @@ def main(argv=None):
         if args.github_output:
             with open(args.github_output, 'a', encoding='utf-8', newline='\n') as stream:
                 stream.write('python_versions=' + json.dumps(value['python_versions']) + '\n')
+                stream.write('execution_matrix=' + json.dumps(execution_matrix(value)) + '\n')
                 stream.write('install=' + str(value['smoke'] or value['install'] or
                     bool(set(value['selected_tests']) - {'test_documentation'})).lower() + '\n')
                 stream.write('smoke=' + str(value['smoke']).lower() + '\n')
         print(json.dumps({k: value[k] for k in ('profile', 'components', 'selected_tests', 'unknown_paths')}))
         return 0
     if args.command == 'run':
-        result = execute_plan(args.repo, load_plan(args.plan, args.repo))
+        result = execute_plan(args.repo, load_plan(args.plan, args.repo),
+                              shard_index=args.shard_index, shard_count=args.shard_count)
         save(args.output, result)
         return 0 if result['behavior']['success'] else 1
     return 0 if aggregate(args.plan_status, args.execution_status) else 1

@@ -1,5 +1,26 @@
 # 风险与剩余范围
 
+## FOLLOWUP-023 新安装发现的helper闭包遗漏
+
+新grant helper包级from import未被既有图语法遍历；初轮source-bound/unit与wheel smoke未覆盖该成员性。
+安装packet实际派生时失败，拒绝用整包pin替代v3 helper闭包。明确qualified import及graph member/
+guard后helper漂移零credential断言作为修复证据；旧859wheel/packet及所有失败留存，新head重新安装。
+检查见 [FOLLOWUP-023](attempts/FOLLOWUP-023/CHECKS.md)。真实grant/API未执行，M6-010 BLOCKED保持。
+
+## FOLLOWUP-022 累计扩限与等待
+
+用户直接授权总计十组，包含保留的三组；所有成功/失败 input+output 仍最多 10,000,000。
+单次 grant 追加到同一 anchor/journal，meta/header/namespace/identity/旧事件保持；open 必须显式选择
+同一 grant hash。accounting1.1/report1.2 重放原 prefix，核对 baseline/effective、decision 与累计事实。
+默认三组/旧报告/120 秒路径保持兼容。事件 ceiling128 仍 fail closed，选定前缀的容量检查不保证
+任意十组 lifecycle 或额外 reconciliation 都可容纳。两个独立反例（累计计数伪造、收响应后关闭账本
+导致报告丢失）及修复复验见 [CHECKS](attempts/FOLLOWUP-022/CHECKS.md)。
+
+整组360秒候选包含本地准备；Session、Tool 和 Schema 完成断言服从原共享 deadline。
+同步请求返回后先保存用量，超时不再执行 Tool/下一请求；socket180 与外层600秒仍有边界，
+不能承诺无限等待或绝不中断。真实扩限迁移与新安装/helper/Windows source freeze 尚未执行，
+四份历史响应成功不等于完整 conformance/具名接受。Provider owner 黄毅，M6-010 BLOCKED 保持。
+
 当前离线完成判断见 [M6-009 收口](M6-009_COMPLETION.md)，绑定 PR128 合入 source3e01158。
 下表及后续 Attempt 的候选/未完成表述保留其历史阶段和 source 范围；真实 Windows/Provider 验收继续由
 M6-010 承担。报告最新用量一致性修复和原失败见 [FOLLOWUP-013](attempts/FOLLOWUP-013/CHECKS.md)。
@@ -60,7 +81,7 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
 - DeepSeek Responses `store` 不支持且响应固定false；自动cache、运营日志、训练用途与账户控制不能合并为零保留。R9公共事实补强字段F07/F15但状态不升级，实际数据接受仍null。
 - cf8实际855项CI及三个ZIPdigest独立归档，不借c78结果。真实native操作本轮非0，Provider/Key/vault/bridge/实际history/预算claim0；文档后继head独立核验，M6-010仍BLOCKED。
 
-## FOLLOWUP-021 Flash 真实部件与剩余阻断
+## FOLLOWUP-021 历史 Flash 真实部件与当时阻断
 
 - [部件进度](M6-010_FLASH_COMPONENT_PROGRESS.md)区分四次 native 启动与三组 durable Attempt。
   PS5.1 Decimal 启动拒绝、第一组 deadline、第二组累计 reservation ordinal 误拒和第三组
@@ -73,3 +94,23 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
   第四组 Attempt；下一轮先形成保留同一累计历史的具体计划与安全状态处理，不能 reset 或另开空历史。
 - 局部文件读取和单次验证内 AST 复用已离线测量，完整运行时改进尚未验证；保留全量文件/hash、
   前后 identity、祖先及 use-boundary 检查。不得靠缓存 guard PASS 或放宽 120 秒掩盖问题。
+
+## FOLLOWUP-023 真实扩限与部件结果
+
+- 新source66修复grant helper图遗漏，81模块和依赖/函数/global claims闭合；原失败保持。1875项安装/运行时核对与Windows完整合成链通过。
+- 原三failed Attempts与25events保留，Root只追加grant26；独立ro审计验证header/meta/identity/claim/BASIS原字节和1205用量不变。baseline3/effective10、总token10m，未知用量仍held STOP。
+- 后继唯一actual005/durable4的Tool/text/Schema三步全部通过，parent exit0/186.42秒，coldreport1.2 PASS；累计1744tokens/held0/七responses。shared360/socket180/outer600/coop605保持有界，不产生无限等待或自动重试。
+- 当前证据绑定未合入的PR131 source66；caller-observed entry与本地断言不证明物理网络/账单、remote strict或他人具名接受。正式M6-010 BLOCKED、report live_qualified false和其他研究/发布Gate保持。原actual失败、生成器失败与capturegap在各归档保留；未选择下一组。
+
+## FOLLOWUP-024 PR131 私密审查修复
+
+- 闭账本的扩限 metadata 读取原先越过失败报告处理；恢复普通 120 秒路径的 blocked/accounting-failed/accounting=null，保留零凭据/HTTP与可归档失败报告，普通存储错误也按同一脱敏机制处理。
+- 用户授权原文原先隐式要求 JSON，与 cold reader 的原字节读取不一致；独立 byte/hash reader 保留 portable 路径、大小与哈希边界，prefix/decision 继续 canonical JSON。UTF-8/Markdown 的 append/reopen/cold-read 和原文篡改拒绝均有临时合成账本反例。
+- [CHECKS](attempts/FOLLOWUP-024/CHECKS.md)保留修复前失败与后继离线结果；当前源码变化不重签原source66安装/live证据，具名适用性及M6-010收口仍独立，未新增真实调用/预算或修改Task状态。
+
+## FOLLOWUP-025 PR131 required CI
+
+- 旧41模块串行job在45分钟结束前未完成、没有result.json；通过的部分不能代作整个选集成功。日常component按完整库存确定性分为四个独立producer，每job仍45分钟；全选集、case去重、同模块fixture状态及每份安装smoke均保留。
+- native0.2绑定head/plan/Python/profile及index/count，汇总要求完整相同库存、各片实际case完整匹配和所有预定artifact；缺失/重复/漂移/失败仍拒绝。计划与components-v1汇总权威、checkpoint/发布门禁保持。
+- metadata仅对匹配且仍运行的producer尚未上传计划进行有界等待，冻结身份并重核head/attempt，过期/重复/损坏或终态缺plan立即拒绝，不借等待推导执行success。
+- 开发2的两个Provider测试文件经精确7d19提交接入，复用只读pristine准备并保留逐case真实核验/反例；Root新extended测试去除writer前重复成功校验并实际读回JSON。peer单组7.60%局部收益不当全量或新head保证。组合和最终CI证据见[FOLLOWUP-025](attempts/FOLLOWUP-025/CHECKS.md)，Provider产品/真实预算/M6-010状态及source66历史范围保持。

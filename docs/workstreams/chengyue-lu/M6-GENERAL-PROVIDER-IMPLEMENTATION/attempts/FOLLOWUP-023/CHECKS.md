@@ -1,0 +1,62 @@
+# FOLLOWUP-023 检查
+
+原installed859 wheel/install/pipcheck/installed smoke通过；packet第一次PREPARE_001因helper不在
+v3 graph失败。第二variant已中断，partial和exit1保留，未把package pin冒称graph通过。
+只读parser诊断表明qualified import显式记录helper edge；真正source-bound与guard漂移复验待完成。
+这些旧安装和partial不具备执行资格，必须以修复新head重建。
+
+首轮qualified-import回归52项中51通过、1fixture断言失败（307.200秒）：helper graph member/edge已通过，
+漂移测试误复用了已completed预算，首先被Attempt admission正确拒绝，未到预期guard阶段。
+修正为已grant但未开始第四组的零调用construction失败fixture；最终集中复验52/52 PASS
+（317.284秒，GRAPH_DEPENDENCY_002.log），包含helper graph member/edge和guard漂移拒绝。
+预算完成后禁止retry的产品语义保持一致；原GRAPH_DEPENDENCY_001.log保留。
+
+新installed002选定产品提交66f24a29335ced059a460d879418e07a6c7e6ea0，wheel/install/pipcheck/
+installed smoke与1875项唯一安装、依赖及运行时文件核查PASS。新packet002真实v3 graph包含81个
+模块（旧graph80），其中grant helper与journal/report依赖边、7个函数claim和4个global claim均闭合。
+COMPOSER_REFS摘要4eaf0a63673e3429cecd5765e876cb9507d6e56f1a6a5353dec2796ce4cb923b；
+FINAL_FREEZE摘要d32541539079c1cac194ce7658e764becc1e37a5c945800b7babf702e703f3aa。
+独立静态cold review PASS，receipt 9bf20208b48699727af86355f744cac19936809545536e2eb883f7e78c99691a。
+完整Windows合成运行与实际caller绑定尚待验证，以上不代表真实conformance通过。
+
+只读实际历史核查PASS，25个anchor checkpoints均一致，原claim/basis/identity/DBhash不变。
+独立receipt `7484e7b7ab2a095e1bab0769617067b5b1b4c809d91e4c33ac452a562704f11c`；
+应用recipe要求Root在同新packet根复制原始用户ref及canonical prefix/decision，显式独占追加grant，
+独立核对原事件prefix与新event26，然后另选实际第四组。未执行grant或journal.open真实历史。
+
+独立官方核对2026-10-03：精确Flash/context1M、POST `/responses`、`reasoning.effort=none`、
+Tool specific/none与text.format，以及周末全天闲时。根记录初稿误写`/v1/responses`已保存，
+按选定profile与官方operation修正，未发请求。时间候选UTC13:25–15:00仍需实际前fresh检查。
+
+新增mutation命中断言的独立针对性复验1/1 PASS（294.211秒）；52项集中结果保持单独记录。
+完整Windows合成链：父进程exit0，147.89秒；child144.468秒，三份fake响应、一个pure Tool、
+report1.2/allassertions/累计1226 synthetic tokens通过；实际API/Key/真实预算操作为0。
+
+Root之后在同一真实账本追加唯一grant事件26；原25事件、header/meta/identity/claim/BASIS及
+1205tokens/三failed Attempts/七slots/held0保持。独立只读审计PASS，receipt
+61424e6c34062a40ad73c9995565c50b379d196364740fc813e13990ec0a8bc8。
+baseline3/effective10；prefix53a7b82a、decisionedea0cc4、grant payload9e93f98b、post snapshot697586ac
+分别按文件或canonical payload核对，最终provenance位于同根binding/budget-extension。
+
+真实入口source001的bridge换行归一化断言失败和source002旧Windows路径绑定失败均保留；
+未执行这些入口。fresh source003保留genuine bridge/library原bytes并重建四个父源路径与pin，
+独立cold review PASS，receipt d6876617c5302cb4b7b93735b8f9e21e200f511a71de3ea1b97a5c4548fa5c82。
+官方英文pricing/current primary Responses资料与当前时间重新核对，周末闲时和北京18后成立。
+
+唯一native005（durable Attempt4）父进程exit0，186.42秒；本组3调用/3响应/1pure Tool，
+Tool shape/once、text exact、Schema exact全true；report1.2 status/stop均completed，cold check PASS。
+新增539tokens，总input1540/output204=1744，held0；总四durable Attempts、五native launches、
+七response、十reserved slots、40events，原prefix25与grant26保持，无retry/fallback或下一组选择。
+脱敏report SHA1f0bef0cbf1bea5f9b1744a8801f62c7aac3e05c86f34b9b9e8b76781cda70d8；
+DB0348110452b9bc212085466415909e8d3b9e71e154b3accced4ccbe496db3d0d；
+anchor32cada80507f410e8cf480ace5e65ff68d4f8f9ec37e0538ff32aba0debf16c2。
+最终独立实际结果核查PASS（pure cold reader与stdlib SQLite ro/immutable/query_only独立重算），
+receipt93eb95e1f9d19262465128ba4c201a1c6c8544b3542b22860af1c4f67781a0d3。
+本组global8..10逐项用量321+49、94+1、68+6，与report三轮及累计账本一致；原prefix25/grant26、
+40events/41anchor checkpoints全部相符。初版独立auditor把terminal kind误写complete，原失败保留，
+按直接合同修正finish/attempt4后复验；不算产品缺陷或实际retry。
+不借技术结果代填具名接受；report live_qualified/remote_strict均false，费用unknown/未核账。
+本地过程明细与私密路径保留在忽略目录，不提交原prefix。
+
+后继安装、完整Windows合成与实际结果分别记载，不外推unit/marker结果。
+平台未导出的完整事件为capture gap。全部本地明细在 `.rwb/m6-general-prototype/followup-023/`。
