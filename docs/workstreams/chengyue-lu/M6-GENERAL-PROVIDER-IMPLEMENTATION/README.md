@@ -101,3 +101,7 @@ profile 引用默认相对安装资源目录；独立配置可显式传入 `--ro
 账本 metadata 读取失败返回脱敏 accounting-failed 报告，授权原文按 exact bytes/hash 校验；
 prefix/decision 保持 canonical JSON。复现、离线回归及后继接受边界见
 [检查](attempts/FOLLOWUP-024/CHECKS.md)和[交接](attempts/FOLLOWUP-024/HANDOFF.md)。
+
+[FOLLOWUP-025](attempts/FOLLOWUP-025/TASK.md) 处理 PR131 required component CI 超时与
+metadata 计划上传竞态。分片完整库存及汇总合同见[CI 修复](attempts/FOLLOWUP-025/CI_REPAIR.md)，
+组合验证与原失败见[检查](attempts/FOLLOWUP-025/CHECKS.md)。

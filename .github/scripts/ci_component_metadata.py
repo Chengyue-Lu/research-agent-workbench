@@ -5,15 +5,21 @@ import argparse
 import hashlib
 import io
 import json
+import math
 import os
 from pathlib import Path
 import zipfile
+import time
 
 from release_source_ci import GitHub, positive, require, sha
 from run_component_ci import canonical, git, make_plan, save
 
 WORKFLOW = '.github/workflows/ci_components.yml'
 MAX_BYTES = 2_000_000
+
+
+class PlanNotReady(ValueError):
+    """The matching run has not published its plan; no result is inferred."""
 
 
 def identity(pr):
@@ -24,6 +30,8 @@ def identity(pr):
 def read_plan(api, run):
     artifacts = api.pages(f'actions/runs/{positive(run["id"])}/artifacts', 'artifacts')
     matches = [a for a in artifacts if a['name'] == 'component-plan' and not a['expired']]
+    if not matches and not any(a['name'] == 'component-plan' for a in artifacts):
+        raise PlanNotReady('current component plan is missing or ambiguous')
     require(len(matches) == 1, 'current component plan is missing or ambiguous')
     artifact = matches[0]
     require(artifact['workflow_run']['id'] == run['id'], 'foreign plan artifact')
@@ -39,8 +47,11 @@ def read_plan(api, run):
     return value, positive(artifact['id'])
 
 
-def bind_plan(api, pr, plan):
-    number, repository, base_ref, base, head_repository, head = identity(pr)
+def bind_plan(api, pr, plan, *, wait_seconds=0):
+    require(type(wait_seconds) in (int, float) and math.isfinite(wait_seconds)
+            and 0 <= wait_seconds <= 180, 'invalid component plan wait budget')
+    expected_identity = identity(pr)
+    number, repository, base_ref, base, head_repository, head = expected_identity
     require(repository == api.repository and base_ref == 'develop', 'component metadata requires develop PR')
     require(plan['profile'] == 'component' and plan['base_sha'] == base, 'wrong component metadata plan')
     workflow = api.get('actions/workflows/ci_components.yml')
@@ -62,13 +73,29 @@ def bind_plan(api, pr, plan):
         if len(linked) == 1:
             matches.append(run)
     require(matches, 'no component content run for the current PR base/head')
-    run = max(matches, key=lambda row: positive(row['id']))
-    observed, artifact_id = read_plan(api, run)
+    run = dict(max(matches, key=lambda row: positive(row['id'])))
+    deadline = time.monotonic() + wait_seconds
+    while True:
+        try:
+            observed, artifact_id = read_plan(api, run)
+            break
+        except PlanNotReady:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise
+            fresh = api.get(f'actions/runs/{run["id"]}')
+            require(fresh['id'] == run['id'] and fresh['run_attempt'] == run['run_attempt']
+                    and fresh['head_sha'] == head and fresh['path'] == WORKFLOW,
+                    'component run changed during plan wait')
+            require(identity(api.get(f'pulls/{number}')) == expected_identity,
+                    'PR base/head changed during plan wait')
+            require(fresh['status'] in ('queued', 'in_progress'), 'component plan producer stopped without a plan')
+            time.sleep(min(5, remaining))
     require(canonical(observed) == canonical(plan), 'component plan differs from current Git inputs')
     fresh = api.get(f'actions/runs/{run["id"]}')
     require(fresh['id'] == run['id'] and fresh['run_attempt'] == run['run_attempt']
             and fresh['head_sha'] == head and fresh['path'] == WORKFLOW, 'component run changed during observation')
-    require(identity(api.get(f'pulls/{number}')) == identity(pr), 'PR base/head changed during metadata validation')
+    require(identity(api.get(f'pulls/{number}')) == expected_identity, 'PR base/head changed during metadata validation')
     # Failed/cancelled execution does not erase an authentic plan. CI result remains
     # the separate required execution gate; this record cannot replace it.
     return dict(schema_version=1, kind='component_metadata_binding', authority='plan-reference-only',
@@ -79,7 +106,7 @@ def bind_plan(api, pr, plan):
                 execution_success_asserted=False)
 
 
-def check_metadata(repo, event, api):
+def check_metadata(repo, event, api, *, wait_seconds=0):
     pr = event['pull_request']
     expected = identity(pr)
     require(event['repository']['full_name'] == api.repository == expected[1], 'foreign metadata repository')
@@ -87,18 +114,19 @@ def check_metadata(repo, event, api):
     target = git(repo, 'rev-parse', 'HEAD').decode().strip()
     parents = git(repo, 'show', '-s', '--format=%P', target).decode().split()
     require(parents == [expected[3], expected[5]], 'metadata checkout is not the current PR test merge')
-    return bind_plan(api, pr, make_plan(repo, expected[3], target, 'component'))
+    return bind_plan(api, pr, make_plan(repo, expected[3], target, 'component'), wait_seconds=wait_seconds)
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--event', type=Path, default=os.environ.get('GITHUB_EVENT_PATH'))
     parser.add_argument('--output', required=True)
+    parser.add_argument('--wait-seconds', type=int, default=0)
     args = parser.parse_args(argv)
     require(os.environ.get('GITHUB_EVENT_NAME') == 'pull_request', 'metadata requires pull_request event')
     event = json.loads(args.event.read_bytes())
     api = GitHub(os.environ['GITHUB_REPOSITORY'])
-    value = check_metadata(Path.cwd(), event, api)
+    value = check_metadata(Path.cwd(), event, api, wait_seconds=args.wait_seconds)
     save(args.output, value)
     print(json.dumps(value, ensure_ascii=False))
     return 0

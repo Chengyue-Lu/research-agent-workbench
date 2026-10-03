@@ -107,3 +107,10 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
 - 闭账本的扩限 metadata 读取原先越过失败报告处理；恢复普通 120 秒路径的 blocked/accounting-failed/accounting=null，保留零凭据/HTTP与可归档失败报告，普通存储错误也按同一脱敏机制处理。
 - 用户授权原文原先隐式要求 JSON，与 cold reader 的原字节读取不一致；独立 byte/hash reader 保留 portable 路径、大小与哈希边界，prefix/decision 继续 canonical JSON。UTF-8/Markdown 的 append/reopen/cold-read 和原文篡改拒绝均有临时合成账本反例。
 - [CHECKS](attempts/FOLLOWUP-024/CHECKS.md)保留修复前失败与后继离线结果；当前源码变化不重签原source66安装/live证据，具名适用性及M6-010收口仍独立，未新增真实调用/预算或修改Task状态。
+
+## FOLLOWUP-025 PR131 required CI
+
+- 旧41模块串行job在45分钟结束前未完成、没有result.json；通过的部分不能代作整个选集成功。日常component按完整库存确定性分为四个独立producer，每job仍45分钟；全选集、case去重、同模块fixture状态及每份安装smoke均保留。
+- native0.2绑定head/plan/Python/profile及index/count，汇总要求完整相同库存、各片实际case完整匹配和所有预定artifact；缺失/重复/漂移/失败仍拒绝。计划与components-v1汇总权威、checkpoint/发布门禁保持。
+- metadata仅对匹配且仍运行的producer尚未上传计划进行有界等待，冻结身份并重核head/attempt，过期/重复/损坏或终态缺plan立即拒绝，不借等待推导执行success。
+- 开发2的两个Provider测试文件经精确7d19提交接入，复用只读pristine准备并保留逐case真实核验/反例；Root新extended测试去除writer前重复成功校验并实际读回JSON。peer单组7.60%局部收益不当全量或新head保证。组合和最终CI证据见[FOLLOWUP-025](attempts/FOLLOWUP-025/CHECKS.md)，Provider产品/真实预算/M6-010状态及source66历史范围保持。

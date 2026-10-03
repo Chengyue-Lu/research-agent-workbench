@@ -1,0 +1,13 @@
+# PR131 component CI 修复
+
+同head dbe1836/base3579e67的cross-owner REQUEST_CHANGES仅阻断required CI。旧run37128684718在45分钟时于provider_binding_graph期间取消，未产生result.json；执行过的正例/反例不能替代尚未完成的选集。
+
+日常component计划至少选择四个主测试模块时，Python3.11使用四个独立job；每个job保留45分钟上限。同一固定Git计划和完整选集在各producer收集，沿用按源码/类/方法去重的现有collector，将portable test.id规范化后生成完整库存与SHA256。按库存的canonical module排序循环分配，同一模块/类的fixture与状态留在同一job，case只运行一次。小型计划、integration-smoke及checkpoint仍使用原串行流程；Python3.13的安装smoke保留原职责。
+
+分片native receipt使用0.2.0，绑定同一head、plan、Python/profile、完整selections、index/count和库存。汇总要求所有预定artifact恰好存在，每份完整库存一致、每片实际records与其分配库存相等，重复/漏项、失配/旧版本替代、失败/subtest失败与缺smoke均阻断。全选集计数由各片相加，新增max_shard_test_seconds区分最长分片与累计测试时间。Git计划0.1.0、按Python汇总的components-v1权威与merge_eligible=false保持；checkpoint及发布所需完整版本/治理门禁保持。
+
+metadata-only事件在当前匹配run尚未上传component-plan时，显式--wait-seconds120允许有界等待；默认0保持旧即时拒绝。等待期间冻结PR身份与run/attempt，重复核对fresh状态。已完成且无计划、过期/重复/损坏artifact或任何head/attempt变化立即拒绝；等待不是execution-success证明。120秒是轮询等待预算，原API请求timeout独立保留。
+
+开发2的Provider测试独立提交7d19adf2bf4aa07a74dde736b966423c89fcbf2c已由同Git对象核对并cherry-pick为6f382c72fd3ce8d661388c3bb59a70696eabc690：pristine graph模板逐case复制、fresh provider与真实checker仍执行；普通binding成功出版去除紧邻writer内部checker的重复verify。Root对新extended-binding采用同一成功出版改法并核对JSON读回；所有负例保留。M5独立实验继续由开发2交付。
+
+本切片不修改Provider产品/Schema、原实际安装/运行证据或累计真实账本。source66真实结果保持原范围，M6-010正式BLOCKED与live_qualified=false保持。最终head必须以自身component与governance终态证明required CI，先前head结果及纯库存检查不代替它。

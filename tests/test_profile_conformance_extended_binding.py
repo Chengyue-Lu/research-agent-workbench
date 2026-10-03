@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import json
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -91,10 +92,9 @@ class ProfileConformanceExtendedBindingTests(unittest.TestCase):
         self.assertEqual(report["budget_extension"]["effective_limits"]["max_attempts"], 10)
         self.assertFalse(report["live_qualified"])
         self.assertFalse(report["remote_strict_claim"])
-        self.assertEqual(self.verify(report, self.completed_fixture), report)
         output = self.completed_fixture.root / "granted-report.json"
         write_profile_conformance_report(report, output, root=self.completed_fixture.root, schema_root=ROOT / "schemas")
-        self.assertTrue(output.exists())
+        self.assertEqual(json.loads(output.read_bytes()), report)
 
     def test_budget_helper_is_a_graph_member_and_post_guard_drift_blocks_before_credentials(self):
         # A completed Attempt closes this budget lineage. Use the prior
