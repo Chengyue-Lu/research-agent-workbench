@@ -12,6 +12,57 @@ from research_workbench.evaluation.pins import EvaluationInputs
 from research_workbench.validation.schemas import SchemaCatalog
 
 
+_TOKEN_FIELDS = ("input_tokens", "output_tokens", "cached_input_tokens", "reasoning_tokens")
+
+
+def _valid_token_subsets(usage):
+    return all(usage[subset] is None or usage[subset] <= usage[parent]
+               for subset, parent in (("cached_input_tokens", "input_tokens"),
+                                      ("reasoning_tokens", "output_tokens")))
+
+
+def _verify_accounting_usage(accounting):
+    # The durable report contract has no reconciled receipts. Unknown/partial
+    # usage remains unresolved; only complete reported receipts enter totals.
+    receipts = []
+    for call in accounting["calls"]:
+        usage = call["reported_usage"]
+        if usage is None:
+            if call["accounting_status"] in {"known", "reservation-exceeded", "total-limit-exceeded"}:
+                return False
+        elif not _valid_token_subsets(usage):
+            return False
+        else:
+            receipts.append(usage)
+    inputs = sum(usage["input_tokens"] for usage in receipts)
+    outputs = sum(usage["output_tokens"] for usage in receipts)
+    return (accounting["known_input_tokens"] == inputs
+            and accounting["known_output_tokens"] == outputs
+            and accounting["known_total_tokens"] == inputs + outputs)
+
+
+def _verify_call_usage(reservation, call):
+    # An unsettled write failure can retain observed facts without a durable
+    # receipt. A settled receipt must agree with the current Attempt's report.
+    if reservation["settled"] and reservation["response_received"] != call["response_received"]:
+        return False
+    usage = reservation["reported_usage"]
+    if usage is not None:
+        return all(call[field] == usage[field] for field in _TOKEN_FIELDS)
+    if not reservation["settled"]:
+        return True
+    issue = reservation["token_usage_failure"]
+    if issue == "invalid-token-usage":
+        return call["input_tokens"] is None or call["output_tokens"] is None
+    if issue == "invalid-token-subset":
+        # Invalid auxiliary values may be redacted to None by the producer.
+        # Preserve those failed observations without treating them as known.
+        return (call["input_tokens"] is None or call["output_tokens"] is None
+                or call["cached_input_tokens"] is None or call["reasoning_tokens"] is None
+                or not _valid_token_subsets(call))
+    return all(call[field] is None for field in _TOKEN_FIELDS)
+
+
 def _verify_binding(report, *, root, schema_root):
     """Derive archived pins without loading archived code or resolving a Key."""
     inputs = EvaluationInputs(root, schema_root)
@@ -38,12 +89,14 @@ def _verify_binding(report, *, root, schema_root):
             or any(model not in profile["model"]["allowed_observed_ids"] for model in report["observed_models"])
             or binding["body_policy"]["max_output_tokens"] != report["limits"]["max_output_tokens"]):
         return False
+    accounting = report["accounting"]
+    if accounting is not None and not _verify_accounting_usage(accounting):
+        return False
     attempt_ordinal = binding["attempt_ordinal"]
     if attempt_ordinal is None:
         if report["calls"]:
             return False
-    elif report["accounting"] is not None:
-        accounting = report["accounting"]
+    elif accounting is not None:
         if len([attempt for attempt in accounting["attempts"] if attempt["ordinal"] == attempt_ordinal]) != 1:
             return False
         reservations = [call for call in accounting["calls"] if call["attempt_ordinal"] == attempt_ordinal]
@@ -52,7 +105,8 @@ def _verify_binding(report, *, root, schema_root):
         for ordinal, (reservation, call) in enumerate(zip(reservations, report["calls"]), 1):
             if (call["ordinal"] != ordinal
                     or reservation["input_upper_tokens"] != binding["input_upper_tokens"][ordinal - 1]
-                    or reservation["output_upper_tokens"] != report["limits"]["max_output_tokens"]):
+                    or reservation["output_upper_tokens"] != report["limits"]["max_output_tokens"]
+                    or not _verify_call_usage(reservation, call)):
                 return False
     graph = read_source_closure(inputs, binding["implementation_closure_ref"])
     for reference in report["source_refs"]:

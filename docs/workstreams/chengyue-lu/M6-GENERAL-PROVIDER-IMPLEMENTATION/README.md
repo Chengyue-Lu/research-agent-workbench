@@ -43,6 +43,12 @@ v3 manifest；这一选项要求固定 body policy 和真实 UrllibTransport 类
 报告发布需要显式 archive root，只新建文件。无绑定调用继续产生 1.0 报告。
 该证据不认证 caller guard 的全局状态、Windows 时间/环境、真实 socket 或账单；具名实现及运行接受仍待审核。
 
+[FOLLOWUP-013](attempts/FOLLOWUP-013/TASK.md) 补齐 bound 1.1 报告的用量一致性：当前 Attempt
+实际用量匹配对应持久回执，累计值核对全部历史调用，缓存/推理计数保持子集语义。
+partial、未结算失败、最终 accounting 不可得及旧 1.0 回放保留原有事实；
+篡改报告在发布前拒绝。检查与交接见 [CHECKS](attempts/FOLLOWUP-013/CHECKS.md)、
+[HANDOFF](attempts/FOLLOWUP-013/HANDOFF.md)。
+
 安装版可读取默认禁用配置并输出离线计划：
 
 ```powershell
