@@ -326,6 +326,38 @@ class ProfileConformanceTests(unittest.TestCase):
         self.assertEqual(report["actual_counts"]["provider_invocations"], 0)
         self.assertEqual(self.helper.credential.resolutions, 0)
 
+    def test_closed_journal_returns_archivable_accounting_failure_before_credentials(self):
+        from research_workbench.adapters.models.profile_conformance_report import write_profile_conformance_report
+
+        self.journal.close()
+        report = self.run_driver()
+        self.assertEqual(("1.0.0", "blocked", "accounting-failed"),
+                         (report["report_version"], report["status"], report["stop_code"]))
+        self.assertIsNone(report["accounting"])
+        self.assertEqual(report["calls"], [])
+        self.assertEqual(report["actual_counts"], {"provider_invocations": 0, "http_entry_observations": 0,
+                                                  "tool_executions": 0, "responses_received": 0})
+        self.assertEqual(self.helper.credential.resolutions, 0)
+        self.assertEqual(self.helper.credential.presence_checks, 0)
+        self.assertEqual(self.transport.requests, [])
+        self.assertEqual(self.guard_stages, [])
+        output = self.helper.root / "closed-journal-report.json"
+        write_profile_conformance_report(report, output, schema_root=Path(__file__).resolve().parents[1] / "schemas")
+        self.assertEqual(json.loads(output.read_bytes()), report)
+
+    def test_extension_metadata_failure_returns_redacted_block_without_credentials(self):
+        detail = "synthetic private extension storage failure"
+        with patch.object(ConformanceUsageJournal, "extension_metadata", side_effect=OSError(detail)):
+            report = self.run_driver()
+        self.assertEqual(("blocked", "accounting-failed"), (report["status"], report["stop_code"]))
+        self.assertEqual(report["accounting"]["known_total_tokens"], 0)
+        self.assertEqual(report["actual_counts"]["provider_invocations"], 0)
+        self.assertNotIn(detail, json.dumps(report))
+        self.assertEqual(self.helper.credential.resolutions, 0)
+        self.assertEqual(self.helper.credential.presence_checks, 0)
+        self.assertEqual(self.transport.requests, [])
+        self.assertEqual(self.guard_stages, [])
+
     def test_failed_response_money_fields_do_not_erase_numeric_token_receipt(self):
         self.transport.bad_money = True
         report = self.run_driver()

@@ -646,7 +646,8 @@ class ConformanceUsageJournal:
         return self._transaction(action)
 
     @staticmethod
-    def _grant_read(root, reference, *, canonical_required=True):
+    def _grant_read_bytes(root, reference):
+        """Verify exact referenced bytes without interpreting the user original."""
         result = None
         try:
             grant_policy.reference(reference)
@@ -658,8 +659,21 @@ class ConformanceUsageJournal:
                 raw = stream.read(262145)
             if len(raw) > 262144 or hashlib.sha256(raw).hexdigest() != reference["sha256"]:
                 _fail("attempt-limit-grant-refused")
+            result = raw
+        except Exception:
+            pass
+        if result is None:
+            _fail("attempt-limit-grant-refused")
+        return result
+
+    @staticmethod
+    def _grant_read(root, reference):
+        """Prefix and decision retain their canonical JSON contract."""
+        result = None
+        try:
+            raw = ConformanceUsageJournal._grant_read_bytes(root, reference)
             candidate = json.loads(raw)
-            if canonical_required and raw != (grant_policy.canonical(candidate) + "\n").encode("ascii"):
+            if raw != (grant_policy.canonical(candidate) + "\n").encode("ascii"):
                 _fail("attempt-limit-grant-refused")
             result = candidate
         except Exception:
@@ -673,7 +687,7 @@ class ConformanceUsageJournal:
         try:
             prefix = self._grant_read(root, grant["prefix_ref"])
             decision = self._grant_read(root, grant["decision_ref"])
-            self._grant_read(root, decision["user_input_ref"], canonical_required=False)
+            self._grant_read_bytes(root, decision["user_input_ref"])
             if (prefix["anchor_header"] == json.loads(self._anchor._header_bytes)
                     and prefix["events"] == [list(event) for event in events]):
                 grant_policy.validate_grant(grant, namespace=self._namespace, identity=self._anchor.identity,

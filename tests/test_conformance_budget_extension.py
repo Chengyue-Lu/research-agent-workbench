@@ -58,9 +58,13 @@ class BudgetExtensionTests(unittest.TestCase):
             snapshot['responses_received'], snapshot['known_total_tokens'], snapshot['unresolved_reserved_tokens']))
         return snapshot
 
-    def refs(self, decision_change=None):
+    def refs(self, decision_change=None, *, user_bytes=None, user_path='user.json'):
         prefix = self.journal.budget_extension_prefix()
-        source = self.put('user.json', {'user_authorized_total_attempts': 10, 'tokens': 10000000})
+        if user_bytes is None:
+            source = self.put('user.json', {'user_authorized_total_attempts': 10, 'tokens': 10000000})
+        else:
+            (self.root / user_path).write_bytes(user_bytes)
+            source = {'path': user_path, 'sha256': hashlib.sha256(user_bytes).hexdigest()}
         decision = {'record_kind': 'conformance_attempt_limit_decision', 'version': '1.0.0',
             'budget_namespace': self.namespace, 'journal_identity': prefix['journal_identity'],
             'baseline_limits': dict(policy.BASELINE), 'new_max_attempts': 10, 'user_input_ref': source}
@@ -114,6 +118,65 @@ class BudgetExtensionTests(unittest.TestCase):
         with self.assertRaises(ConformanceJournalError):
             self.journal.start_attempt(repair_refreeze_confirmed=True)
         self.assertEqual(1205, self.journal.snapshot()['known_total_tokens'])
+
+    def test_text_and_markdown_user_bytes_agree_with_grant_reopen_and_cold_reader(self):
+        sources = (('user.txt', '累计十组，输入输出总预算1000万。\r\n'.encode('utf-8')),
+                   ('user.md', '# 合成授权\n\n- 总计10组\n- 总tokens上限10000000\n'.encode('utf-8')))
+        for path, raw in sources:
+            with self.subTest(path=path):
+                fixture = BudgetExtensionTests()
+                fixture.setUp()
+                self.addCleanup(fixture.doCleanups)
+                before = fixture.history()
+                events = fixture.journal._events()
+                anchor = fixture.anchor.read_bytes()
+                decision_ref, prefix_ref = fixture.refs(user_bytes=raw, user_path=path)
+                receipt = fixture.journal.extend_attempt_limit(root=fixture.root,
+                    decision_ref=decision_ref, prefix_ref=prefix_ref)
+                after = fixture.journal.snapshot()
+                self.assertEqual(events, fixture.journal._events()[:25])
+                self.assertTrue(fixture.anchor.read_bytes().startswith(anchor))
+                for key in ('attempts', 'calls', 'known_total_tokens', 'responses_received', 'provider_invocations'):
+                    self.assertEqual(before[key], after[key])
+                self.assertEqual((26, 10, 1205, 0), (after['events_committed'], after['limits']['max_attempts'],
+                    after['known_total_tokens'], after['unresolved_reserved_tokens']))
+                report = {'budget_extension': fixture.journal.extension_metadata(), 'accounting': after}
+                self.assertTrue(_verify_extension(report, EvaluationInputs(fixture.root, ROOT / 'schemas')))
+                self.assertEqual(raw, (fixture.root / path).read_bytes())
+                fixture.journal.close()
+                reopened = ConformanceUsageJournal.open(fixture.db, anchor_path=fixture.anchor,
+                    namespace=fixture.namespace, total_token_limit=10000000,
+                    grant_root=fixture.root, expected_grant_sha256=receipt['sha256'])
+                self.addCleanup(reopened.close)
+                self.assertEqual(after, reopened.snapshot())
+
+    def test_changed_raw_user_bytes_refuse_without_appending_grant(self):
+        self.history()
+        decision_ref, prefix_ref = self.refs(user_bytes=b'authorize ten total attempts\n', user_path='user.txt')
+        events, anchor = self.journal._events(), self.anchor.read_bytes()
+        (self.root / 'user.txt').write_bytes(b'changed synthetic decision\n')
+        with self.assertRaises(ConformanceJournalError) as caught:
+            self.journal.extend_attempt_limit(root=self.root, decision_ref=decision_ref, prefix_ref=prefix_ref)
+        self.assertEqual(caught.exception.code, 'attempt-limit-grant-refused')
+        self.assertIsNone(caught.exception.__context__)
+        self.assertEqual(events, self.journal._events())
+        self.assertEqual(anchor, self.anchor.read_bytes())
+
+    def test_prefix_and_decision_still_require_canonical_json_with_raw_user_text(self):
+        self.history()
+        for invalid in ('prefix', 'decision'):
+            with self.subTest(invalid=invalid):
+                decision_ref, prefix_ref = self.refs(user_bytes=b'authorize ten total attempts\n', user_path='user.txt')
+                reference = prefix_ref if invalid == 'prefix' else decision_ref
+                target = self.root / reference['path']
+                raw = json.dumps(json.loads(target.read_bytes()), indent=2).encode('utf-8')
+                target.write_bytes(raw)
+                reference['sha256'] = hashlib.sha256(raw).hexdigest()
+                events, anchor = self.journal._events(), self.anchor.read_bytes()
+                with self.assertRaises(ConformanceJournalError):
+                    self.journal.extend_attempt_limit(root=self.root, decision_ref=decision_ref, prefix_ref=prefix_ref)
+                self.assertEqual(events, self.journal._events())
+                self.assertEqual(anchor, self.anchor.read_bytes())
 
     def test_closed_wrong_types_missing_authority_and_repeated_grants_refuse_without_changes(self):
         self.history()

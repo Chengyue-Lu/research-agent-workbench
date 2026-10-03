@@ -356,7 +356,10 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
     actual_clock = time.monotonic if clock is None else clock
     binding_material = None
     early_started = None
-    extension = journal.extension_metadata()
+    try:
+        extension = journal.extension_metadata()
+    except Exception:
+        return emit("accounting-failed")
     if max_seconds > 120 and extension is None:
         _fail("attempt-admission-refused")
     if extension is not None:

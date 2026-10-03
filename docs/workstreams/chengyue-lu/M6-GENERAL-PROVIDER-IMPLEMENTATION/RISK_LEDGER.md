@@ -101,3 +101,9 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
 - 原三failed Attempts与25events保留，Root只追加grant26；独立ro审计验证header/meta/identity/claim/BASIS原字节和1205用量不变。baseline3/effective10、总token10m，未知用量仍held STOP。
 - 后继唯一actual005/durable4的Tool/text/Schema三步全部通过，parent exit0/186.42秒，coldreport1.2 PASS；累计1744tokens/held0/七responses。shared360/socket180/outer600/coop605保持有界，不产生无限等待或自动重试。
 - 当前证据绑定未合入的PR131 source66；caller-observed entry与本地断言不证明物理网络/账单、remote strict或他人具名接受。正式M6-010 BLOCKED、report live_qualified false和其他研究/发布Gate保持。原actual失败、生成器失败与capturegap在各归档保留；未选择下一组。
+
+## FOLLOWUP-024 PR131 私密审查修复
+
+- 闭账本的扩限 metadata 读取原先越过失败报告处理；恢复普通 120 秒路径的 blocked/accounting-failed/accounting=null，保留零凭据/HTTP与可归档失败报告，普通存储错误也按同一脱敏机制处理。
+- 用户授权原文原先隐式要求 JSON，与 cold reader 的原字节读取不一致；独立 byte/hash reader 保留 portable 路径、大小与哈希边界，prefix/decision 继续 canonical JSON。UTF-8/Markdown 的 append/reopen/cold-read 和原文篡改拒绝均有临时合成账本反例。
+- [CHECKS](attempts/FOLLOWUP-024/CHECKS.md)保留修复前失败与后继离线结果；当前源码变化不重签原source66安装/live证据，具名适用性及M6-010收口仍独立，未新增真实调用/预算或修改Task状态。

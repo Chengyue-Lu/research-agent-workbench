@@ -96,3 +96,8 @@ profile 引用默认相对安装资源目录；独立配置可显式传入 `--ro
 随后第四组真实测试Tool/text/Schema三步断言全部通过，父进程正常退出，report1.2冷读PASS。
 累计input1540/output204=1744tokens、held0，四组durable Attempt与五次native启动分别记录；
 不再选择下一组。当前source66仍属PR131候选，费用unknown与正式具名接受分别保留。
+
+[FOLLOWUP-024](attempts/FOLLOWUP-024/TASK.md) 修复 PR131 私密审查的两项 P2：普通路径的
+账本 metadata 读取失败返回脱敏 accounting-failed 报告，授权原文按 exact bytes/hash 校验；
+prefix/decision 保持 canonical JSON。复现、离线回归及后继接受边界见
+[检查](attempts/FOLLOWUP-024/CHECKS.md)和[交接](attempts/FOLLOWUP-024/HANDOFF.md)。
