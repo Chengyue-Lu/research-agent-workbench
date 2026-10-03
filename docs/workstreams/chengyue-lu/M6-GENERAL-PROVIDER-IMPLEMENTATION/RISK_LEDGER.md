@@ -29,7 +29,7 @@ M6-010 承担。报告最新用量一致性修复和原失败见 [FOLLOWUP-013](
 | 新图消费者拒绝路径不完整 | 独立复现MappingProxy构造拒绝、旧manifest降级遗漏引用及静态异常出口漏import，最终修复和针对性复验3/3PASS；组件原轮及清单修复分别留档 | 仅当前声明的离线作用域，driver/report和完整运行context另整合 |
 | 过程留痕缺口 | 独占本地 archive 保留 dispatch、工作日志、原失败及 source receipts | 平台未暴露或未导出的完整工具事件不伪造；capture gap 保留 |
 
-真实 Provider/API 调用、真实 Key 值读取为 0；各冻结源的安装检查见对应 Attempt CHECKS。M5 Pilot、A4 admission、Phase C、
+上述离线候选阶段的真实 Provider/API 调用、真实 Key 值读取为 0；各冻结源的安装检查见对应 Attempt CHECKS。M5 Pilot、A4 admission、Phase C、
 Supply/Resolver/Skill 和科研判断的权威边界保持独立。
 
 ## FOLLOWUP-004 驱动和报告
@@ -59,3 +59,17 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
 - 初版probe成员证明、observer握手、原子marker、触发截止和清理错误出口经独立review修复，三个旧source阶段和早检失败保留。触发≤5秒/观察同trigger+2秒排除12秒自然fuse假通过；不以最终结果抹去review晚归档17秒。
 - DeepSeek Responses `store` 不支持且响应固定false；自动cache、运营日志、训练用途与账户控制不能合并为零保留。R9公共事实补强字段F07/F15但状态不升级，实际数据接受仍null。
 - cf8实际855项CI及三个ZIPdigest独立归档，不借c78结果。真实native操作本轮非0，Provider/Key/vault/bridge/实际history/预算claim0；文档后继head独立核验，M6-010仍BLOCKED。
+
+## FOLLOWUP-021 Flash 真实部件与剩余阻断
+
+- [部件进度](M6-010_FLASH_COMPONENT_PROGRESS.md)区分四次 native 启动与三组 durable Attempt。
+  PS5.1 Decimal 启动拒绝、第一组 deadline、第二组累计 reservation ordinal 误拒和第三组
+  Schema 发送前 deadline 均保存；后继成功断言不覆盖原失败。
+- Tool 执行及往返文本的真实断言通过，完整 conformance 仍失败；HTTP delegate 入口不认证 socket，
+  本地报告不产生具名运行接受、remote strict 或其他厂商 live 资格。
+- 独立复核全部四个已收到响应，共 input 1,057 / output 148 / total 1,205，未知预占为 0。
+  缓存 256 是 input 子集。金额与币种 unknown 按用户决策非阻断，不能解释为零费用或已结算。
+- 既定 initial + 最多两次修复复验已用完。token 剩余容量与 journal `blocked=false` 均不授权
+  第四组 Attempt；下一轮先形成保留同一累计历史的具体计划与安全状态处理，不能 reset 或另开空历史。
+- 局部文件读取和单次验证内 AST 复用已离线测量，完整运行时改进尚未验证；保留全量文件/hash、
+  前后 identity、祖先及 use-boundary 检查。不得靠缓存 guard PASS 或放宽 120 秒掩盖问题。
