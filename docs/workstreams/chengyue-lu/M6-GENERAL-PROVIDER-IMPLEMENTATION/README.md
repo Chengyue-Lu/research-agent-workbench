@@ -1,15 +1,17 @@
-# 通用 Provider 离线实现候选
+# 通用 Provider 离线实现与验收
 
 本目录记录 M6-009 的隔离实现候选。定义来自 [PR #125](https://github.com/Chengyue-Lu/research-agent-workbench/pull/125)，
 传输安全维护来自 [PR #126](https://github.com/Chengyue-Lu/research-agent-workbench/pull/126)；两项已分别按用户直接定义接受、正式cross-owner批准合入develop，本实现候选已更新到该基线。
 离线基础已在 [PR #127](https://github.com/Chengyue-Lu/research-agent-workbench/pull/127) 获正式 cross-owner 批准，
-正常合入 develop `27cbf860e48e9639bd3af32a58c12bfd88d87526`。M6-009 保持 IN_PROGRESS。
-后续实现仍须独立 R2 审核；基础合入不构成整项完成或真实调用资格。
+正常合入 develop `27cbf860e48e9639bd3af32a58c12bfd88d87526`。
+[PR #128](https://github.com/Chengyue-Lu/research-agent-workbench/pull/128) 的后继合同和报告修复已按维护者
+直接指令合入 `3e01158bbf6730bcd3089356e7e307cef4b857dc`；M6-009 的条款映射、当前源码验证与
+直接接受来源见[整项收口](M6-009_COMPLETION.md)。离线完成与 M6-010 真实调用资格分别验证。
 Provider/Session 维护者仍为黄毅，路诚钺协调准备及共享语义复核。Agent 结果仅为可审查的技术证据。
 
 API 客户端与厂商协议映射的复用建议、Windows 辅助链测试对象及 PR #128 审核范围见
-[客户端复用与审核范围](CLIENT_REUSE_REVIEW.md)。当前离线产品候选可先审核；本地启动原型完成
-与真实调用资格分别验证。第三方 SDK 的选择、集成和兼容验证尚未完成。
+[客户端复用与审核范围](CLIENT_REUSE_REVIEW.md)。第三方 SDK 的选择、集成和兼容验证尚未完成，
+没有作为当前通用离线合同或 Flash 首轮准备的新增门槛。
 
 候选实现分离闭集配置、真实服务身份、四个协议编解码、晚解析凭据及实际源码绑定。
 新配置默认禁用；原三家 facade、配置版本、ModelProvider Port 和默认 Session 行为保留。
@@ -30,7 +32,7 @@ SiliconFlow Qwen 和 OpenRouter GPT-4.1 Mini 新增独立 standard Text 路径�
 后续 [FOLLOWUP-002](attempts/FOLLOWUP-002/TASK.md) 加入显式 retained anchor，检测预算历史单边回退、
 同 anchor 换 DB 和未知提交状态；默认无 anchor 的旧语义保留。实际唯一预算选择、完整运行
 source/config/helper/Windows/time 闭包、输入预占依据接受与具名运行接受继续待定；
-当前没有 M6-009 DONE 或 M6-010 真实调用提议。
+该阶段的待定事实按历史源保留；当前 M6-009 完成判断见整项收口，M6-010 尚无 live PASS。
 后续 [FOLLOWUP-003](attempts/FOLLOWUP-003/TASK.md) 实现上述源码图消费者及显式
 ConformanceBodyPolicy：沿用已有 Flash Responses nonthinking，credential 前检查 ModelRequest，
 intent 前检查实际 body；三个 local phase 固定 Tool/call ID/history/result、Schema 和大小上限。
