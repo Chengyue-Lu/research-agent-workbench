@@ -40,7 +40,9 @@ release；当前 release branch 不回并 develop，原 tag/附件保持不变�
 版本化源码绑定、显式两轮 Session 政策和脱敏报告均有离线验证；条款与接受来源见
 [整项收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-009_COMPLETION.md)。
 默认禁用模板和官方矩阵中的未核实条件不产生厂商 live 资格。M6-010 独立验收 DeepSeek Flash；
-当前 exact 安装/Windows 启动/运行闭包仍在准备，保持 BLOCKED，无新增 live PASS。
+2026-10-03 的真实部件运行已验证一次 Tool 执行及结果往返文本；Schema 步骤在发送前因
+deadline 停止，累计四个响应、1,205 tokens。三组有界 Attempt 已耗尽，保持 BLOCKED；
+完整 conformance、运行接受与后续计划仍待闭合，见[部件进度](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)。
 原 M6-004 OpenAI 验收仍 BLOCKED；保存本地 Key 和晚间时间安排不证明 Provider 或 Pilot 已可用。
 
 ## 已实现

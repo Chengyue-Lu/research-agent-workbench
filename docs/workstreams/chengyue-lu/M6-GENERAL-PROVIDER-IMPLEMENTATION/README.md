@@ -9,6 +9,10 @@
 直接接受来源见[整项收口](M6-009_COMPLETION.md)。离线完成与 M6-010 真实调用资格分别验证。
 Provider/Session 维护者仍为黄毅，路诚钺协调准备及共享语义复核。Agent 结果仅为可审查的技术证据。
 
+M6-010 的 2026-10-03 真实部件结果、失败保留与剩余阻断见
+[Flash 部件进度](M6-010_FLASH_COMPONENT_PROGRESS.md)及
+[FOLLOWUP-021 交接](attempts/FOLLOWUP-021/HANDOFF.md)。完整验收仍 BLOCKED。
+
 API 客户端与厂商协议映射的复用建议、Windows 辅助链测试对象及 PR #128 审核范围见
 [客户端复用与审核范围](CLIENT_REUSE_REVIEW.md)。第三方 SDK 的选择、集成和兼容验证尚未完成，
 没有作为当前通用离线合同或 Flash 首轮准备的新增门槛。
