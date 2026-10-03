@@ -862,7 +862,7 @@ class SystemEvaluationFixture:
             },
         )
 
-    def build_overlay(self):
+    def build_overlay(self, *, document_suffix=None):
         import tempfile
 
         from research_workbench.artifacts.integrity import hash_directory
@@ -1076,7 +1076,9 @@ class SystemEvaluationFixture:
             identity
         )
         path_map = {
-            old: (old if old == "bundle/task.yaml" else "a4/" + old)
+            old: (old if old == "bundle/task.yaml" else
+                  ("a4/" + old if document_suffix is None else
+                   (Path("a4") / Path(old).with_suffix(document_suffix)).as_posix()))
             for old in source_documents
         }
 
@@ -1139,7 +1141,7 @@ class SystemEvaluationFixture:
             schema_root=ROOT / "schemas",
         )
         view_ref = self.write("a4/view/view.json", view)
-        supply = self.doc("a4/bundle/supply.yaml")
+        supply = self.doc(path_map["bundle/supply.yaml"])
         interface = record(
             "evaluation_provider_interface",
             "interface_id",
@@ -1156,7 +1158,7 @@ class SystemEvaluationFixture:
         interface_ref = self.write("a4/view/interface.json", interface)
         manifest = self.doc(self.manifest_ref["path"])
         manifest["arms"][3]["treatment_control"]["method_resolution_refs"] = [
-            self.ref("a4/bundle/method.yaml")
+            self.ref(path_map["bundle/method.yaml"])
         ]
         manifest["arms"][3]["skill_binding"] = {
             "skill_id": release["skill_id"],
@@ -1185,11 +1187,11 @@ class SystemEvaluationFixture:
             accountable_human="Synthetic Reviewer",
             release_ref=release_ref,
             lifecycle_ref=lifecycle_ref,
-            projection_ref=self.ref("a4/bundle/skill-projection.yaml"),
+            projection_ref=self.ref(path_map["bundle/skill-projection.yaml"]),
             promotion_provenance_ref=None,
             runtime_bindings=[
                 {
-                    "snapshot_ref": self.ref("a4/bundle/snapshot.yaml"),
+                    "snapshot_ref": self.ref(path_map["bundle/snapshot.yaml"]),
                     "bundle_ref": bundle_ref,
                     "view_ref": view_ref,
                     "interface_ref": interface_ref,
@@ -1204,7 +1206,7 @@ class SystemEvaluationFixture:
             evidence_phase="pre-run-qualification",
         )
         extra_snapshot = self.requirement_slice(
-            self.ref("a4/bundle/snapshot.yaml"), "a4/document-read"
+            self.ref(path_map["bundle/snapshot.yaml"]), "a4/document-read"
         )
         self.overlay["runtime_bindings"].append(
             self.runtime_binding(

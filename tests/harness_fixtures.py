@@ -45,7 +45,9 @@ class HarnessFixture(BaselineFixture):
             self.protocol["design"].update(replicates_per_case=1, pilot_replicates_per_case=0)
             self.protocol["design"]["stopping"]["completed_blocks"] = 2
         self.protocol_ref = self.write("evaluation/protocol.json", self.protocol)
-        self.build_overlay()
+        # Synthetic A4 documents are serialized as JSON by the fixture writer.
+        # Use their actual format; YAML loader behavior has separate bundle tests.
+        self.build_overlay(document_suffix=".json")
         self.build_pairwise()
         self.a2 = produce_a2_qualification(
             self.inputs(),
