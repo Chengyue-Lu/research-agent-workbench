@@ -10,4 +10,6 @@ metadata-only事件在当前匹配run尚未上传component-plan时，显式--wai
 
 开发2的Provider测试独立提交7d19adf2bf4aa07a74dde736b966423c89fcbf2c已由同Git对象核对并cherry-pick为6f382c72fd3ce8d661388c3bb59a70696eabc690：pristine graph模板逐case复制、fresh provider与真实checker仍执行；普通binding成功出版去除紧邻writer内部checker的重复verify。Root对新extended-binding采用同一成功出版改法并核对JSON读回；所有负例保留。M5独立实验继续由开发2交付。
 
+组合实现bdecc98离线四模块31/31 PASS，真实源码绑定、负例、冷读和汇总共同运行，344.094秒；Git完整选集45模块/594项另做collection与分配完整性核对，未当作执行通过。开发2全量单test交付见独立Draft [PR132](https://github.com/Chengyue-Lu/research-agent-workbench/pull/132)，其旧全量失败归因和局部coverage结果保持各自范围。
+
 本切片不修改Provider产品/Schema、原实际安装/运行证据或累计真实账本。source66真实结果保持原范围，M6-010正式BLOCKED与live_qualified=false保持。最终head必须以自身component与governance终态证明required CI，先前head结果及纯库存检查不代替它。
