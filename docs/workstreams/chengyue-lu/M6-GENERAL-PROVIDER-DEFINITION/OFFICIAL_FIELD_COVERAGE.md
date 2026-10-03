@@ -112,7 +112,7 @@ D表示官方正文给出该行限定范围内的明确事实；P表示有事实
 | F04 model alias / revision | P | pricing将deepseek-flash映射DeepSeek-V4.1-Flash；models reference例子context_window=1048576、max_output_tokens=393216。 | alias可变；只读metadata文档，未调用models endpoint，actual身份/权限未认证。 | [DS4][DS4]、[DS10][DS10] |
 | F05 角色 | D | Responses支持system/developer/user/assistant；developer按user处理，instructions为首system，function_call/output为独立item。 | 只限DeepSeek Responses，不冒充原厂developer权威。 | [DS1][DS1]、[DS2][DS2] |
 | F06 ToolChoice | D | Responses原生tool_choice为none/auto（默认）/required/指定{name,type:function}；Tool原生name/parameters。 | 文档支持不是Flash非思考Tool live接受；Chat strict另有边界。 | [DS1][DS1]、[DS2][DS2] |
-| F07 Tool 往返 | P | Responses每轮传完整input；call_id须非空且唯一、每call须配对应function_call_output；previous_response_id/conversation/store/background不支持。 | Session本地history/所有ID配对/终态另验；store=false不等于隐私零留存。 | [DS1][DS1]、[DS2][DS2] |
+| F07 Tool 往返 | P | Responses每轮传完整input；call_id须非空且唯一、每call须配对应function_call_output；previous_response_id/conversation/store/background不支持；响应store固定false。 | Session本地history/所有ID配对/终态另验；store=false不等于日志或缓存零留存。 | [DS1][DS1]、[DS2][DS2]；R9 |
 | F08 并行 Tool | D | Responses忽略parallel_tool_calls与max_tool_calls，始终并行，两个参数不能保证单call。 | 本地有界执行/返回拒绝规则由实现计划约束；named choice也不自动单call。 | [DS2][DS2] |
 | F09 Schema / JSON | P | Responses text.format有text/json_object/json_schema(name/schema)；Chat Beta strict Tool子集含enum及required/additionalProperties规则。 | 未取得Responses独立strict/keyword表，Chat enum不是Responses enforcement证据；截断JSON须拒绝。 | [DS1][DS1]、[DS2][DS2]、[DS5][DS5]、[DS6][DS6] |
 | F10 thinking / context 续传 | D | 所选deepseek-responses-nonthinking-v1为deepseek-flash+reasoning.effort=none；此原生值关思考（默认high）；max_output_tokens含reasoning。 | 这是所选profile/文档关系非live接受；Chat thinking.disabled是另surface，其他型号不继承。 | [DS1][DS1]、[DS2][DS2]、[DS7][DS7] |
@@ -120,7 +120,7 @@ D表示官方正文给出该行限定范围内的明确事实；P表示有事实
 | F12 usage / cache / reasoning | P | Responses input+output=total，cached为input子项、reasoning为output子项；incomplete原因max_output_tokens/content_filter，message可incomplete。 | 失败missing不填零；保留停止状态和已收用量，未完成Tool拒绝；子项不重复加总。 | [DS1][DS1]、[DS2][DS2]、[DS4][DS4] |
 | F13 error / retry / rate | P | Flash account并发2500（全部Keys合计），user_id用于KV/scheduling/content-safety隔离；错误400/401/402/422/429/500/503分列。 | 并发不是RPM/TPM或用户预算，账户可用/余额未知；不授权自动retry/fallback。 | [DS8][DS8]、[DS9][DS9] |
 | F14 价格 / 时间窗 | P | USD/1M Flash闲时hit0.003/miss0.15/output0.60，峰时两倍；峰UTC工作日01–04/06–10排除中国公共假日，其余闲时。 | 执行前重核日期/假日与北京时间18:00后；文档价格非actual账单或消费目标。 | [DS4][DS4] |
-| F15 账户数据控制 | P | 2026-02-10 privacy有输入收集、模型改进/训练目的与opt-out权利；按必要期限/活跃账户留存，未给通用API固定天数。 | 不是API no-training/ZDR承诺；actual账户条款未查，不一概新增合成测试gate。 | [DS11][DS11] |
+| F15 账户数据控制 | P | 既有2026-02-10 privacy描述输入收集、改进/训练目的和opt-out；2026-04-29生效的Open Platform Terms适用于API/developer tools，开发者个人信息引用Privacy，开发者承担下游用户隐私披露；涉嫌违规相关记录可保留。Responses store固定false；prompt_cache_key/retention不支持，缓存自动管理。 | 这三页未证明API no-training/ZDR、固定日志/cache期限或actual账户开关；一般privacy不能充作全部下游API数据契约，stateless不推出零留存，不一概新增合成测试gate。 | [DS11][DS11]、[DS12][DS12]、[DS1][DS1]、[DS2][DS2]；R9 |
 
 ## Alibaba Qwen / DashScope
 
@@ -389,6 +389,7 @@ OpenRouter 的 full endpoint slug 在要求具体 upstream 变体时才有相应
 [G16]: https://ai.google.dev/api/caching#FunctionCallingConfig "Native FunctionCallingConfig reference"
 [DS10]: https://api-docs.deepseek.com/api/list-models/ "DeepSeek models metadata reference only"
 [DS11]: https://cdn.deepseek.com/policies/en-US/deepseek-privacy-policy.html "DeepSeek privacy policy"
+[DS12]: https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html "DeepSeek Open Platform API terms"
 [Q8]: https://www.alibabacloud.com/help/en/model-studio/rate-limit "Model Studio rate limits"
 [Q9]: https://www.alibabacloud.com/help/en/model-studio/model-pricing "Model Studio pricing"
 [Q10]: https://www.alibabacloud.com/help/en/model-studio/faq-about-alibaba-cloud-model-studio "Model Studio FAQ data training"

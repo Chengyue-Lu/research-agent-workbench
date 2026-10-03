@@ -48,3 +48,10 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
   backend guard后按同一deadline重算wait，向下取整且过期STOP。两个独立原反例和后继修复证据分开。
 - [FOLLOWUP-011检查](attempts/FOLLOWUP-011/CHECKS.md)记录39/14合成测试与独立2项复验；
   无native/Key/API/history动作，不把fake ABI或CI成功当具名接受。实际三bootstrap和完整run/context仍待闭合。
+
+## FOLLOWUP-012 原生合成证据与数据边界
+
+- [FOLLOWUP-012检查](attempts/FOLLOWUP-012/CHECKS.md)首次执行无凭据Windows Job测试：正常退出、超时、恢复前/后外层退出四场景通过，实际child/leaf成员和触发后停止核对。仅当前合成context；PowerShell/bridge/完整launcher/bootstrap及M6具名接受保持独立。
+- 初版probe成员证明、observer握手、原子marker、触发截止和清理错误出口经独立review修复，三个旧source阶段和早检失败保留。触发≤5秒/观察同trigger+2秒排除12秒自然fuse假通过；不以最终结果抹去review晚归档17秒。
+- DeepSeek Responses `store` 不支持且响应固定false；自动cache、运营日志、训练用途与账户控制不能合并为零保留。R9公共事实补强字段F07/F15但状态不升级，实际数据接受仍null。
+- cf8实际855项CI及三个ZIPdigest独立归档，不借c78结果。真实native操作本轮非0，Provider/Key/vault/bridge/实际history/预算claim0；文档后继head独立核验，M6-010仍BLOCKED。
