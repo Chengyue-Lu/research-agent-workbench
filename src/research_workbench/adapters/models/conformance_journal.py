@@ -25,7 +25,7 @@ from research_workbench.adapters.models.conformance_ledger import (
     ConformanceLedgerError, ConformanceUsageLedger, ConformanceUsageLimits,
 )
 from research_workbench.adapters.models.port import Usage
-from research_workbench.adapters.models import conformance_budget_grant as grant_policy
+import research_workbench.adapters.models.conformance_budget_grant as grant_policy
 
 _APPLICATION_ID = 0x52574243
 _MAX_EVENTS = 128

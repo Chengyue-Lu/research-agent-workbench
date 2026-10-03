@@ -88,3 +88,7 @@ profile 引用默认相对安装资源目录；独立配置可显式传入 `--ro
 实现显式单次 append-only grant、accounting1.1/report1.2 冷读与共享剩余时限。
 默认初始三组和 120 秒合同保留，扩限需要 exact decision/prefix/grant 引用，不能仅改启动参数。
 真实预算尚未迁移，新安装、socket180 配置、helper 与 Windows context 尚未冻结；M6-010 仍 BLOCKED。
+
+[FOLLOWUP-023](attempts/FOLLOWUP-023/TASK.md) 的新安装揭示grant helper包级导入未进入v3图；
+原859安装/packet失败保留，改为明确module dependency并验graph member及guard后漂移，
+再重建新安装与Windows选择。全包哈希不替代源码图闭包，actual grant与新请求尚未发生。

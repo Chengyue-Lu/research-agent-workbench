@@ -1,5 +1,12 @@
 # 风险与剩余范围
 
+## FOLLOWUP-023 新安装发现的helper闭包遗漏
+
+新grant helper包级from import未被既有图语法遍历；初轮source-bound/unit与wheel smoke未覆盖该成员性。
+安装packet实际派生时失败，拒绝用整包pin替代v3 helper闭包。明确qualified import及graph member/
+guard后helper漂移零credential断言作为修复证据；旧859wheel/packet及所有失败留存，新head重新安装。
+检查见 [FOLLOWUP-023](attempts/FOLLOWUP-023/CHECKS.md)。真实grant/API未执行，M6-010 BLOCKED保持。
+
 ## FOLLOWUP-022 累计扩限与等待
 
 用户直接授权总计十组，包含保留的三组；所有成功/失败 input+output 仍最多 10,000,000。

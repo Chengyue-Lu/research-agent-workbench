@@ -8,10 +8,12 @@ from unittest.mock import patch
 from uuid import uuid4
 
 from research_workbench.adapters.models import profile_conformance as driver
+from research_workbench.adapters.models import conformance_budget_grant as grant_policy
 from research_workbench.adapters.models.conformance_journal import ConformanceUsageJournal
 from research_workbench.adapters.models.profile_conformance_report import (
     verify_profile_conformance_report, write_profile_conformance_report,
 )
+from research_workbench.evaluation.pins import EvaluationInputs
 from tests import test_conformance_budget_extension as grant_helpers
 from tests import test_profile_conformance_binding as binding_helpers
 
@@ -93,6 +95,40 @@ class ProfileConformanceExtendedBindingTests(unittest.TestCase):
         output = self.completed_fixture.root / "granted-report.json"
         write_profile_conformance_report(report, output, root=self.completed_fixture.root, schema_root=ROOT / "schemas")
         self.assertTrue(output.exists())
+
+    def test_budget_helper_is_a_graph_member_and_post_guard_drift_blocks_before_credentials(self):
+        # A completed Attempt closes this budget lineage. Use the prior
+        # zero-call construction failure fixture to test a fresh Attempt4.
+        fixture = self.construction_fixture
+        report = self.construction
+        graph = EvaluationInputs(fixture.root).read(report["binding"]["implementation_closure_ref"])
+        module = "research_workbench.adapters.models.conformance_budget_grant"
+        journal = "research_workbench.adapters.models.conformance_journal"
+        self.assertIn(module, graph["modules"])
+        self.assertIn(module, graph["modules"][journal]["dependencies"])
+        previous_resolutions = fixture.credential.resolutions
+        original_opener = fixture.opener
+        fixture.opener = binding_helpers.SyntheticOpener()
+        mutation = patch.object(grant_policy, "validate_grant", lambda *args, **kwargs: None)
+        mutated = False
+
+        def guard(stage, ordinal):
+            nonlocal mutated
+            if stage == "preinvoke" and ordinal != 1 and not mutated:
+                mutation.start()
+                mutated = True
+            return True
+
+        try:
+            refused = fixture.run_driver(max_seconds=360, repair_refreeze_confirmed=True, guard=guard)
+            self.assertEqual(refused["stop_code"], "guard-refused")
+            self.assertEqual(refused["actual_counts"]["http_entry_observations"], 0)
+            self.assertEqual(fixture.opener.bodies, [])
+            self.assertEqual(fixture.credential.resolutions, previous_resolutions)
+        finally:
+            mutation.stop()
+            fixture.opener = original_opener
+        self.assertEqual(self.verify(refused, fixture), refused)
 
     def test_extended_report_cannot_drop_grant_binding_or_retained_facts(self):
         mutations = (

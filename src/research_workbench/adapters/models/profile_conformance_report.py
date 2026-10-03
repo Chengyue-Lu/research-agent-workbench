@@ -111,7 +111,7 @@ def _verify_extended_accounting(accounting):
 
 def _verify_extension(report, inputs):
     """Replay the original prefix under3 before deriving the single grant10."""
-    from research_workbench.adapters.models import conformance_budget_grant as policy
+    import research_workbench.adapters.models.conformance_budget_grant as policy
     from research_workbench.adapters.models.conformance_journal import ConformanceUsageJournal, _Replay, _parse
     from research_workbench.adapters.models.conformance_ledger import ConformanceUsageLedger
     extension = report["budget_extension"]
