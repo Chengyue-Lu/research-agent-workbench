@@ -81,7 +81,7 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
 - DeepSeek Responses `store` 不支持且响应固定false；自动cache、运营日志、训练用途与账户控制不能合并为零保留。R9公共事实补强字段F07/F15但状态不升级，实际数据接受仍null。
 - cf8实际855项CI及三个ZIPdigest独立归档，不借c78结果。真实native操作本轮非0，Provider/Key/vault/bridge/实际history/预算claim0；文档后继head独立核验，M6-010仍BLOCKED。
 
-## FOLLOWUP-021 Flash 真实部件与剩余阻断
+## FOLLOWUP-021 历史 Flash 真实部件与当时阻断
 
 - [部件进度](M6-010_FLASH_COMPONENT_PROGRESS.md)区分四次 native 启动与三组 durable Attempt。
   PS5.1 Decimal 启动拒绝、第一组 deadline、第二组累计 reservation ordinal 误拒和第三组
@@ -94,3 +94,10 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
   第四组 Attempt；下一轮先形成保留同一累计历史的具体计划与安全状态处理，不能 reset 或另开空历史。
 - 局部文件读取和单次验证内 AST 复用已离线测量，完整运行时改进尚未验证；保留全量文件/hash、
   前后 identity、祖先及 use-boundary 检查。不得靠缓存 guard PASS 或放宽 120 秒掩盖问题。
+
+## FOLLOWUP-023 真实扩限与部件结果
+
+- 新source66修复grant helper图遗漏，81模块和依赖/函数/global claims闭合；原失败保持。1875项安装/运行时核对与Windows完整合成链通过。
+- 原三failed Attempts与25events保留，Root只追加grant26；独立ro审计验证header/meta/identity/claim/BASIS原字节和1205用量不变。baseline3/effective10、总token10m，未知用量仍held STOP。
+- 后继唯一actual005/durable4的Tool/text/Schema三步全部通过，parent exit0/186.42秒，coldreport1.2 PASS；累计1744tokens/held0/七responses。shared360/socket180/outer600/coop605保持有界，不产生无限等待或自动重试。
+- 当前证据绑定未合入的PR131 source66；caller-observed entry与本地断言不证明物理网络/账单、remote strict或他人具名接受。正式M6-010 BLOCKED、report live_qualified false和其他研究/发布Gate保持。原actual失败、生成器失败与capturegap在各归档保留；未选择下一组。

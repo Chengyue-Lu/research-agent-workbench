@@ -121,6 +121,7 @@ class ProfileConformanceExtendedBindingTests(unittest.TestCase):
 
         try:
             refused = fixture.run_driver(max_seconds=360, repair_refreeze_confirmed=True, guard=guard)
+            self.assertTrue(mutated)
             self.assertEqual(refused["stop_code"], "guard-refused")
             self.assertEqual(refused["actual_counts"]["http_entry_observations"], 0)
             self.assertEqual(fixture.opener.bodies, [])

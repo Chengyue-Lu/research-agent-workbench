@@ -87,8 +87,12 @@ profile 引用默认相对安装资源目录；独立配置可显式传入 `--ro
 用户随后授权累计十组（含已用三组），token 上限不变。[FOLLOWUP-022](attempts/FOLLOWUP-022/TASK.md)
 实现显式单次 append-only grant、accounting1.1/report1.2 冷读与共享剩余时限。
 默认初始三组和 120 秒合同保留，扩限需要 exact decision/prefix/grant 引用，不能仅改启动参数。
-真实预算尚未迁移，新安装、socket180 配置、helper 与 Windows context 尚未冻结；M6-010 仍 BLOCKED。
+后继真实预算迁移与新的运行证据见 FOLLOWUP-023；M6-010 正式状态仍 BLOCKED。
 
 [FOLLOWUP-023](attempts/FOLLOWUP-023/TASK.md) 的新安装揭示grant helper包级导入未进入v3图；
 原859安装/packet失败保留，改为明确module dependency并验graph member及guard后漂移，
-再重建新安装与Windows选择。全包哈希不替代源码图闭包，actual grant与新请求尚未发生。
+新installed66、81模块图与Windows完整合成链均通过。全包哈希不替代源码图闭包。
+同一真实账本只追加grant事件26，原25事件及身份、claim、BASIS和1205用量保持；独立只读审计通过。
+随后第四组真实测试Tool/text/Schema三步断言全部通过，父进程正常退出，report1.2冷读PASS。
+累计input1540/output204=1744tokens、held0，四组durable Attempt与五次native启动分别记录；
+不再选择下一组。当前source66仍属PR131候选，费用unknown与正式具名接受分别保留。
