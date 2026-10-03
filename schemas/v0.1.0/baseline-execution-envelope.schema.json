@@ -8,7 +8,7 @@
   "properties": {
     "schema_version": {"const": "0.1.0"},
     "record_kind": {"const": "baseline_execution_envelope"},
-    "version": {"enum": ["1.0.0", "1.1.0"]},
+    "version": {"enum": ["1.0.0", "1.1.0", "1.2.0"]},
     "envelope_id": {"type": "string", "minLength": 1},
     "provider_visible_payload": {
       "type": "object",
@@ -95,7 +95,7 @@
       }
     },
     {
-      "if": {"properties": {"version": {"const": "1.1.0"}}},
+      "if": {"properties": {"version": {"enum": ["1.1.0", "1.2.0"]}}},
       "then": {"properties": {"transport_enforcement_metadata": {"required": ["provider_binding_manifest_ref"]}}},
       "else": {"properties": {"transport_enforcement_metadata": {"not": {"required": ["provider_binding_manifest_ref"]}}}}
     }

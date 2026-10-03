@@ -111,7 +111,9 @@ class ConsumerContractTests(unittest.TestCase):
         for record in policy['consumer_contracts']:
             files = {p: (ROOT/p).read_bytes() for p in record['pins']}
             result = self.inspect(record, files)
-            self.assertTrue(result['declared_pins_match'], result['drift'])
+            # Historical review pins retain their source boundary as code evolves.
+            for flag in ('execution_authority', 'evidence_executed', 'complete_input_closure_proved'):
+                self.assertIs(False, result[flag])
         legacy = {k:v for k,v in policy.items() if k != 'consumer_contracts'}
         legacy['version'] = 1
         planner.validate_policy(legacy)
@@ -121,6 +123,25 @@ class ConsumerContractTests(unittest.TestCase):
         invalid = {**policy, 'consumer_contracts':[dict(self.record, execution_authority=True)]}
         with self.assertRaises(ValueError):
             planner.validate_policy(invalid)
+
+    def test_live_historical_records_report_current_consumer_drift_without_authority(self):
+        policy = json.loads((ROOT / planner.POLICY).read_bytes())
+        planner.validate_policy(policy)
+        for record in policy['consumer_contracts']:
+            with self.subTest(record=record['id']):
+                files = {p: (ROOT/p).read_bytes() for p in record['pins']}
+                original = self.inspect(record, files)
+                consumer = record['consumer']
+                changed = dict(files)
+                changed[consumer] += b'\n'
+                self.assertNotEqual(hashlib.sha256(files[consumer]).hexdigest(),
+                                    hashlib.sha256(changed[consumer]).hexdigest())
+                result = self.inspect(record, changed)
+                self.assertFalse(result['declared_pins_match'])
+                self.assertIn(consumer + ': bytes changed', result['drift'])
+                self.assertEqual(original['effect_syntax'], result['effect_syntax'])
+                for flag in ('execution_authority', 'evidence_executed', 'complete_input_closure_proved'):
+                    self.assertIs(False, result[flag])
 
     def test_policy_authority_does_not_import_candidate_diagnostic_module(self):
         with tempfile.TemporaryDirectory() as directory:

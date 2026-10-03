@@ -29,10 +29,16 @@
       "const": "provider_binding_manifest"
     },
     "version": {
-      "const": "1.0.0"
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
     },
     "binding_policy_version": {
-      "const": "provider-binding-v2"
+      "enum": [
+        "provider-binding-v2",
+        "provider-binding-v3"
+      ]
     },
     "manifest_id": {
       "type": "string",
@@ -190,10 +196,21 @@
       "additionalProperties": false
     },
     "limitations": {
-      "const": [
-        "Independent source checks cover explicit source-declared callables and closed first-party policy registries; generated dataclass methods and dependency behavior are not independently source-attested.",
-        "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
-        "Injected transport/credential modules pin explicit class callables and source bytes, not arbitrary component module globals."
+      "oneOf": [
+        {
+          "const": [
+            "Independent source checks cover explicit source-declared callables and closed first-party policy registries; generated dataclass methods and dependency behavior are not independently source-attested.",
+            "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
+            "Injected transport/credential modules pin explicit class callables and source bytes, not arbitrary component module globals."
+          ]
+        },
+        {
+          "const": [
+            "Independent source checks cover explicit source-declared callables and closed first-party policy registries; generated dataclass methods and dependency behavior are not independently source-attested.",
+            "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
+            "The explicit source graph includes package initialization and declared helper dependencies under trusted compiler/native/dependency boundaries; it is not a complete live execution context or remote attestation."
+          ]
+        }
       ]
     },
     "model_policy": {
@@ -201,6 +218,18 @@
     },
     "generation_policy": {
       "$ref": "provider-api-profile.schema.json#/$defs/generation"
+    },
+    "implementation_closure_ref": {
+      "$ref": "common.schema.json#/$defs/fileRef"
+    },
+    "source_roots": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$"
+      }
     }
   },
   "additionalProperties": false,
@@ -208,5 +237,62 @@
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/provider-binding-manifest.schema.json",
   "title": "Provider Binding Manifest",
   "x-rwb-document-kind": "provider_binding_manifest",
-  "$comment": "Explicit local configuration and implementation closure; not a credential, remote model attestation, selection or execution authorization."
+  "$comment": "Explicit local configuration and implementation closure; not a credential, remote model attestation, selection or execution authorization.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "version": {
+            "const": "1.1.0"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "implementation_closure_ref",
+          "source_roots"
+        ],
+        "properties": {
+          "binding_policy_version": {
+            "const": "provider-binding-v3"
+          },
+          "limitations": {
+            "const": [
+              "Independent source checks cover explicit source-declared callables and closed first-party policy registries; generated dataclass methods and dependency behavior are not independently source-attested.",
+              "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
+              "The explicit source graph includes package initialization and declared helper dependencies under trusted compiler/native/dependency boundaries; it is not a complete live execution context or remote attestation."
+            ]
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "implementation_closure_ref"
+              ]
+            },
+            {
+              "required": [
+                "source_roots"
+              ]
+            }
+          ]
+        },
+        "properties": {
+          "binding_policy_version": {
+            "const": "provider-binding-v2"
+          },
+          "limitations": {
+            "const": [
+              "Independent source checks cover explicit source-declared callables and closed first-party policy registries; generated dataclass methods and dependency behavior are not independently source-attested.",
+              "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
+              "Injected transport/credential modules pin explicit class callables and source bytes, not arbitrary component module globals."
+            ]
+          }
+        }
+      }
+    }
+  ]
 }

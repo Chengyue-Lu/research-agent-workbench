@@ -581,6 +581,135 @@ class ConformanceSessionPolicyTests(unittest.TestCase):
                 self.assertNotIn(marker, repr(result))
                 self.assertNotIn(marker, json.dumps(sink.events))
 
+    def assert_capture_fault_contained(self, kind, *, turn=None, persistent=False):
+        marker = "SYNTHETIC-PRIVATE-CAPTURE-FAULT"
+
+        class FaultSink(Sink):
+            def __init__(self):
+                super().__init__()
+                self.attempts = []
+                self.failed = False
+
+            def record(self, actual_kind, payload):
+                self.attempts.append((actual_kind, dict(payload)))
+                target = actual_kind == kind and (turn is None or payload.get("model_attempt") == turn)
+                if (target and (not self.failed or persistent)
+                    or persistent and self.failed and actual_kind in {"capture-gap-summary", "session-summary"}):
+                    self.failed = True
+                    raise OSError(marker)
+                super().record(actual_kind, payload)
+
+        first, second = response(), response(tool=False)
+        provider = FakeProvider(first, second)
+        sink = FaultSink()
+        result = self.run_policy(provider, sink=sink)
+        expected_responses = 0 if kind == "request-summary" and turn == 1 else 2 if kind == "session-summary" else 1
+        expected_tools = int(kind not in {"tool-attempt-summary"} and not (kind == "request-summary" and turn == 1))
+        self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+        self.assertEqual("trace-capture-gap", result.stop_reason)
+        self.assertEqual((expected_responses, expected_tools), (result.model_turns, result.tool_calls))
+        self.assertEqual(expected_responses, len(provider.requests))
+        self.assertEqual(expected_tools, len(self.executed))
+        self.assertEqual(7 * expected_responses if expected_responses else None, result.usage.total_tokens)
+        self.assertEqual(second if expected_responses == 2 else first if expected_responses else None, result.final_response)
+        attempted_kinds = [actual_kind for actual_kind, _ in sink.attempts]
+        self.assertEqual(1, attempted_kinds.count("capture-gap-summary"))
+        self.assertEqual(1, attempted_kinds.count("session-summary"))
+        self.assertNotIn(marker, repr(result))
+        self.assertNotIn(marker, json.dumps(sink.attempts))
+        for actual_kind, payload in sink.attempts:
+            validate_summary_event(actual_kind, payload)
+        if persistent:
+            self.assertIn("conformance-gap-summary-capture-failed", result.warnings)
+            self.assertIn("conformance-stop-summary-capture-failed", result.warnings)
+        terminal = next(payload for actual_kind, payload in sink.attempts if actual_kind == "session-summary")
+        self.assertEqual(expected_responses, terminal["model_attempts"])
+        self.assertEqual(expected_responses, terminal["successful_responses"])
+        self.assertEqual(expected_tools, terminal["tool_invocations"])
+        expected_history = expected_tools == 1
+        self.assertEqual(expected_history, terminal["local_tool_history_assembled"])
+        self.assertEqual(int(kind == "session-summary"), terminal["tool_context_submission_attempts"])
+
+    def test_request_summary_once_and_persistent_faults_stop_before_each_send(self):
+        for turn in (1, 2):
+            for persistent in (False, True):
+                with self.subTest(turn=turn, persistent=persistent):
+                    self.assert_capture_fault_contained("request-summary", turn=turn, persistent=persistent)
+
+    def test_tool_attempt_summary_once_and_persistent_faults_do_not_invoke_handler(self):
+        for persistent in (False, True):
+            with self.subTest(persistent=persistent):
+                self.assert_capture_fault_contained("tool-attempt-summary", persistent=persistent)
+
+    def test_tool_context_summary_once_and_persistent_faults_retain_local_history_without_send(self):
+        for persistent in (False, True):
+            with self.subTest(persistent=persistent):
+                self.assert_capture_fault_contained("tool-context-summary", persistent=persistent)
+
+    def test_ordinary_terminal_summary_once_and_persistent_faults_preserve_both_responses(self):
+        for persistent in (False, True):
+            with self.subTest(persistent=persistent):
+                self.assert_capture_fault_contained("session-summary", persistent=persistent)
+
+    def test_terminal_capture_fault_preserves_unknown_usage_and_preexisting_provider_failure_facts(self):
+        for unknown in (False, True):
+            with self.subTest(unknown=unknown):
+                first = response(usage=Usage()) if unknown else response()
+                provider = FakeProvider(first, ProviderError(ProviderErrorCategory.TRANSIENT, "synthetic private provider error"))
+                sink = Sink("session-summary")
+                result = self.run_policy(provider, sink=sink)
+                self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+                self.assertEqual("trace-capture-gap", result.stop_reason)
+                self.assertEqual(1, result.model_turns)
+                self.assertEqual(None if unknown else 7, result.usage.total_tokens)
+                self.assertEqual(0 if unknown else 1, result.tool_calls)
+                self.assertEqual(1 if unknown else 2, len(provider.requests))
+                self.assertEqual(0 if unknown else 1, len(self.executed))
+                self.assertEqual(first, result.final_response)
+                gap = next(payload for kind, payload in sink.events if kind == "capture-gap-summary")
+                self.assertEqual("session-summary-capture-failed", gap["failure_code"])
+
+    def test_tool_context_callback_policy_drift_still_blocks_following_model(self):
+        selected = policy()
+
+        class DriftSink(Sink):
+            def record(self, kind, payload):
+                super().record(kind, payload)
+                if kind == "tool-context-summary":
+                    object.__setattr__(selected, "policy_id", "changed-after-tool-context")
+
+        provider = FakeProvider(response(), response(tool=False))
+        result = self.run_policy(provider, session_policy=selected, sink=DriftSink())
+        self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+        self.assertEqual("conformance-session-policy-drift", result.stop_reason)
+        self.assertEqual((1, 1), (result.model_turns, result.tool_calls))
+        self.assertEqual(7, result.usage.total_tokens)
+        self.assertEqual(1, len(provider.requests))
+
+    def test_persistent_tool_result_capture_fault_does_not_escape_stopping_summary(self):
+        class BrokenResultSink(Sink):
+            def __init__(self):
+                super().__init__()
+                self.attempts = []
+
+            def record(self, kind, payload):
+                self.attempts.append(kind)
+                if kind in {"tool-result-summary", "capture-gap-summary", "session-summary"}:
+                    raise OSError("synthetic persistent result capture failure")
+                super().record(kind, payload)
+
+        provider = FakeProvider(response(), response(tool=False))
+        sink = BrokenResultSink()
+        result = self.run_policy(provider, sink=sink)
+        self.assertEqual(ApiSessionStatus.SAFE_PAUSED, result.status)
+        self.assertEqual("trace-capture-gap", result.stop_reason)
+        self.assertEqual((1, 1, 7), (result.model_turns, result.tool_calls, result.usage.total_tokens))
+        self.assertEqual(1, len(provider.requests))
+        self.assertEqual(1, len(self.executed))
+        self.assertEqual(1, sink.attempts.count("capture-gap-summary"))
+        self.assertEqual(1, sink.attempts.count("session-summary"))
+        self.assertNotIn("tool-context-summary", sink.attempts)
+
     def test_generic_trace_sink_is_rejected_before_provider_use(self):
         provider = FakeProvider(response(), response(tool=False))
         with tempfile.TemporaryDirectory() as directory:

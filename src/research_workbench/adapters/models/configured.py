@@ -129,6 +129,7 @@ class ConfiguredProvider:
     credential: CredentialProvider = field(repr=False)
     transport: HttpTransport = field(repr=False)
     _root: Path = field(repr=False)
+    _implementation_closure_ref: Mapping[str, object] | None = field(default=None, repr=False)
     _binding_snapshot: Mapping[str, object] = field(init=False, repr=False)
 
     required_binding_modules: ClassVar[tuple[str, ...]] = tuple(
@@ -176,6 +177,12 @@ class ConfiguredProvider:
         object.__setattr__(self, "profile", profile)
         object.__setattr__(self, "resolved_config", _freeze(_plain(actual_config)))
         object.__setattr__(self, "_root", root)
+        reference = self._implementation_closure_ref
+        if reference is not None:
+            if not isinstance(reference, Mapping) or set(reference) != {"path", "sha256"}:
+                _reject("provider source graph requires an explicit FileRef")
+            object.__setattr__(self, "_implementation_closure_ref", _freeze(_plain(reference)))
+            self._assert_implementation_closure()
         _endpoint(profile.document)
         from research_workbench.adapters.models.provider_binding import capture_configured_provider_binding
         object.__setattr__(self, "_binding_snapshot", capture_configured_provider_binding(self))
@@ -205,7 +212,7 @@ class ConfiguredProvider:
         )
 
     def binding_descriptor(self) -> dict[str, object]:
-        return {
+        descriptor = {
             "adapter_class": _class_name(self),
             "adapter_version": ADAPTER_VERSION,
             "profile": self.profile.to_mapping(),
@@ -216,10 +223,37 @@ class ConfiguredProvider:
                 "options": {"max_response_bytes": self.transport.max_response_bytes},
             },
         }
+        if self._implementation_closure_ref is not None:
+            descriptor["implementation_closure_ref"] = _plain(self._implementation_closure_ref)
+        return descriptor
+
+    def _assert_implementation_closure(self) -> None:
+        if self._implementation_closure_ref is None:
+            return
+        failed = False
+        try:
+            from research_workbench.adapters.models.provider_binding import provider_source_roots, CONFORMANCE_ROOTS
+            from research_workbench.adapters.models.provider_source_closure import read_source_closure, verify_loaded_source_closure
+            from research_workbench.evaluation.pins import EvaluationInputs
+            inputs = EvaluationInputs(self._root)
+            graph = read_source_closure(inputs, _plain(self._implementation_closure_ref))
+            required = set(provider_source_roots(self))
+            actual = set(graph["roots"])
+            if actual not in (required, required | set(CONFORMANCE_ROOTS)):
+                failed = True
+            else:
+                verify_loaded_source_closure(graph, read_bytes=inputs.read_bytes,
+                                             source_root=Path(__file__).resolve().parents[3])
+                inputs.recheck()
+        except Exception:
+            failed = True
+        if failed:
+            _reject("provider implementation source graph differs")
 
     def _assert_frozen_binding(self) -> None:
         from research_workbench.adapters.models.provider_binding import assert_configured_provider_binding
         assert_configured_provider_binding(self, self._binding_snapshot)
+        self._assert_implementation_closure()
         # Construction independently parsed the pinned JSON/YAML profile. The
         # immutable actual profile is in the snapshot; its original bytes are
         # checked again without reinterpreting a file in a different dialect.
@@ -265,6 +299,7 @@ def build_profile_provider(
     model_environment: Mapping[str, str] | None = None,
     credential: CredentialProvider | None = None,
     transport: HttpTransport | None = None,
+    implementation_closure_ref: Mapping[str, object] | None = None,
 ) -> ConfiguredProvider:
     if type(config) is not ProviderAdapterConfigV2 or not config.enabled:
         _reject("disabled or unvalidated provider configuration cannot execute")
@@ -277,4 +312,5 @@ def build_profile_provider(
         credential if credential is not None else EnvironmentCredential(source["name"]),
         transport if transport is not None else UrllibTransport(max_response_bytes=resolved["transport"]["max_response_bytes"]),
         Path(root),
+        implementation_closure_ref,
     )

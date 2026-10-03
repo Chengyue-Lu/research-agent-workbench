@@ -9,7 +9,23 @@
     {"path": "registry/capabilities/requirements.json", "kind": "capability_requirement_index", "entry_kind": "capability_requirement", "entry_prefix": "registry/capabilities/requirements/"},
     {"path": "registry/protocol-profiles.json", "kind": "protocol_profile_index", "entry_kind": "protocol_profile", "entry_prefix": "registry/protocol-profiles/"},
     {"path": "registry/skills/release-projections.json", "kind": "skill_release_projection_index", "entry_kind": "skill_release_projection", "entry_prefix": "registry/skills/release-projections/"},
-    {"path": "examples/quickstart/task-no-skill.yaml", "kind": "task_packet"}
+    {"path": "examples/quickstart/task-no-skill.yaml", "kind": "task_packet"},
+    {"path": "registry/providers/adapters-v2.disabled.json", "kind": "provider_adapters_v2"},
+    {"path": "registry/providers/profiles/alibaba-dashscope-chat-completions-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/anthropic-anthropic-messages-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/bytedance-ark-chat-completions-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/deepseek-responses-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/google-gemini-generate-content-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/google-gemma-content-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/minimax-responses-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/moonshot-chat-completions-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/openai-responses-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/openrouter-chat-completions-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/siliconflow-chat-completions-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/zhipu-chat-completions-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/text-adapters-v2.disabled.json", "kind": "provider_adapters_v2"},
+    {"path": "registry/providers/profiles/siliconflow-chat-completions-text-v1.json", "kind": "provider_api_profile"},
+    {"path": "registry/providers/profiles/openrouter-chat-completions-text-v1.json", "kind": "provider_api_profile"}
   ],
   "release_assets": []
 }

@@ -18,10 +18,11 @@ from pathlib import Path
 from types import CodeType, FunctionType, MappingProxyType
 from typing import Any
 
-from research_workbench.evaluation.pins import EvaluationInputs, digest, file_ref, require
+from research_workbench.evaluation.pins import EvaluationInputs, EvaluationValidationError, digest, file_ref, require
 
 
 POLICY = "provider-binding-v2"
+GRAPH_POLICY = "provider-binding-v3"
 KIND = "provider_binding_manifest"
 CONFIGURED_CLASS = "research_workbench.adapters.models.configured.ConfiguredProvider"
 MODULES = tuple(f"research_workbench.adapters.models.{name}" for name in (
@@ -32,6 +33,25 @@ LIMITATIONS = (
     "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
     "Injected transport/credential modules pin explicit class callables and source bytes, not arbitrary component module globals.",
 )
+GRAPH_LIMITATIONS = (
+    "Independent source checks cover explicit source-declared callables and closed first-party policy registries; generated dataclass methods and dependency behavior are not independently source-attested.",
+    "Cold replay requires the frozen Python code runtime; remote provider/model/account authentication is not established.",
+    "The explicit source graph includes package initialization and declared helper dependencies under trusted compiler/native/dependency boundaries; it is not a complete live execution context or remote attestation.",
+)
+CONFORMANCE_ROOTS = (
+    "research_workbench.adapters.models.profile_conformance",
+    "research_workbench.adapters.models.profile_conformance_report",
+)
+
+
+def provider_source_roots(provider, *, include_conformance=False) -> tuple[str, ...]:
+    """Derive source roots from the actual selected components, without selection."""
+    require(type(include_conformance) is bool, "source graph option must be explicit")
+    roots = {CONFIGURED_CLASS.rsplit(".", 1)[0], __name__,
+             type(provider.transport).__module__, type(provider.credential).__module__}
+    if include_conformance:
+        roots.update(CONFORMANCE_ROOTS)
+    return tuple(sorted(roots))
 
 
 def _code_runtime() -> dict[str, Any]:
@@ -332,6 +352,9 @@ def _descriptor(provider) -> dict[str, Any]:
             "max_response_bytes": transport.max_response_bytes,
         }},
     }
+    reference = getattr(provider, "_implementation_closure_ref", None)
+    if reference is not None:
+        descriptor["implementation_closure_ref"] = _plain(reference)
     require(_plain(provider.binding_descriptor()) == descriptor, "Provider descriptor differs from actual instance")
     return descriptor
 
@@ -401,9 +424,15 @@ def _json_bytes(document: Mapping[str, Any]) -> bytes:
     return (json.dumps(_plain(document), ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False) + "\n").encode("utf-8")
 
 
-def stage_provider_binding(provider, *, root: str | Path, destination: str) -> dict[str, str]:
+def stage_provider_binding(provider, *, root: str | Path, destination: str,
+                           source_closure=False, include_conformance=False) -> dict[str, str]:
     """Stage only the explicit actual configuration and declared source closure."""
     project = Path(root).resolve()
+    require(type(source_closure) is bool and type(include_conformance) is bool,
+            "Provider graph options must be explicit")
+    require(source_closure or not include_conformance, "conformance graph requires source closure")
+    require(source_closure or getattr(provider, "_implementation_closure_ref", None) is None,
+            "source-bound Provider cannot stage a legacy binding manifest")
     snapshot = _plain(capture_configured_provider_binding(provider))
     descriptor = snapshot["descriptor"]
     refs = []
@@ -431,6 +460,15 @@ def stage_provider_binding(provider, *, root: str | Path, destination: str) -> d
         "limitations": list(LIMITATIONS),
         "model_policy": descriptor["profile"]["model"], "generation_policy": descriptor["profile"]["generation"],
     }
+    if source_closure:
+        from research_workbench.adapters.models.provider_source_closure import produce_source_closure
+        roots = provider_source_roots(provider, include_conformance=include_conformance)
+        graph = produce_source_closure(roots, source_root=Path(__file__).resolve().parents[3],
+                                      project_root=project, archive_prefix=f"{destination}/graph/source")
+        graph_ref = _write_bytes(project, f"{destination}/graph/closure.json", _json_bytes(graph))
+        manifest.update(version="1.1.0", binding_policy_version=GRAPH_POLICY,
+                        limitations=list(GRAPH_LIMITATIONS), implementation_closure_ref=graph_ref,
+                        source_roots=list(roots))
     assert_configured_provider_binding(provider, snapshot)
     return _write_bytes(project, f"{destination}/manifest.json", _json_bytes(manifest))
 
@@ -447,11 +485,37 @@ def _visit_references(inputs: EvaluationInputs, value: Any) -> None:
             _visit_references(inputs, child)
 
 
+def _checked_source_closure(inputs, reference, *, actual=False):
+    from research_workbench.adapters.models.provider_source_closure import (
+        SourceClosureError, read_source_closure, verify_loaded_source_closure,
+    )
+    failed = False
+    try:
+        graph = read_source_closure(inputs, reference)
+        if actual:
+            verify_loaded_source_closure(graph, read_bytes=inputs.read_bytes,
+                                         source_root=Path(__file__).resolve().parents[3])
+    except SourceClosureError:
+        failed = True
+    if failed:
+        raise EvaluationValidationError("Provider source closure validation failed")
+    return graph
+
+
 def read_provider_binding_manifest(
     inputs: EvaluationInputs, reference: Mapping[str, Any], *, expected_adapter: Mapping[str, Any] | None = None,
 ) -> ProviderBindingManifest:
     """Independently derive archived closure, without importing archived code."""
     document = inputs.read(reference, KIND)
+    if document["version"] == "1.1.0":
+        graph = _checked_source_closure(inputs, document["implementation_closure_ref"])
+        expected_roots = {CONFIGURED_CLASS.rsplit(".", 1)[0], __name__,
+                          *document["component_modules"].values()}
+        roots = set(document["source_roots"])
+        require(roots in (expected_roots, expected_roots | set(CONFORMANCE_ROOTS)),
+                "Provider source roots differ from selected implementation")
+        require(document["source_roots"] == sorted(roots) == graph["roots"],
+                "Provider graph root identity differs")
     require(document["code_runtime"] == _code_runtime(),
             "Provider binding callable replay requires its frozen Python code runtime")
     profile = inputs.read(document["profile_ref"], "provider_api_profile")
@@ -532,4 +596,12 @@ def observe_provider_binding(provider, *, inputs: EvaluationInputs, manifest_ref
         state["constants"] = item["constants"]
         state["defaults"] = item["defaults"]
     require(actual["sources"] == expected, "actual loaded Provider implementation differs from binding manifest")
+    if document["version"] == "1.1.0":
+        require(_plain(getattr(provider, "_implementation_closure_ref", None)) == document["implementation_closure_ref"],
+                "actual Provider has not opted into selected source graph")
+        _checked_source_closure(inputs, document["implementation_closure_ref"], actual=True)
+        inputs.recheck()
+    else:
+        require(getattr(provider, "_implementation_closure_ref", None) is None,
+                "source-bound Provider cannot use a legacy binding manifest")
     return {"ref": document["adapter_class"], "version": document["adapter_version"], "content_hash": manifest.root}

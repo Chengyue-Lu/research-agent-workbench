@@ -1,0 +1,21 @@
+{
+  "id": "synthetic-openrouter-text",
+  "object": "chat.completion",
+  "model": "openai/gpt-4.1-mini",
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "content": "synthetic ok"
+      }
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 5,
+    "completion_tokens": 2,
+    "total_tokens": 7
+  },
+  "provider": "OpenAI"
+}

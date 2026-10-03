@@ -1,0 +1,11 @@
+# FOLLOWUP-008 交接
+
+selected runtime与预算组合已形成可审查的本地接口，公开资料补齐Qwen所选型号价行与BytePlus beta Schema正文。全部校验的源码绑定、失败和限制见[检查](CHECKS.md)。产品sourcecb3fa4a保持，PR128仍Draft；M6-009 IN_PROGRESS、M6-010 BLOCKED/NOT_EXECUTABLE。
+
+后续实际caller按既有外部准入选择完整implementation/config/manifest/Windows和父环境、官方dated model/idle/data条件、输入预占依据及唯一累计历史。准入前只做非秘密inspection，不能经bridge做inspection，因为bridge会先读取Key。明确首次initialize与retained-open，单root固定排他claim；任何unknown/recovery/漂移STOP，失败不改选root或重建预算。获准子进程才由既有桥注入DEEPSEEK_API_KEY，使用最终冻结callable，caller在finally关闭journal；composer的sink与report均使用新目标并保留partial。
+
+本地callable不同于旧inspection-only入口；passing hash/合成测试不能使候选自动成为获准运行。尚缺最终父环境/桥接/argv及真实历史basis与exact-run具名接受，实际字段仍null。需要接受的是一组具体已冻结输入和执行边界，不能由任意非null JSON或时钟到达来补全。runtime返回report还须检查状态/stop；写出blocked报告不等于成功调用。
+
+公开字段后续只追已指明的官方缺口：Qwen cache/Responses及精确usage子集，BytePlus支持表正文；SPAshell或另型号例子均不当作selected model支持。保持operator与model身份、surface/region区别。
+
+用户累计成功失败input+output≤10m；仅精确Flash，每request北京时间18+且官方闲时；unknown金额非阻断、unknown token held-STOP，无自动重试。当前真实调用/凭据/bridge/预算claim0，未请求ready/merge或扩大M5/Pilot/release。

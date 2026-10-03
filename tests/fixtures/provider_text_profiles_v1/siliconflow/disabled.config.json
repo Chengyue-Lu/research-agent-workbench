@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1.0",
+  "registry_kind": "provider_adapters",
+  "config_version": "2.0.0",
+  "config_id": "siliconflow-qwen25-text-standard-v1-fixture-v2",
+  "adapters": [
+    {
+      "adapter_id": "siliconflow-qwen25-text-standard-v1-fixture",
+      "enabled": false,
+      "profile_ref": {
+        "path": "registry/providers/profiles/siliconflow-chat-completions-text-v1.json",
+        "sha256": "b54523352fc21f96df440061070a0a3f6402cd8192e6bb8fbdf518e2f594663d"
+      },
+      "model_selector": {
+        "kind": "literal",
+        "value": "Qwen/Qwen2.5-72B-Instruct"
+      },
+      "credential_source": {
+        "kind": "environment",
+        "name": "RWB_SILICONFLOW_SYNTHETIC_KEY"
+      },
+      "capabilities": [
+        "text"
+      ],
+      "transport": {
+        "timeout_seconds": 10,
+        "max_response_bytes": 65536,
+        "redirect_policy": "deny",
+        "retry_policy": "none"
+      },
+      "conformance_ref": null
+    }
+  ]
+}

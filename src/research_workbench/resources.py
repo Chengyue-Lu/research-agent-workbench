@@ -61,6 +61,8 @@ KINDS = {
     "capability_requirement": r"registry/capabilities/requirements/[^/]+\.yaml",
     "protocol_profile_index": r"registry/protocol-profiles\.json",
     "protocol_profile": r"registry/protocol-profiles/[^/]+\.yaml",
+    "provider_adapters_v2": r"registry/providers/(?:adapters-v2|text-adapters-v2)\.disabled\.json",
+    "provider_api_profile": r"registry/providers/profiles/[^/]+\.json",
     "skill_release_projection_index": r"registry/skills/release-projections\.json",
     "skill_release_projection": r"registry/skills/release-projections/[^/]+\.(?:yaml|json)",
     "skill_manifest": r"registry/skills/accepted/[^/]+\.yaml",
@@ -180,7 +182,9 @@ class RuntimeResources:
             kind = entry["kind"]
             if kind in ("schema", "skill_asset"):
                 continue
-            document = load_document_bytes(Path(logical), self.read(logical))
+            raw = self.read(logical)
+            document = (strict_json(raw) if kind in {"provider_api_profile", "provider_adapters_v2"}
+                        else load_document_bytes(Path(logical), raw))
             require(not catalog.validate(kind, document), f"Runtime catalog schema invalid: {logical}")
             documents[logical] = document
             if kind == "research_mode":
@@ -219,11 +223,54 @@ class RuntimeResources:
                 mode_ref = f"{document['mode_id']}@{document['version']}"
                 require(all(actions.get(ref) == mode_ref for ref in document.get("action_refs", [])),
                         "Runtime Mode Action reference missing or mismatched")
+        self._validate_provider_profiles(documents)
         self._validate_releases(documents)
         return {"resources": len(self.entries), "schemas": len(catalog.names),
                 "modes": len(identities), "projections": sum(entry["kind"] == "skill_release_projection"
                                                             for entry in self.entries.values()),
                 "validation_profile": "installed-runtime", "merge_eligible": False}
+
+    def _validate_provider_profiles(self, documents):
+        """Validate portable templates, without resolving a model or credential."""
+        from research_workbench.adapters.models.profile_configuration import (
+            ProviderApiProfile, ProviderAdapterConfigV2, ProfileConfigurationError,
+        )
+        profiles = {}
+        identities = set()
+        try:
+            for path, document in documents.items():
+                if self.entries[path]["kind"] != "provider_api_profile":
+                    continue
+                profile = ProviderApiProfile.from_mapping(document)
+                identity = (profile.profile_id, document["version"])
+                require(identity not in identities, "duplicate Runtime Provider profile identity")
+                identities.add(identity)
+                profiles[path] = profile
+            for path, document in documents.items():
+                if self.entries[path]["kind"] != "provider_adapters_v2":
+                    continue
+                # Interpret only the already hash-verified JSON snapshot, never
+                # reopen a path through a second unpinned configuration loader.
+                configs = tuple(ProviderAdapterConfigV2.from_mapping(item) for item in document["adapters"])
+                require(len({c.adapter_id for c in configs}) == len(configs),
+                        "duplicate Runtime Provider adapter identity")
+                references = set()
+                for config in configs:
+                    require(not config.enabled, "Runtime Provider templates must remain disabled")
+                    for ref in (config.profile_ref, config.document["conformance_ref"]):
+                        if ref is not None:
+                            key = ref["path"].casefold()
+                            require(key not in references, "duplicate Runtime Provider reference path")
+                            references.add(key)
+                    reference = config.profile_ref
+                    target = reference["path"]
+                    require(target in profiles, "Runtime Provider profile target missing or wrong kind")
+                    require(hashlib.sha256(self.read(target)).hexdigest() == reference["sha256"],
+                            "Runtime Provider profile reference hash drift")
+                    require(config.capabilities <= profiles[target].capabilities,
+                            "Runtime Provider template capabilities exceed its profile")
+        except ProfileConfigurationError:
+            raise ResourceError("invalid closed Runtime Provider template") from None
 
     def documents(self, kind):
         """Load published Mode/Action/Authority and other typed catalog inputs."""
