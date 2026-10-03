@@ -39,3 +39,12 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
   native/dependency 行为、账户用量或 Windows context。caller-attested / windows-unaccepted 限定保持。
 - 旧 head982c43e hosted CI37048711145 的安装路径测试 ERROR 原样保存；修复将测试指向实际
   loaded package root，原错误位置负例保持。新 head 的 CI 独立观察，不借旧绿色或抹去此失败。
+
+## FOLLOWUP-011 本地启动准备
+
+- parent-only超时不能证明子树退出。本地候选改为外层独占非继承Job、creation-time JOB_LIST，
+  没有Start后Assign回退；原bridge仅作inner，原生Windows层级/继承/owner死亡与终止延迟仍待验证。
+- 磁盘pins不足以发现已加载类方法漂移；连接层捕获强引用身份并在callback后复核实际entry。
+  backend guard后按同一deadline重算wait，向下取整且过期STOP。两个独立原反例和后继修复证据分开。
+- [FOLLOWUP-011检查](attempts/FOLLOWUP-011/CHECKS.md)记录39/14合成测试与独立2项复验；
+  无native/Key/API/history动作，不把fake ABI或CI成功当具名接受。实际三bootstrap和完整run/context仍待闭合。
