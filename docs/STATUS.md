@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-10-02
+更新：2026-10-03
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -36,7 +36,12 @@ exact identities、source/hosted CI、review/merge/publish 决定和附件哈希
 Skill admission、正式研究评价或科学有效性。产品修复继续进入 develop，再独立冻结下一次 curated
 release；当前 release branch 不回并 develop，原 tag/附件保持不变。
 
-通用API接入的M6-009正在实施offline-first协议/profile与凭据接口，M6-010为独立DeepSeek Flash验收，详见[计划](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)及[实现记录](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/README.md)。当前实现包含闭集配置、真实厂商身份、四协议映射、版本化绑定与显式两轮Session政策；部分厂商的模型/模式政策及真实测试入口尚未闭合，M6-009未完成、M6-010仍BLOCKED，无新增live PASS。原M6-004 OpenAI验收仍BLOCKED；保存本地Key和晚间时间安排不证明Provider或Pilot已经可用。
+通用 API 接入的 M6-009 离线合同已完成：闭集配置、十一家真实厂商身份、四协议映射、晚解析凭据、
+版本化源码绑定、显式两轮 Session 政策和脱敏报告均有离线验证；条款与接受来源见
+[整项收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-009_COMPLETION.md)。
+默认禁用模板和官方矩阵中的未核实条件不产生厂商 live 资格。M6-010 独立验收 DeepSeek Flash；
+当前 exact 安装/Windows 启动/运行闭包仍在准备，保持 BLOCKED，无新增 live PASS。
+原 M6-004 OpenAI 验收仍 BLOCKED；保存本地 Key 和晚间时间安排不证明 Provider 或 Pilot 已可用。
 
 ## 已实现
 

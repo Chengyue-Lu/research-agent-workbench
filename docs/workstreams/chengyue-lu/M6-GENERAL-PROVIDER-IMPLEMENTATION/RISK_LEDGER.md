@@ -1,5 +1,9 @@
 # 风险与剩余范围
 
+当前离线完成判断见 [M6-009 收口](M6-009_COMPLETION.md)，绑定 PR128 合入 source3e01158。
+下表及后续 Attempt 的候选/未完成表述保留其历史阶段和 source 范围；真实 Windows/Provider 验收继续由
+M6-010 承担。报告最新用量一致性修复和原失败见 [FOLLOWUP-013](attempts/FOLLOWUP-013/CHECKS.md)。
+
 | 风险 | 处理与证据 | 当前边界 |
 |---|---|---|
 | 协议兼容抹平服务身份或能力 | 实际 profile → factory → 编解码离线检查；未知角色、strict、模式、能力在凭据前拒绝 | 十四份 profile、十一家工厂 fake 正例；新 SF/OR 仅 standard Text，不代表当前远端接受 |
