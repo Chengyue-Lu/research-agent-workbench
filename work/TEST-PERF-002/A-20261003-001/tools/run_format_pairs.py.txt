@@ -1,0 +1,34 @@
+"""Three fresh-process coverage pairs; fixture format is the sole treatment."""
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+root = Path(sys.argv[1]).resolve()
+out = Path(__file__).resolve().parent
+python = sys.executable
+assert (out / 'provider-after-coverage-v1/binding.json').exists(), 'Do not overlap CPU timing probes.'
+cases = ['tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry',
+         'tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch']
+results = []
+for pair in range(1, 4):
+    # Reverse the second pair to expose simple order/warmup effects.
+    for mode in (('json', 'yaml') if pair == 2 else ('yaml', 'json')):
+        name = f'format-pair-{pair}-{mode}'
+        target = out / name
+        assert not target.exists(), target
+        command = [python, '-B', '-X', 'utf8', '-m', 'coverage', 'run',
+                   '--data-file', str(out / (name + '.coverage')), '--source=research_workbench',
+                   str(out / 'run_probe.py'), '--root', str(root), '--output', str(target),
+                   '--overlay-format', mode, *cases]
+        with (out / (name + '.log')).open('x', encoding='utf-8') as log:
+            process = subprocess.run(command, cwd=root, stdout=log, stderr=subprocess.STDOUT)
+        result = json.loads((target / 'binding.json').read_text(encoding='utf-8'))
+        results.append({'pair': pair, 'mode': mode, 'command': command, 'exit_code': process.returncode,
+                        'binding': result, 'native_sha256': hashlib.sha256((target / 'native-results.json').read_bytes()).hexdigest()})
+        (out / 'format-pairs-progress.json').write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding='utf-8')
+        print(name, process.returncode, result['test_count'], round(result['wall_seconds'], 3), flush=True)
+        if process.returncode or not result['successful'] or result['test_count'] != len(cases):
+            raise SystemExit(1)
+(out / 'format-pairs-complete.json').write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding='utf-8')

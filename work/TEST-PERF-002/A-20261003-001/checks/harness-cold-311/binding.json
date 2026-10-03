@@ -1,0 +1,33 @@
+{
+  "head": "fc158961b9cad70e6b681ef81bddbb0022242f86",
+  "python": "3.11.16",
+  "cases": [
+    "tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay",
+    "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+    "tests.test_evaluation_harness_execution.HarnessReplayTests.test_runtime_output_hash_drift_is_rejected",
+    "tests.test_evaluation_harness_execution.HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails"
+  ],
+  "platform": "Windows-10-10.0.26200-SP0",
+  "dependencies": {
+    "coverage": "7.16.1",
+    "jsonschema": "4.26.0",
+    "PyYAML": "6.0.3"
+  },
+  "traced": false,
+  "profiled": false,
+  "wall_seconds": 346.9958444000222,
+  "overlay_format": null,
+  "successful": true,
+  "test_count": 4,
+  "source_sha256": {
+    "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+    "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+    "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+    "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+    "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+    "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+    "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+    "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+    "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+  }
+}

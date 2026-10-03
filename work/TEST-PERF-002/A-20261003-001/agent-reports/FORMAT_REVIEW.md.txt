@@ -1,0 +1,15 @@
+# 测试夹具格式独立复核
+
+静态结论：通过，未发现必须修改生产代码的问题。动态格式等价和真实冷回放仍待根代理验证。本复核未构造夹具、运行测试、访问网络或修改源代码。
+
+审阅基线：`3579e67124836559d7932287591e4d77053a1e94`，worktree `D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003`。审阅差异仅 `tests/system_evaluation_fixtures.py` 与 `tests/harness_fixtures.py`；源文件、HEAD 内容和差异哈希存于 `FORMAT_REVIEW.json`。
+
+`document_suffix=None` 时映射与旧逻辑完全一致：task 保持 `bundle/task.yaml`，其他文件保留 `a4/` 前缀及原扩展名。五处 supply/method/projection/snapshot 消费者经映射得到原路径。把新增参数、映射与五处引用恢复为旧形式后，整份 AST 与 HEAD 相同；Harness 文件只需恢复一处调用参数，整份 AST 也相同。
+
+JSON 分支仍使用原来的递归 rename/refresh/save：字符串路径、imports 的 from/to、documents、entrypoint 和 skill projection 均沿同一映射，嵌套 sha256/content_hash 由实际写入结果重签。未发现残留旧 A4 路径或漏签引用。根代理另报告全测试扫描仅有这五处硬编码；该消费者扫描是父代理提供的证据。
+
+真实 `load_runtime_bundle` 继续读取实际 bytes、校验 SHA-256、schema、qualification、lineage 和 import graph；夹具原写入器本就输出 JSON。没有新增缓存 checker、伪 loader 或改写 Host。public cases、四臂、失败重试、compact 参数、A2/A3 与计划构建的代码保持。此静态结论不能代替实际冷回放通过。
+
+默认 OverlayFixtureMixin 与独立 runtime/skill bundle 夹具继续保留 YAML 路径和写入方式。Harness 的 A4 合成文档改走 JSON 分支，因此其 YAML 解析覆盖转由保留的默认路径承担。
+
+最小验证建议：根代理运行 YAML/JSON 成对 probe，比较归一化路径与重新签名哈希后的文档、cases/arms/protocol，核验全部实际文件 pin；保留真实 qualification、Host 与新进程冷回放及失败重试原断言；再选一个默认 overlay/runtime YAML 消费者。完成前不宣称格式等价或提速已验证。

@@ -1,0 +1,122 @@
+{
+  "audit_id": "TEST-PERF-002",
+  "accountable_owner": "Chengyue-Lu",
+  "baseline_sha": "3579e67124836559d7932287591e4d77053a1e94",
+  "implementation_retained": true,
+  "python": "3.11.16",
+  "coverage_version": "7.16.1 (parent-provided)",
+  "coverage_source": "research_workbench",
+  "branch_coverage": true,
+  "cases": [
+    "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+    "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+    "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+    "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph"
+  ],
+  "before_wall_seconds": 197.071647,
+  "after_wall_seconds": 182.098508,
+  "wall_decrease_percent": 7.597814920580636,
+  "class_setup_included": true,
+  "before_count": 4,
+  "after_count": 4,
+  "before_successful": true,
+  "after_successful": true,
+  "pairs": [
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph",
+      "before_seconds": 156.059482,
+      "after_seconds": 147.950902,
+      "before_outcome": "passed",
+      "after_outcome": "passed",
+      "before_checkpoints": 5,
+      "after_checkpoints": 5
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+      "before_seconds": 18.057286,
+      "after_seconds": 14.497814,
+      "before_outcome": "passed",
+      "after_outcome": "passed",
+      "before_checkpoints": 0,
+      "after_checkpoints": 0
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+      "before_seconds": 9.761732,
+      "after_seconds": 5.903519,
+      "before_outcome": "passed",
+      "after_outcome": "passed",
+      "before_checkpoints": 0,
+      "after_checkpoints": 0
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+      "before_seconds": 8.882178,
+      "after_seconds": 4.903191,
+      "before_outcome": "passed",
+      "after_outcome": "passed",
+      "before_checkpoints": 3,
+      "after_checkpoints": 3
+    }
+  ],
+  "source_before": {
+    "profile": "5c4676082fee5738510cb0a7a6eb9c7e179fe1b05a69cd593125be4f4791b7e7",
+    "graph": "508f8529f497d346b470bef23366f217398c464595adf200b28d1328ab14c12c"
+  },
+  "source_after": {
+    "profile": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+    "graph": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307"
+  },
+  "static_work_reduction": {
+    "selected_graph_productions": "3 -> 1, real stage in class setup",
+    "profile_negative_verifications": "5 -> 5",
+    "profile_success_verifications": "2 -> 1, writer still uses real checker",
+    "entire_graph_class_productions": "11 -> 1 (not fully executed here)"
+  },
+  "isolation": {
+    "two_instance_probe_executed": false,
+    "probe": "provider-after-isolation.py",
+    "reason": "Parent instructed stopping further CPU verification after four cases to serialize A4 measurements.",
+    "drift_then_fresh_cold_case_passed": true
+  },
+  "measurement_limitations": [
+    "One coverage pair only; no repeatability or hosted-CI speedup claim.",
+    "Probe gained an unused optional overlay-format branch and metadata fields between samples; timed runner and case selection unchanged. Exact probe hash was not frozen.",
+    "No full provider component or Python 3.13 run."
+  ],
+  "excluded_setup_attempt": {
+    "reason": "Coverage created the data-file parent before run_probe immutable-directory assertion; rerun used external data-file paths.",
+    "output_directory": "provider-before",
+    "test_count": 0
+  },
+  "evidence_checksums": [
+    {
+      "path": "provider-before-coverage-v1/binding.json",
+      "sha256": "9127dd9e2336e481667c071214b967e44dfb190ac9e13a3f7311ad905eda074f"
+    },
+    {
+      "path": "provider-before-coverage-v1/native-results.json",
+      "sha256": "9cf7b907bfed54efe6a2755a41e0c13cd102643d3fb1d4a4690f2873d9c67ff6"
+    },
+    {
+      "path": "provider-after-coverage-v1/binding.json",
+      "sha256": "ac149b288f2a3c093c289d69afc2a9b0cb4827b7769ce409ccb19005ca1f4344"
+    },
+    {
+      "path": "provider-after-coverage-v1/native-results.json",
+      "sha256": "eb71f4d9977b17eeea0fd76661d91fdb7f79a43046eb5f25e4b9902b1ea24d44"
+    },
+    {
+      "path": "provider-before-coverage-v1.coverage",
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30"
+    },
+    {
+      "path": "provider-after-coverage-v1.coverage",
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30"
+    },
+    {
+      "path": "provider-after-isolation.py",
+      "sha256": "636818b557c11082e60883b914f733b40ed58655bd5317ae18bd503ac3f8e184"
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "duration_seconds": {
+    "p50": 13.909509,
+    "p95": 156.059482
+  },
+  "events": {
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+    "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph"
+  ],
+  "outcomes": {
+    "errors": 0,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 4,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph",
+      "checkpoints": [
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='config_ref')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='implementation_closure_ref')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='source_sha256')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='policy_output')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='input_bound')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 156.059482,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+      "checkpoints": [],
+      "duration_seconds": 18.057286,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+      "checkpoints": [],
+      "duration_seconds": 9.761732,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+      "checkpoints": [
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields (candidate='1.0.0')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields (candidate='1.1.0')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields (candidate='1.1.0')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 8.882178,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields"
+    }
+  ],
+  "successful": true,
+  "suite": "scoped-performance-probe",
+  "test_count": 4,
+  "tests": [
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph",
+      "checkpoints": [
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='config_ref')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='implementation_closure_ref')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='source_sha256')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='policy_output')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph (key='input_bound')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 156.059482,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+      "checkpoints": [],
+      "duration_seconds": 18.057286,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+      "checkpoints": [],
+      "duration_seconds": 9.761732,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+      "checkpoints": [
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields (candidate='1.0.0')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields (candidate='1.1.0')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields (candidate='1.1.0')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 8.882178,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields"
+    }
+  ],
+  "wall_seconds": 197.071647
+}

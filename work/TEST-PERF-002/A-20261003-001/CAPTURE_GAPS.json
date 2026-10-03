@@ -1,0 +1,11 @@
+{
+  "completeness": "gapped",
+  "certification": null,
+  "gaps": [
+    "Earlier message/tool payloads survived compaction as continuation summaries; no complete raw Agent Trace is claimed.",
+    "Provider probe metadata source changed between one before/after sample; timed runner and selected cases were unchanged.",
+    "Root initially misread omitted CLI --branch; original receipt and actual database always contained branch arcs; correction retained.",
+    "Initial pre-runtime profiler and coverage output-directory setup failures had zero tests and are excluded from timing."
+  ],
+  "historical_raw_retention": "Original task-local assessment directories remain unchanged; repository contains selected receipts and hash references, not every raw hosted artifact or profile database."
+}

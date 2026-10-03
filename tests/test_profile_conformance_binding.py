@@ -126,7 +126,6 @@ class ProfileConformanceBindingTests(unittest.TestCase):
         self.assertEqual(report["actual_counts"]["tool_executions"], 1)
         self.assertFalse(report["live_qualified"])
         self.assertFalse(report["remote_strict_claim"])
-        self.assertEqual(verify_profile_conformance_report(report, root=self.root, schema_root=ROOT / "schemas"), report)
         output = self.root / "report.json"
         write_profile_conformance_report(report, output, root=self.root, schema_root=ROOT / "schemas")
         self.assertEqual(json.loads(output.read_bytes()), report)

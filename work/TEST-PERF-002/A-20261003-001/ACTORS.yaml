@@ -1,0 +1,67 @@
+owner: Chengyue-Lu
+actors:
+- actor_id: root
+  agent_profile: requirements, isolated implementation, real validation and publication
+  required_skills: []
+  inputs:
+  - declared target tests
+  - baseline source
+  - task-local evidence
+  write_scope:
+  - tests/test_provider_binding_graph.py
+  - tests/test_profile_conformance_binding.py
+  - tests/harness_fixtures.py
+  - tests/system_evaluation_fixtures.py
+  output_contract: persist source identity, actual outcome, timing boundary and limitations
+    before handoff
+  budget: one bounded task; root serializes CPU trials
+  stop_conditions:
+  - no unrelated product/CI changes
+  - stop and retain failed evidence
+- actor_id: slow_ci_hosted_audit
+  agent_profile: read-only hosted timing audit and source/evidence review
+  required_skills: []
+  inputs:
+  - declared target tests
+  - baseline source
+  - task-local evidence
+  write_scope:
+  - task-local audit reports
+  output_contract: persist source identity, actual outcome, timing boundary and limitations
+    before handoff
+  budget: one bounded task; root serializes CPU trials
+  stop_conditions:
+  - no unrelated product/CI changes
+  - stop and retain failed evidence
+- actor_id: slow_harness_fixture_design
+  agent_profile: bounded fixture cost and isolation experiment
+  required_skills: []
+  inputs:
+  - declared target tests
+  - baseline source
+  - task-local evidence
+  write_scope:
+  - task-local analysis evidence
+  output_contract: persist source identity, actual outcome, timing boundary and limitations
+    before handoff
+  budget: one bounded task; root serializes CPU trials
+  stop_conditions:
+  - no unrelated product/CI changes
+  - stop and retain failed evidence
+- actor_id: slow_provider_test_design
+  agent_profile: Provider preparation optimization and real scoped timing
+  required_skills: []
+  inputs:
+  - declared target tests
+  - baseline source
+  - task-local evidence
+  write_scope:
+  - tests/test_provider_binding_graph.py
+  - tests/test_profile_conformance_binding.py
+  - task-local provider evidence
+  output_contract: persist source identity, actual outcome, timing boundary and limitations
+    before handoff
+  budget: one bounded task; root serializes CPU trials
+  stop_conditions:
+  - no unrelated product/CI changes
+  - stop and retain failed evidence
