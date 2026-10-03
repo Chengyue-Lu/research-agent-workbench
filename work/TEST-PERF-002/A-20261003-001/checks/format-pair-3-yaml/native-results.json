@@ -1,0 +1,70 @@
+{
+  "duration_seconds": {
+    "p50": 46.145635,
+    "p95": 84.001939
+  },
+  "events": {
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+    "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+  ],
+  "outcomes": {
+    "errors": 0,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 2,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "checkpoints": [],
+      "duration_seconds": 84.001939,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch",
+      "checkpoints": [],
+      "duration_seconds": 8.289331,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    }
+  ],
+  "successful": true,
+  "suite": "scoped-performance-probe",
+  "test_count": 2,
+  "tests": [
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "checkpoints": [],
+      "duration_seconds": 84.001939,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch",
+      "checkpoints": [],
+      "duration_seconds": 8.289331,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    }
+  ],
+  "wall_seconds": 107.660041
+}

@@ -1,0 +1,67 @@
+"""Run scoped existing unittest cases with their native timing receipts."""
+import argparse
+import cProfile
+import hashlib
+import importlib.metadata
+import json
+import os
+from pathlib import Path
+import platform
+import subprocess
+import sys
+import time
+import unittest
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--root', type=Path, required=True)
+parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--profile', action='store_true')
+parser.add_argument('--overlay-format', choices=('yaml', 'json'))
+parser.add_argument('cases', nargs='+')
+args = parser.parse_args()
+args.root = args.root.resolve()
+assert not args.output.exists(), 'Keep each probe in its own immutable directory.'
+args.output.mkdir(parents=True)
+sys.path[:0] = [str(args.root), str(args.root / 'src')]
+os.chdir(args.root)
+from tests.run_unittest_suite import TimedTextResult, _write_summary
+if args.overlay_format:
+    from tests.system_evaluation_fixtures import SystemEvaluationFixture
+    original_overlay = SystemEvaluationFixture.build_overlay
+    def format_overlay(self, **kwargs):
+        # Experiment varies only fixture serialization; production code is real.
+        return original_overlay(self, document_suffix=None if args.overlay_format == 'yaml' else '.json')
+    SystemEvaluationFixture.build_overlay = format_overlay
+
+suite = unittest.defaultTestLoader.loadTestsFromNames(args.cases)
+runner = unittest.TextTestRunner(verbosity=2, resultclass=TimedTextResult)
+profiler = cProfile.Profile() if args.profile else None
+started = time.perf_counter()
+if profiler:
+    profiler.enable()
+result = runner.run(suite)
+if profiler:
+    profiler.disable()
+    profiler.dump_stats(str(args.output / 'calls.prof'))
+wall = time.perf_counter() - started
+_write_summary(args.output / 'native-results.json', 'scoped-performance-probe', wall, result, 20, None)
+files = ('tests/test_evaluation_harness_execution.py',
+         'tests/test_evaluation_harness_evidence.py',
+         'tests/test_evaluation_harness_analysis.py',
+         'tests/harness_fixtures.py', 'tests/harness_execution_fixtures.py',
+         'tests/harness_analysis_fixtures.py',
+         'tests/test_profile_conformance_binding.py',
+         'tests/test_provider_binding_graph.py')
+files += ('tests/system_evaluation_fixtures.py',)
+metadata = {'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+            'python': platform.python_version(), 'cases': args.cases,
+            'platform': platform.platform(),
+            'dependencies': {name: importlib.metadata.version(name) for name in ('coverage', 'jsonschema', 'PyYAML')},
+            'traced': sys.gettrace() is not None,
+            'profiled': args.profile, 'wall_seconds': wall,
+            'overlay_format': args.overlay_format,
+            'successful': result.wasSuccessful(), 'test_count': result.testsRun,
+            'source_sha256': {name: hashlib.sha256((args.root / name).read_bytes()).hexdigest()
+                              for name in files}}
+(args.output / 'binding.json').write_text(json.dumps(metadata, indent=2) + '\n', encoding='utf-8')
+raise SystemExit(0 if result.wasSuccessful() and result.testsRun else 1)

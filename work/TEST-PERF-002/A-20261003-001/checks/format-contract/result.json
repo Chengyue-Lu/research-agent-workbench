@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "fixture_file_count": 124,
+  "compared_documents": [
+    "a4/bundle/conformance.yaml",
+    "a4/bundle/manifest.json",
+    "a4/bundle/method.yaml",
+    "a4/bundle/requirement.yaml",
+    "a4/bundle/resolution.yaml",
+    "a4/bundle/skill-projection.yaml",
+    "a4/bundle/snapshot.yaml",
+    "a4/bundle/supply.yaml"
+  ],
+  "cases": 2,
+  "design_equal": true,
+  "fresh_byte_drift_rejected": true,
+  "diagnostic": "Runtime Bundle validation failed: C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\supply.json:RUNTIME-BUNDLE-HASH-MISMATCH:a4/bundle/supply.json; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json:RUNTIME-BUNDLE-CARDINALITY:Core bundle requires exactly one capability_supply_report; found 0; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-IMPORT-GRAPH-MISMATCH:declared imports must equal the derived closure; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-UNDECLARED-IMPORT:a4/bundle/supply.json; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-UNDECLARED-IMPORT:a4/bundle/supply.json; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-CLOSURE-MISMATCH:documents must be the exact entrypoint closure",
+  "path_map": {
+    "a4/bundle/conformance.yaml": "a4/bundle/conformance.json",
+    "a4/bundle/method.yaml": "a4/bundle/method.json",
+    "a4/bundle/requirement.yaml": "a4/bundle/requirement.json",
+    "a4/bundle/resolution.yaml": "a4/bundle/resolution.json",
+    "a4/bundle/skill-projection.yaml": "a4/bundle/skill-projection.json",
+    "a4/bundle/snapshot.yaml": "a4/bundle/snapshot.json",
+    "a4/bundle/supply.yaml": "a4/bundle/supply.json"
+  }
+}

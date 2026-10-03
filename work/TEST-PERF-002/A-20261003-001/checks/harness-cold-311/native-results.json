@@ -1,0 +1,108 @@
+{
+  "duration_seconds": {
+    "p50": 8.987576,
+    "p95": 287.352877
+  },
+  "events": {
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_evaluation_harness_analysis.py::HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay",
+    "tests/test_evaluation_overlay.py::EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+    "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_runtime_output_hash_drift_is_rejected",
+    "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails"
+  ],
+  "outcomes": {
+    "errors": 0,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 4,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_evaluation_harness_analysis.py::HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay",
+      "checkpoints": [],
+      "duration_seconds": 287.352877,
+      "id": "tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay",
+      "module": "tests.test_evaluation_harness_analysis",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails",
+      "checkpoints": [],
+      "duration_seconds": 12.500497,
+      "id": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_runtime_output_hash_drift_is_rejected",
+      "checkpoints": [],
+      "duration_seconds": 5.474656,
+      "id": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_runtime_output_hash_drift_is_rejected",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_runtime_output_hash_drift_is_rejected"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_overlay.py::EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "checkpoints": [],
+      "duration_seconds": 0.770514,
+      "id": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "module": "tests.test_evaluation_overlay",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority"
+    }
+  ],
+  "successful": true,
+  "suite": "scoped-performance-probe",
+  "test_count": 4,
+  "tests": [
+    {
+      "canonical_id": "tests/test_evaluation_harness_analysis.py::HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay",
+      "checkpoints": [],
+      "duration_seconds": 287.352877,
+      "id": "tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay",
+      "module": "tests.test_evaluation_harness_analysis",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails",
+      "checkpoints": [],
+      "duration_seconds": 12.500497,
+      "id": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessReplayTests.test_runtime_output_hash_drift_is_rejected",
+      "checkpoints": [],
+      "duration_seconds": 5.474656,
+      "id": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_runtime_output_hash_drift_is_rejected",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessReplayTests.test_runtime_output_hash_drift_is_rejected"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_overlay.py::EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "checkpoints": [],
+      "duration_seconds": 0.770514,
+      "id": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "module": "tests.test_evaluation_overlay",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority"
+    }
+  ],
+  "wall_seconds": 346.995844
+}

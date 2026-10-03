@@ -1,0 +1,20 @@
+# Hosted CI 耗时审计（TEST-PERF-002）
+
+证据截至已下载快照；精确 run/head、源路径和 SHA-256、逐模块排序及前 20 用例见 `hosted-audit.json`。本审计只读取下载证据，未运行测试。
+
+|run|head 前缀|3.11 coverage：作业/套件/用例和秒|3.13 full：作业/套件/用例和秒|结果|
+|---|---|---|---|---|
+|37001814011|64c93c05|3316 / 3299.001 / 2864.625|1300 / 1274.602 / 1113.364|两套件通过；1633 用例|
+|37106743428|3e01158b|4915 / 4898.099 / 3714.120|1942 / 1921.862 / 1694.669|coverage 2016 通过，义务门失败；3.13 14 错误|
+|37108211033|e0682586|6513 / 6490.906 / 4990.443|1624 / 1607.561 / 1417.256|coverage 2014 通过、2 失败；3.13 14 错误|
+|37130368701|3579e671|快照仍运行，无最终结果|1769 / 1751.921 / 1546.922|3.13 14 错误|
+
+各 job 创建至启动只需 1–3 秒。前两个存在显著启动前间隔的 run 是 37001814011（2921 秒）和 37108211033（3355 秒），此间隔只记为 job 创建前等待，无法据此确定排队原因。作业时钟包含安装、导出等；套件 wall 与用例和的差还包含类设置等，不能混算。
+
+最近两次完整 coverage producer 的前两模块是 `test_provider_binding_graph`（11 用例，751.299 / 885.967 秒）和 `test_profile_conformance_binding`（7 用例，662.999 / 856.205 秒），合占用例和 38.08% / 34.91%。前五模块占 63.17% / 62.01%；前十用例占 43.53% / 42.09%。profile binding 的两个最慢通过用例分别 295.874、265.112 秒及 374.685、343.779 秒。最新 3.13 最慢通过用例为 four-arm analysis 148.970 秒、review 83.051 秒；前五模块占 53.18%。
+
+共同通过用例的 coverage/full 用时比分别 2.573、1.309、2.237；它们混合了 Python 3.11/3.13 与 runner 差异，不等于纯 coverage 开销。后两次 full 的类设置失败还漏跑 20 个 profile 用例，不能用整套件比例证明提速。coverage-quality 报表是 producer 投影，已核对 ID、结果、用时一致，不能再次累加。
+
+最新 run 的 14 个错误均为 `undeclared runtime class callable: ProviderAdapterConfig.__repr__`：11 graph、1 source closure、2 setUpClass。日志落点为 `provider_source_closure.py:677` 的类布局校验，具体 Python 机制待源检查。1996 个执行测试加 2 个无用时类设置错误形成 1998 证据行；缺失用时不当作已测零秒。37108211033 的两个 coverage 失败明确为 post-call 时间预算；37106743428 的义务门缺口未包含于本次输入。
+
+下一步只建议读取 `src/research_workbench/adapters/models/provider_source_closure.py` 与 `tests/test_profile_conformance_binding.py`，核查反复验证和夹具成本。当前证据未验证任何优化或提速。

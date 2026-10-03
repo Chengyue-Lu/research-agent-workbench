@@ -1,0 +1,13 @@
+# Provider 测试候选独立复核
+
+静态结论：通过，未发现阻断项或必须修改生产代码的问题。基线 `3579e67124836559d7932287591e4d77053a1e94`，worktree `D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003`。本次只读两份测试差异及必要 staging/writer 声明，未构造夹具、运行测试或改源；父代理正在串行动态验证。
+
+`test_provider_binding_graph.py` 的 11 个测试方法 AST 全部与 HEAD 一致，测试正文断言调用 42→42。原 `self.stage()` 均无参数，均不位于 patch/变异上下文内；三个 baseline 案例经未改的 frozen_envelope/run_baseline 先 staging，再变异。每次均选择相同 v1.1 source_closure+include_conformance closure。legacy 与 downgrade 的独立 staging 调用仍在。
+
+类模板只缓存实际 staging 产生的文件。每案例仍有全新临时根、configured_fixture、ConfiguredProvider、credential 和 transport；copytree 生成独立普通文件。变异只写 self.root。返回 ref 是复制的扁平 path/sha256 字符串字典，未共享计数器、请求列表或 provider。staging 的引用为根内相对路径，profile 输入由每案例重新构造，真实读取和当前运行态校验仍执行。
+
+`_components` 模块缓存原已存在；本类 runtime patch 均受 context 管理，子进程冷回放修改不跨进程，文件变异不跨案例。未见案例写模板或共享 ref。新 setUpClass 的失败会成为类设置错误，动态验证必须确认全部案例通过，不能从失败/跳过造成的时长缩短推导提速。
+
+`test_profile_conformance_binding.py` 的 7 个测试方法保留。AST 仅删除正向案例中的一次 verify 返回等值断言；writer 内部实际调用 verify 得到 detached，原样序列化后写入，因此紧邻的读回 JSON==report 仍证明该成功返回等值。guard 失败和两次 fresh attempt 的独立 verify==report 断言、五类篡改拒绝分支保持。
+
+动态待核：全部 11 graph + 7 profile 案例的原断言、正反顺序或相邻 provider 类的状态恢复，以及原新进程冷回放与 writer 篡改案例。文件模板隔离和全 suite 顺序这里只做静态审阅，没有动态通过或提速结论。源文件/差异哈希、逐调用上下文、AST 计数见 `PROVIDER_REVIEW.json`。

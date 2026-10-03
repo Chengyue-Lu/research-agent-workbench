@@ -1,0 +1,21 @@
+# TEST-PERF-002 fixture design
+
+Owner: Chengyue-Lu. Worktree: ci-slow-tests-20261003; supplied base: 3579e67. Read-only assessment; no tests, network or implementation ran. Read scope: AGENTS.md and the nine named test files; no src reads.
+
+已有缓存覆盖主链：execution 两类共25测试、evidence 三类共16测试、proof 两类共8测试；重型 prototype 已按类生成并逐测试 deepcopy/copytree。分析24测试中23个单元测试仍每次写13方法、52观测、52测量及上下文；review 12单元测试需重新生成匿名ID。耗时主因尚未量测，不能把 hosted coverage 的数百秒归因于 fixture。
+
+建议优先测量并仅实施 analysis 单元静态输入快照：把确定性写入移到 setUpClass；每测试复制独立目录并深拷贝 evidence/context/refs；当前逐测试 seams/cleanup 保持原位。保留全部23个测试体与子测试。它节省重复序列化、哈希及构造，复制I/O仍存在；实际收益须 profile 证明。
+
+次选：execution 与 evidence 各模块内只生成一次“未执行”ExecutionFixture，然后为两个类各复制独立 prototype；Replay 类仍真实 execute/compile，故 transient fixture 不与 completed fixture 混用。收益上限各省一次 build_execution。先不做跨模块缓存，避免全局生命周期及导入副作用。
+
+review package/alias 不缓存；proof 已一次真构建，保持原状；build_analysis_chain、review/analysis integration、replication 仍从空目录真构建。所有冷进程 subprocess 和执行禁令断言照旧。禁止硬链接、共享可变文件、identity/read/validator结果缓存、增加mock替代；schema/source bytes 仍实时读取。验证复制前后相对路径及SHA256一致，修改一个副本须不改变源及第二副本。
+
+最小 profiling（同一Python/coverage模式前后对比，profile未执行）：
+
+```powershell
+python -m cProfile -o "$env:TEMP/rwb-analysis.prof" -m unittest tests.test_evaluation_harness_analysis.HarnessAnalysisTests.test_complete_metrics_and_pairing_reconstruct_without_authority
+python -m cProfile -o "$env:TEMP/rwb-h3.prof" -m unittest tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch
+python -m pstats "$env:TEMP/rwb-analysis.prof"
+```
+
+pstats 看 setUp/build_execution、persist、copytree、validator_identity、read_bytes 的累计占比。若准备占比低，停止fixture重构；把主体重复重放交回单独诊断。授权实施后，先跑受影响类，再逐个保留 execution/evidence/review/analysis/proof 冷进程用例和 source/schema drift 用例；保持86个现有测试与全部断言。

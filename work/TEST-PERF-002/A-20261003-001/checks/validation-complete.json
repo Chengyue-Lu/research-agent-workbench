@@ -1,0 +1,92 @@
+[
+  {
+    "name": "format-contract",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\check_format_contract.py",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "provider-isolation",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\provider-after-isolation.py",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\provider-isolation.json"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "provider-remaining-311",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\provider-remaining-311",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+      "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+      "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt",
+      "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest",
+      "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest",
+      "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt",
+      "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history",
+      "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "harness-cold-311",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\harness-cold-311",
+      "tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay",
+      "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "tests.test_evaluation_harness_execution.HarnessReplayTests.test_runtime_output_hash_drift_is_rejected",
+      "tests.test_evaluation_harness_execution.HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "harness-cold-313",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv313\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\harness-cold-313",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority"
+    ],
+    "exit_code": 0
+  }
+]

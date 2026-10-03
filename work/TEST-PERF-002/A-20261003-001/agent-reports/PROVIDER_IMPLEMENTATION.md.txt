@@ -1,0 +1,38 @@
+# Provider 测试侧实施（TEST-PERF-002）
+
+负责人 Chengyue-Lu；基线 `3579e67124836559d7932287591e4d77053a1e94`。只修改两个测试文件，保留改动；无产品源码修改或真实外部 API、真实凭据访问，未 commit/push。
+
+`test_provider_binding_graph.py` 的公共 graph stage 参数均为 `destination="graph-binding", source_closure=True, include_conformance=True`。现于 class setup 真实生成一次 v1.1 模板，每个 case 复制自己的图文件并重建 provider/credential/transport；返回独立 FileRef 字典。显式 legacy staging 和 downgrade-refusal staging 原样保留。实际核验、文件漂移、猴补、source claim、use-ref、cold subprocess 断言均未删改。
+
+`test_profile_conformance_binding.py` 仅删去成功报告紧接 writer 前的一次 verify。writer 仍调用真实 verifier，序列化其 detached 返回值，readback 与原报告相等；三次 credential resolution、三次 synthetic urllib HTTP、一次 tool、五种报告变异均通过原断言。
+
+同一 Python 3.11.16、coverage 7.16.1、`--source=research_workbench`、仓库 branch coverage 配置，顺序运行四个相同 case，均 4/4 通过；setup 已计入 suite wall。
+
+|项目|before 秒|after 秒|
+|---|---:|---:|
+|suite wall|197.071647|182.098508|
+|actual urllib profile|156.059482|147.950902|
+|graph archived drift|18.057286|14.497814|
+|graph cold manifest|9.761732|5.903519|
+|graph version pairing|8.882178|4.903191|
+
+单 pair 的 suite wall 下降 7.598%，profile case 下降 5.196%；仅为本次本地观测，不外推 hosted CI 或重复稳定收益。三个 graph case 的生产次数按代码由 3→1；完整 11-case class 的 11→1 尚未整类执行。profile 成功 verifier 由 2→1，五个负例保持 5→5。
+
+after 顺序中 archived drift 后的 fresh cold manifest 通过，证明前一变异未污染下一模板副本。双实例隔离脚本 `provider-after-isolation.py` 已保存但未执行：root 指示四用例结束后停止额外 CPU 验证，串行测 A4。完整 Provider 组件及 Python 3.13 尚未执行；独立 `__repr__` 兼容故障未修复。
+
+原始记录为 `provider-before-coverage-v1/`、`provider-after-coverage-v1/`；汇总、逐 case 结果、源码及证据哈希见 `provider-after-comparison.json`。Graph after SHA-256：`a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307`；profile after：`fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114`。生产 checker SHA-256 与只读设计时一致：`e4121ee3c4770e29b0b8d16ce872cd1d4abdb8590f45b7852d583b7af1701c44`。`git diff --check` 通过。
+
+命令如下，CASE 顺序见汇总 `cases`；两次仅替换 TAG 为 `before`/`after`：
+
+```powershell
+$env:PYTHONPATH='D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/src;D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003;D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests'
+& 'D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe' -m coverage run --data-file 'D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-TAG-coverage-v1.coverage' --source=research_workbench 'D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/run_probe.py' --root 'D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003' --output 'D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-TAG-coverage-v1' CASE...
+```
+
+测量间 probe 增加未启用的 overlay-format 分支及计时后的元数据，timer/runner/cases 保持一致；未冻结 probe 文件哈希。第一次 `provider-before/.coverage` 输出目录由 coverage 提前创建，导致 probe 的 immutable-directory assert，执行测试数为零；上述两次有效测量改用目录外 data-file，该准备失败不参与提速比较。
+
+## 2026-10-04 覆盖模式核实
+
+只读两份持久化 CoverageData，before/after 均为 `has_arcs()=True`，各有 120 个 measured files；因此本次两次测量均启用 branch coverage。仓库 `pyproject.toml` 的 `[tool.coverage.run]` 明确 `branch=true`；不能根据 CLI 未显式传入 `--branch` 推断 `branch_coverage:false`，应以实际数据为准。
+
+本次核读原 `provider-after-comparison.json` 字段已为 `branch_coverage:true`，SHA-256 仍为交付时的 `01e818ecb35a69310f9a66e41bde6dcedad73611071dc7c190877e6f206b5967`。root 此前把 CLI 未显式传入 `--branch` 误读为字段 false，现已澄清；原字段与实际数据一致，原比较文件保持原样。独立记录见 `coverage-mode-verification.json`，包含实际 coverage 数据哈希和文件计数。未重跑测试，原用时和结果未变化。

@@ -1,0 +1,216 @@
+{
+  "task_id": "TEST-PERF-002-PROVIDER-REVIEW",
+  "accountable_owner": "Chengyue-Lu",
+  "reviewed_at_utc": "2026-10-03T16:03:36.769816+00:00",
+  "worktree": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003",
+  "base_head": "3579e67124836559d7932287591e4d77053a1e94",
+  "verdict": "Static review passes; runtime isolation and full-suite ordering remain to be verified by root.",
+  "sources": [
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/test_provider_binding_graph.py",
+      "sha256": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+      "HEAD_blob_sha256": "508f8529f497d346b470bef23366f217398c464595adf200b28d1328ab14c12c"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/test_profile_conformance_binding.py",
+      "sha256": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+      "HEAD_blob_sha256": "5c4676082fee5738510cb0a7a6eb9c7e179fe1b05a69cd593125be4f4791b7e7"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/test_provider_binding.py",
+      "sha256": "764651413ce67a3e32c8efa1fe2f1d54209dab90fba57884618dbd6dc1f0f90e",
+      "read_scope": "Necessary staging, fixture, provider, and report writer declarations."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/fixtures/provider_binding_graph_v1/components.py",
+      "sha256": "edcabfb7172658e20678bfac479fa0f26a113e9d400956514b8c8972c2769ef8",
+      "read_scope": "Necessary staging, fixture, provider, and report writer declarations."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/src/research_workbench/adapters/models/provider_binding.py",
+      "sha256": "45ae1480039e7bc13c7a5e988a70bd6773ec9e4e6b1e7530be9867ae05ac349e",
+      "read_scope": "Necessary staging, fixture, provider, and report writer declarations."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/src/research_workbench/adapters/models/provider_source_closure.py",
+      "sha256": "e4121ee3c4770e29b0b8d16ce872cd1d4abdb8590f45b7852d583b7af1701c44",
+      "read_scope": "Necessary staging, fixture, provider, and report writer declarations."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/src/research_workbench/adapters/models/profile_conformance_report.py",
+      "sha256": "daea5554338fc3cee5a8fd7e8b3a3f99859f0b0a0b3d4616f41e31a071e0ccf6",
+      "read_scope": "Necessary staging, fixture, provider, and report writer declarations."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/src/research_workbench/adapters/models/configured.py",
+      "sha256": "616d6b0d33c68fb1a8222ad22a9e719fbe748a99cb8148a2f78f65aabbccf043",
+      "read_scope": "Necessary staging, fixture, provider, and report writer declarations."
+    }
+  ],
+  "reviewed_diffs": {
+    "tests/test_provider_binding_graph.py": {
+      "sha256": "13cf751989585980efc57d6726d254fba26279b8fd0717047cf4f6b0d6b11724",
+      "text": "diff --git a/tests/test_provider_binding_graph.py b/tests/test_provider_binding_graph.py\nindex bed7315..854b019 100644\n--- a/tests/test_provider_binding_graph.py\n+++ b/tests/test_provider_binding_graph.py\n@@ -7,6 +7,7 @@ import importlib.util\n import json\n from pathlib import Path\n from types import SimpleNamespace\n+import shutil\n import subprocess\n import sys\n import tempfile\n@@ -43,6 +44,21 @@ def _unexpected(*args, **kwargs):\n \n \n class ProviderBindingGraphTests(unittest.TestCase):\n+    @classmethod\n+    def setUpClass(cls):\n+        from test_provider_binding import configured_fixture\n+        cls.template = tempfile.TemporaryDirectory(prefix=\"rwb-provider-graph-template-\")\n+        cls.addClassCleanup(cls.template.cleanup)\n+        cls.template_root = Path(cls.template.name)\n+        original = configured_fixture(cls.template_root)\n+        module = _components()\n+        provider = ConfiguredProvider(original.profile, original.resolved_config,\n+            module.SyntheticCredential(), module.SyntheticTransport(), cls.template_root)\n+        # Every graph case selects this same v1.1 conformance closure. Produce it\n+        # once; each case still verifies its own files and current runtime state.\n+        cls.reference = stage_provider_binding(provider, root=cls.template_root,\n+            destination=\"graph-binding\", source_closure=True, include_conformance=True)\n+\n     def setUp(self):\n         from test_provider_binding import configured_fixture\n         temporary = tempfile.TemporaryDirectory(prefix=\"rwb-provider-graph-\")\n@@ -52,13 +68,13 @@ class ProviderBindingGraphTests(unittest.TestCase):\n         module = _components()\n         self.provider = ConfiguredProvider(original.profile, original.resolved_config,\n             module.SyntheticCredential(), module.SyntheticTransport(), self.root)\n+        shutil.copytree(self.template_root / \"graph-binding\", self.root / \"graph-binding\")\n \n     def inputs(self):\n         return EvaluationInputs(self.root, ROOT / \"schemas\")\n \n     def stage(self):\n-        return stage_provider_binding(self.provider, root=self.root, destination=\"graph-binding\",\n-                                      source_closure=True, include_conformance=True)\n+        return dict(self.reference)\n \n     def bound(self, reference):\n         manifest = read_provider_binding_manifest(self.inputs(), reference).to_mapping()\n"
+    },
+    "tests/test_profile_conformance_binding.py": {
+      "sha256": "baab9c8ae22841b2b98ea7de23e1ed17a45c68fca6a1e004f6c9756bb369456f",
+      "text": "diff --git a/tests/test_profile_conformance_binding.py b/tests/test_profile_conformance_binding.py\nindex 273f45d..8210031 100644\n--- a/tests/test_profile_conformance_binding.py\n+++ b/tests/test_profile_conformance_binding.py\n@@ -126,7 +126,6 @@ class ProfileConformanceBindingTests(unittest.TestCase):\n         self.assertEqual(report[\"actual_counts\"][\"tool_executions\"], 1)\n         self.assertFalse(report[\"live_qualified\"])\n         self.assertFalse(report[\"remote_strict_claim\"])\n-        self.assertEqual(verify_profile_conformance_report(report, root=self.root, schema_root=ROOT / \"schemas\"), report)\n         output = self.root / \"report.json\"\n         write_profile_conformance_report(report, output, root=self.root, schema_root=ROOT / \"schemas\")\n         self.assertEqual(json.loads(output.read_bytes()), report)\n"
+    }
+  },
+  "static_checks": {
+    "graph_test_methods_unchanged": {
+      "count": 11,
+      "methods": [
+        "test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+        "test_cold_manifest_read_does_not_import_synthetic_component",
+        "test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+        "test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+        "test_rehashed_false_source_claim_is_rejected_independently",
+        "test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+        "test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+        "test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+        "test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+        "test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+        "test_version_pairing_cannot_downgrade_graph_fields"
+      ],
+      "all_test_AST_identical_to_HEAD": true,
+      "assertion_calls_before": 42,
+      "assertion_calls_after": 42
+    },
+    "graph_helpers_unchanged": [
+      "bound",
+      "frozen_envelope",
+      "inputs",
+      "request",
+      "run_baseline",
+      "test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+      "test_cold_manifest_read_does_not_import_synthetic_component",
+      "test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+      "test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+      "test_rehashed_false_source_claim_is_rejected_independently",
+      "test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+      "test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+      "test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+      "test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+      "test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+      "test_version_pairing_cannot_downgrade_graph_fields"
+    ],
+    "old_stage_call_contexts": [
+      {
+        "method": "test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+        "HEAD_line": 75,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+        "HEAD_line": 95,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+        "HEAD_line": 106,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+        "HEAD_line": 118,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+        "HEAD_line": 128,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "test_version_pairing_cannot_downgrade_graph_fields",
+        "HEAD_line": 141,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "test_rehashed_false_source_claim_is_rejected_independently",
+        "HEAD_line": 159,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "test_cold_manifest_read_does_not_import_synthetic_component",
+        "HEAD_line": 178,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      },
+      {
+        "method": "frozen_envelope",
+        "HEAD_line": 196,
+        "positional_args": 0,
+        "keyword_args": 0,
+        "enclosing_mutation_control_contexts": []
+      }
+    ],
+    "profile_test_method_count": 7,
+    "profile_only_AST_change": [
+      {
+        "HEAD_line": 129,
+        "expression": "self.assertEqual(verify_profile_conformance_report(report, root=self.root, schema_root=ROOT / 'schemas'), report)"
+      }
+    ],
+    "profile_assertion_calls_before": 34,
+    "profile_assertion_calls_after": 33
+  },
+  "findings": [],
+  "observations": [
+    {
+      "id": "stage-contexts",
+      "status": "verified_static",
+      "statement": "All old self.stage calls were parameterless and outside mutation/patch control contexts. Direct tests stage before mutation; the three baseline tests stage through unchanged run_baseline/frozen_envelope before archive, fact, or runtime monkeypatch mutations. The selected graph is always the same v1.1 source_closure/include_conformance closure. The legacy manifest and downgrade staging calls remain independent and unchanged."
+    },
+    {
+      "id": "file-provider-isolation",
+      "status": "verified_static",
+      "statement": "setUp still creates a fresh temp root and runs configured_fixture, then creates new SyntheticCredential and SyntheticTransport objects. copytree uses normal file copies, not links; all test archive mutations address self.root, not the template root. stage returns a copied flat reference dictionary containing only path and sha256 strings. No mutable provider, request list or resolution counter is shared."
+    },
+    {
+      "id": "portable-template-content",
+      "status": "verified_static",
+      "statement": "stage_provider_binding archive refs are portable destination-relative paths. configured_fixture writes the same root-relative binding-input/profile.json pin from registry/config mappings per case. Template and case use the same component classes and source-closing options. Copied graph bytes are consumed through real manifest read, source checks and actual provider/runtime verification."
+    },
+    {
+      "id": "global-runtime-state",
+      "status": "verified_static",
+      "statement": "The _components module cache is pre-existing. In the reviewed graph class, runtime patch.object changes are context-managed and restored; fresh-process replay mutations stay in a subprocess, and on-disk mutations stay inside each case temp root. No reviewed case writes class reference or template files. setUpClass/addClassCleanup scopes the immutable file template to its class."
+    },
+    {
+      "id": "writer-positive-return-equality",
+      "status": "verified_static",
+      "statement": "write_profile_conformance_report first binds detached to the actual verify_profile_conformance_report result, then serializes detached and writes it unchanged. The retained json.loads(output.read_bytes()) == report assertion therefore still asserts successful verifier return equality with the input report. Writer verification and schema/source binding have not been mocked. Independent positive verify equality for the stopped report and both fresh-attempt reports remains, as do five tamper rejection branches."
+    },
+    {
+      "id": "full-suite-order-limit",
+      "status": "unverified_dynamic",
+      "statement": "Moving production staging to setUpClass means staging failure is now class-setup failure rather than repeated per-case staging. Full passing counts and adjacent-class/runtime restoration must be checked dynamically before accepting performance evidence; no failed or skipped run establishes improvement."
+    }
+  ],
+  "suggested_minimal_validation": [
+    "Root paired baseline/candidate provider probes should run all 11 graph cases and all 7 profile cases with unchanged original assertions.",
+    "Run the graph class with ordinary and reverse case order, or an adjacent provider class, to exercise template/patch restoration; keep a drift case before a later positive case.",
+    "Retain the real subprocess cold-manifest and isolated baseline receipt replay cases, and the writer readback equality plus tamper rejections."
+  ],
+  "not_executed": [
+    "No CPU-heavy process, fixture construction, test case, test suite, or network activity."
+  ],
+  "production_change_required": false,
+  "source_edits_or_commits": false
+}
