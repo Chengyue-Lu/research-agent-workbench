@@ -1,0 +1,21 @@
+{
+  "head": "3579e67124836559d7932287591e4d77053a1e94",
+  "python": "3.11.16",
+  "cases": [
+    "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry"
+  ],
+  "profiled": true,
+  "wall_seconds": 111.51348550000694,
+  "successful": true,
+  "test_count": 1,
+  "source_sha256": {
+    "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+    "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+    "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+    "tests/harness_fixtures.py": "32178051bc456c664dd133eea172f4ad09efe703e940b889a564044eb73ac083",
+    "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+    "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+    "tests/test_profile_conformance_binding.py": "5c4676082fee5738510cb0a7a6eb9c7e179fe1b05a69cd593125be4f4791b7e7",
+    "tests/test_provider_binding_graph.py": "508f8529f497d346b470bef23366f217398c464595adf200b28d1328ab14c12c"
+  }
+}

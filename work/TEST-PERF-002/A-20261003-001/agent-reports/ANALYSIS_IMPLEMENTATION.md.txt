@@ -1,0 +1,20 @@
+# TEST-PERF-002 analysis implementation gate
+
+Decision: retain the source unchanged. The proposed class seed adds preparation cost on this machine. Owner: Chengyue-Lu. Authorized source scope was only `tests/test_evaluation_harness_analysis.py`; no source edits, commits, network, cProfile or full-suite runs occurred.
+
+The 23 `HarnessAnalysisTests` unit tests passed with Python 3.11: unittest reported 105.800 seconds; process wall was 106.428237 seconds. Native output and exact environment are in `analysis-before/unittest.log` and `analysis-before/result.json`. Root was independently profiling another case on the same machine, so this wall result includes possible resource competition.
+
+Before attempting a source edit, `analysis-before/setup-probe.py` directly called the existing real `setUp` five times, then measured five independent `copytree` + `deepcopy` candidates. It did not replace any validator or introduce test mocks. Real setup median: 0.106285 seconds. Copying the same 149 files and deep-copying the mutable state median: 0.131355 seconds. Estimated preparation for 23 original cases is approximately 2.44 seconds (2.30% of the measured class wall); one seed plus 23 clones would add approximately 0.683 seconds. This estimate is preparation evidence, not an implemented-suite benchmark or hosted speedup.
+
+The candidate experiment verified every clone's relative path and SHA256 against the seed. It then corrupted the first clone's protocol bytes and changed nested `protocol_ref`, context association and evidence fields. Seed bytes/objects and the second clone remained identical: PASS. Raw output is `analysis-before/setup-probe.log`; structured records are `analysis-before/setup-result.json` and `analysis-after/candidate-isolation-result.json`.
+
+The task's stop condition applies: setup cost is small and the copy candidate costs more. Accordingly no implementation was landed and no unchanged after-suite was repeated. All test bodies, assertions, patches and the real Integration class remain byte-identical. `git diff -- tests/test_evaluation_harness_analysis.py` was empty. Before and after SHA256: `41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374`.
+
+Commands ran from the worktree with `PYTHONPATH=<worktree>/src;<worktree>`:
+
+```powershell
+& 'D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe' -m unittest tests.test_evaluation_harness_analysis.HarnessAnalysisTests -v
+& 'D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe' 'D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/analysis-before/setup-probe.py'
+```
+
+Elapsed assessment/measurement work: approximately 3 minutes (2026-10-03 15:50:30–15:53:26 UTC), within the 10-minute bound. No failures occurred in this subtask. The remaining direction is profiling required independent replay/validation rather than changing this fixture's lifetime.

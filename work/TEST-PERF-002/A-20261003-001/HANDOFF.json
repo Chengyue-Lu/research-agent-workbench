@@ -1,0 +1,15 @@
+{
+  "kind": "compact_handoff",
+  "created_at": "2026-10-03T16:26:00.655432+00:00",
+  "scope": "narrow slow-test preparation and serialization optimization",
+  "source_binding": "checks/source-binding.json",
+  "local_validation": "checks/validation-complete.json",
+  "performance": [
+    "checks/provider-after-comparison.json",
+    "checks/format-pairs-complete.json"
+  ],
+  "capture_gaps": "CAPTURE_GAPS.json",
+  "accepted_for_merge": false,
+  "hosted_candidate_result": "pending separate new PR execution",
+  "next": "Publish Draft; verify its actual component plan/native/governance; human review before any merge."
+}
