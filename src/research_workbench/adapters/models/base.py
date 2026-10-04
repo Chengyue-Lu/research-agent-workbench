@@ -15,6 +15,7 @@ from research_workbench.adapters.models.http import (
     HttpResponse,
     HttpTransport,
     HttpTransportError,
+    PreparedHttpTransport,
     decode_json_object,
     json_body,
     validate_https_endpoint,
@@ -189,6 +190,19 @@ def perform_json_request(
         raise failure
     # Non-secret serialization/admission precedes any credential access.
     body = json_body(payload)
+    try:
+        if isinstance(transport, PreparedHttpTransport):
+            if transport.prepare_request(HttpRequest("POST", url, {}, body, timeout_seconds)) is not None:
+                raise ValueError("request admission did not finish")
+    except Exception:
+        failure = ProviderError(ProviderErrorCategory.INVALID_REQUEST, "provider request admission failed")
+    if failure is not None:
+        try:
+            raise failure from None
+        finally:
+            failure.__cause__ = None
+            failure.__context__ = None
+            failure.__suppress_context__ = True
     try:
         secret = credential.resolve()
     except Exception:

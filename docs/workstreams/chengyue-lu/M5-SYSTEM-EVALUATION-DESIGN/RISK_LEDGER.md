@@ -1,5 +1,23 @@
 # M5 System-Level Evaluation Design Risk Ledger
 
+## 当前 M5-008 准备风险（2026-10-04）
+
+M5-007 与 M6-010 均 DONE；M5-008 仍 BLOCKED。以下控制属于
+[live 准备与设计候选](M5-008_PREPARATION_PACKET.md)，不是已实现/已运行的结论。
+后文的旧阶段风险状态保留其历史时点，不代替本段当前进入事实。
+
+| Risk ID | 风险 | 候选控制与待验证反例 | 当前状态 |
+|---|---|---|---|
+| M5-PREP-PURPOSE-001 | 仅把 synthetic Harness 接到 API 或放宽旧 purpose，污染历史回放并取得隐式执行权 | 新 live-purpose/version 明确分派；保留 v1.0.0 producer/Schema/历史；未知版本、混合用途及 confirmatory 接收 Pilot 均拒绝 | 显式v2输入/preflight候选已实现；真实Driver与接受仍未闭合 |
+| M5-PREP-BINDING-001 | M6-010 DONE 被泛化成新 Driver/Host/model，或不同facade被重标为同manifest | source66原报告保留；默认同binding严格核对；[显式关系候选](M5-008_PROVIDER_APPLICABILITY_CANDIDATE.md)保留Conformance/Pilot两个manifest与完整源码差异，原M6 accounting仍核对原账本，当前Pilot actual binding与Protocol重验；独立具名Human决定须绑定关系/差异/限定/当前context，未知或漂移零调用 | M6-010受限完成；关系仅隔离R2候选，实际适用决定与Pilot binding尚未冻结，不是共同live qualification |
+| M5-PREP-ADMISSION-001 | 测试 Projection、同名 Skill 或 candidate direct-load 冒充真实 A4 准入 | exact Human candidate/evaluation Decision 与 immutable Release/provenance/Projection/Supply/Resolver→View 链；use-boundary actual consumption 与 replay 独立相等 | UNSATISFIED；生产 index entries=[] |
+| M5-PREP-REVIEW-001 | 任意正文或 transport metadata 泄漏 treatment，或投影择优/自动修改答案 | 有限 claim/source/relation/verdict 白名单；每 slice 全量 source refs；无自由文本/额外字段，非完整/无效输出 unreviewable；Human 全量 freeze 后 reveal | 用户选独立工程类型；exact cards/格式/anchors未冻结，未作匿名性证明 |
+| M5-PREP-BUDGET-001 | 将部件十组/预算授权当成四臂许可，重开账本、遗漏/双计历史或用提前freeze继承后发生的用量 | Pilot 专项 exact 授权；10m累计关联全部实际历史；[选定M6+Pilot前缀](M5-008_LIVE_BUDGET_PACKET.md)按run delta累计，原prior/UUID/run/path与freeze/start chronology独立重算，慢读漂移拒绝；unknown/held/open禁止checkpoint，原M6 report-specific equality保持，零自动retry/fallback | 只读前缀为隔离候选；Trial producer及完整历史选择仍缺，外部ledger/一致替换不在本地认证内；Pilot授权UNSATISFIED，新实际调用/凭据/生产账本操作0 |
+| M5-PREP-DRIVER-001 | 将已有 Python ports 或 planned View 当作 M11 live execution | 复用通用 View/Host seam；真实 Provider/Tool及Skill pre-use/post-call typed facts；新进程独立 Receipt replay；不可只靠 self-reported PASS | 实现/验证待合法进入；未添加 runner/selector |
+| M5-PREP-GOAL-001 | 把推进目标/窗口委托视作 A4准入、冻结未发生输出或进入M5-004的授权 | 目标终点限定M5-008；具体案例/Skill选择与exact专项决定、Human review/收口分开，索引legacy/deprecated不直接执行，未决继续BLOCKED | 目标ACTIVE；无新live授权；M12独立窗口接手 |
+| M5-PREP-SKILL-001 | 用算术fixture证明语义Skill增量，或在M5 A4直接加载候选以完成自己的准入 | 复用正式Need；独立Maintainer评价覆盖scope/反证/未知与non-trigger；相同baseline/ceiling、Human盲审/准入，Requirement/Method/egress相容性独立闭合 | 纯说明候选与评价方案已准备；没有manifest/Release/Projection/实际Evaluation |
+| M5-CODEC-001 | 宽松JSON/正文metadata把transport或treatment传入审查，或把结构reviewable当真实/科学成功 | 完整有界正文、重复键/未知字段/closed IDs/枚举/cardinality/depth、纯text/完整finish、positive public_value；原response/usage归archive，actual Receipt/Human独立验证 | 隔离pure codec候选22项离线正反用例PASS；未集成live/盲审包、未获新准入 |
+
 The following original rows retain the accepted design-stage controls and downstream dependencies.
 Implementation evidence for M5-006 is recorded after the table; candidate verification does not close M6-008,
 M5-007, Human case/admission or actual-execution obligations.
@@ -210,3 +228,27 @@ that decision without asserting cross-owner approval or reviewer unavailability.
 | Existing synthetic ports reused as live authorization | H3 requires synthetic Protocol; H4 producers/Schemas and finite integer review retain that purpose | Versioned live-purpose and bounded review design within M5-008's R2 scope; no relabeling or silent legacy widening |
 | M5-007 completion treated as the pilot start gate | M6-004 BLOCKED, projection index empty, no pilot-specific authorization supplied | Exact conformance, actual A4 admission and named budget/data/Tool/time authorization before activation/calls |
 | Preparation observations treated as execution evidence | [Entry Attempt](attempts/M5-008-ENTRY-001/README.md) pins the accepted source and labels all results as static/docs checks | Complete live run set, actual facts, independent replay and Human review/freeze/reveal before M5-008 DONE |
+
+
+## Isolated live Protocol inputs candidate (2026-10-04)
+
+| Risk | Implemented control | Required downstream evidence |
+|---|---|---|
+| New live purpose silently changes historical validators | Separate v0.2 Protocol/scope, self-contained frozen fragments, explicit reader; v0.1/default and synthetic downstream rejected/unchanged; version-namespaced fingerprints | Exact new parent/source/catalog and explicit live execution/review versions, current R2 review |
+| Hash-consistent input declarations used as conformance, budget or grant authority | Scope has frozen-inputs-not-authorized status and false boundaries; tests deliberately allow qualified=false opaque applicability/checkpoint inputs | Independently verified original M6 evidence plus current source/config/Windows/Host, actual cumulative ledger, official window and named grant |
+| H1 substitutes different case closure or schedules confirmatory Pilot use | New reader compares exact scope/plan closure refs; execution phase allowlist is pilot only; H1 remains compiled-not-executed | Later scheduler enforces pilot-only full inventory and all actual guard/Receipt facts; primary eligibility remains false |
+| New preparation code treated as Task completion | [Input packet](M5-008_LIVE_PROTOCOL_PACKET.md) labels 24 offline tests separately from live/replay/Human acceptance | Actual A4 admission, Pilot authorization, full frozen run set, independent replay and named completion; M5-008 remains BLOCKED |
+
+
+## Isolated live preflight candidate (2026-10-04)
+
+| Risk | Implemented control | Required downstream evidence |
+|---|---|---|
+| Saved preflight/file flags used as authorization | Independent immutable context, required external verifiers, literal True/typed checkpoint, all authority boundaries false; independent recomputation and [evidence/use-boundary candidate](M5-008_LIVE_VERIFICATION_PACKET.md) | Actual named authority/observer and atomic current Pilot reservation/settlement connected to Driver |
+| Budget fixture/DTO treated as actual available capacity | Temporary synthetic journal replay verifies fixture totals; actual complete frozen prefix/ref/ceilings must be supplied externally; held/unknown denies | Current unique production ledger reservation/settlement, retain all failures and historical1744 usage |
+| Callback mutates inputs or leaks failure diagnostics | Copied primitive argument, rechecked bytes/source/Schema, fixed errors without original exception context | Actual adapter/Driver negative and post-call evidence, no credential or hidden thought capture |
+| Expired/held-out input becomes eligible live output | Expired scope denied; shared overlap/freshness/case/pairwise revalidated; every case primary/pilot eligibility false | Actual trusted clock/official idle, frozen full pilot run set, independent replay/Human scoring/reveal and named acceptance |
+
+| Standalone successful conformance journal silently reused for four-arm slots | Retained reader opens existing independently selected anchored history; full checkpoint/report accounting equality; old success-finish policy unchanged; bounded Pilot journal candidate serializes fresh frozen slots with inherited usage and single-use handles | Actual ledger/Driver boundary and full run-set evidence; no automatic retry or cross-run prefix acceptance |
+| Local budget facts confused with HTTP proof or global quota authentication | Per-file independently selected identity/retained anchor, durable intent before caller-observed entry, unknown/reopened holds remain; settlement preserves known responses even after authority failure | Trusted unique ledger selection, actual input-bound proof and Provider/Tool guards; coherent DB+anchor replacement stays outside authentication |
+| File-declared or stale Human acceptance used at current entry | Named accepted Kernel Decision with exact input/Need/runtime commitments, required external Human verifier, transitive admission evidence pins and post-callback recheck | Actual full Need evaluation/admission and current Pilot/applicability acceptance; synthetic authority is test-only |

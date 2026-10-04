@@ -12,7 +12,13 @@ H4c 的历史 [Attempt 与验证](attempts/M5-007-H4C-001/README.md) 保留；PR
 
 [M5-007 整体验收准备](M5-007_CLOSEOUT_PACKET.md) 已由 PR107 合入 `develop@2618ef4`；
 [整体验收复核](M5-007_ACCEPTANCE_REVIEW.md) 已由 PR121 合入 `develop@30600f2`，对照 Task、源码与 H1–H5 证明。
-两者当时没有改变 Task 状态；后继 PR122 已完成 DONE 收口。[M5-008 接手计划](M5-008_ENTRY_PLAN.md)与 [Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)独立跟踪三个未满足 Gate 和 live-purpose/审查格式缺口，Task 继续 BLOCKED。
+两者当时没有改变 Task 状态；后继 PR122 已完成 DONE 收口。M6-010 已由 PR133 受限收口为 DONE；
+[M5-008 接手计划](M5-008_ENTRY_PLAN.md)、[live 准备与设计候选](M5-008_PREPARATION_PACKET.md)与
+[Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)继续跟踪 A4/Pilot 两个未满足外部 Gate、
+新 Provider binding 适用性和 live-purpose/有限审查缺口，Task 仍 BLOCKED。
+
+[有界Pilot账本候选](M5-008_LIVE_BUDGET_PACKET.md)保存单用预占、durable intent与成功/失败/未知usage，
+保持旧conformance终态；actual Driver/权限端口与完整live验收仍待接入。
 
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
@@ -28,7 +34,7 @@ ADR-0020 将 `A4 − A2` 固定为 primary，并明确它包含 transport packag
 transport 的 Tool 条件增量，`A4 − A3` 只有在 pairwise exact-equality closure 证明唯一 delta 为 admitted
 Skill extension 时才可称 Skill conditional increment，否则必须降级为 Skill-bearing package / bundled
 effect 或 unavailable。`A3 − A2` 不得称 pure Mode effect，`A4 − A1` 只作完整栈支持性 contrast。当前
-workstream 已接受 Gate A、Protocol 与 H1–H5 synthetic Harness 切片，当前进行整项收口；正式 Evaluation 留待其独立 Gate。
+workstream 已接受 Gate A、Protocol 与 H1–H5 synthetic Harness 并完成 M5-007 收口；当前准备 M5-008，正式 Evaluation 留待其独立 Gate。
 
 ## 2. 保留的 M5-003 基线
 
@@ -328,13 +334,14 @@ flowchart LR
     M4003 --> M5004
     M4004 --> M5004
     M1106 --> M5004
-    M6004["M6-004 live Provider/session"] --> M5004
-    M6004 --> M5008
+    M6010["M6-010 DONE<br/>exact Flash Provider/session + applicability"] --> M5004
+    M6010 --> M5008
     M5004 --> M5005["M5-005 disposition"]
 ```
 
-当前没有另一个已接受、具名且等价的 live Provider/session Gate，因此 M5-008 与 M5-004 均明确 hard-depend M6-004。
-synthetic Driver 不能成为 system-level formal evidence。
+当前 M5-008/M5-004 按已接受 TASKS 显式依赖 M6-010；原 M6-004 OpenAI 验收独立保留。
+M6-010 的 DONE 只接受[固定 Flash 部件对象](../M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md)，
+消费前须复核相同 source/config/model/profile/Host/Tool 的适用性；synthetic Driver 不能成为 system-level formal evidence。
 
 ### `A4-RUNTIME-ADMISSION-GATE`
 
@@ -418,6 +425,19 @@ H1/H2、[H3 四臂 synthetic execution/replay](M5-007_H3_PACKET.md)、H4a/H4b、
 PR122 已[完成整项收口](M5-007_CLOSEOUT_RECEIPT.md)，Task DONE、Issue #55 completed，十二项条件与直接接受记录齐备。
 [M5-008 进入准备](M5-008_ENTRY_PLAN.md)不解除 live Gate；M5-001/002 保留 Human boundary，M5-008/004/005
 按各自 live/admission/case/Human dependencies 保持 BLOCKED。
+
+2026-10-04用户设定目标到M5-008 run-set验收后停止，选择独立工程案例并希望先考虑一般化Skill。
+[具体决定候选](M5-008_DECISION_CANDIDATE.md)和[一般化Skill源包/Need/评价方案](M5-008_GENERAL_SKILL_CANDIDATE.md)
+是当前准备输入；源包位于非发现目录，实际A4准入与Pilot专项freeze仍待闭合。
+
+[有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)先在隔离分支验证JSON闭集、metadata边界
+和旧H4格式隔离；它不构成实际Receipt资格、Human评分或Task接受。
+[显式v2 live Protocol/scope只读候选](M5-008_LIVE_PROTOCOL_PACKET.md)及[未接受的版本处理决定](M5-008_LIVE_PROTOCOL_DECISION.md)
+继而复用非执行H1，核对输入refs与预算/窗口声明。
+[独立v2 preflight候选](M5-008_LIVE_PREFLIGHT_PACKET.md)已接入共享资格/overlap/A4/pairwise重算，
+新增[证据核验/入口guard候选](M5-008_LIVE_VERIFICATION_PACKET.md)，重读具名Decision、
+Skill Evaluation、selected journal及M6 report/current graph；实际Human/运行环境、多slot Pilot
+reservation/settlement、Driver与全run-set验收仍待闭合。
 
 ## 9. 原始设计阶段的历史本地验证
 

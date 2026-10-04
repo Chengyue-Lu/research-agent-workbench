@@ -25,20 +25,17 @@ from research_workbench.evaluation.system_protocol import validate_protocol
 
 KIND = "baseline_execution_envelope"
 COMPILER_PATH = "src/research_workbench/execution/baseline_envelope.py"
-BOUNDARIES = dict.fromkeys(
-    (
-        "execution_authority",
-        "supply_selection",
-        "permission_grant",
-        "method_decision",
-        "task_completion",
-        "claim_acceptance",
-        "human_decision",
-        "promotion",
-        "topic5_recovery",
-    ),
-    False,
-)
+BOUNDARIES = {
+    "execution_authority": False,
+    "supply_selection": False,
+    "permission_grant": False,
+    "method_decision": False,
+    "task_completion": False,
+    "claim_acceptance": False,
+    "human_decision": False,
+    "promotion": False,
+    "topic5_recovery": False,
+}
 
 
 def compiler_reference() -> dict[str, str]:

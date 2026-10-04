@@ -89,6 +89,16 @@ class HttpTransport(Protocol):
         """Send one bounded request. HTTP error statuses are returned, not raised."""
 
 
+@runtime_checkable
+class PreparedHttpTransport(Protocol):
+    def prepare_request(self, request: HttpRequest) -> None:
+        """Admit an encoded nonsecret request before credential resolution.
+
+        This optional port sees no authentication headers. It does not send or
+        replace the concrete transport's final once-only entry checks.
+        """
+
+
 def validate_https_endpoint(url: str, *, allow_query: bool = True) -> None:
     """Validate non-secret URL syntax without DNS or credential access.
 

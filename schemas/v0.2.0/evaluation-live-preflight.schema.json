@@ -1,0 +1,462 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.2.0/evaluation-live-preflight.schema.json",
+  "title": "Nonexecuting Live Pilot Preflight v2",
+  "x-rwb-document-kind": "evaluation_live_preflight",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "status",
+    "request",
+    "validator",
+    "qualifications",
+    "overlap",
+    "cases",
+    "boundaries",
+    "purpose",
+    "context",
+    "checkpoint"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "record_kind": {
+      "const": "evaluation_live_preflight"
+    },
+    "version": {
+      "const": "2.0.0"
+    },
+    "status": {
+      "const": "preflight-checked"
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "preflight_id",
+        "checked_at",
+        "a2_qualification_ref",
+        "a3_qualification_ref",
+        "overlap_ref",
+        "case_bindings"
+      ],
+      "properties": {
+        "preflight_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "a2_qualification_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "a3_qualification_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "overlap_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "case_bindings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "case_id",
+              "a4_overlay_ref",
+              "pairwise_ref"
+            ],
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "a4_overlay_ref": {
+                "$ref": "#/$defs/common__defs__fileRef"
+              },
+              "pairwise_ref": {
+                "$ref": "#/$defs/common__defs__fileRef"
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1
+        },
+        "checked_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "additionalProperties": false
+    },
+    "validator": {
+      "type": "object",
+      "required": [
+        "identity",
+        "version",
+        "sources",
+        "schemas_sha256"
+      ],
+      "properties": {
+        "identity": {
+          "const": "evaluation-live-preflight"
+        },
+        "version": {
+          "const": "2.0.0"
+        },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        },
+        "schemas_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "qualifications": {
+      "type": "object",
+      "required": [
+        "plain-agent-tool",
+        "mode-no-skill"
+      ],
+      "properties": {
+        "plain-agent-tool": {
+          "type": "object",
+          "required": [
+            "ref",
+            "bindings_sha256"
+          ],
+          "properties": {
+            "ref": {
+              "$ref": "#/$defs/common__defs__fileRef"
+            },
+            "bindings_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        },
+        "mode-no-skill": {
+          "type": "object",
+          "required": [
+            "ref",
+            "bindings_sha256"
+          ],
+          "properties": {
+            "ref": {
+              "$ref": "#/$defs/common__defs__fileRef"
+            },
+            "bindings_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "overlap": {
+      "type": "object",
+      "required": [
+        "overlap_status",
+        "overlap_refs",
+        "unresolved_reasons",
+        "primary_confirmatory_eligible"
+      ],
+      "properties": {
+        "overlap_status": {
+          "enum": [
+            "held-out",
+            "admission-overlap",
+            "unresolved"
+          ]
+        },
+        "overlap_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "category",
+              "admission_identity",
+              "comparison_identity",
+              "by"
+            ],
+            "properties": {
+              "category": {
+                "enum": [
+                  "case",
+                  "task",
+                  "formal-input",
+                  "private-oracle"
+                ]
+              },
+              "admission_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "comparison_identity": {
+                "type": "string",
+                "minLength": 1
+              },
+              "by": {
+                "enum": [
+                  "identity",
+                  "hash",
+                  "identity-and-hash"
+                ]
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "unresolved_reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "primary_confirmatory_eligible": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "case_id",
+          "comparison",
+          "baseline_payload_sha256",
+          "primary_confirmatory_eligible",
+          "pilot_primary_eligible"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "comparison": {
+            "$ref": "#/$defs/a3_a4_pairwise_comparability__properties__result"
+          },
+          "baseline_payload_sha256": {
+            "type": "object",
+            "required": [
+              "plain-agent",
+              "plain-agent-tool"
+            ],
+            "properties": {
+              "plain-agent": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "plain-agent-tool": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "additionalProperties": false
+          },
+          "primary_confirmatory_eligible": {
+            "const": false
+          },
+          "pilot_primary_eligible": {
+            "const": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "actual_execution": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "task_completion": false
+      }
+    },
+    "purpose": {
+      "const": "live-pilot"
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "protocol_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "scope_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "plan_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "case_closure_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "provider_config_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "provider_applicability_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "windows_context_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "budget_checkpoint_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "authorization_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "case_selection_frozen_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cumulative_token_ceiling": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "protocol_ref",
+        "scope_ref",
+        "plan_ref",
+        "case_closure_ref",
+        "provider_config_ref",
+        "provider_applicability_ref",
+        "windows_context_ref",
+        "budget_checkpoint_ref",
+        "authorization_ref",
+        "source_commit",
+        "case_selection_frozen_at",
+        "run_id",
+        "cumulative_token_ceiling"
+      ],
+      "additionalProperties": false
+    },
+    "checkpoint": {
+      "type": "object",
+      "properties": {
+        "checkpoint_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        },
+        "known_total_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "held_total_tokens": {
+          "const": 0
+        },
+        "cumulative_token_limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "usage_complete": {
+          "const": true
+        }
+      },
+      "required": [
+        "checkpoint_ref",
+        "known_total_tokens",
+        "held_total_tokens",
+        "cumulative_token_limit",
+        "usage_complete"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "common__defs__fileRef": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/common__defs__relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/common__defs__sha256"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "common__defs__relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$)).+$"
+    },
+    "common__defs__sha256": {
+      "type": "string",
+      "pattern": "^(?:sha256:)?[0-9a-fA-F]{64}$"
+    },
+    "a3_a4_pairwise_comparability__properties__result": {
+      "type": "object",
+      "required": [
+        "status",
+        "interpretation",
+        "mismatches",
+        "comparison_digest"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "exact-skill-only",
+            "skill-bearing-package",
+            "not-comparable"
+          ]
+        },
+        "interpretation": {
+          "enum": [
+            "skill-conditional-increment",
+            "skill-bearing-package-effect",
+            "unavailable"
+          ]
+        },
+        "mismatches": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        },
+        "comparison_digest": {
+          "$ref": "#/$defs/common__defs__sha256"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

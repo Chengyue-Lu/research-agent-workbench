@@ -91,6 +91,7 @@
         "test_provider_repository_validation",
         "test_profile_conformance",
         "test_conformance_transport",
+        "test_live_transport",
         "test_profile_conformance_cli",
         "test_profile_conformance_reporting",
         "test_profile_conformance_binding",
@@ -122,7 +123,15 @@
         "test_evaluation_harness_proof",
         "test_skill_evaluation",
         "test_skill_evaluation_helpers",
-        "test_system_evaluation_protocol"
+        "test_system_evaluation_protocol",
+        "test_bounded_evidence",
+        "test_live_evaluation_inputs",
+        "test_live_preflight",
+        "test_live_verification",
+        "test_live_budget",
+        "test_live_transport",
+        "test_live_budget_history",
+        "test_live_applicability"
       ],
       "flags": [
         "smoke"
@@ -351,6 +360,11 @@
     }
   },
   "direct_tests": {
+    "src/research_workbench/adapters/models/port.py": [
+      "test_bounded_evidence",
+      "test_live_budget",
+      "test_live_budget_history"
+    ],
     "tests/fixtures/provider_binding_graph_v1/": [
       "test_provider_binding_graph"
     ],
@@ -470,18 +484,32 @@
       "test_evaluation_harness_review",
       "test_evaluation_overlay",
       "test_evaluation_overlap",
-      "test_system_evaluation_protocol"
+      "test_system_evaluation_protocol",
+      "test_live_evaluation_inputs",
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history",
+      "test_live_applicability"
     ],
     "tests/baseline_fixtures.py": [
       "test_evaluation_harness_proof",
       "test_baseline_envelope",
       "test_baseline_execution",
-      "test_baseline_replay_integrity"
+      "test_baseline_replay_integrity",
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history"
     ],
     "tests/harness_fixtures.py": [
       "test_evaluation_harness_proof",
       "test_evaluation_harness_plan",
-      "test_evaluation_harness_preflight"
+      "test_evaluation_harness_preflight",
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history"
     ],
     "tests/harness_execution_fixtures.py": [
       "test_evaluation_harness_analysis",
@@ -614,7 +642,9 @@
     ],
     "tests/test_profile_conformance_binding.py": [
       "test_profile_conformance_usage_consistency",
-      "test_profile_conformance_extended_binding"
+      "test_profile_conformance_extended_binding",
+      "test_live_verification",
+      "test_live_budget"
     ],
     "tests/test_profile_conformance_reporting.py": [
       "test_profile_conformance_usage_consistency",
@@ -639,6 +669,161 @@
     ],
     "tests/test_conformance_budget_extension.py": [
       "test_profile_conformance_extended_binding"
+    ],
+    "src/research_workbench/validation/schemas.py": [
+      "test_live_evaluation_inputs",
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "schemas/v0.2.0/system-evaluation-protocol.schema.json": [
+      "test_live_evaluation_inputs",
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "schemas/v0.2.0/evaluation-live-scope.schema.json": [
+      "test_live_evaluation_inputs",
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "schemas/v0.2.0/evaluation-live-preflight.schema.json": [
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "src/research_workbench/adapters/models/conformance_journal.py": [
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history"
+    ],
+    "tests/live_preflight_fixtures.py": [
+      "test_live_preflight",
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history"
+    ],
+    "tests/test_skill_evaluation.py": [
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "tests/test_provider_binding_graph.py": [
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "tests/test_configured_provider.py": [
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "tests/fixtures/provider_binding_graph_v1/components.py": [
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "src/research_workbench/evaluation/live_preflight.py": [
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/evaluation/live_verification.py": [
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/adapters/models/conformance_budget_anchor.py": [
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_budget_history"
+    ],
+    "src/research_workbench/adapters/models/profile_conformance_report.py": [
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/adapters/models/provider_binding.py": [
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/adapters/models/provider_source_closure.py": [
+      "test_live_verification",
+      "test_live_budget",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/capability/lifecycle.py": [
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "src/research_workbench/evaluation/skill_evaluation.py": [
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "registry/skill-needs/evidence-conflict-synthesis-1.0.0.yaml": [
+      "test_live_verification",
+      "test_live_budget"
+    ],
+    "src/research_workbench/evaluation/harness_plan.py": [
+      "test_live_budget"
+    ],
+    "src/research_workbench/evaluation/live_budget.py": [
+      "test_live_budget",
+      "test_live_transport",
+      "test_live_budget_history",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/evaluation/live_inputs.py": [
+      "test_live_budget"
+    ],
+    "src/research_workbench/evaluation/pins.py": [
+      "test_live_budget",
+      "test_live_budget_history",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/evaluation/system_protocol.py": [
+      "test_live_budget"
+    ],
+    "tests/test_live_verification.py": [
+      "test_live_budget",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/adapters/models/reserved_transport.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/adapters/models/request_admission.py": [
+      "test_live_transport",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/evaluation/live_transport.py": [
+      "test_live_transport",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/adapters/models/base.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/adapters/models/http.py": [
+      "test_live_transport",
+      "test_live_applicability"
+    ],
+    "src/research_workbench/adapters/models/conformance_transport.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/adapters/models/conformance_ledger.py": [
+      "test_live_budget_history"
+    ],
+    "src/research_workbench/evaluation/live_budget_history.py": [
+      "test_live_budget_history"
+    ],
+    "src/research_workbench/adapters/models/configured.py": [
+      "test_live_applicability"
+    ],
+    "src/research_workbench/evaluation/live_applicability.py": [
+      "test_live_applicability"
+    ],
+    "src/research_workbench/execution/baseline_envelope.py": [
+      "test_live_applicability"
     ]
   },
   "nearest_components": {

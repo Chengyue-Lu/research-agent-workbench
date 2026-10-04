@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.2.0/evaluation-live-scope.schema.json",
+  "title": "Read-only Live Pilot Input Scope",
+  "x-rwb-document-kind": "evaluation_live_scope",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_kind",
+    "version",
+    "purpose",
+    "scope_id",
+    "status",
+    "frozen_at",
+    "source_commit",
+    "source_artifact_refs",
+    "provider_config_ref",
+    "provider_applicability_ref",
+    "windows_context_ref",
+    "budget_checkpoint_ref",
+    "input_closure_ref",
+    "tool_configuration_refs",
+    "execution_phase_allowlist",
+    "output_contract",
+    "budget",
+    "window",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "record_kind": {
+      "const": "evaluation_live_scope"
+    },
+    "version": {
+      "const": "2.0.0"
+    },
+    "purpose": {
+      "const": "live-pilot"
+    },
+    "scope_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "frozen-inputs-not-authorized"
+    },
+    "frozen_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "source_artifact_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/common__defs__fileRef"
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "provider_config_ref": {
+      "$ref": "#/$defs/common__defs__fileRef"
+    },
+    "provider_applicability_ref": {
+      "$ref": "#/$defs/common__defs__fileRef"
+    },
+    "windows_context_ref": {
+      "$ref": "#/$defs/common__defs__fileRef"
+    },
+    "budget_checkpoint_ref": {
+      "$ref": "#/$defs/common__defs__fileRef"
+    },
+    "input_closure_ref": {
+      "$ref": "#/$defs/common__defs__fileRef"
+    },
+    "tool_configuration_refs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/common__defs__fileRef"
+      },
+      "maxItems": 16,
+      "uniqueItems": true
+    },
+    "execution_phase_allowlist": {
+      "const": [
+        "pilot"
+      ]
+    },
+    "output_contract": {
+      "type": "object",
+      "required": [
+        "format",
+        "max_body_bytes",
+        "max_json_depth",
+        "cases"
+      ],
+      "properties": {
+        "format": {
+          "const": "bounded-evidence-relations-v1"
+        },
+        "max_body_bytes": {
+          "const": 16384
+        },
+        "max_json_depth": {
+          "const": 5
+        },
+        "cases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "case_id",
+              "claim_ids",
+              "source_ids"
+            ],
+            "properties": {
+              "case_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "claim_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^C0[1-4]$"
+                },
+                "minItems": 1,
+                "maxItems": 4,
+                "uniqueItems": true
+              },
+              "source_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^S0[1-8]$"
+                },
+                "minItems": 1,
+                "maxItems": 8,
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        }
+      },
+      "additionalProperties": false
+    },
+    "budget": {
+      "type": "object",
+      "required": [
+        "cumulative_token_limit",
+        "max_provider_calls",
+        "max_attempts",
+        "max_calls_per_attempt",
+        "max_request_input_tokens",
+        "max_request_output_tokens",
+        "max_attempt_seconds",
+        "max_run_seconds",
+        "prior_tokens",
+        "automatic_retry",
+        "fallback"
+      ],
+      "properties": {
+        "cumulative_token_limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_provider_calls": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_calls_per_attempt": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_request_input_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_request_output_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_attempt_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_run_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "prior_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "automatic_retry": {
+          "const": false
+        },
+        "fallback": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "window": {
+      "type": "object",
+      "required": [
+        "time_zone",
+        "not_before",
+        "not_after",
+        "official_window_ref"
+      ],
+      "properties": {
+        "time_zone": {
+          "const": "Asia/Shanghai"
+        },
+        "not_before": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "not_after": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "official_window_ref": {
+          "$ref": "#/$defs/common__defs__fileRef"
+        }
+      },
+      "additionalProperties": false
+    },
+    "boundaries": {
+      "const": {
+        "runtime_input": false,
+        "execution_authority": false,
+        "supply_selection": false,
+        "human_decision": false,
+        "task_completion": false,
+        "analysis_eligibility": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "common__defs__fileRef": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/common__defs__relativePath"
+        },
+        "sha256": {
+          "$ref": "#/$defs/common__defs__sha256"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "common__defs__relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:[\\\\/])(?![\\\\/])(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$)).+$"
+    },
+    "common__defs__sha256": {
+      "type": "string",
+      "pattern": "^(?:sha256:)?[0-9a-fA-F]{64}$"
+    }
+  }
+}
