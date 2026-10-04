@@ -1,0 +1,9 @@
+# FOLLOWUP-025：PR131 required CI 修复
+
+输入：用户2026-10-03最新协作指令；PR131 fixed head dbe1836b8931704e9eeb4d520cae9973f510b478/base3579e67124836559d7932287591e4d77053a1e94；let778750-cpu 的同head REQUEST_CHANGES；当前component计划、失败/超时日志及直接CI/Provider消费者。
+Root维护此PR的CI闭合，required Skills=[]。用户已澄清协作窗口为RWB开发(2)，本窗口为RWB开发(3)。开发2另负责全量CI单test耗时与独立PR，独占test_provider_binding_graph.py、test_profile_conformance_binding.py及system_evaluation_fixtures.py、harness_fixtures.py；Root保留这些路径，本轮先处理新extended-binding测试与PR131检查。Provider owner黄毅、路诚钺协调修复保持。
+允许读取：仓库AGENTS/README/进度/开发指导、此review及其引用的CI artifact/日志；component/governance workflow与直接scripts/tests；PR131 conformance扩限、deadline、binding及其直接fixture/源码图消费者；开发2明确交付的紧凑handoff和commit。不得读取其无关工作目录或原始材料。
+候选写范围：PR131直接Provider conformance测试及仅与该PR闭合有关的CI脚本/fixture、当前workstream Task/CHECKS/HANDOFF/Risk导航、本地忽略档案/PR131 body和共享PROJECT_MEMORY对应摘要；与开发2可能重叠的路径在约定前只读。全量workflow与单test独立修复仍由开发2负责，不静默提高45分钟上限、删除适用测试、缩窄fail-closed选择或重签真实测试。
+交付：定位原41模块required CI耗时，保留原timeout/failure；有界针对性离线实验、语义等价反例/正例与实际耗时；等待开发2交付后明确组合顺序，再使最终exact head的component结果与governance各自闭合。Checks身份不能混用历史head或仅由计划成功替代执行。
+预算/停止：离线合成输入；任何具体实验声明单项/总时长并归档，失败后诊断再继续，不自动重跑同一重型套件。真实Provider/Key/native launcher/累计预算操作0。冲突、远端候选变更、协作写范围不明、语义降低或新失败先停该步骤；不得代填reviewer批准、Task具名接受/merge/release。
+M6-010正式BLOCKED与live_qualified=false保持，source66历史真实部件结果保持原源码范围；本次目标是PR131 required CI资格。所有可见协作传递及相关运行结果按此archive留存，隐藏推理/密钥不捕获。

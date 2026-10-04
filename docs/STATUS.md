@@ -40,9 +40,14 @@ release；当前 release branch 不回并 develop，原 tag/附件保持不变�
 版本化源码绑定、显式两轮 Session 政策和脱敏报告均有离线验证；条款与接受来源见
 [整项收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-009_COMPLETION.md)。
 默认禁用模板和官方矩阵中的未核实条件不产生厂商 live 资格。M6-010 独立验收 DeepSeek Flash；
-2026-10-03 的真实部件运行已验证一次 Tool 执行及结果往返文本；Schema 步骤在发送前因
-deadline 停止，累计四个响应、1,205 tokens。三组有界 Attempt 已耗尽，保持 BLOCKED；
-完整 conformance、运行接受与后续计划仍待闭合，见[部件进度](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)。
+2026-10-03 的前三组失败和 1205 tokens 保留，原 Tool/text 通过、Schema 发送前停止的记录见
+[部件进度](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)。
+随后按用户总计十次授权，向同一账本追加单次扩限，
+token 上限仍 10,000,000。新安装与 Windows 合成链通过后，第四组真实 Flash 的 Tool、结果文本、
+Schema 三步部件断言全部通过，父进程正常退出、报告 1.2 冷读校验通过。
+累计四组 durable Attempt、七份成功响应，input1540/output204=1744 tokens、held0。
+证据见 [FOLLOWUP-023](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-023/CHECKS.md)。
+本地结果绑定未合入的 PR131 候选；M6-010 正式状态保持 BLOCKED，具名接受和 `live_qualified` 尚未成立。
 原 M6-004 OpenAI 验收仍 BLOCKED；保存本地 Key 和晚间时间安排不证明 Provider 或 Pilot 已可用。
 
 ## 已实现

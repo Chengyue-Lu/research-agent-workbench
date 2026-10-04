@@ -69,7 +69,7 @@ def _provider_stop():
 
 def _limits(output, seconds):
     if (type(output) is not int or not 16 <= output <= 256 or type(seconds) not in {int, float}
-            or not math.isfinite(seconds) or not 0 < seconds <= 120):
+            or not math.isfinite(seconds) or not 0 < seconds <= 360):
         _fail("plan-blocked")
 
 
@@ -92,7 +92,8 @@ def profile_conformance_plan(config, *, root, max_output_tokens=256, max_seconds
     required = {Capability.TEXT, Capability.TOOLS, Capability.STRUCTURED_OUTPUT}
     missing = sorted(str(item) for item in required - config.capabilities)
     return _detached({
-        "schema_version": "0.1.0", "record_kind": "profile_conformance_plan", "plan_version": "1.0.0",
+        "schema_version": "0.1.0", "record_kind": "profile_conformance_plan",
+        "plan_version": "1.1.0" if max_seconds > 120 else "1.0.0",
         "provider": profile.provider, "profile_id": profile.profile_id, "requested_model": resolved["model"],
         "profile_ref": dict(config.profile_ref), "config_enabled": config.enabled,
         "protocol_family": profile.document["protocol"]["family"],
@@ -254,7 +255,7 @@ class _BudgetedProvider:
                         self.stop = "accounting-failed"
             _provider_stop()
         finally:
-            if handle is not None and self.transport.entry_recorded:
+            if handle is not None and self.transport.entry_observed:
                 self.entries += 1
             self.transport.disarm()
 
@@ -267,7 +268,7 @@ def _source_refs():
              "source_sha256": hashlib.sha256(Path(conformance_transport.__file__).read_bytes()).hexdigest()}]
 
 
-def _report(plan, journal, budget, assertions, tool_executions, stop, binding=None):
+def _report(plan, journal, budget, assertions, tool_executions, stop, binding=None, extension=None):
     accounting = None
     try:
         accounting = journal.snapshot()
@@ -296,7 +297,45 @@ def _report(plan, journal, budget, assertions, tool_executions, stop, binding=No
     if binding is not None:
         document.update(binding)
         document["report_version"] = "1.1.0"
+    if extension is not None:
+        if binding is None:
+            _fail("attempt-admission-refused")
+        document.update(report_version="1.2.0", budget_extension=extension)
     return _detached(document)
+
+
+def _report_binding_material(root, transport, body_policy, binding_manifest_ref, input_upper_tokens):
+    from research_workbench.adapters.models.http import UrllibTransport
+    from research_workbench.adapters.models.provider_binding import (
+        CONFORMANCE_ROOTS, GRAPH_POLICY, read_provider_binding_manifest,
+    )
+    from research_workbench.evaluation.pins import EvaluationInputs
+    if body_policy is None or type(transport) is not UrllibTransport:
+        raise ValueError("bound conformance requires its production transport and body policy")
+    policy_pin(body_policy)
+    if (type(input_upper_tokens) is not tuple or len(input_upper_tokens) != 3
+            or any(type(value) is not int or not 0 < value <= 10_000_000 for value in input_upper_tokens)):
+        raise ValueError("bound conformance requires its input bounds")
+    reference = _detached(binding_manifest_ref)
+    inputs = EvaluationInputs(root)
+    manifest = read_provider_binding_manifest(inputs, reference).to_mapping()
+    if (manifest["version"] != "1.1.0" or manifest["binding_policy_version"] != GRAPH_POLICY
+            or not set(CONFORMANCE_ROOTS) <= set(manifest["source_roots"])):
+        raise ValueError("bound conformance requires its selected source graph")
+    implementation_ref = manifest["implementation_closure_ref"]
+    graph = inputs.read(implementation_ref)
+    frozen_sources = [{"module": item["module"],
+        "source_sha256": graph["modules"][item["module"]]["source_ref"]["sha256"]}
+        for item in _source_refs()]
+    selected = {"config_ref": manifest["resolved_config_ref"], "source_refs": frozen_sources,
+        "binding": {"manifest_ref": reference, "implementation_closure_ref": implementation_ref,
+            "attempt_ordinal": None,
+            "body_policy": {"policy_version": body_policy.policy_version,
+                "max_output_tokens": body_policy.max_output_tokens, "max_body_bytes": body_policy.max_body_bytes},
+            "input_upper_tokens": list(input_upper_tokens),
+            "session_policy": {"policy_id": "profile-conformance-specific-none", "policy_version": "1.0.0"},
+            "delegated_transport_class": "research_workbench.adapters.models.http.UrllibTransport"}}
+    return selected, implementation_ref, inputs, reference
 
 
 def run_profile_conformance(config, *, root, journal, transport, credential, guard,
@@ -307,10 +346,33 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
     plan = profile_conformance_plan(config, root=root, max_output_tokens=max_output_tokens, max_seconds=max_seconds)
     assertions = {"tool_call_shape": False, "tool_executed_once": False, "text_exact": False, "schema_exact": False}
     report_binding = None
+    extension = None
     def emit(stop, budget=None, tool_executions=0):
-        return _report(plan, journal, budget, assertions, tool_executions, stop, report_binding)
+        # Freeze verified grant provenance before any execution. A later closed
+        # or unavailable journal must not erase already observed response facts.
+        return _report(plan, journal, budget, assertions, tool_executions, stop, report_binding, extension)
     if type(journal) is not ConformanceUsageJournal:
         _fail("accounting-failed")
+    actual_clock = time.monotonic if clock is None else clock
+    binding_material = None
+    early_started = None
+    try:
+        extension = journal.extension_metadata()
+    except Exception:
+        return emit("accounting-failed")
+    if max_seconds > 120 and extension is None:
+        _fail("attempt-admission-refused")
+    if extension is not None:
+        try:
+            early_started = actual_clock()
+            if type(early_started) not in {int, float} or not math.isfinite(early_started):
+                raise ValueError("invalid clock")
+            if binding_manifest_ref is None:
+                raise ValueError("extended execution requires selected binding")
+            binding_material = _report_binding_material(root, transport, body_policy, binding_manifest_ref, input_upper_tokens)
+            report_binding = binding_material[0]
+        except Exception:
+            _fail("attempt-admission-refused")
     if plan["readiness"] != "ready":
         return emit("plan-blocked")
     if body_policy is not None:
@@ -334,9 +396,8 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
             return emit("journal-blocked")
     except Exception:
         return emit("accounting-failed")
-    actual_clock = time.monotonic if clock is None else clock
     try:
-        started = actual_clock()
+        started = actual_clock() if early_started is None else early_started
     except Exception:
         return emit("deadline-exhausted")
     if type(started) not in {int, float} or not math.isfinite(started):
@@ -346,32 +407,12 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
         actual_guard = guard
         selected_binding = None
         if binding_manifest_ref is not None:
-            from research_workbench.adapters.models.http import UrllibTransport
             from research_workbench.adapters.models.provider_binding import (
-                CONFORMANCE_ROOTS, GRAPH_POLICY, observe_provider_binding, read_provider_binding_manifest,
+                observe_provider_binding,
             )
-            from research_workbench.evaluation.pins import EvaluationInputs
-            if body_policy is None or type(transport) is not UrllibTransport:
-                raise ValueError("bound conformance requires its explicit production transport and body policy")
-            reference = _detached(binding_manifest_ref)
-            inputs = EvaluationInputs(root)
-            manifest = read_provider_binding_manifest(inputs, reference).to_mapping()
-            if (manifest["version"] != "1.1.0" or manifest["binding_policy_version"] != GRAPH_POLICY
-                    or not set(CONFORMANCE_ROOTS) <= set(manifest["source_roots"])):
-                raise ValueError("bound conformance requires its selected source graph")
-            implementation_ref = manifest["implementation_closure_ref"]
-            graph = inputs.read(implementation_ref)
-            frozen_sources = [{"module": item["module"],
-                "source_sha256": graph["modules"][item["module"]]["source_ref"]["sha256"]}
-                for item in _source_refs()]
-            selected_binding = {"config_ref": manifest["resolved_config_ref"], "source_refs": frozen_sources,
-                "binding": {"manifest_ref": reference, "implementation_closure_ref": implementation_ref,
-                    "attempt_ordinal": None,
-                    "body_policy": {"policy_version": body_policy.policy_version,
-                        "max_output_tokens": body_policy.max_output_tokens, "max_body_bytes": body_policy.max_body_bytes},
-                    "input_upper_tokens": list(input_upper_tokens),
-                    "session_policy": {"policy_id": "profile-conformance-specific-none", "policy_version": "1.0.0"},
-                    "delegated_transport_class": "research_workbench.adapters.models.http.UrllibTransport"}}
+            if binding_material is None:
+                binding_material = _report_binding_material(root, transport, body_policy, binding_manifest_ref, input_upper_tokens)
+            selected_binding, implementation_ref, inputs, reference = binding_material
             def checked_guard(stage, ordinal):
                 accepted = guard(stage, ordinal)
                 # A caller guard can run after encoding: check the actual graph
@@ -380,7 +421,8 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
                 inputs.recheck()
                 return accepted
             actual_guard = checked_guard
-        bounded = GuardedConformanceTransport(transport, journal, actual_guard, deadline=started + max_seconds,
+        shared_deadline = started + max_seconds
+        bounded = GuardedConformanceTransport(transport, journal, actual_guard, deadline=shared_deadline,
                                              clock=actual_clock, body_policy=body_policy)
         options = {} if implementation_ref is None else {"implementation_closure_ref": implementation_ref}
         provider = build_profile_provider(config, root=root, transport=bounded, credential=credential, **options)
@@ -401,8 +443,17 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
     tool_schema = {"type": "object", "properties": {"a": {"type": "integer", "enum": [3]},
                     "b": {"type": "integer", "enum": [4]}}, "required": ["a", "b"], "additionalProperties": False}
     definition = ToolDefinition("add_ints", "Add two synthetic integers.", tool_schema, strict=False)
+    def remaining_time():
+        try:
+            # Use the transport's same absolute deadline and monotonic clock
+            # validation; a fresh Session/Tool phase never renews this budget.
+            return bounded._remaining()
+        except Exception:
+            budget.stop = "deadline-exhausted"
+            _provider_stop()
     def add_ints(arguments):
         nonlocal tool_runs
+        remaining_time()
         if dict(arguments) != {"a": 3, "b": 4} or any(type(value) is not int for value in arguments.values()) or tool_runs:
             raise ValueError("conformance Tool contract failed")
         tool_runs += 1
@@ -417,8 +468,9 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
                            tools=(definition,), tool_choice=ToolChoice("specific", "add_ints"), max_output_tokens=max_output_tokens)
     stop = None
     try:
+        session_remaining = remaining_time()
         session = runner.run(provider_name=plan["provider"], request=request,
-            limits=ApiSessionLimits(2, 1, 1, 128, max_output_tokens, max_seconds),
+            limits=ApiSessionLimits(2, 1, 1, 128, max_output_tokens, session_remaining),
             event_sink=event_sink, tool_choice_transition=policy)
         assertions["tool_call_shape"] = bool(budget.calls and budget.calls[0]["assertion_passed"])
         assertions["tool_executed_once"] = tool_runs == 1
@@ -436,6 +488,10 @@ def run_profile_conformance(config, *, root, journal, transport, credential, gua
                                       max_output_tokens=max_output_tokens)
             budget.generate(structured)
             assertions["schema_exact"] = budget.calls[2]["assertion_passed"]
+            # A synchronous response can return after the shared admission
+            # deadline. Its facts were settled first; do not claim a timely
+            # completed Attempt or start more work after that boundary.
+            remaining_time()
             journal.finish_attempt()
             stop = "completed"
     except Exception:

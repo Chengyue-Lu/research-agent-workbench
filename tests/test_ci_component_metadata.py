@@ -55,6 +55,65 @@ class ComponentAPI:
 
 
 class ComponentMetadataTests(unittest.TestCase):
+    def wait_clock(self):
+        state = {'now': 0, 'sleeps': []}
+        def sleep(seconds):
+            state['sleeps'].append(seconds)
+            state['now'] += seconds
+        return state, lambda: state['now'], sleep
+
+    def test_late_plan_is_bound_without_claiming_running_execution_success(self):
+        self.api.run.update(status='in_progress', conclusion=None)
+        state, clock, sleep = self.wait_clock()
+        pages = self.api.pages
+        def delayed(path, key):
+            return [] if state['now'] == 0 else pages(path, key)
+        with patch.object(self.api, 'pages', side_effect=delayed), \
+             patch.object(metadata.time, 'monotonic', side_effect=clock), \
+             patch.object(metadata.time, 'sleep', side_effect=sleep):
+            value = metadata.bind_plan(self.api, self.pr, self.plan, wait_seconds=7)
+        self.assertEqual([5], state['sleeps'])
+        self.assertEqual('in_progress', value['content_status'])
+        self.assertFalse(value['execution_success_asserted'])
+
+    def test_plan_wait_is_bounded_and_completed_missing_or_ambiguous_plan_never_waits(self):
+        self.api.run.update(status='in_progress', conclusion=None)
+        state, clock, sleep = self.wait_clock()
+        with patch.object(self.api, 'pages', return_value=[]), \
+             patch.object(metadata.time, 'monotonic', side_effect=clock), \
+             patch.object(metadata.time, 'sleep', side_effect=sleep), \
+             self.assertRaises(metadata.PlanNotReady):
+            metadata.bind_plan(self.api, self.pr, self.plan, wait_seconds=7)
+        self.assertEqual([5, 2], state['sleeps'])
+        for artifacts, status in (([], 'completed'), ([self.api.artifact, self.api.artifact], 'in_progress'),
+                                  ([dict(self.api.artifact, expired=True)], 'in_progress')):
+            with self.subTest(status=status, artifacts=len(artifacts)), \
+                 patch.object(self.api, 'pages', return_value=artifacts), \
+                 patch.object(metadata.time, 'sleep') as paused, self.assertRaises(ValueError):
+                self.api.run['status'] = status
+                metadata.bind_plan(self.api, self.pr, self.plan, wait_seconds=7)
+            paused.assert_not_called()
+
+    def test_head_or_attempt_changes_during_wait_refuse_instead_of_borrowing_new_plan(self):
+        for mutation in ('head', 'attempt'):
+            self.api = ComponentAPI(self.plan, self.pr)
+            self.api.run.update(status='in_progress', conclusion=None)
+            state, clock, advance = self.wait_clock()
+            def sleep(seconds):
+                advance(seconds)
+                if mutation == 'head':
+                    self.api.pr['head']['sha'] = 'e'*40
+                else:
+                    self.api.run['run_attempt'] = 2
+            with self.subTest(mutation=mutation), patch.object(self.api, 'pages', return_value=[]), \
+                 patch.object(metadata.time, 'monotonic', side_effect=clock), \
+                 patch.object(metadata.time, 'sleep', side_effect=sleep), self.assertRaisesRegex(ValueError, 'changed'):
+                metadata.bind_plan(self.api, self.pr, self.plan, wait_seconds=7)
+            self.assertEqual([5], state['sleeps'])
+        for seconds in (-1, 181, True, float('inf'), float('nan')):
+            with self.subTest(seconds=seconds), self.assertRaisesRegex(ValueError, 'budget'):
+                metadata.bind_plan(self.api, self.pr, self.plan, wait_seconds=seconds)
+
     def setUp(self):
         self.pr = dict(number=5, base=dict(ref='develop', sha='a'*40, repo={'full_name':'Example/repo'}),
                        head=dict(sha='b'*40, repo={'full_name':'Example/repo'}))

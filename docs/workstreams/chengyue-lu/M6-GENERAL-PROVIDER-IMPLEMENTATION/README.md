@@ -81,3 +81,27 @@ profile 引用默认相对安装资源目录；独立配置可显式传入 `--ro
 预算是停止上限，不是消耗目标。
 
 费用、币种或账单不可得时记录 unknown，不作为停止条件；未知 token 用量仍保留预占并停止。
+
+2026-10-03 的真实进度已另存 [PR #130](https://github.com/Chengyue-Lu/research-agent-workbench/pull/130)：
+四份响应成功，Tool/result text 通过，Schema 发送前 deadline 停止；三组累计 1205 tokens，完整验收失败。
+用户随后授权累计十组（含已用三组），token 上限不变。[FOLLOWUP-022](attempts/FOLLOWUP-022/TASK.md)
+实现显式单次 append-only grant、accounting1.1/report1.2 冷读与共享剩余时限。
+默认初始三组和 120 秒合同保留，扩限需要 exact decision/prefix/grant 引用，不能仅改启动参数。
+后继真实预算迁移与新的运行证据见 FOLLOWUP-023；M6-010 正式状态仍 BLOCKED。
+
+[FOLLOWUP-023](attempts/FOLLOWUP-023/TASK.md) 的新安装揭示grant helper包级导入未进入v3图；
+原859安装/packet失败保留，改为明确module dependency并验graph member及guard后漂移，
+新installed66、81模块图与Windows完整合成链均通过。全包哈希不替代源码图闭包。
+同一真实账本只追加grant事件26，原25事件及身份、claim、BASIS和1205用量保持；独立只读审计通过。
+随后第四组真实测试Tool/text/Schema三步断言全部通过，父进程正常退出，report1.2冷读PASS。
+累计input1540/output204=1744tokens、held0，四组durable Attempt与五次native启动分别记录；
+不再选择下一组。当前source66仍属PR131候选，费用unknown与正式具名接受分别保留。
+
+[FOLLOWUP-024](attempts/FOLLOWUP-024/TASK.md) 修复 PR131 私密审查的两项 P2：普通路径的
+账本 metadata 读取失败返回脱敏 accounting-failed 报告，授权原文按 exact bytes/hash 校验；
+prefix/decision 保持 canonical JSON。复现、离线回归及后继接受边界见
+[检查](attempts/FOLLOWUP-024/CHECKS.md)和[交接](attempts/FOLLOWUP-024/HANDOFF.md)。
+
+[FOLLOWUP-025](attempts/FOLLOWUP-025/TASK.md) 处理 PR131 required component CI 超时与
+metadata 计划上传竞态。分片完整库存及汇总合同见[CI 修复](attempts/FOLLOWUP-025/CI_REPAIR.md)，
+组合验证与原失败见[检查](attempts/FOLLOWUP-025/CHECKS.md)。

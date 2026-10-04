@@ -30,7 +30,7 @@ jobs:
         if: github.base_ref == 'develop' && contains(fromJSON('["edited", "labeled", "unlabeled", "ready_for_review"]'), github.event.action)
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python .github/scripts/ci_component_metadata.py --output component-metadata.json
+        run: python .github/scripts/ci_component_metadata.py --wait-seconds 120 --output component-metadata.json
       - name: Recompute legacy release obligations
         if: github.base_ref != 'develop'
         run: python .github/scripts/plan_ci.py --output metadata-plan.json
