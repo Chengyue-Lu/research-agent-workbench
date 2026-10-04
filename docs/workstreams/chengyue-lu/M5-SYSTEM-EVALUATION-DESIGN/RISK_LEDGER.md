@@ -238,3 +238,13 @@ that decision without asserting cross-owner approval or reviewer unavailability.
 | Hash-consistent input declarations used as conformance, budget or grant authority | Scope has frozen-inputs-not-authorized status and false boundaries; tests deliberately allow qualified=false opaque applicability/checkpoint inputs | Independently verified original M6 evidence plus current source/config/Windows/Host, actual cumulative ledger, official window and named grant |
 | H1 substitutes different case closure or schedules confirmatory Pilot use | New reader compares exact scope/plan closure refs; execution phase allowlist is pilot only; H1 remains compiled-not-executed | Later scheduler enforces pilot-only full inventory and all actual guard/Receipt facts; primary eligibility remains false |
 | New preparation code treated as Task completion | [Input packet](M5-008_LIVE_PROTOCOL_PACKET.md) labels 24 offline tests separately from live/replay/Human acceptance | Actual A4 admission, Pilot authorization, full frozen run set, independent replay and named completion; M5-008 remains BLOCKED |
+
+
+## Isolated live preflight candidate (2026-10-04)
+
+| Risk | Implemented control | Required downstream evidence |
+|---|---|---|
+| Saved preflight/file flags used as authorization | Independent immutable context, required external verifiers, literal True/typed checkpoint, all authority boundaries false; independent recomputation | Real named authority/applicability/journal verifier factory and every-use guard |
+| Budget fixture/DTO treated as actual available capacity | Temporary synthetic journal replay verifies fixture totals; actual complete frozen prefix/ref/ceilings must be supplied externally; held/unknown denies | Current unique production ledger reservation/settlement, retain all failures and historical1744 usage |
+| Callback mutates inputs or leaks failure diagnostics | Copied primitive argument, rechecked bytes/source/Schema, fixed errors without original exception context | Actual adapter/Driver negative and post-call evidence, no credential or hidden thought capture |
+| Expired/held-out input becomes eligible live output | Expired scope denied; shared overlap/freshness/case/pairwise revalidated; every case primary/pilot eligibility false | Actual trusted clock/official idle, frozen full pilot run set, independent replay/Human scoring/reveal and named acceptance |

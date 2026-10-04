@@ -124,7 +124,8 @@
         "test_skill_evaluation_helpers",
         "test_system_evaluation_protocol",
         "test_bounded_evidence",
-        "test_live_evaluation_inputs"
+        "test_live_evaluation_inputs",
+        "test_live_preflight"
       ],
       "flags": [
         "smoke"
@@ -476,18 +477,21 @@
       "test_evaluation_overlay",
       "test_evaluation_overlap",
       "test_system_evaluation_protocol",
-      "test_live_evaluation_inputs"
+      "test_live_evaluation_inputs",
+      "test_live_preflight"
     ],
     "tests/baseline_fixtures.py": [
       "test_evaluation_harness_proof",
       "test_baseline_envelope",
       "test_baseline_execution",
-      "test_baseline_replay_integrity"
+      "test_baseline_replay_integrity",
+      "test_live_preflight"
     ],
     "tests/harness_fixtures.py": [
       "test_evaluation_harness_proof",
       "test_evaluation_harness_plan",
-      "test_evaluation_harness_preflight"
+      "test_evaluation_harness_preflight",
+      "test_live_preflight"
     ],
     "tests/harness_execution_fixtures.py": [
       "test_evaluation_harness_analysis",
@@ -647,13 +651,25 @@
       "test_profile_conformance_extended_binding"
     ],
     "src/research_workbench/validation/schemas.py": [
-      "test_live_evaluation_inputs"
+      "test_live_evaluation_inputs",
+      "test_live_preflight"
     ],
     "schemas/v0.2.0/system-evaluation-protocol.schema.json": [
-      "test_live_evaluation_inputs"
+      "test_live_evaluation_inputs",
+      "test_live_preflight"
     ],
     "schemas/v0.2.0/evaluation-live-scope.schema.json": [
-      "test_live_evaluation_inputs"
+      "test_live_evaluation_inputs",
+      "test_live_preflight"
+    ],
+    "schemas/v0.2.0/evaluation-live-preflight.schema.json": [
+      "test_live_preflight"
+    ],
+    "src/research_workbench/adapters/models/conformance_journal.py": [
+      "test_live_preflight"
+    ],
+    "tests/live_preflight_fixtures.py": [
+      "test_live_preflight"
     ]
   },
   "nearest_components": {

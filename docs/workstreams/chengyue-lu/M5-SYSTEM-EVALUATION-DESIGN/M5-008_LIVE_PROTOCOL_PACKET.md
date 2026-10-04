@@ -1,7 +1,8 @@
 # M5-008 live Protocol 输入实现候选
 
 2026-10-04。Evaluation owner：路诚钺；风险R2。基于`develop@c80ec014925f0cbbbaef5486bce8422a5b4f73fb`。
-PR136仍是隔离分支候选；原Task **BLOCKED**。本段实现只读输入与非执行H1计划，不产生live资格。
+PR136仍是隔离分支候选；原Task **BLOCKED**。本输入段实现只读输入与非执行H1；后续[独立v2 preflight候选](M5-008_LIVE_PREFLIGHT_PACKET.md)
+直接复用共享校验并要求外部核验接口，两者均不产生live资格。
 
 ## 实现范围
 
@@ -39,7 +40,7 @@ scope中的input closure沿用已有`evaluation_case_closure`的`confirmatory`�
 
 已有H1 producer复用为`evaluation_harness_plan@1.0.0`、`compiled-not-executed`：
 冻结算法、公共正向白名单、私有bytes隔离与reserved identities不变。新reader额外要求H1的
-case closure和scope **exact path/hash/revision一致**；相同字节的另一ref不能替换。
+case closure和scope按共有FileReference normalization固定 **path/hash一致**；相同字节的另一ref不能替换。
 H1仍描述pilot与confirmatory slots；它本身不调度，后继live入口只能执行scope允许的pilot slots。
 不能因非执行plan存在就批准或启动其中任何slot。
 
@@ -59,7 +60,8 @@ Task/Tool/egress权限、A4完整lineage与具名grant，必须由后继独立�
 
 ## 后继实现与原验收
 
-下一实现节点是新版本独立preflight、实际授权/applicability/admission verifier接入、
+[新版本独立preflight](M5-008_LIVE_PREFLIGHT_PACKET.md)已形成隔离实现，外部核验接口无默认许可。
+下一实现节点是实际授权/applicability/admission/journal verifier接入及每次调用guard、
 M6 baseline与M11 Provider-backed Driver，以及实际call/Tool/Receipt/usage的失败保留和replay。
 之后准备有限blind package、全部Human review冻结、受控reveal、metric/analysis joins。
 这些可在隔离分支准备离线候选；共享R2接受、Task合法进入与真实执行仍遵守

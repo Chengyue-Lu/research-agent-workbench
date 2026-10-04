@@ -64,7 +64,10 @@ source/config 时仍须复核同一 binding 的适用性，A4 admission 和四�
 
 M5隔离分支还形成[显式v2 live Protocol/scope只读候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PROTOCOL_PACKET.md)：
 独立Schema catalog、旧默认入口拒收、exact refs/冻结IDs/预算与窗口声明校验，以及已有非执行H1复用。
-24项新离线用例通过；没有实际Provider-backed Driver、资格/授权核验或live evidence，Task仍BLOCKED。
+原输入切片24项离线用例通过；后续[独立v2 preflight候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PREFLIGHT_PACKET.md)
+复用共享资格/overlap/A4/pairwise与M6公共payload重算，要求冻结context及四项外部核验接口。
+实际authority/applicability/journal verifier factory、每次调用guard与Provider-backed Driver尚未闭合，
+没有新live evidence，Task仍BLOCKED。
 
 ## 已实现
 

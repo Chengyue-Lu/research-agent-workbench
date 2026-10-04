@@ -1,7 +1,8 @@
 """Explicit v2 live-pilot inputs for nonexecuting evaluation preparation.
 
 This reader grants nothing and has no Provider, Tool, Driver or credential port.
-The generic H1 plan is reusable; v1 execution/review records remain synthetic.
+The generic H1 plan and explicit v2 preflight are nonexecuting; v1 downstream
+execution/review records remain synthetic.
 """
 from __future__ import annotations
 
@@ -42,7 +43,7 @@ class LiveEvaluationInputs(EvaluationInputs):
             self.live_schema_hashes[path.name] = hashlib.sha256(raw).hexdigest()
 
     def validate(self, kind, document):
-        if kind in {"system_evaluation_protocol", "evaluation_live_scope"}:
+        if kind in {"system_evaluation_protocol", "evaluation_live_scope", "evaluation_live_preflight"}:
             # Keep the accepted reader's finite-JSON invariant in the new route.
             try:
                 digest(document)
@@ -55,7 +56,7 @@ class LiveEvaluationInputs(EvaluationInputs):
         require(not (kind.startswith("evaluation_harness_")
                      and kind != "evaluation_harness_plan")
                 and kind != "evaluation_measurement",
-                "live input reader supports nonexecuting H1 only; v1 downstream records are synthetic")
+                "live reader reuses nonexecuting H1 only from v1; v1 downstream records are synthetic")
         result = super().validate(kind, document)
         if kind == "evaluation_harness_plan":
             request = document["request"]

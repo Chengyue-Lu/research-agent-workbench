@@ -33,6 +33,8 @@ scope是输入commitment，六个authority flags全false。Schema中的状态、
 ## 接受要求与当前证据
 
 具体实现、正反用例及剩余限制见[实现包](M5-008_LIVE_PROTOCOL_PACKET.md)。
-24项新离线用例已通过；尚没有live execution、qualified applicability、accepted Skill或Human评分。
+原输入切片24项离线用例已通过；后续新增[独立v2 preflight](M5-008_LIVE_PREFLIGHT_PACKET.md)，
+直接复用共享校验并声明可信外部接口，未改默认Core身份或权限。尚没有live execution、
+实际qualified applicability verifier接入、accepted Skill或Human评分。
 完整R2审查与必要CI只接受本候选范围，不代替真实输入、准入、专项授权、独立回放与run-set验收。
 M5-008仍BLOCKED；所有Pilot数据保持primary_confirmatory_eligible=false。
