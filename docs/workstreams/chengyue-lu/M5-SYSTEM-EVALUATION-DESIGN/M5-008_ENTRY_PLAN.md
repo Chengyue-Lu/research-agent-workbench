@@ -46,7 +46,8 @@ Capability Resolver；不新增 arm-specific Host dispatcher、selector、fallba
 另形成[显式v2 Protocol/scope只读实现](M5-008_LIVE_PROTOCOL_PACKET.md)：旧入口拒收新版，
 已有H1仅编译计划，声明与exact refs校验不认证applicability/checkpoint/grant。
 [独立v2 preflight](M5-008_LIVE_PREFLIGHT_PACKET.md)继而复用共享资格、overlap/A4/pairwise校验，
-需可信外部context和四项核验接口；真实reader factory/每次调用guard仍待闭合。
+需可信外部context和四项核验接口；新增[证据核验/入口guard候选](M5-008_LIVE_VERIFICATION_PACKET.md)，
+真实Human/运行环境、多slot Pilot reservation/settlement与Driver接入仍待闭合。
 AGENTS将治理施加于共享接受边界；这个P0.5节点不把外部Gate写成满足，也不激活Task或执行API。
 
 ## 推进节点

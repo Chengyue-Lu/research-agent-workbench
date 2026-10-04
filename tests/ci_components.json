@@ -125,7 +125,8 @@
         "test_system_evaluation_protocol",
         "test_bounded_evidence",
         "test_live_evaluation_inputs",
-        "test_live_preflight"
+        "test_live_preflight",
+        "test_live_verification"
       ],
       "flags": [
         "smoke"
@@ -478,20 +479,23 @@
       "test_evaluation_overlap",
       "test_system_evaluation_protocol",
       "test_live_evaluation_inputs",
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "tests/baseline_fixtures.py": [
       "test_evaluation_harness_proof",
       "test_baseline_envelope",
       "test_baseline_execution",
       "test_baseline_replay_integrity",
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "tests/harness_fixtures.py": [
       "test_evaluation_harness_proof",
       "test_evaluation_harness_plan",
       "test_evaluation_harness_preflight",
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "tests/harness_execution_fixtures.py": [
       "test_evaluation_harness_analysis",
@@ -624,7 +628,8 @@
     ],
     "tests/test_profile_conformance_binding.py": [
       "test_profile_conformance_usage_consistency",
-      "test_profile_conformance_extended_binding"
+      "test_profile_conformance_extended_binding",
+      "test_live_verification"
     ],
     "tests/test_profile_conformance_reporting.py": [
       "test_profile_conformance_usage_consistency",
@@ -652,24 +657,69 @@
     ],
     "src/research_workbench/validation/schemas.py": [
       "test_live_evaluation_inputs",
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "schemas/v0.2.0/system-evaluation-protocol.schema.json": [
       "test_live_evaluation_inputs",
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "schemas/v0.2.0/evaluation-live-scope.schema.json": [
       "test_live_evaluation_inputs",
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "schemas/v0.2.0/evaluation-live-preflight.schema.json": [
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "src/research_workbench/adapters/models/conformance_journal.py": [
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
     ],
     "tests/live_preflight_fixtures.py": [
-      "test_live_preflight"
+      "test_live_preflight",
+      "test_live_verification"
+    ],
+    "tests/test_skill_evaluation.py": [
+      "test_live_verification"
+    ],
+    "tests/test_provider_binding_graph.py": [
+      "test_live_verification"
+    ],
+    "tests/test_configured_provider.py": [
+      "test_live_verification"
+    ],
+    "tests/fixtures/provider_binding_graph_v1/components.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/evaluation/live_preflight.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/evaluation/live_verification.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/adapters/models/conformance_budget_anchor.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/adapters/models/profile_conformance_report.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/adapters/models/provider_binding.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/adapters/models/provider_source_closure.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/capability/lifecycle.py": [
+      "test_live_verification"
+    ],
+    "src/research_workbench/evaluation/skill_evaluation.py": [
+      "test_live_verification"
+    ],
+    "registry/skill-needs/evidence-conflict-synthesis-1.0.0.yaml": [
+      "test_live_verification"
     ]
   },
   "nearest_components": {

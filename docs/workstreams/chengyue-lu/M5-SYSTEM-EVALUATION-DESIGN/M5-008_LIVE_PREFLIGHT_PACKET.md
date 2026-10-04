@@ -40,7 +40,9 @@ Schema digest。它描述本preflight校验器，完整Provider/Host实现图仍
 
 前三项只接受布尔`True`；字符串、整数或文件内的`approved`/`qualified`声明不能代替核验。
 外部接口接收独立副本；接口异常只产生固定诊断，原异常文本及exception context不外泄。
-当前实现提供接入接口，尚未实现真实authority/applicability/journal verifier factory。
+当前另有[证据核验与入口guard候选](M5-008_LIVE_VERIFICATION_PACKET.md)，重读具名Decision、
+共有Skill Evaluation、实际selected journal及M6 bound report/current graph。真实authority/observer/
+多slot Pilot reservation与Driver接入仍未完成。
 测试中的独立fixture authority仅覆盖其合成环境，不是生产默认许可。
 
 预算接口须返回不可变`VerifiedBudgetCheckpoint`，其ref与外部context一致，usage完整、held=0，

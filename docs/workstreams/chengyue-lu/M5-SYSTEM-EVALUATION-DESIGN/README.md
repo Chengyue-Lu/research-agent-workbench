@@ -432,7 +432,9 @@ PR122 已[完成整项收口](M5-007_CLOSEOUT_RECEIPT.md)，Task DONE、Issue #5
 [显式v2 live Protocol/scope只读候选](M5-008_LIVE_PROTOCOL_PACKET.md)及[未接受的版本处理决定](M5-008_LIVE_PROTOCOL_DECISION.md)
 继而复用非执行H1，核对输入refs与预算/窗口声明。
 [独立v2 preflight候选](M5-008_LIVE_PREFLIGHT_PACKET.md)已接入共享资格/overlap/A4/pairwise重算，
-外部authority/applicability/journal真实reader、每次调用guard、Driver与全run-set验收仍待闭合。
+新增[证据核验/入口guard候选](M5-008_LIVE_VERIFICATION_PACKET.md)，重读具名Decision、
+Skill Evaluation、selected journal及M6 report/current graph；实际Human/运行环境、多slot Pilot
+reservation/settlement、Driver与全run-set验收仍待闭合。
 
 ## 9. 原始设计阶段的历史本地验证
 

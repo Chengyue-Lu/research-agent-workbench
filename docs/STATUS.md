@@ -66,7 +66,9 @@ M5隔离分支还形成[显式v2 live Protocol/scope只读候选](workstreams/ch
 独立Schema catalog、旧默认入口拒收、exact refs/冻结IDs/预算与窗口声明校验，以及已有非执行H1复用。
 原输入切片24项离线用例通过；后续[独立v2 preflight候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PREFLIGHT_PACKET.md)
 复用共享资格/overlap/A4/pairwise与M6公共payload重算，要求冻结context及四项外部核验接口。
-实际authority/applicability/journal verifier factory、每次调用guard与Provider-backed Driver尚未闭合，
+[证据核验与入口guard候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_VERIFICATION_PACKET.md)
+重读具名Decision、Skill Evaluation、selected journal及M6 report/current graph；真实authority/observer、
+多slot Pilot reservation/settlement与Provider-backed Driver尚未闭合，
 没有新live evidence，Task仍BLOCKED。
 
 ## 已实现

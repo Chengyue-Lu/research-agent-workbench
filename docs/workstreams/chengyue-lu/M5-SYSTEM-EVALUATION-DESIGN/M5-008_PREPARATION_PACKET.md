@@ -24,7 +24,8 @@
 以及可填入exact pins的进入清单。后续在隔离分支形成[有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)，
 并实现[显式v2 live Protocol/scope只读候选](M5-008_LIVE_PROTOCOL_PACKET.md)、非执行H1复用；
 另形成[独立v2非执行preflight](M5-008_LIVE_PREFLIGHT_PACKET.md)，要求独立冻结context及
-四项外部核验接口；实际verifier factory/每次调用guard尚未实现。仍无live执行器/调用资格。
+四项外部核验接口；新增[证据核验/入口guard候选](M5-008_LIVE_VERIFICATION_PACKET.md)，
+实际Human/运行环境与多slot Pilot reservation/Driver接入仍未完成，仍无live调用资格。
 没有新增实际API调用、凭据读取、生产账本/grant、Skill admission或Task接受；临时测试账本明确为合成fixture。
 M6-010 的部件成功证明一个选定 Provider/session；M11 live Driver、四臂集成和 M5 完成仍需本项自身验证。
 

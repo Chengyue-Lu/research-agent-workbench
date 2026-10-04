@@ -122,11 +122,11 @@ def _verify(callback, argument, label):
 
 def validator_identity(inputs):
     from research_workbench.evaluation import (bounded_evidence, comparability, harness_plan, harness_preflight,
-                                             live_inputs, overlap, overlay, pins, qualification, system_protocol)
+                                             live_inputs, live_verification, overlap, overlay, pins, qualification, system_protocol)
     from research_workbench.execution import baseline_envelope
     from research_workbench.validation import schemas
     paths = [Path(m.__file__) for m in (bounded_evidence, comparability, harness_plan, harness_preflight,
-             live_inputs, overlap, overlay, pins, qualification, system_protocol, baseline_envelope, schemas)]
+             live_inputs, live_verification, overlap, overlay, pins, qualification, system_protocol, baseline_envelope, schemas)]
     paths.append(Path(__file__))
     return {"identity": "evaluation-live-preflight", "version": "2.0.0",
             "sources": dict(sorted(("/".join(p.parts[p.parts.index("research_workbench"):]),
