@@ -8,6 +8,7 @@ import dataclasses
 import hashlib
 import importlib
 import json
+import os
 import reprlib
 import subprocess
 import sys
@@ -98,6 +99,46 @@ class ProviderSourceClosureTests(unittest.TestCase):
         with patch.object(self.provider, "source_alias", lambda value: "stale"):
             with self.assertRaisesRegex(closure.SourceClosureError, "import alias differs"):
                 self.verify()
+
+    def test_successful_verification_does_not_authorize_later_source_or_runtime(self):
+        self.assertTrue(self.verify()["actual_verified"])
+        reference = self.document["modules"]["rwb_source_fixture.helper"]["source_ref"]
+        path = self.root.joinpath(*reference["path"].split("/"))
+        original = path.read_bytes()
+        timestamp = path.stat().st_mtime_ns
+        try:
+            altered = original.replace(b"fixture:", b"altered:", 1)
+            self.assertNotEqual(original, altered)
+            self.assertEqual(len(original), len(altered))
+            path.write_bytes(altered)
+            os.utime(path, ns=(timestamp, timestamp))
+            with self.assertRaisesRegex(closure.SourceClosureError, "FileRef hash differs"):
+                self.verify()
+        finally:
+            path.write_bytes(original)
+        self.assertTrue(self.verify()["actual_verified"])
+        with patch.object(self.provider.helper, "PREFIX", "changed-after-success:"):
+            with self.assertRaisesRegex(closure.SourceClosureError, "global policy differs"):
+                self.verify()
+        with patch.object(self.provider, "source_alias", lambda value: "changed-after-success"):
+            with self.assertRaisesRegex(closure.SourceClosureError, "import alias differs"):
+                self.verify()
+        self.assertTrue(self.verify()["actual_verified"])
+
+    def test_successful_read_does_not_authorize_changed_claims_or_compiler(self):
+        self.assertIn("Provider.__init__", closure.declarations(
+            (FIXTURES / "rwb_source_fixture/provider.py").read_bytes()))
+        reference = self.write_document()
+        self.assertEqual(self.document, closure.read_source_closure(self.reader, reference))
+        changed = copy.deepcopy(self.document)
+        changed["modules"][self.provider.__name__]["claims"]["compiled_callables"]["typed"] = "0" * 64
+        with self.assertRaisesRegex(closure.SourceClosureError, "source-derived claims differ"):
+            closure.read_source_closure(self.reader, self.write_document(changed))
+        changed = copy.deepcopy(self.document)
+        changed["compiler"]["optimization"] += 1
+        with self.assertRaisesRegex(closure.SourceClosureError, "compiler/runtime differs"):
+            closure.read_source_closure(self.reader, self.write_document(changed))
+        self.assertTrue(self.verify()["actual_verified"])
 
     def test_source_native_clock_default_is_independent_of_actual(self):
         function = self.provider.Provider.__init__

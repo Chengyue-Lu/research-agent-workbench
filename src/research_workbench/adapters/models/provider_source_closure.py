@@ -63,7 +63,7 @@ def _path_for(source_root, module):
     raise SourceClosureError("declared source module unavailable: " + module)
 
 
-def _imports(module, raw, *, is_package, namespace):
+def _imports(module, tree, *, is_package, namespace):
     edges = set()
     aliases = {}
     parts = module.split(".")
@@ -77,7 +77,6 @@ def _imports(module, raw, *, is_package, namespace):
             target = ".".join(base[:len(base) - node.level + 1])
             return target + ("." + node.module if node.module else "")
         return node.module or ""
-    tree = ast.parse(raw)
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for item in node.names:
@@ -162,7 +161,7 @@ class ClosedSource:
         self.active.add(key)
         try:
             item = self.archive[module]
-            for node in ast.parse(item["raw"]).body:
+            for node in item["tree"].body:
                 targets = node.targets if isinstance(node, ast.Assign) else ([node.target] if isinstance(node, ast.AnnAssign) else [])
                 if any(isinstance(target, ast.Name) and target.id == name for target in targets):
                     result = self.evaluate(module, node.value, {})
@@ -213,7 +212,7 @@ class ClosedSource:
             if isinstance(base, dict) and set(base) == {"source_class"}:
                 full = base["source_class"]
                 target, cls = full.rsplit(".", 1)
-                class_node = next(item for item in ast.parse(self.archive[target]["raw"]).body if isinstance(item, ast.ClassDef) and item.name == cls)
+                class_node = next(item for item in self.archive[target]["tree"].body if isinstance(item, ast.ClassDef) and item.name == cls)
                 for member in class_node.body:
                     if isinstance(member, ast.Assign) and any(isinstance(name, ast.Name) and name.id == node.attr for name in member.targets):
                         value = self.evaluate(target, member.value, {})
@@ -309,7 +308,7 @@ class ClosedSource:
         raise ValueError("outside closed source literal/reference language")
 
     def check_typing_only(self, module, symbol):
-        tree = ast.parse(self.archive[module]["raw"])
+        tree = self.archive[module]["tree"]
         annotation_ids = set()
         for node in ast.walk(tree):
             for field in ("annotation", "returns"):
@@ -327,7 +326,7 @@ class ClosedSource:
         }
         if full not in allowed: raise ValueError("record class outside named closed registry")
         module, name = full.rsplit(".", 1)
-        node = next(item for item in ast.parse(self.archive[module]["raw"]).body if isinstance(item, ast.ClassDef) and item.name == name)
+        node = next(item for item in self.archive[module]["tree"].body if isinstance(item, ast.ClassDef) and item.name == name)
         if node.bases or node.keywords: raise ValueError("record inheritance unsupported")
         fields = tuple(item.target.id for item in node.body if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name) and item.value is None)
         if fields != allowed[full]: raise ValueError("record field declaration differs")
@@ -431,14 +430,18 @@ def plain(value):
     raise ValueError("runtime value outside closed serialization")
 
 
-def declarations(raw):
+def _declarations(tree):
     result = {}
     def walk(nodes, prefix=""):
         for node in nodes:
             if isinstance(node, ast.ClassDef): walk(node.body, prefix + node.name + ".")
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)): result[prefix + node.name] = node
-    walk(ast.parse(raw).body)
+    walk(tree.body)
     return result
+
+
+def declarations(raw):
+    return _declarations(ast.parse(raw))
 
 
 def _check_dataclass_metadata(cls):
@@ -504,7 +507,7 @@ def _wrapping(item, node):
 
 
 def _class_node(item, qualname):
-    nodes = ast.parse(item["raw"]).body
+    nodes = item["tree"].body
     found = None
     for part in qualname.split("."):
         found = next((node for node in nodes if isinstance(node, ast.ClassDef) and node.name == part), None)
@@ -539,7 +542,7 @@ def _class_policies(name, item, closed):
             result[qual] = {"policies": fields, "bases": [ast.dump(base, include_attributes=False) for base in cls.bases],
                             "decorators": [ast.dump(dec, include_attributes=False) for dec in cls.decorator_list]}
             walk(cls.body, qual + ".")
-    walk(ast.parse(item["raw"]).body)
+    walk(item["tree"].body)
     return result
 
 
@@ -547,12 +550,12 @@ def _claims(name, archive, closed):
     item = archive[name]
     defaults = {}
     wrappers = {}
-    for qual, node in declarations(item["raw"]).items():
+    for qual, node in _declarations(item["tree"]).items():
         defaults[qual] = {"positional": [plain(closed.evaluate(name, value, {})) for value in node.args.defaults],
                           "keyword": {arg.arg: plain(closed.evaluate(name, value, {})) for arg, value in zip(node.args.kwonlyargs, node.args.kw_defaults) if value is not None}}
         wrappers[qual] = _wrapping(item, node)
     globals_ = {}
-    for node in ast.parse(item["raw"]).body:
+    for node in item["tree"].body:
         if not isinstance(node, (ast.Assign, ast.AnnAssign)) or node.value is None: continue
         for target in _targets(node):
             if isinstance(target, ast.Name) and (target.id.lstrip("_").isupper() or target.id in {"__version__", "__all__"}):
@@ -602,9 +605,12 @@ def _document_archive(document, read_bytes):
         raw = _read_ref(read_bytes, value["source_ref"])
         total += len(raw)
         _fail(total <= MAX_TOTAL_BYTES, "source total byte bound")
-        edges, aliases = _imports(name, raw, is_package=value["is_package"], namespace=namespace)
+        # This tree is private to this validation and never mutated or exposed.
+        # FileRef bytes/hash and all runtime comparisons are still checked afresh.
+        tree = ast.parse(raw)
+        edges, aliases = _imports(name, tree, is_package=value["is_package"], namespace=namespace)
         _fail(edges == value["dependencies"], "source import graph claim differs: " + name)
-        archive[name] = {"raw": raw, "aliases": aliases, "dependencies": edges, "is_package": value["is_package"]}
+        archive[name] = {"raw": raw, "tree": tree, "aliases": aliases, "dependencies": edges, "is_package": value["is_package"]}
     reached, pending = set(), list(roots)
     while pending:
         name = pending.pop()
@@ -890,8 +896,9 @@ def produce_source_closure(roots, *, source_root, project_root, archive_prefix):
         total += len(raw)
         _fail(len(raw) <= MAX_SOURCE_BYTES and total <= MAX_TOTAL_BYTES, "source byte bound")
         is_package = path.name == "__init__.py"
-        edges, aliases = _imports(name, raw, is_package=is_package, namespace=namespace)
-        archive[name] = {"raw": raw, "aliases": aliases, "dependencies": edges, "is_package": is_package}
+        tree = ast.parse(raw)
+        edges, aliases = _imports(name, tree, is_package=is_package, namespace=namespace)
+        archive[name] = {"raw": raw, "tree": tree, "aliases": aliases, "dependencies": edges, "is_package": is_package}
         pending.extend(edges)
     closed = ClosedSource(archive)
     document = {"schema_version": "0.1.0", "record_kind": KIND, "version": VERSION, "policy": POLICY,

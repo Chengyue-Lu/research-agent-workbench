@@ -7,7 +7,9 @@ Provider/source-closure 维护及跨 owner 审核：黄毅（`let778750-cpu`）�
 用户在2026-10-04要求停止旧全量，针对最新 `develop` 测试并推进修复。
 旧 `6fa105b` 的全量37171230339已取消；实际接受基线 `c80ec014` 的现有全量
 [37176315620](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37176315620)
-接续启动，避免额外触发同一基线。此运行仍按双 Python、full behavior 和 repository coverage执行；
+接续启动，避免额外触发同一基线。此运行按双 Python、full behavior 和 repository coverage执行，
+现已失败：3.13为生成repr问题，3.11另有两项Provider图baseline超过调用后时间预算。
+3.11测试producer没有生成coverage原生投影，质量门禁未执行；原始覆盖率数字不代表门禁通过。
 本候选的结果与该基线运行分别绑定。
 
 ## 已定位故障
@@ -33,6 +35,28 @@ Provider/source-closure 维护及跨 owner 审核：黄毅（`let778750-cpu`）�
 三个声明文件与 `tests/coverage_policy.yaml` 登记为该短检查的直接消费者，
 日常组件CI因此能在相关源码位置移动时发现漂移，无须等全量完成。
 全仓对实际排除集合的双向对账仍保留；该短检查不替代新文件的全仓排除审计。
+
+## 单次归档内的源码解析复用
+
+针对图baseline时间预算故障，本候选减少同一次归档派生内的重复AST解析：每个模块
+从该遍已读取并核对哈希的源码字节解析一次，私有tree供import、常量、默认值、
+TypeVar、闭合record与class layout检查使用。保持声明扫描顺序，不改变同名声明的选择。
+tree只在当前归档上下文内读取，验证结束后不保留；公共document与receipt不含tree，
+调用方也不能传入“已验证facts”取得通过资格。现有declarations(raw)入口保持。
+
+loaded verification仍执行原来的两遍完整归档检查。每遍重新核FileRef、当前字节/hash、
+闭图及独立claims/compile；当前loaded source、code、defaults、alias、global/class、
+wrapper和captured builtins检查全部保留。没有进程全局缓存、磁盘缓存、跨提交结果复用，
+也没有扩大时间预算、削减反例或改变组件选集。新增回归覆盖成功后同路径/大小/mtime
+的源码变化，以及后续runtime、claims和compiler变化；旧失败和正常控制继续保留。
+
+同本机未插桩原用例单配对约78/80秒降至29/30秒；相同CI path-source/branch coverage
+配置的独立单配对约98/99秒降至45/47秒。两边原用例均通过，原120秒生产预算及全部
+反例保持，没有以方法总时长推算生产预算余量。本地旧版未复现远端预算失败，
+实际新候选完整checkpoint仍待单独验证；局部减幅不外推全仓。
+源码身份、原生配对、准备工具失败和独立安全复核保存在新归档
+[A-20261004-003](../../../../work/AUDIT-FULL-CI-REPAIR-001/A-20261004-003/README.md)，
+结果在PR正文绑定实际源码；A001/A002和原c80/d7回执不重签。
 
 ## 验证与接受边界
 
