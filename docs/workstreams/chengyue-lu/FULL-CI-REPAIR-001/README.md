@@ -36,6 +36,15 @@ Provider/source-closure 维护及跨 owner 审核：黄毅（`let778750-cpu`）�
 
 ## 验证与接受边界
 
+用户后续提供的P1揭示函数自身捕获的builtins仍可与模块globals不同：
+`FunctionType`克隆可保留wrapper的code、globals、closure和`__wrapped__`，
+构造时捕获替换的`id`，再恢复模块builtins。原候选在两Python版本均接受该clone，
+后续repr会执行替换引用。跟进修复同时核外层wrapper和生成inner的
+`__builtins__`为canonical builtin namespace对象，拒绝复制dict、dict子类和自定义mapping，
+不查询这些对象。正常生成与真实递归repr、既有源码/code/closure/metadata控制继续保留。
+原反例、新源码局部检查与独立复核使用新归档[A-20261004-002](../../../../work/AUDIT-FULL-CI-REPAIR-001/A-20261004-002/README.md)；
+原A001及e939 hosted结果保留原身份，不能替代跟进提交的执行证明。
+
 修复保留正常生成repr和明确源码声明的自定义repr；未知注入、伪造包装器、替换内层、
 错误属性槽均需拒绝。独立复核发现的字段truth调用与组件policy路径选集缩小问题，
 以及修复过程暴露的元数据子类getter调用，均保留原始反例与后续修复身份。

@@ -5,6 +5,7 @@
 | 风险 | 控制与证据 | 剩余边界 |
 |---|---|---|
 | 为兼容Python3.13扩大可执行代码信任 | 只识别canonical递归repr包装器、源码dataclass声明与独立标准库生成的内层代码；保留注入/伪造/错误槽拒绝 | 既有Python运行时、依赖实现和生成方法trust boundary仍如原契约声明；不证明依赖实现或真实Provider资格 |
+| FunctionType clone在恢复模块globals后仍捕获替换builtins | 外层wrapper及生成inner的函数自身builtins须为canonical对象；复制dict、子类和custom mapping零callback拒绝，两版本原漏洞和新修复分别保存 | 不把模块globals恢复当函数捕获状态恢复；canonical Python builtin namespace仍属既有运行时信任 |
 | 参考构造先执行不可信字段truth或元数据getter | class-local params/dict/Field及name/repr/kw-only精确类型检查位于读取/生成前；四种对象注入须拒绝且零callback，原P1与中间失败保留 | 仅修复生成repr新增输入面及扫描到这类dataclass元数据的入口，不宣称普遍消除Python反射的既有信任 |
 | 精确排除位置修复掩盖可执行生产逻辑 | 只登记coverage已排除的Protocol纯占位；actual源码与排除配置不变；旧工件原policy FAIL/精确候选PASS分别保存 | 新HEAD full结果仍由其自身运行确定，不用旧工件重放替代 |
 | 再次移动源码导致位置漂移 | 真实源码静态分析回归与三个声明文件/政策的直接消费者映射；现有双向差集检查保留 | 新增未登记排除仍由完整checkpoint确认，不宣称短检查覆盖全仓 |

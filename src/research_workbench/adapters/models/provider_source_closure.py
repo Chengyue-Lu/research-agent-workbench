@@ -686,6 +686,7 @@ def _generated_dataclass_repr(module, cls, member, item, node, namespace):
     parameters = local.get("__dataclass_params__")
     field_metadata = local.get("__dataclass_fields__")
     if not (namespace is not None and member.__globals__ is vars(namespace)
+            and member.__builtins__ is vars(builtins)
             and type(parameters) is dataclasses._DataclassParams
             and type(field_metadata) is dict
             and all(type(field) is dataclasses.Field for field in field_metadata.values())):
@@ -711,8 +712,9 @@ def _generated_dataclass_repr(module, cls, member, item, node, namespace):
         if type(cells.get("fillvalue")) is not str or cells["fillvalue"] != "...":
             return False
     if not (set(cells) == expected_cells
-            and type(cells["repr_running"]) is set and isinstance(inner, FunctionType)
+            and type(cells["repr_running"]) is set and type(inner) is FunctionType
             and inner.__globals__ is vars(module) and inner.__module__ == module.__name__
+            and inner.__builtins__ is vars(builtins)
             and getattr(member, "__wrapped__", None) is inner
             and inner.__defaults__ is None and inner.__kwdefaults__ is None
             and inner.__closure__ is None):

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import builtins
 import dataclasses
 import hashlib
 import importlib
@@ -161,6 +162,71 @@ class ProviderSourceClosureTests(unittest.TestCase):
         self.assertTrue(receipt["actual_verified"])
         self.assertEqual("Record(value=1)", repr(module.Record(value=1)))
         self.assertEqual("custom:1", repr(module.Custom(1)))
+        recursive = module.Record(value=None)
+        object.__setattr__(recursive, "value", recursive)
+        self.assertEqual("Record(value=...)", repr(recursive))
+
+    def test_generated_repr_captured_builtins_must_be_canonical(self):
+        module, document, source = self.repr_fixture()
+        original = module.Record.__repr__
+        calls = []
+
+        def injected_id(value):
+            calls.append("captured id")
+            return builtins.id(value)
+
+        class BuiltinsDict(dict):
+            def __getitem__(self, name):
+                calls.append("dict getter")
+                return super().__getitem__(name)
+
+        class BuiltinsMapping:
+            def __getitem__(self, name):
+                calls.append("mapping getter")
+                return vars(builtins)[name]
+
+        def clone_with_builtins(function, mapping):
+            globals_ = function.__globals__
+            previous = globals_["__builtins__"]
+            try:
+                globals_["__builtins__"] = mapping
+                clone = FunctionType(function.__code__, globals_, function.__name__,
+                                     function.__defaults__, function.__closure__)
+            finally:
+                globals_["__builtins__"] = previous
+            clone.__dict__.update(function.__dict__)
+            clone.__module__ = function.__module__
+            clone.__qualname__ = function.__qualname__
+            self.assertIs(previous, globals_["__builtins__"])
+            return clone
+
+        for label, mapping in (
+            ("replaced captured id", {**vars(builtins), "id": injected_id}),
+            ("dict subclass", BuiltinsDict(vars(builtins))),
+            ("custom mapping", BuiltinsMapping()),
+        ):
+            replacement = clone_with_builtins(original, mapping)
+            self.assertIs(original.__code__, replacement.__code__)
+            self.assertIs(original.__globals__, replacement.__globals__)
+            self.assertIs(original.__closure__, replacement.__closure__)
+            self.assertIs(original.__wrapped__, replacement.__wrapped__)
+            with self.subTest(label=label), patch.object(module.Record, "__repr__", replacement):
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+                self.assertEqual([], calls)
+
+        inner = clone_with_builtins(original.__wrapped__, {**vars(builtins), "id": injected_id})
+        namespace = closure._recursive_repr_namespace(original)
+        replacement = (reprlib.recursive_repr()(inner) if namespace is reprlib
+                       else dataclasses._recursive_repr(inner))
+        with patch.object(module.Record, "__repr__", replacement):
+            with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                closure.verify_loaded_source_closure(
+                    document, read_bytes=self.reader.read_bytes, source_root=source,
+                )
+            self.assertEqual([], calls)
 
     def test_injected_and_forged_repr_wrappers_remain_rejected(self):
         module, document, source = self.repr_fixture()
