@@ -1,0 +1,6 @@
+# Preserve captured evidence bytes and manifest hashes.
+* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+# Captured patch context contains intentional space-only context lines.
+candidate.diff -whitespace
+# The original diagnostic log embeds the same captured patch lines.
+commit-first-failure.log -whitespace

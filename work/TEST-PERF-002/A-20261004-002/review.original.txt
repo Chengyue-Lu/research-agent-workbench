@@ -1,0 +1,47 @@
+# Independent final review: PASS
+
+通过有界独立源码/现有证据复核。结论仅绑定 accepted base `6fa105b720254fae82d2e889385c89292272b2d7` 及候选 `tests/test_skill_execution_closeout.py` SHA-256 `0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38`；未知后续 hash 不在本结论内。未发现需修改候选源码的问题。本轮 current-head 正式 target plan 的 Python3.11 完整33项模块（含cold）及short smoke仍由根侧执行，coverage用于诊断；当前结论不是 hosted/full-suite/merge 证明。
+
+独立检查脚本只解析源码与原始 JSON，不导入产品或运行 unittest。自行核得 33 原方法、69 原 assertion calls 全保留；11 方法只替换首个 fixture 构造语句，其余所有语句/patch/subTest/攻击/拒绝和 22 原方法正文 bytes 全等。replay/rewrite_trace/setUp helpers 也全等；新增仅 setUpClass 与 completed_archive_fixture。直接 fixture/Host/Bundle/View/Skill facts/Trace 源码与 accepted base hash 全等。
+
+实际 seed 由原 SkillCloseoutFixture 真生成并 seal Host、Trace、checker、output。缓存只保存临时 root 和 recursive plain metadata；每例 copytree + deepcopy 后真实重载 Bundle/View，重建 root-bound documents/lineage。副本不含 Driver/Recorder；selected cases 只用原 build/receipt/refresh_validation 接口，所需字段齐全，无已通过 receipt 或 validator 结果缓存。每个真实负例继续改写当前副本文件并调用原生产 checker/builder/replay。
+
+有限交错隔离原证据覆盖 27 文件 hash、嵌套 mutable IDs=0、首副本文件/host/validation 污染不影响 seed/第二副本、真实 Bundle/View 重绑、第二副本当前 API completed replay 和所有临时 root cleanup；实际 fixture/Host/provider 各1调用。现有检查充分，无必要追加对抗测试。
+
+保留的 11 个证明：
+
+| 原方法（候选行） | 保留的具体保护 |
+|---|---|
+| `test_missing_typed_fact_is_rejected`:169 | typed fact decision ref missing → exactly one rejection |
+| `test_missing_actual_input_read_is_rejected`:175 | remove content_sha256 and rehash Trace → hash-pinned read rejection |
+| `test_missing_fact_capture_event_is_rejected`:185 | replace actual capture revision path/reason → rejection |
+| `test_capture_after_provider_invocation_is_rejected`:196 | move fact capture after invocation and resequence → ordering rejection |
+| `test_rehashed_host_and_fact_identity_still_require_actual_input_bytes`:215 | forge matching Host/fact Skill identity and re-sign → real input bytes still reject |
+| `test_validation_subject_closed_set_is_enforced`:268 | drop subject and re-sign validation → exact subject closure rejects |
+| `test_artifact_corruption_is_rejected`:275 | mutate copied output bytes → actual artifact hash rejects |
+| `test_checker_pin_corruption_is_rejected`:281 | mutate copied checker bytes → checker source pin rejects |
+| `test_core_closeout_does_not_silently_accept_skill_contract`:287 | generic builder/replay reject Skill contract; Skill receipt still builds |
+| `test_receipt_recomputed_fields_cannot_be_self_reported`:298 | independent deepcopies forge resolution/actual binding/requested Skill; each real re-signed replay rejects |
+| `test_receipt_versions_and_authority_fields_fail_closed`:312 | unpublished version and unauthorized assignment/human/task fields remain schema-invalid |
+
+完整正向 cold 子进程及实际 Driver=1/provider_invocations=1 断言、binding/Supply/Projection drift、blocked=0、tool、exception、missing consumption、unknown contract 和 regressing clock 方法全部原文保留，继续自行进入真实 Host；没有替换这些路径的时间/事实观测。档案副本不是一次新的执行，复用 seed 的真实 Recorder 时间符合其档案输入角色。
+
+三组原始结果均 before/after 各11 PASS、0 failure/error/skip，真实 fixture/Host/provider 从11→1；Fixture.build 入口仍11次。公共 replay 引发的其他 build/Bundle/View 也保留，不能将这一计数误写为全部 validator 只有11次。每组产品 line/branch 集合全等。suite timer 包含真实 seed 生成、class/各case setup、body、cleanup；改动是减少真实准备工作。Python3.11.16、coverage7.16.1 branch=True/config_file=False、jsonschema4.26.0、PyYAML6.0.3、method顺序、helper/runtime pin hash在组内一致。
+
+| Pair / observer | before s | after s | 仅组内减少 |
+|---|---:|---:|---:|
+| 1 / v1 | 28.244747 | 20.006266 | 29.168% |
+| 2 / v2 | 29.979051 | 20.173474 | 32.708% |
+| 3 / v2 | 29.415991 | 20.172214 | 31.424% |
+
+不合并不同 observer 的三组为“稳定提速”。v1 原 summary 未嵌入 runner hash 或逐 fixture pin 观测；归档 v1 hash 是 `6c7000bf7440ac4c47ef97d8ede5ccdf8b3f803855bf8d8eb7705e677ae6ae28`。v2 两组明确绑定 `a05f4d6d8a509b488bed5253a4c730d06a11d314c8c89cfc92a0cb44913ff76d`。equivalence/evidence 的旧 source_hashes.pair_runner 字段对应 v1，不能解读为 v2身份。v2 记录 actual file hash；它没有额外记录返回 pin.sha 属性，不冒充逐 pin runtime expected-value 对比。
+
+首次 compile_evidence 的“before 全五项 hash 必等于 after seed”断言失败，原 `evidence-first-failure.log` 保留。独立重算确认：manifest/View/Host 相等；before 各自真实生成的 Trace 与依赖其 subject pin 的 validation 不同；全部 after 副本五项实际 hash 均与自己的 seed 全等。源码 Trace `_now` 是真实 UTC；message created_at（trace.py:592）与 event occurred_at（:673）传播至 Index/hash。fixture 生成/责任/actor/Task/Attempt/binding/input claim 源码未改，实际 Host 三个关键工件同值；动态 Trace 不同并非输入攻击或时钟变化。因为旧临时根已清理，不主张独立重读了其完整 raw Trace，也没有改旧时间、pins 或回执来造 byte 等值。修正汇总只读取原结果，不重跑测试。
+
+PR135 未接受 head `a392f39689642480336769775a13de76b540a5ed` 仅对同文件两条历史档案检查/zipfile import 有另一个边界 diff。本候选保持这两条原方法原文，与11优化方法没有语义交叉；文件/附近 import hunk可能重叠，后续集成须分别保留已授权的变化，不能恢复 PR135 删除的方法或把其删断言混入本 PR。
+
+无源码、refs、远端变更；reviewer 测试次数0。原始 receipt、首次失败及独立再核 hash 全保存在 FINAL_REVIEW.json/independent-checks.json；本意见可以用于具名审查，本轮正式组件 CI obligation 尚在。
+
+## 本轮机器检查范围校正
+
+独立读取 accepted `docs/DEVELOPMENT.md` 第6节（:191,196–197）：日常 develop PR 按组件/直接消费者跑 Python3.11，coverage诊断；完整多版本/全仓由明确 checkpoint 触发。因而本轮最低义务为新target正式plan规定的完整33/cold及short smoke，实际失败、错误身份或缺适用检查仍阻断。实现者原报告/evidence 中“Python3.11/3.13 required jobs and coverage thresholds”作为更广的历史建议原样保留，并不追加本轮3.13/full重跑。原始质量定义未改变，local11 branch集合全等不能作为全仓Gate。此前review措辞的快照保存为FINAL_REVIEW.v1.md/JSON；当前结论仍是同一候选hash的有界PASS。

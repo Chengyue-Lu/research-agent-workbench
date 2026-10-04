@@ -6,6 +6,7 @@ import io
 import json
 import os
 import runpy
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -19,7 +20,7 @@ from research_workbench.execution import (
     build_generic_execution_receipt, read_skill_execution_inputs,
     validate_generic_execution_receipt, validate_skill_execution_receipt,
     build_skill_execution_receipt, execute_frozen_view, ExecutionHostValidationError,
-    SKILL_CLOSEOUT_CONTRACT,
+    SKILL_CLOSEOUT_CONTRACT, load_runtime_bundle, load_resolved_execution_view,
 )
 from research_workbench.execution.skill_facts import validate_skill_consumption
 from research_workbench.io import load_document
@@ -30,10 +31,54 @@ from tests.skill_closeout_fixtures import ROOT, SkillCloseoutFixture, write
 
 
 class SkillExecutionCloseoutTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._completed_seed = None
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+
+    def completed_archive_fixture(self):
+        cls = type(self)
+        if cls._completed_seed is None:
+            temp = tempfile.TemporaryDirectory()
+            cls.addClassCleanup(temp.cleanup)
+            seed_root = Path(temp.name)
+            source = SkillCloseoutFixture(seed_root)
+            # Only sealed files and plain state survive; live Host objects do not.
+            state = {
+                "host": plain(source.host),
+                "validation": plain(source.validation),
+                "view_ref": plain(source.view_ref),
+                **{name: {"path": pin.path, "sha256": pin.sha256}
+                   for name, pin in (("host_pin", source.host_pin),
+                                     ("trace_pin", source.trace_pin),
+                                     ("validation_pin", source.validation_pin))},
+            }
+            cls._completed_seed = seed_root, state
+
+        seed_root, seed_state = cls._completed_seed
+        shutil.copytree(seed_root, self.root, dirs_exist_ok=True)
+        state = copy.deepcopy(seed_state)
+        fixture = SkillCloseoutFixture.__new__(SkillCloseoutFixture)
+        fixture.root = self.root
+        fixture.trace_dir = self.root / "closeout/trace"
+        fixture.host = state["host"]
+        fixture.validation = state["validation"]
+        for name in ("host_pin", "trace_pin", "validation_pin"):
+            setattr(fixture, name, CloseoutPin(**state[name]))
+        fixture.bundle = load_runtime_bundle(
+            self.root / "bundle/manifest.yaml", project_root=self.root,
+            schema_root=ROOT / "schemas",
+        )
+        fixture.view = load_resolved_execution_view(
+            state["view_ref"]["path"], expected_sha256=state["view_ref"]["sha256"],
+            bundle=fixture.bundle, schema_root=ROOT / "schemas",
+        )
+        return fixture
 
     def replay(self, fixture):
         pin = fixture.receipt()
@@ -121,13 +166,13 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
             fixture.build()
 
     def test_missing_typed_fact_is_rejected(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         self.rewrite_trace(fixture, lambda index, events: index["decision_refs"].pop())
         with self.assertRaisesRegex(GenericCloseoutValidationError, "exactly one"):
             fixture.build()
 
     def test_missing_actual_input_read_is_rejected(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         def mutate(index, events):
             for event in events:
                 if event["event_type"] == "content-read":
@@ -137,7 +182,7 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
             fixture.build()
 
     def test_missing_fact_capture_event_is_rejected(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         def mutate(index, events):
             for event in events:
                 if event["event_type"] == "file-revision":
@@ -148,7 +193,7 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
             fixture.build()
 
     def test_capture_after_provider_invocation_is_rejected(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         def mutate(index, events):
             position = next(i for i, event in enumerate(events) if event["event_type"] == "file-revision")
             item = events.pop(position)
@@ -167,7 +212,7 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
             fixture.build()
 
     def test_rehashed_host_and_fact_identity_still_require_actual_input_bytes(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         # A failed lifecycle permits observed drift; it does not permit replacing
         # both report dictionaries while retaining unrelated input bytes.
         fixture.host["actual_skill_consumption"]["skill"]["skill_id"] = "invented-skill"
@@ -220,26 +265,26 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
             read_skill_execution_inputs(self.root, fixture.supply_pin, schema_root=ROOT / "schemas")
 
     def test_validation_subject_closed_set_is_enforced(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         fixture.validation["subject_refs"].pop()
         fixture.validation_pin = write(self.root, "closeout/validation.yaml", fixture.validation)
         with self.assertRaisesRegex(GenericCloseoutValidationError, "subjects must equal"):
             fixture.build()
 
     def test_artifact_corruption_is_rejected(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         (self.root / fixture.host["artifacts"][0]["path"]).write_text("tampered", encoding="utf-8")
         with self.assertRaisesRegex(GenericCloseoutValidationError, "artifact hash"):
             fixture.build()
 
     def test_checker_pin_corruption_is_rejected(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         (self.root / "closeout/checker.py").write_text("tampered", encoding="utf-8")
         with self.assertRaisesRegex(GenericCloseoutValidationError, "checker source pin"):
             fixture.build()
 
     def test_core_closeout_does_not_silently_accept_skill_contract(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         with self.assertRaises(GenericCloseoutValidationError):
             build_generic_execution_receipt(fixture.view, fixture.bundle, host_report=fixture.host_pin,
                                             trace_index=fixture.trace_pin, validations=(fixture.validation_pin,),
@@ -250,7 +295,7 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
                                                bundle=fixture.bundle, schema_root=ROOT / "schemas")
 
     def test_receipt_recomputed_fields_cannot_be_self_reported(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         original = fixture.build()
         mutations = [lambda d: d["resolution_ref"].update(ref="wrong@r1"),
                      lambda d: d["actual_binding"]["model"].update(ref="invented"),
@@ -264,7 +309,7 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
                                                        project_root=self.root, schema_root=ROOT / "schemas")
 
     def test_receipt_versions_and_authority_fields_fail_closed(self):
-        fixture = SkillCloseoutFixture(self.root)
+        fixture = self.completed_archive_fixture()
         original = fixture.build()
         for field, value in (("contract_version", "2.0.0"), ("skill_assignment_ref", "fake"),
                              ("human_approval", True), ("task_completion", True)):

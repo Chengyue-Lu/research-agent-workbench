@@ -1,0 +1,307 @@
+{
+  "status": "PASS",
+  "base": "6fa105b720254fae82d2e889385c89292272b2d7",
+  "original_test_method_count": 33,
+  "candidate_test_method_count": 33,
+  "selected_preparation_changes": 11,
+  "original_assertion_call_count": 69,
+  "all_original_methods_preserved": true,
+  "all_assertion_ast_preserved": true,
+  "all_patch_subtest_attack_and_cold_bodies_preserved": true,
+  "all_unselected_original_bodies_equal": true,
+  "source_hashes": {
+    "before": "a429c4814ab75330e0e730c2194a7ef82848c49b264d4018fa60b0c0c47f6f8e",
+    "after": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+    "diff": "a0d908962193f1f517989e63f9777fc8669ad406e317c833144b73c9b11fb620",
+    "pair_runner": "6c7000bf7440ac4c47ef97d8ede5ccdf8b3f803855bf8d8eb7705e677ae6ae28"
+  },
+  "test_inventory": [
+    "test_actual_input_bytes_are_immutable_after_read",
+    "test_actual_supply_scalar_cannot_diverge_from_consumed_supply",
+    "test_archived_candidate_pins_and_replay_are_portable",
+    "test_archived_checkers_reject_missing_outside_and_changed_subjects",
+    "test_artifact_corruption_is_rejected",
+    "test_capture_after_provider_invocation_is_rejected",
+    "test_checker_pin_corruption_is_rejected",
+    "test_clock_regression_is_rejected_in_blocked_and_exception_lifecycles",
+    "test_completed_vertical_proof_replays_in_fresh_process",
+    "test_consumption_schema_identity_component_and_hash_drift_are_rejected",
+    "test_consumption_version_and_projection_supply_relationships_are_checked",
+    "test_core_closeout_does_not_silently_accept_skill_contract",
+    "test_driver_exception_is_not_receipt_eligible",
+    "test_failed_actual_binding_drift_remains_replay_valid",
+    "test_failed_actual_supply_and_projection_are_preserved",
+    "test_generic_document_validation_dispatches_explicit_skill_kinds",
+    "test_host_actual_binding_cannot_replace_independent_trace_fact",
+    "test_host_rejects_unknown_contract_and_unverifiable_consumption",
+    "test_missing_actual_consumption_is_not_receipt_eligible",
+    "test_missing_actual_input_read_is_rejected",
+    "test_missing_fact_capture_event_is_rejected",
+    "test_missing_typed_fact_is_rejected",
+    "test_preflight_blocked_has_no_actual_inputs_or_invocation",
+    "test_receipt_absolute_path_and_bundle_pin_are_checked",
+    "test_receipt_recomputed_fields_cannot_be_self_reported",
+    "test_receipt_rejects_bundle_from_another_project",
+    "test_receipt_versions_and_authority_fields_fail_closed",
+    "test_rehashed_host_and_fact_identity_still_require_actual_input_bytes",
+    "test_same_supply_identity_does_not_hide_projection_drift_as_completed",
+    "test_skill_drift_diagnostic_must_describe_real_drift",
+    "test_skill_input_reader_rejects_missing_outside_parse_and_schema_faults",
+    "test_skill_tool_component_invocation_is_replayed",
+    "test_validation_subject_closed_set_is_enforced"
+  ],
+  "methods": [
+    {
+      "method": "setUp",
+      "assertion_call_count": 0,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "replay",
+      "assertion_call_count": 0,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "rewrite_trace",
+      "assertion_call_count": 0,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_completed_vertical_proof_replays_in_fresh_process",
+      "assertion_call_count": 7,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_failed_actual_binding_drift_remains_replay_valid",
+      "assertion_call_count": 3,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_failed_actual_supply_and_projection_are_preserved",
+      "assertion_call_count": 2,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_preflight_blocked_has_no_actual_inputs_or_invocation",
+      "assertion_call_count": 4,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_skill_tool_component_invocation_is_replayed",
+      "assertion_call_count": 2,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_driver_exception_is_not_receipt_eligible",
+      "assertion_call_count": 2,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_missing_actual_consumption_is_not_receipt_eligible",
+      "assertion_call_count": 2,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_missing_typed_fact_is_rejected",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_missing_actual_input_read_is_rejected",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_missing_fact_capture_event_is_rejected",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_capture_after_provider_invocation_is_rejected",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_host_actual_binding_cannot_replace_independent_trace_fact",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_rehashed_host_and_fact_identity_still_require_actual_input_bytes",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_skill_input_reader_rejects_missing_outside_parse_and_schema_faults",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_consumption_schema_identity_component_and_hash_drift_are_rejected",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_actual_input_bytes_are_immutable_after_read",
+      "assertion_call_count": 3,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_validation_subject_closed_set_is_enforced",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_artifact_corruption_is_rejected",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_checker_pin_corruption_is_rejected",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_core_closeout_does_not_silently_accept_skill_contract",
+      "assertion_call_count": 2,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_receipt_recomputed_fields_cannot_be_self_reported",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_receipt_versions_and_authority_fields_fail_closed",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": true
+    },
+    {
+      "method": "test_generic_document_validation_dispatches_explicit_skill_kinds",
+      "assertion_call_count": 5,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_receipt_absolute_path_and_bundle_pin_are_checked",
+      "assertion_call_count": 3,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_consumption_version_and_projection_supply_relationships_are_checked",
+      "assertion_call_count": 3,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_skill_drift_diagnostic_must_describe_real_drift",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_host_rejects_unknown_contract_and_unverifiable_consumption",
+      "assertion_call_count": 3,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_clock_regression_is_rejected_in_blocked_and_exception_lifecycles",
+      "assertion_call_count": 2,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_receipt_rejects_bundle_from_another_project",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_actual_supply_scalar_cannot_diverge_from_consumed_supply",
+      "assertion_call_count": 1,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_archived_candidate_pins_and_replay_are_portable",
+      "assertion_call_count": 5,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_archived_checkers_reject_missing_outside_and_changed_subjects",
+      "assertion_call_count": 2,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    },
+    {
+      "method": "test_same_supply_identity_does_not_hide_projection_drift_as_completed",
+      "assertion_call_count": 3,
+      "assertion_ast_equal": true,
+      "body_equal_except_preparation": true,
+      "preparation_changed": false
+    }
+  ]
+}

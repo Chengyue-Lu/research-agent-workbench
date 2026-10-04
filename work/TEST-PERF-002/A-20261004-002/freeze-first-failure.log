@@ -1,0 +1,1 @@
+2026-10-04 archive pre-copy validation: freeze_candidate.py line 30 used review['status']; actual independent review field is verdict. KeyError: 'status'. Output directory created but contained zero files. Corrected schema lookup to verdict and source hash. No tests or source changed/repeated.

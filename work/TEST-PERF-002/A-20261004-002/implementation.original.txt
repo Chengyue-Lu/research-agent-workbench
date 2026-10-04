@@ -1,0 +1,68 @@
+# 有界 Skill closeout fixture 优化交付
+
+结论：保留此候选，交独立 review 与新 target CI。本轮只修改 `tests/test_skill_execution_closeout.py`：11 个封存档案消费者惰性生成一次真实 completed Host/Trace，然后独立复制文件、deepcopy 普通状态，并在各自 root 重新加载当前 Bundle/View。33 个原测试方法、69 处 assertion-call AST 均保留。没有提交或推送。
+
+工作树：`D:/lcy/develop/_worktrees/RWB/slow-fixture-seeds-20261004`；分支 `perf/slow-fixture-seeds-20261004`；基线 `6fa105b720254fae82d2e889385c89292272b2d7`。原模块 SHA-256 `a429c4814ab75330e0e730c2194a7ef82848c49b264d4018fa60b0c0c47f6f8e`；冻结候选 SHA-256 `0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38`。精确 diff 见 [candidate.diff](D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/candidate.diff)，SHA-256 `a0d908962193f1f517989e63f9777fc8669ad406e317c833144b73c9b11fb620`。
+
+## 实施和生命周期
+
+`setUpClass` 只清空惰性缓存。第一次档案消费者调用标准 `SkillCloseoutFixture`，保留封存文件及 plain host/validation/view-ref/pin 数据，不保留 live Recorder、Driver 或 clock。每个消费者仍由原 `setUp` 获得独立临时 root；copytree 产生独立文件，普通状态 deepcopy，pin 对象重新构造，Bundle/View 重新加载和校验。class cleanup 清理 seed。没有 test body 内的变异、重签名攻击、断言、patch、子进程或实际调用数断言被修改。
+
+真实 completed happy/cold、failed binding/projection、blocked、tool、capture/exception、Host/clock 等其余 22 个原方法仍逐节点一致，仍直接创建自己的真实 fixture。PR135 拟删除的历史 checker 方法在此分支仍保留，归另一 PR 处理；没有带入其文档或历史 replay diff。PR132 的两处 M5 JSON 表示不在本分支。
+
+## 配对实测
+
+每阶段启动独立 Python 进程，严格保持同一 11-method 顺序、同一源码基线/候选和版本。Python `3.11.16`；coverage `7.16.1`、jsonschema `4.26.0`、PyYAML `6.0.3`；coverage 开启 branch，source=`research_workbench`，config_file=False。只读 `sys.setprofile` 计数真实函数调用，无函数替代。
+
+主计时为完整 unittest suite wall，包含首次真实 seed、每个 case 的 setup/body/teardown、class setup/cleanup；生产导入、coverage 初始化/落盘不在该 suite wall 内。观察进程 span 另存 summary，不冒充外部进程总 wall。第一组使用 v1 observer；第二、三组均使用 v2 observer，before/after 都记录实际文件 hash/ref/root。各 pair 绑定自己的 runner SHA；不合并两个 observer 版本的计时，不计算跨组“稳定提速”。
+
+|Pair|Observer|Before suite wall(s)|After suite wall(s)|组内减少(s)|组内减少|Outcome|
+|---|---|---:|---:|---:|---:|---|
+|1|v1|28.244747|20.006266|8.238481|29.168%|各 11 passed|
+|2|v2|29.979051|20.173474|9.805577|32.708%|各 11 passed|
+|3|v2|29.415991|20.172214|9.243777|31.424%|各 11 passed|
+
+每组真实 fixture-init / execute_frozen_view / provider execute 均 `11→1`，receipt build 保持 `11→11`；Bundle load `25→16`，View load `14→15`，后者包括 seed 与各副本的重新加载。每组 before/after 覆盖到的产品 line/arc 集合完全一致。该检查只说明选集等价，不是质量阈值或整个 component coverage 已通过。
+
+这是该 11-case 族的本地单进程结果。每个执行该族的 fresh shard / class 生命周期都生成自己的真实 seed；正式 component 按四个 fresh 进程分片，不能把本地 `11→1` 宣称 hosted `11→1`，也不推算整个 CI 秒数。
+
+## 隔离、pin 和原始失败
+
+[isolation.json](D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/isolation.json) 记录一个有限隔离集：修改第一副本的 artifact 文件、nested host、nested validation 后，seed 的 27 个文件与 plain state 不变，第二副本严格等于 seed；共享 mutable IDs 为 0，Bundle/View 两个独立对象绑定第二 root，副本没有 live driver/recorder。第二副本调用当前产品 API 正向 replay=`completed`。class/per-case cleanup 后三个 root 均删除。该集未开 coverage，其 factory 时间仅作可行性观察，不与上表混算。
+
+v2 的每阶段记录 11 个不同 case root。每个 after 副本的 Bundle root、View root、manifest path 都指向自身 root；五项实际文件 SHA（manifest/View/Host/Trace-index/validation）逐个严格等于自己真实 seed，ref 路径也相同。副本没有重新生成或改签 seed 证据。
+
+第一次 evidence 汇总失败已原样保存在 [evidence-first-failure.log](D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/evidence-first-failure.log)：额外断言 `same_five_hashes_as_every_real_before_case` 过强，触发 `AssertionError`。这是证据汇总假设失败；六次 unittest 都为 11 passed，隔离集通过，原 summary/hash 未改写。actual before 与 seed 的 manifest/View/Host SHA 相同，Trace-index/validation SHA 不同，原值逐项保留在 `before-2/summary.json` 和 `after-2/summary.json`。只读归因到 fixture 实际调用的 `observability/trace.py`：`_record_message` 的 `created_at`（592）及 `_append_event` 的 `occurred_at`（673）使用 `_now()` 实时时间（69）；不同真实生成产生不同 Trace bytes，`refresh_validation` 把实际 Trace hash 放入 validation subject pin，因此 validation bytes 随之不同。没有改时钟、重新生成旧 Trace、签名旧 Trace，或使用忽略字段后的归一化冒充 byte equality。
+
+before 的初始 pin 来源仍是原 helper `write` 的实际 hash（30）及 `refresh_validation` 的实际 hash（146、147、174），当前加载器也执行各自 Bundle/View 的 pin 校验。v2 保存实际文件 hash/ref/root；未另外保存每个初始 `pin.sha256` 属性的冗余副本，不将静态构造对应关系写成额外运行时 expected-pin 比较。after 与 seed 的逐字节 hash 一致和独立正向 replay 是本轮额外的直接检查。
+
+## 方法和证据
+
+以下 11 个方法仅替换第一句 fixture 来源，全部后续 AST 原样：
+
+- `test_missing_typed_fact_is_rejected`
+- `test_missing_actual_input_read_is_rejected`
+- `test_missing_fact_capture_event_is_rejected`
+- `test_capture_after_provider_invocation_is_rejected`
+- `test_rehashed_host_and_fact_identity_still_require_actual_input_bytes`
+- `test_validation_subject_closed_set_is_enforced`
+- `test_artifact_corruption_is_rejected`
+- `test_checker_pin_corruption_is_rejected`
+- `test_core_closeout_does_not_silently_accept_skill_contract`
+- `test_receipt_recomputed_fields_cannot_be_self_reported`
+- `test_receipt_versions_and_authority_fields_fail_closed`
+
+完整 33-method inventory、逐方法 assertion AST 和原 replay/rewrite_trace/setUp 等价证明见 [equivalence.json](D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/equivalence.json)。六阶段原生 unittest.log、summary.json、coverage.json、`.coverage` 和进程 log 均保留；[evidence.json](D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/evidence.json) 绑定阶段源 hash、条件、真实调用数、原回执 hash、隔离和汇总失败身份；[visible-request.md](D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/visible-request.md) 是可见委派记录，保留 capture-gap。
+
+精确运行命令，cwd 为候选工作树：
+
+```powershell
+$env:PYTHONPATH = (Get-Location).Path + '/src;' + (Get-Location).Path
+& 'D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe' -c 'import build_backend; print(build_backend.generate())'
+& 'D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe' 'D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/run_pair.py' 'D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/before-1'
+& 'D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe' 'D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/run_pair.py' 'D:/lcy/develop/_assessments/rwb-ci-review-ready-20261004/fixture/after-3'
+```
+
+Runtime generate 只执行一次，既有 ignored runtime manifest pin=`193304bc586300078cf09cf17de245ae685454ba313babf10d8de3ad67fefc3c`。原六次执行入口路径均为 `run_pair.py`，pair1 执行时的原文现在保存在 `run_pair_v1.py`；equivalence.json 内 runner hash 是该静态检查时的 v1，分组实际 runner hash 以 evidence.json 各 pair 为准。各 before 阶段使用保存的 accepted 模块，after 使用保存的 candidate 模块，具体 runner 版本见上表；已有输出目录不可重用。`git diff --check` 通过。tracked diff 只有此测试模块和 root 已复制的 `.codex/config.toml`；没有 staged 文件，config 不纳入候选。
+
+剩余验证交 root：独立 reviewer 核最终 diff/alias/cold/negative 等价及汇总失败归因；新 target 正式 CI 执行完整 33-case 模块（包括真实 cold child process、live Driver/clock）及 Python3.11/3.13 和既有质量阈值。本轮停止继续本地测试、计时和源码修改。

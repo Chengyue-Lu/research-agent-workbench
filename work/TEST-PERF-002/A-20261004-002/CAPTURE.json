@@ -1,0 +1,24 @@
+{
+  "kind": "compact_delegated_development_record",
+  "accountable_owner": "Chengyue-Lu",
+  "observed_at_utc": "2026-10-04T03:13:45.186705+00:00",
+  "base": "6fa105b720254fae82d2e889385c89292272b2d7",
+  "candidate_source_sha256": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+  "agent_profiles_and_inputs": "PLAN.original.txt",
+  "skills": [],
+  "claimed_complete_agent_trace_v0_1": false,
+  "warnings": [
+    "capture-gap: full Codex transport/event trace is not available; selected persisted visible requests, original reports, raw test observations and failures are retained."
+  ],
+  "archive_preparation_failure": "First archive pre-copy validation used nonexistent review status field and raised KeyError; empty output reused after correcting to actual verdict field. No evidence/source/tests changed or rerun.",
+  "scope": "one test-only sealed-input family; no production validity cache or source change",
+  "local_metric_boundary": "three within-pair single-process suite walls, v1 separate from v2; every pair includes real seed creation and cleanup",
+  "machine_obligation_correction": "Original agent report proposed Python3.13/full thresholds. Accepted daily component policy requires Python3.11/full selected module/short smoke; explicit multi-version/checkpoint remains separate. No original report rewritten.",
+  "not_yet_claimed": [
+    "formal current-target hosted native execution",
+    "full checkpoint or repository coverage gate",
+    "overall CI speedup",
+    "merge"
+  ],
+  "archive_precommit_failure": "git diff --cached --check reported intentional space-only lines in captured patch context. Scoped candidate.diff -whitespace preserves original patch bytes; source/docs checks remain active. No source/test rerun."
+}
