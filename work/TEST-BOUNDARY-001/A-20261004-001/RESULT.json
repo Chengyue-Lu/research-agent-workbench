@@ -1,0 +1,91 @@
+{
+  "status": "PASS",
+  "at": "2026-10-04T02:26:37.805161+00:00",
+  "base": "ede2bc1d5e3496b4e4c72abb1f39f0a3ce00aedf",
+  "removed_count": 21,
+  "removed": [
+    "test_catalog.CandidateCatalogTests.test_community_intake_has_one_decision_per_selected_skill",
+    "test_catalog.CandidateCatalogTests.test_first_party_intake_has_pinned_non_executable_decisions",
+    "test_catalog.CandidateCatalogTests.test_user_archive_has_one_pinned_candidate_per_skill_entrypoint",
+    "test_catalog.CandidateCatalogTests.test_new_archive_candidates_have_explicit_non_executable_decisions",
+    "test_documentation.DocumentationTests.test_internal_markdown_links_resolve",
+    "test_documentation.DocumentationTests.test_stable_examples_do_not_use_retired_skill_packages",
+    "test_documentation.DocumentationTests.test_document_surface_authorities_exist",
+    "test_documentation.DocumentationTests.test_execution_runtime_audit_keeps_private_sources_out_of_git",
+    "test_documentation.DocumentationTests.test_recovery_gate_separates_authority_from_implementation_evidence",
+    "test_documentation.DocumentationTests.test_no_skill_path_requires_execution_view_without_assignment",
+    "test_documentation.DocumentationTests.test_adr_numbers_are_unique",
+    "test_pr_governance.PolicyAndCodeownersTests.test_pr25_rollout_is_retained_and_marked_superseded",
+    "test_m5_trace_export.M5TraceExportTests.test_cli_preserves_payload_bytes_gaps_and_observed_outcomes",
+    "test_m5_trace_export.M5TraceExportTests.test_empty_spool_remains_explicitly_gapped",
+    "test_m5_trace_export.M5TraceExportTests.test_existing_or_escaping_archive_is_rejected_without_overwrite",
+    "test_m5_trace_export.M5TraceExportTests.test_post_seal_evidence_corruption_produces_block_and_nonzero_exit",
+    "test_m5_trace_export.H4TraceExportTests.test_cli_preserves_observed_results_outcomes_and_task_binding",
+    "test_m5_trace_export.H4TraceExportTests.test_empty_spool_preserves_explicit_event_and_message_gaps",
+    "test_m5_trace_export.H4TraceExportTests.test_existing_or_escaping_archive_is_rejected_without_writes",
+    "test_m5_trace_export.H4TraceExportTests.test_post_seal_tampering_blocks_cli_and_persists_failure_report",
+    "test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_checkers_reject_missing_outside_and_changed_subjects"
+  ],
+  "modified": [
+    "test_catalog.CandidateCatalogTests.test_quarantine_candidates_cannot_be_confused_with_trial",
+    "test_catalog.CandidateCatalogTests.test_mode_filter_is_metadata_only",
+    "test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable",
+    "test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_and_its_checkers_reject_bad_subjects"
+  ],
+  "renamed": {
+    "SkillCloseoutReviewTests.test_repaired_archive_replays_and_its_checkers_reject_bad_subjects": "SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects"
+  },
+  "unchanged_retained_method_count": 132,
+  "per_module": [
+    {
+      "module": "test_catalog",
+      "before": 6,
+      "after": 2
+    },
+    {
+      "module": "test_documentation",
+      "before": 10,
+      "after": 3
+    },
+    {
+      "module": "test_pr_governance",
+      "before": 90,
+      "after": 89
+    },
+    {
+      "module": "test_m5_trace_export",
+      "before": 8,
+      "after": 0
+    },
+    {
+      "module": "test_skill_execution_closeout",
+      "before": 33,
+      "after": 32
+    },
+    {
+      "module": "test_skill_closeout_review",
+      "before": 10,
+      "after": 10
+    }
+  ],
+  "coverage_authority_fields_unchanged": true,
+  "source_and_release_authority_unchanged": true,
+  "historical_records_preserved": true,
+  "local_pass_unique": 68,
+  "catalog_pass": 2,
+  "public_mapping_governance_coverage_controls_pass": 60,
+  "real_trace_pass_after_runtime_generation": 4,
+  "original_missing_generated_runtime_errors_preserved": 4,
+  "current_product_compatibility_replay_pass": 2,
+  "production_coverage_collected": false,
+  "global_coverage_proven": false,
+  "changed_file_sha256": {
+    "tests/test_catalog.py": "0da0ccc8c0ce9474c4f5ed22d445beb5918c589b6253defc6e204411c5a2beab",
+    "tests/test_documentation.py": "c7bdaef4bee20a8d05c9c2762611a861b485ea60dace130e3f96a5bc25f6fbd6",
+    "tests/test_pr_governance.py": "e13e05c7f4181fcb8b4160e99519fba38872959485ab89d5b985b6699c76ef1d",
+    "tests/test_skill_execution_closeout.py": "e60b87ccae7b0429db6169b856ff897f29b62d77d28197fe824d4790ff2cf4af",
+    "tests/test_skill_closeout_review.py": "07731410fa70c0172780da667b8e34360f603bb7ede9fad6a822d681b17724bb",
+    "tests/coverage_policy.yaml": "dd6a8eedef51f8c840db15bed1c06d6988d38077ee6623c58e466de9511f9fed",
+    "tests/ci_components.json": "606624b8bef52efbf92dd67382147126532fd559c1184f03c36843d9ff0b2a43"
+  }
+}

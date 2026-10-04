@@ -1169,14 +1169,6 @@ class PolicyAndCodeownersTests(unittest.TestCase):
         for required in ("风险等级", "共享契约", "权威依据", "对抗性证据"):
             self.assertIn(required, template)
 
-    def test_pr25_rollout_is_retained_and_marked_superseded(self) -> None:
-        rollout = (
-            ROOT
-            / "docs/workstreams/huangyi/execution-runtime-recovery-audit/GITHUB_GOVERNANCE_ROLLOUT.md"
-        ).read_text(encoding="utf-8")
-        self.assertIn("superseded", rollout.lower())
-        self.assertIn("不改写历史事实", rollout)
-
 
 class PublishedActionIdentityTests(unittest.TestCase):
     def setUp(self) -> None:

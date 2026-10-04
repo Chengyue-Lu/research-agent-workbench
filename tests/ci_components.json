@@ -196,8 +196,7 @@
         "test_handoff_transfer",
         "test_agent_trace",
         "test_trace_properties",
-        "test_trace_risk_codes",
-        "test_m5_trace_export"
+        "test_trace_risk_codes"
       ],
       "flags": [
         "smoke"

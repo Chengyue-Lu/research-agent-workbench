@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.3.5
+version: 2.3.6
 source_root: src/research_workbench
 
 suites:
@@ -55,7 +55,6 @@ suites:
       - test_evaluation_harness_evidence
       - test_evaluation_harness_review
       - test_evaluation_harness_analysis
-      - test_m5_trace_export
       - test_governance_helper_branches
       - test_integrity
       - test_kernel

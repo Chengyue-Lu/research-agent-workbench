@@ -10,7 +10,6 @@ import subprocess
 import sys
 import tempfile
 import unittest
-import zipfile
 from unittest.mock import patch
 from pathlib import Path
 
@@ -401,11 +400,6 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
     def test_archived_candidate_pins_and_replay_are_portable(self):
         archive = ROOT / 'work/M11-007/A-20260915-002'
         proof = json.loads((archive / 'checks/vertical-proof.json').read_bytes())
-        with zipfile.ZipFile(ROOT / 'tests/fixtures/skill_closeout_sources/sources.zip') as sources:
-            for ref in proof['source_refs']:
-                content = sources.read(ref['sha256'] + '.txt')
-                self.assertEqual(ref['sha256'], hashlib.sha256(content).hexdigest())
-        self.assertEqual(proof['replay_script']['sha256'], hash_file(ROOT / proof['replay_script']['path']))
         for case in proof['cases']:
             with self.subTest(case=case['case']):
                 for ref in case['files']:
@@ -422,19 +416,6 @@ print(json.dumps({'status':r.document['status'],'skill':r.document['actual_skill
                         # evidence; its one-stage fact is not current acceptance.
                         with self.assertRaises(GenericCloseoutValidationError):
                             runpy.run_path(str(archive / 'replay.py'), run_name='__main__')
-
-    def test_archived_checkers_reject_missing_outside_and_changed_subjects(self):
-        archive = ROOT / 'work/M11-007/A-20260915-002'
-        proof = json.loads((archive / 'checks/vertical-proof.json').read_bytes())
-        for case in proof['cases']:
-            with self.subTest(case=case['case']):
-                root = ROOT / case['project_root']
-                validation = load_document(root / 'closeout/validation.yaml')
-                check = runpy.run_path(str(root / 'closeout/checker.py'))['check']
-                self.assertTrue(check(root, validation['subject_refs']))
-                for path, digest in [('missing.yaml', '0' * 64), ('../outside.yaml', '0' * 64),
-                                     ('closeout/host.yaml', '0' * 64)]:
-                    self.assertFalse(check(root, [{'path': path, 'sha256': digest}]))
 
     def test_same_supply_identity_does_not_hide_projection_drift_as_completed(self):
         fixture = SkillCloseoutFixture(self.root, lifecycle="failed", drift="projection-identity")

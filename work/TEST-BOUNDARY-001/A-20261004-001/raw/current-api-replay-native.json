@@ -1,0 +1,138 @@
+{
+  "duration_seconds": {
+    "p50": 10.220837,
+    "p95": 11.382846
+  },
+  "events": {
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_skill_execution_closeout.py::SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable",
+    "tests/test_skill_closeout_review.py::SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects"
+  ],
+  "outcomes": {
+    "errors": 0,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 2,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_skill_closeout_review.py::SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects",
+      "checkpoints": [
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='completed-with-tool')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='failed-model')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='failed-projection')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='preflight-blocked')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 11.382846,
+      "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects",
+      "module": "tests.test_skill_closeout_review",
+      "outcome": "passed",
+      "scenario": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects"
+    },
+    {
+      "canonical_id": "tests/test_skill_execution_closeout.py::SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable",
+      "checkpoints": [
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='completed-with-tool')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='failed-model')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='failed-projection')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='preflight-blocked')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 9.058828,
+      "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable",
+      "module": "tests.test_skill_execution_closeout",
+      "outcome": "passed",
+      "scenario": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable"
+    }
+  ],
+  "successful": true,
+  "suite": "development-record-boundary",
+  "test_count": 2,
+  "tests": [
+    {
+      "canonical_id": "tests/test_skill_closeout_review.py::SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects",
+      "checkpoints": [
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='completed-with-tool')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='failed-model')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='failed-projection')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects (case='preflight-blocked')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 11.382846,
+      "id": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects",
+      "module": "tests.test_skill_closeout_review",
+      "outcome": "passed",
+      "scenario": "tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects"
+    },
+    {
+      "canonical_id": "tests/test_skill_execution_closeout.py::SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable",
+      "checkpoints": [
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='completed-with-tool')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='failed-model')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='failed-projection')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable (case='preflight-blocked')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 9.058828,
+      "id": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable",
+      "module": "tests.test_skill_execution_closeout",
+      "outcome": "passed",
+      "scenario": "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable"
+    }
+  ],
+  "wall_seconds": 20.442909
+}

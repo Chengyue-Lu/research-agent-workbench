@@ -1,0 +1,7 @@
+test_quarantine_candidates_cannot_be_confused_with_trial (test_catalog.CandidateCatalogTests.test_quarantine_candidates_cannot_be_confused_with_trial) ... ok
+test_mode_filter_is_metadata_only (test_catalog.CandidateCatalogTests.test_mode_filter_is_metadata_only) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.007s
+
+OK

@@ -1,0 +1,195 @@
+test_first_contact_surfaces_do_not_own_internal_milestones (tests.test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones) ... ok
+test_getting_started_uses_recommended_not_replay_path (tests.test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path) ... ok
+test_public_projection_documentation_and_build_closure (tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure) ... ok
+test_autolink_syntax_in_code_remains_literal (tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal) ... ok
+test_build_input_removal_is_rejected (tests.test_public_surface.PublicSurfaceTests.test_build_input_removal_is_rejected) ... ok
+test_excluded_files_are_not_selected (tests.test_public_surface.PublicSurfaceTests.test_excluded_files_are_not_selected) ... ok
+test_excluded_links_cannot_hide_in_reference_html_or_encoding (tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding) ... ok
+test_markdown_reference_html_and_unicode_anchor_resolve (tests.test_public_surface.PublicSurfaceTests.test_markdown_reference_html_and_unicode_anchor_resolve) ... ok
+test_missing_target_and_anchor_are_rejected (tests.test_public_surface.PublicSurfaceTests.test_missing_target_and_anchor_are_rejected) ... ok
+test_product_sources_and_schemas_are_complete (tests.test_public_surface.PublicSurfaceTests.test_product_sources_and_schemas_are_complete) ... ok
+test_projection_without_license_is_not_build_ready (tests.test_public_surface.PublicSurfaceTests.test_projection_without_license_is_not_build_ready) ... ok
+test_provider_build_inputs_are_exact_disabled_public_templates (tests.test_public_surface.PublicSurfaceTests.test_provider_build_inputs_are_exact_disabled_public_templates) ... ok
+test_public_navigation_and_support_have_one_source (tests.test_public_surface.PublicSurfaceTests.test_public_navigation_and_support_have_one_source) ... ok
+test_rendered_entities_and_autolinks_cannot_reach_excluded_files (tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files) ... ok
+test_rendered_public_entity_and_reference_destinations_resolve (tests.test_public_surface.PublicSurfaceTests.test_rendered_public_entity_and_reference_destinations_resolve) ... ok
+test_selected_source_has_closed_docs_and_build_inputs (tests.test_public_surface.PublicSurfaceTests.test_selected_source_has_closed_docs_and_build_inputs) ... ok
+test_user_project_attempt_paths_are_not_repository_archive_links (tests.test_public_surface.PublicSurfaceTests.test_user_project_attempt_paths_are_not_repository_archive_links) ... ok
+test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths (tests.test_pr_governance.PolicyAndCodeownersTests.test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths) ... ok
+test_curated_release_policy_is_strict_declarative_and_active (tests.test_pr_governance.PolicyAndCodeownersTests.test_curated_release_policy_is_strict_declarative_and_active) ... ok
+test_curated_release_required_checks_exist_in_ci_workflow (tests.test_pr_governance.PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow) ... ok
+test_policy_has_three_by_three_model (tests.test_pr_governance.PolicyAndCodeownersTests.test_policy_has_three_by_three_model) ... ok
+test_published_identity_policy_declares_all_protected_kinds (tests.test_pr_governance.PolicyAndCodeownersTests.test_published_identity_policy_declares_all_protected_kinds) ... ok
+test_template_omits_machine_known_and_retired_fields (tests.test_pr_governance.PolicyAndCodeownersTests.test_template_omits_machine_known_and_retired_fields) ... ok
+test_versioned_research_mode_directory_is_protected (tests.test_pr_governance.PolicyAndCodeownersTests.test_versioned_research_mode_directory_is_protected) ... ok
+test_build_change_requests_install_compatibility_smokes (tests.test_ci_components.ComponentPlanTests.test_build_change_requests_install_compatibility_smokes) ... ok
+test_ci_scripts_keep_their_own_explicit_direct_tests (tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests) ... ok
+test_component_source_selects_whole_group_on_baseline (tests.test_ci_components.ComponentPlanTests.test_component_source_selects_whole_group_on_baseline) ... ok
+test_every_mapping_names_an_actual_test_module (tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module) ... ok
+test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation (tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation) ... ok
+test_known_component_keeps_new_source_own_test (tests.test_ci_components.ComponentPlanTests.test_known_component_keeps_new_source_own_test) ... ok
+test_new_and_deleted_source_stay_with_their_components (tests.test_ci_components.ComponentPlanTests.test_new_and_deleted_source_stay_with_their_components) ... ok
+test_pure_docs_skip_product_smoke_and_install_docs_are_explicit (tests.test_ci_components.ComponentPlanTests.test_pure_docs_skip_product_smoke_and_install_docs_are_explicit) ... ok
+test_registry_specific_prefixes_keep_domain_owners (tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners) ... ok
+test_rename_considers_old_and_new_component_paths (tests.test_ci_components.ComponentPlanTests.test_rename_considers_old_and_new_component_paths) ... ok
+test_schema_and_registry_changes_request_contract_checks (tests.test_ci_components.ComponentPlanTests.test_schema_and_registry_changes_request_contract_checks) ... ok
+test_shared_fixture_uses_only_its_declared_direct_map (tests.test_ci_components.ComponentPlanTests.test_shared_fixture_uses_only_its_declared_direct_map) ... ok
+test_tests_are_direct_and_deleted_tests_are_not_run (tests.test_ci_components.ComponentPlanTests.test_tests_are_direct_and_deleted_tests_are_not_run) ... ok
+test_top_level_source_and_exact_override_keep_stable_owners (tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners) ... ok
+test_unknown_path_selects_nearest_and_self_test_without_full (tests.test_ci_components.ComponentPlanTests.test_unknown_path_selects_nearest_and_self_test_without_full) ... ok
+test_branch_collection_is_mandatory (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_branch_collection_is_mandatory) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_checker_helpers_and_structural_failures_are_explicit (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit) ... global line=89.00% threshold=90.00%
+ok
+test_checker_main_reports_pass_and_fail_without_traceback (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+coverage-policy: PASS
+coverage-policy: FAIL
+- coverage must be a mapping
+ok
+test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases) ... ok
+test_coverage_suite_supports_exact_test_selectors_without_duplicates (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates) ... ok
+test_declared_exclusions_exactly_match_coverage_json (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_each_critical_file_has_independent_line_and_branch_gates (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=94.00%/95.00% branch=89.00%/90.00%
+ok
+test_exact_thresholds_and_positive_negative_evidence_pass (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_exclusion_line_shape_and_duplicates_are_fail_closed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_exclusion_requires_exact_auditable_location (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_global_line_threshold_is_fail_closed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed) ... global line=89.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_malformed_coverage_exclusions_fail_closed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_missing_critical_file_is_blocking (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking) ... global line=85.00% threshold=90.00%
+ok
+test_missing_negative_acceptance_result_is_blocking (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_policy_cannot_downgrade_the_quality_floor (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/89.00%
+ok
+test_positive_and_negative_evidence_must_be_disjoint (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_positive_and_negative_evidence_must_be_nonempty_lists (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_positive_and_negative_evidence_reject_internal_duplicates (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_repository_policy_covers_bounded_capability_validation_surfaces (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces) ... ok
+test_source_root_is_canonical_and_cannot_be_narrowed (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_undeclared_actual_and_nonexistent_declared_exclusions_fail (tests.test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail) ... global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+global line=90.00% threshold=90.00%
+critical src/research_workbench/protocol/authority.py line=95.00%/95.00% branch=90.00%/90.00%
+ok
+test_recorder_captures_before_send_redacts_and_validates (tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates) ... ERROR
+test_hash_tamper_is_blocking (tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking) ... ERROR
+test_completed_trace_with_capture_gap_is_blocking (tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking) ... ERROR
+test_index_path_escape_is_blocking (tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking) ... ERROR
+
+======================================================================
+ERROR: test_recorder_captures_before_send_redacts_and_validates (tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\tests\test_agent_trace.py", line 137, in test_recorder_captures_before_send_redacts_and_validates
+    result = validate_attempt_trace(self.root, self.attempt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\observability\trace.py", line 828, in validate_attempt_trace
+    catalog = SchemaCatalog()
+              ^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\validation\schemas.py", line 31, in __init__
+    resource_reader = RuntimeResources()
+                      ^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\resources.py", line 89, in __init__
+    from research_workbench._runtime_pin import MANIFEST_SHA256
+ModuleNotFoundError: No module named 'research_workbench._runtime_pin'
+
+======================================================================
+ERROR: test_hash_tamper_is_blocking (tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\tests\test_agent_trace.py", line 249, in test_hash_tamper_is_blocking
+    result = validate_attempt_trace(self.root, self.attempt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\observability\trace.py", line 828, in validate_attempt_trace
+    catalog = SchemaCatalog()
+              ^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\validation\schemas.py", line 31, in __init__
+    resource_reader = RuntimeResources()
+                      ^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\resources.py", line 89, in __init__
+    from research_workbench._runtime_pin import MANIFEST_SHA256
+ModuleNotFoundError: No module named 'research_workbench._runtime_pin'
+
+======================================================================
+ERROR: test_completed_trace_with_capture_gap_is_blocking (tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\tests\test_agent_trace.py", line 258, in test_completed_trace_with_capture_gap_is_blocking
+    result = validate_attempt_trace(self.root, self.attempt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\observability\trace.py", line 828, in validate_attempt_trace
+    catalog = SchemaCatalog()
+              ^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\validation\schemas.py", line 31, in __init__
+    resource_reader = RuntimeResources()
+                      ^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\resources.py", line 89, in __init__
+    from research_workbench._runtime_pin import MANIFEST_SHA256
+ModuleNotFoundError: No module named 'research_workbench._runtime_pin'
+
+======================================================================
+ERROR: test_index_path_escape_is_blocking (tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\tests\test_agent_trace.py", line 271, in test_index_path_escape_is_blocking
+    result = validate_attempt_trace(self.root, self.attempt)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\observability\trace.py", line 828, in validate_attempt_trace
+    catalog = SchemaCatalog()
+              ^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\validation\schemas.py", line 31, in __init__
+    resource_reader = RuntimeResources()
+                      ^^^^^^^^^^^^^^^^^^
+  File "D:\lcy\develop\_worktrees\RWB\product-doc-ci-boundary-20261004\src\research_workbench\resources.py", line 89, in __init__
+    from research_workbench._runtime_pin import MANIFEST_SHA256
+ModuleNotFoundError: No module named 'research_workbench._runtime_pin'
+
+----------------------------------------------------------------------
+Ran 64 tests in 1.278s
+
+FAILED (errors=4)
+suite_duration suite=development-record-boundary tests=64 wall_seconds=1.279 p50_seconds=0.004 p95_seconds=0.105
+FAILED tests.test_agent_trace / tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates / tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates (error): No module named 'research_workbench._runtime_pin'
+FAILED tests.test_agent_trace / tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking / tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking (error): No module named 'research_workbench._runtime_pin'
+FAILED tests.test_agent_trace / tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking / tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking (error): No module named 'research_workbench._runtime_pin'
+FAILED tests.test_agent_trace / tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking / tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking (error): No module named 'research_workbench._runtime_pin'
+slowest_5_tests
+     0.133s  tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files  passed
+     0.116s  tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure  passed
+     0.109s  tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests  passed
+     0.105s  tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding  passed
+     0.074s  tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal  passed

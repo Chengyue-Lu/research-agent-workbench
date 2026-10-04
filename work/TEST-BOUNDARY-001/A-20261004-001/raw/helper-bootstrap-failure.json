@@ -1,0 +1,8 @@
+{
+  "stage": "before_test_import",
+  "tests_executed": 0,
+  "error": "ImportError: cannot import name '_write_duration_report' from tests.run_unittest_suite",
+  "cause": "local evidence helper used an unverified report function name",
+  "product_failure": false,
+  "repair": "read the actual report function declaration before invoking the test suite"
+}
