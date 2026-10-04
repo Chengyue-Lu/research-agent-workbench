@@ -9,9 +9,11 @@
 直接接受来源见[整项收口](M6-009_COMPLETION.md)。离线完成与 M6-010 真实调用资格分别验证。
 Provider/Session 维护者仍为黄毅，路诚钺协调准备及共享语义复核。Agent 结果仅为可审查的技术证据。
 
-M6-010 的 2026-10-03 真实部件结果、失败保留与剩余阻断见
-[Flash 部件进度](M6-010_FLASH_COMPONENT_PROGRESS.md)及
-[FOLLOWUP-021 交接](attempts/FOLLOWUP-021/HANDOFF.md)。完整验收仍 BLOCKED。
+M6-010 的 exact Windows Flash Provider/session 验收与 source/config 适用性见
+[整项受限收口](M6-010_COMPLETION.md)，原始脱敏报告与24份私有原件的哈希导航在该记录中。
+[Flash 部件进度](M6-010_FLASH_COMPONENT_PROGRESS.md)保留前三组失败及第四组成功的导航；
+[FOLLOWUP-023](attempts/FOLLOWUP-023/HANDOFF.md)记录当时 source66 的真实三步检查。
+Task 状态以 TASKS 为准；报告原有的 qualification flags 保留，后继 M5 仍须核对 exact binding。
 
 API 客户端与厂商协议映射的复用建议、Windows 辅助链测试对象及 PR #128 审核范围见
 [客户端复用与审核范围](CLIENT_REUSE_REVIEW.md)。第三方 SDK 的选择、集成和兼容验证尚未完成，
@@ -36,7 +38,7 @@ SiliconFlow Qwen 和 OpenRouter GPT-4.1 Mini 新增独立 standard Text 路径�
 后续 [FOLLOWUP-002](attempts/FOLLOWUP-002/TASK.md) 加入显式 retained anchor，检测预算历史单边回退、
 同 anchor 换 DB 和未知提交状态；默认无 anchor 的旧语义保留。实际唯一预算选择、完整运行
 source/config/helper/Windows/time 闭包、输入预占依据接受与具名运行接受继续待定；
-该阶段的待定事实按历史源保留；当前 M6-009 完成判断见整项收口，M6-010 尚无 live PASS。
+该阶段的待定事实按历史源保留；当前 M6-009/M6-010 完成判断分别见各自整项收口记录。
 后续 [FOLLOWUP-003](attempts/FOLLOWUP-003/TASK.md) 实现上述源码图消费者及显式
 ConformanceBodyPolicy：沿用已有 Flash Responses nonthinking，credential 前检查 ModelRequest，
 intent 前检查实际 body；三个 local phase 固定 Tool/call ID/history/result、Schema 和大小上限。
