@@ -4,6 +4,7 @@
 
 当前进行中或仍待具名语义决定的工作流：
 
+- [`M12-BOUNDED-CONTINUITY/`](M12-BOUNDED-CONTINUITY/README.md)：Phase C 精确输入与具名收口候选、首个 fresh-process/next-frozen-action 的 Topic 5 ADR/task-definition 准备；M12/M13 仍 RESERVED，未授予实现权限。
 - [`GOV-REVIEW-EXCEPTION-001/`](GOV-REVIEW-EXCEPTION-001/README.md)：reviewer 不可用时由路诚钺批准单次审核例外，独立保留 CI/PR/发布硬门禁。
 - [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；[PR #74](https://github.com/Chengyue-Lu/research-agent-workbench/pull/74) 已获 R2 review 并合入，M14-004 消费该实际入口。
 - [`M11-SKILL-CLOSEOUT-GATE/`](M11-SKILL-CLOSEOUT-GATE/README.md)：M11-007 Skill-bearing generic
