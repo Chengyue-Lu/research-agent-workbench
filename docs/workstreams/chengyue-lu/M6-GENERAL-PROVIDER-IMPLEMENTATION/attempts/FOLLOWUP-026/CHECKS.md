@@ -35,3 +35,9 @@ develop full37168512882 的3.13 compatibility失败和3.11 coverage当时运行�
   相同。显式stage排除 `.codex/config.toml`，其原SHA90069309...保持。
 
 本地治理和实际PR/hosted检查结果随后按各自source身份记录。
+
+本地 R2治理：实现提交fd5dbd6、baseede2bc1，确认 M6-010 BLOCKED→DONE 合法，PASS。
+初始body的验证节缺少字面Task ID导致TASK-DONE-EVIDENCE-MISSING，原FAIL与body hash保留；
+为现有Task专属映射加明示ID/链接后通过，未修改治理器/Task定义/产品。远端mergeability和review
+仍由实际PR回读，不从本地PASS推导。开发2已给出full3.13归因：5个ERROR均为
+`ProviderAdapterConfig.__repr__`的未声明runtime callable；并未修复或重跑，不把类级提前失败当提速。
