@@ -1,5 +1,20 @@
 # M5 System-Level Evaluation Design Risk Ledger
 
+## 当前 M5-008 准备风险（2026-10-04）
+
+M5-007 与 M6-010 均 DONE；M5-008 仍 BLOCKED。以下控制属于
+[live 准备与设计候选](M5-008_PREPARATION_PACKET.md)，不是已实现/已运行的结论。
+后文的旧阶段风险状态保留其历史时点，不代替本段当前进入事实。
+
+| Risk ID | 风险 | 候选控制与待验证反例 | 当前状态 |
+|---|---|---|---|
+| M5-PREP-PURPOSE-001 | 仅把 synthetic Harness 接到 API 或放宽旧 purpose，污染历史回放并取得隐式执行权 | 新 live-purpose/version 明确分派；保留 v1.0.0 producer/Schema/历史；未知版本、混合用途及 confirmatory 接收 Pilot 均拒绝 | 离线设计；产品与 Schema 未改 |
+| M5-PREP-BINDING-001 | M6-010 DONE 被泛化成任何新 Driver/Host/model 已通过 | source66 原报告保留；新 exact source/install/config/Host/Tool 逐项 applicability；未知/漂移零调用，必要复验关联原累计历史 | M6-010 受限完成；Pilot binding 尚未冻结 |
+| M5-PREP-ADMISSION-001 | 测试 Projection、同名 Skill 或 candidate direct-load 冒充真实 A4 准入 | exact Human candidate/evaluation Decision 与 immutable Release/provenance/Projection/Supply/Resolver→View 链；use-boundary actual consumption 与 replay 独立相等 | UNSATISFIED；生产 index entries=[] |
+| M5-PREP-REVIEW-001 | 任意正文或 transport metadata 泄漏 treatment，或投影择优/自动修改答案 | 有限 claim/source/verdict 白名单；每 slice 全量 source refs；无自由文本/额外字段，非完整/无效输出 unreviewable；Human 全量 freeze 后 reveal | 格式候选；未选择案例或作匿名性证明 |
+| M5-PREP-BUDGET-001 | 将部件十组/预算授权当成四臂许可，重开账本或漏计失败 | Pilot 专项 exact 授权；10m 累计上限关联原1744；各层预算/超时/stop；失败与 unknown usage 预占留存，零自动 retry/fallback | Pilot 授权 UNSATISFIED；本次0调用/凭据/账本操作 |
+| M5-PREP-DRIVER-001 | 将已有 Python ports 或 planned View 当作 M11 live execution | 复用通用 View/Host seam；真实 Provider/Tool及Skill pre-use/post-call typed facts；新进程独立 Receipt replay；不可只靠 self-reported PASS | 实现/验证待合法进入；未添加 runner/selector |
+
 The following original rows retain the accepted design-stage controls and downstream dependencies.
 Implementation evidence for M5-006 is recorded after the table; candidate verification does not close M6-008,
 M5-007, Human case/admission or actual-execution obligations.
