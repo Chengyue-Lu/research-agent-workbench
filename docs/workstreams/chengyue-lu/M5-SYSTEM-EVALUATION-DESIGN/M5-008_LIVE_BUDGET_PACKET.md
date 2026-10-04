@@ -31,13 +31,19 @@ durable intent必须先提交，随后仅允许一次caller-observed HTTP entry�
 
 所有成功和失败响应的input+output均结算。响应已收后的业务或capture失败保留实际usage，
 prior/source检查随后失效也不妨碍仍持有handle的调用保存响应事实与failure。
+HTTP entry是调用后保存的caller observation：已有durable intent且原handle有效时，
+不因prior/source失效或返回超时抹掉该事实；迟到entry先记录并停止run，随后仍可保存实际usage。
+这个记录入口不授权新I/O；真正发送前仍须检查current source/权限/窗口/原handle阶段。
 晚返回或超出预占的已知usage先保留，再停止；不把超额截断成预占值。
 缺任一token字段保留已知部分及整个不确定预占，usage_complete=false，不填零或自动retry。
 计费币种/价格不进入此硬token账本。每个成功Attempt结束后才可进入下个冻结slot；
 任何失败停止run，后面的slots保留not-started。completed仅是本账本的结算状态，不表示Task完成。
 
 observe为[LiveUseGuard](M5-008_LIVE_VERIFICATION_PACKET.md)提供typed当前预占/累计/call/elapsed DTO。
-Provider观察要求未使用的原handle；Tool观察要求无pending hold。当前source/实际官方窗口/Human
+默认Provider观察要求未使用的原handle；显式observe_before_entry只接受同一进程持有的原handle，
+其durable intent已记且HTTP entry尚未发生。它不发送、释放或回退intent；entered/settled/foreign/reopen均拒绝。
+use_verifier将preinvoke与send阶段分别绑定上述状态，不能用reserved预占代替durable intent，
+也不能把intent重用为新Provider调用。Tool观察要求无pending hold。当前source/实际官方窗口/Human
 以及transport入口与此接口的耦合仍待Driver接入，不把DTO当成执行授权。
 
 ## 文件闭包与复核

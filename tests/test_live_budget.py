@@ -57,6 +57,85 @@ class LiveBudgetTests(unittest.TestCase):
         self.book.persist_send_intent(handle)
         self.book.record_http_entry(handle)
 
+    def test_final_observation_requires_owned_intent_and_rejects_after_entry(self):
+        handle = self.reserve()
+        with self.assertRaises(PilotBudgetError):
+            self.book.observe_before_entry(attempt_id=self.slots[0], handle=handle)
+        self.book.persist_send_intent(handle)
+        before = self.book.snapshot()
+        value = self.book.observe_before_entry(attempt_id=self.slots[0], handle=handle)
+        self.assertTrue(value.send_intent_durable)
+        self.assertEqual(handle.ordinal, value.reservation_ordinal)
+        self.assertEqual(before, self.book.snapshot())
+        for selected in (copy.copy(handle), replace(handle)):
+            with self.assertRaises(PilotBudgetError):
+                self.book.observe_before_entry(attempt_id=self.slots[0], handle=selected)
+        with self.assertRaises(PilotBudgetError):
+            self.book.observe(attempt_id=self.slots[0], surface="provider", handle=handle)
+        with self.assertRaises(PilotBudgetError):
+            self.book.persist_send_intent(handle)
+        with PilotUsageJournal.open(self.database, self.anchor, **self.options) as cold:
+            with self.assertRaises(PilotBudgetError):
+                cold.observe_before_entry(attempt_id=self.slots[0], handle=handle)
+        self.book.record_http_entry(handle)
+        with self.assertRaises(PilotBudgetError):
+            self.book.observe_before_entry(attempt_id=self.slots[0], handle=handle)
+        self.book.settle(handle, usage=Usage(5, 2), successful=True, response_received=True)
+        with self.assertRaises(PilotBudgetError):
+            self.book.observe_before_entry(attempt_id=self.slots[0], handle=handle)
+
+    def test_bound_guard_port_distinguishes_preinvoke_send_and_tool_stage(self):
+        handle = self.reserve()
+        verifier = self.book.use_verifier(executor_id="fixture-executor", current_handle=lambda _: handle)
+        argument = {"context": self.context.value(), "executor_id": "fixture-executor", "checked_at": NOW,
+                    "slot": {"attempt_id": self.slots[0], "phase": "pilot"}, "surface": "provider"}
+        self.assertFalse(verifier(argument).send_intent_durable)
+        with self.assertRaises(PilotBudgetError):
+            verifier(argument | {"provider_stage": "send"})
+        self.book.persist_send_intent(handle)
+        self.assertTrue(verifier(argument | {"provider_stage": "send"}).send_intent_durable)
+        for changes in ({}, {"provider_stage": "other"}, {"provider_stage": "send", "surface": "tool"}):
+            with self.assertRaises(PilotBudgetError):
+                verifier(argument | changes)
+        self.prior = replace(self.prior, usage_complete=False)
+        with self.assertRaises(PilotBudgetError):
+            verifier(argument | {"provider_stage": "send"})
+
+    def test_late_entry_observation_retains_received_usage_then_stops(self):
+        handle = self.reserve()
+        self.book.persist_send_intent(handle)
+        self.now = "2026-09-11T10:02:00Z"
+        self.book.record_http_entry(handle)
+        observed = self.book.snapshot()
+        self.assertTrue(observed["stopped"])
+        self.assertTrue(observed["calls"][0]["time_exhausted"])
+        self.book.settle(handle, usage=Usage(5, 2), successful=False, response_received=True)
+        self.book.fail_attempt(self.slots[0])
+        saved = self.book.snapshot()
+        self.assertEqual(1751, saved["known_total_tokens"])
+        self.assertEqual(0, saved["held_total_tokens"])
+        self.assertEqual("failed", saved["attempts"][0]["status"])
+        for operation in (lambda: self.book.record_http_entry(handle),
+                          lambda: self.book.start_attempt(self.slots[1])):
+            with self.assertRaises(PilotBudgetError):
+                operation()
+
+    def test_prior_and_source_drift_during_call_do_not_erase_entry_or_received_usage(self):
+        handle = self.reserve()
+        self.book.persist_send_intent(handle)
+        self.prior = replace(self.prior, usage_complete=False)
+        (self.f.root / self.context.provider_config_ref["path"]).write_bytes(b"synthetic drift")
+        self.book.record_http_entry(handle)
+        self.book.settle(handle, usage=Usage(5, 2), successful=False, response_received=True)
+        self.book.fail_attempt(self.slots[0])
+        saved = self.book.snapshot()
+        self.assertEqual(1751, saved["known_total_tokens"])
+        self.assertEqual(0, saved["held_total_tokens"])
+        self.assertTrue(saved["stopped"])
+        self.assertTrue(saved["calls"][0]["response_received"])
+        with self.assertRaises(PilotBudgetError):
+            self.book.observe_before_entry(attempt_id=self.slots[0], handle=handle)
+
     def test_complete_frozen_slots_with_fresh_attempts_inherit_usage(self):
         for slot in self.slots:
             self.book.start_attempt(slot)
@@ -431,9 +510,14 @@ class LiveBudgetRetainedTests(retained_fixtures.LiveEvidenceFixture, unittest.Te
                                                           current_handle=lambda _: handle)
             self.assertTrue(guard.check(attempt_id=self.slot["attempt_id"], surface="provider"))
             book.persist_send_intent(handle)
-            book.record_http_entry(handle)
-            book.settle(handle, usage=Usage(5, 2), successful=True, response_received=True)
             from research_workbench.evaluation.pins import EvaluationValidationError
+            with self.assertRaises(EvaluationValidationError):
+                guard.check(attempt_id=self.slot["attempt_id"], surface="provider")
+            self.assertTrue(guard.check(attempt_id=self.slot["attempt_id"], surface="provider", provider_stage="send"))
+            book.record_http_entry(handle)
+            with self.assertRaises(EvaluationValidationError):
+                guard.check(attempt_id=self.slot["attempt_id"], surface="provider", provider_stage="send")
+            book.settle(handle, usage=Usage(5, 2), successful=True, response_received=True)
             with self.assertRaises(EvaluationValidationError):
                 guard.check(attempt_id=self.slot["attempt_id"], surface="provider")
             self.assertEqual(1751, book.snapshot()["known_total_tokens"])

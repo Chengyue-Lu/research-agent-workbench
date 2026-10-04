@@ -381,6 +381,7 @@ class VerifiedPilotReservation:
     run_elapsed_seconds: int
     usage_complete: bool
     reservation_ordinal: int | None = None
+    send_intent_durable: bool = False
 
     def __post_init__(self):
         require(type(self.attempt_id) is str and self.attempt_id, "verified Pilot slot required")
@@ -388,9 +389,12 @@ class VerifiedPilotReservation:
             "known_total_tokens", "reserved_input_tokens", "reserved_output_tokens", "other_held_tokens",
             "cumulative_token_limit", "provider_calls", "attempt_calls", "attempt_elapsed_seconds",
             "run_elapsed_seconds"))
-            and type(self.usage_complete) is bool, "invalid verified Pilot reservation")
+            and type(self.usage_complete) is bool and type(self.send_intent_durable) is bool,
+            "invalid verified Pilot reservation")
         require(self.reservation_ordinal is None or (type(self.reservation_ordinal) is int
                 and self.reservation_ordinal > 0), "invalid current request reservation identity")
+        require(not self.send_intent_durable or self.reservation_ordinal is not None,
+                "durable intent needs a current request reservation identity")
 
 
 class LiveUseGuard:
@@ -411,11 +415,14 @@ class LiveUseGuard:
             return value, timestamp(value)
         return _verify(read, {}, "trusted clock")
 
-    def _reservation(self, context, now, slot, surface, budget):
+    def _reservation(self, context, now, slot, surface, budget, provider_stage):
         reservation = _verify(self.reservation_verifier, {"context": context.value(), "checked_at": now,
-            "slot": slot, "surface": surface, "executor_id": self.factory.executor_id}, "current Pilot reservation")
+            "slot": slot, "surface": surface, "provider_stage": provider_stage,
+            "executor_id": self.factory.executor_id}, "current Pilot reservation")
         require(type(reservation) is VerifiedPilotReservation and reservation.attempt_id == slot["attempt_id"],
                 "current typed reservation for exact Pilot slot required")
+        require(reservation.send_intent_durable == (surface == "provider" and provider_stage == "send"),
+                "current request send stage differs from durable intent")
         require(reservation.usage_complete and reservation.other_held_tokens == 0
                 and reservation.known_total_tokens >= budget["prior_tokens"]
                 and 0 < reservation.cumulative_token_limit <= budget["cumulative_token_limit"]
@@ -445,8 +452,10 @@ class LiveUseGuard:
             "official_window_ref": file_ref(window["official_window_ref"])}, "official idle window") is True,
                 "current official idle window was not verified")
 
-    def check(self, *, attempt_id: str, surface: str):
+    def check(self, *, attempt_id: str, surface: str, provider_stage: str = "preinvoke"):
         require(surface in {"provider", "tool"}, "unknown live use surface")
+        require(provider_stage in {"preinvoke", "send"} and (surface == "provider" or provider_stage == "preinvoke"),
+                "unknown live Provider send stage")
         inputs, context = self.factory.inputs, self.factory.context
         now, when = self._clock()
         require(when >= timestamp(self.checked_at), "live clock precedes preflight")
@@ -460,7 +469,7 @@ class LiveUseGuard:
         require(len(slots) == 1, "only an exact frozen Pilot slot may enter live use")
         slot = slots[0]
         require(not (surface == "tool" and slot["arm_id"] == "plain-agent"), "A1 Tool entry denied")
-        initial = self._reservation(context, now, slot, surface, budget)
+        initial = self._reservation(context, now, slot, surface, budget, provider_stage)
         # Cheap denials above touch no execution ports. A successful entry still
         # recomputes the entire original record and all gates at current time.
         original = inputs.read(json.loads(self._reference), "evaluation_live_preflight")
@@ -474,7 +483,7 @@ class LiveUseGuard:
         final_now, final_when = self._clock()
         require(final_when >= when, "live clock moved backwards during verification")
         self._window(final_now, final_when, window)
-        final = self._reservation(context, final_now, slot, surface, budget)
+        final = self._reservation(context, final_now, slot, surface, budget, provider_stage)
         require((initial.reservation_ordinal, initial.reserved_input_tokens, initial.reserved_output_tokens) ==
                 (final.reservation_ordinal, final.reserved_input_tokens, final.reserved_output_tokens),
                 "current request reservation changed during verification")

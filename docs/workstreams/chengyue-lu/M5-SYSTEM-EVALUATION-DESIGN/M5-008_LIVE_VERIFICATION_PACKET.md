@@ -57,7 +57,10 @@ checkpoint必须与真实重放的完整snapshot一致。接口仍继承M6的cal
 执行成功路径前独立重算原preflight，并以当前时间重算资格、权限、applicability、overlap与pairwise。
 时间、slot和预算的快速拒绝放在完整重算前，所有检查均先于实际执行端口。
 完整核验后再读取当前时间、官方窗口与同一request预占ordinal；过期、时钟回退或预占被更改时拒绝，
-不会沿用慢核验开始时的时间/预算观察。实际Driver/transport仍须在入口原子使用所选单用handle。
+不会沿用慢核验开始时的时间/预算观察。默认preinvoke要求未使用reserved预占；显式send阶段
+要求同一原handle的durable intent且尚无HTTP entry，慢核验后再次核对这个状态和ordinal。
+Tool没有send阶段。该阶段区分让Driver能在写入intent后、实际HTTP entry前再核验，
+不改变事件、不授权第二次发送。实际Driver/transport仍须在入口原子使用所选单用handle。
 
 可信Pilot ledger接口必须返回该slot当前的typed reservation：实际已知累计、当前request预占、
 其他held、完整性、累计ceiling、包含本次预占的call计数与单Attempt/全run elapsed time。

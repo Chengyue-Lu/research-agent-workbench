@@ -310,8 +310,15 @@ class PilotUsageJournal:
                     call.update(status="intent", intent_at=payload["at"])
                 elif kind == "entry":
                     _need(call["status"] == "intent" and not state["stopped"], "pilot-budget-send-reused")
-                    self._time_check(state, payload["at"])
+                    # A late return still produced an observed entry. Retain
+                    # that fact before stopping; this event grants no new I/O.
+                    expired = ((timestamp(payload["at"]) - timestamp(attempt["started_at"])).total_seconds()
+                                    >= limits["max_attempt_seconds"] or
+                               (timestamp(payload["at"]) - timestamp(state["attempts"][0]["started_at"])).total_seconds()
+                                    >= limits["max_run_seconds"])
                     call.update(status="entered", entry_at=payload["at"])
+                    if expired:
+                        call["time_exhausted"], state["stopped"] = True, True
                 elif kind == "release":
                     _need(call["status"] == "reserved", "pilot-budget-release-after-intent")
                     call["status"] = "released-before-send"
@@ -429,8 +436,12 @@ class PilotUsageJournal:
         self._call_event(handle, "intent")
 
     def record_http_entry(self, handle):
-        """One caller-observed HTTP entry, after the durable intent."""
-        self._call_event(handle, "entry")
+        """Retain one already-observed HTTP entry after durable intent.
+
+        Current authority/bytes gate future I/O, not this post-call fact. Late
+        observations stop the run but can still retain received numeric usage.
+        """
+        self._call_event(handle, "entry", current=False)
 
     def reject_before_send(self, handle):
         self._call_event(handle, "release", current=False)
@@ -473,6 +484,17 @@ class PilotUsageJournal:
 
     def observe(self, *, attempt_id, surface, handle=None):
         """Trusted ledger port for LiveUseGuard; not a deserialized permit."""
+        return self._observe(attempt_id=attempt_id, surface=surface, handle=handle, send_intent=False)
+
+    def observe_before_entry(self, *, attempt_id, handle):
+        """Recheck the original owned durable intent before caller HTTP entry.
+
+        This read never sends, releases, rewinds or makes an intent reusable.
+        The actual transport must still enforce its own once-only entry.
+        """
+        return self._observe(attempt_id=attempt_id, surface="provider", handle=handle, send_intent=True)
+
+    def _observe(self, *, attempt_id, surface, handle, send_intent):
         def read(state):
             _need(surface in {"provider", "tool"} and not state["stopped"] and state["attempts"]
                   and state["attempts"][-1]["attempt_id"] == attempt_id
@@ -484,7 +506,7 @@ class PilotUsageJournal:
             call = None
             if surface == "provider":
                 call = self._owned_call(state, handle)
-                _need(call["status"] == "reserved", "pilot-budget-send-reused")
+                _need(call["status"] == ("intent" if send_intent else "reserved"), "pilot-budget-send-reused")
             else:
                 _need(handle is None and not held, "pilot-budget-tool-before-settlement")
             limits = _parse(self._header)["limits"]
@@ -496,7 +518,7 @@ class PilotUsageJournal:
                 sum(c["attempt_id"] == attempt_id for c in state["calls"]),
                 int((timestamp(now) - timestamp(state["attempts"][-1]["started_at"])).total_seconds()),
                 int((timestamp(now) - timestamp(state["attempts"][0]["started_at"])).total_seconds()),
-                not any(c["status"] == "unknown" for c in state["calls"]), selected)
+                not any(c["status"] == "unknown" for c in state["calls"]), selected, send_intent)
         return self._transaction(read)
 
     def use_verifier(self, *, executor_id, current_handle):
@@ -515,6 +537,11 @@ class PilotUsageJournal:
                           and argument["surface"] in {"provider", "tool"}, "pilot-budget-context-mismatch")
                     _need(timestamp(argument["checked_at"]) <= timestamp(self._now()), "pilot-budget-clock-invalid")
                     attempt_id, surface = argument["slot"]["attempt_id"], argument["surface"]
+                    stage = argument.get("provider_stage", "preinvoke")
+                    _need(stage in {"preinvoke", "send"} and (surface == "provider" or stage == "preinvoke"),
+                          "pilot-budget-context-mismatch")
+                    if stage == "send":
+                        return self.observe_before_entry(attempt_id=attempt_id, handle=current_handle(attempt_id))
                     return self.observe(attempt_id=attempt_id, surface=surface,
                                         handle=current_handle(attempt_id) if surface == "provider" else None)
                 return _safe(read)

@@ -284,6 +284,18 @@ class LiveUseGuardTests(LiveEvidenceFixture, unittest.TestCase):
         self.assertTrue(guard.check(attempt_id=self.slot["attempt_id"], surface="provider"))
         self.assertGreaterEqual(len(self.human_calls), 3)
 
+    def test_send_stage_needs_current_durable_intent_and_excludes_tool(self):
+        guard = self.guard()
+        for stage in ("send", "other"):
+            with self.assertRaises(EvaluationValidationError):
+                guard.check(attempt_id=self.slot["attempt_id"], surface="provider", provider_stage=stage)
+        self.reservation = replace(self.reservation, send_intent_durable=True)
+        with self.assertRaises(EvaluationValidationError):
+            guard.check(attempt_id=self.slot["attempt_id"], surface="provider")
+        self.assertTrue(guard.check(attempt_id=self.slot["attempt_id"], surface="provider", provider_stage="send"))
+        with self.assertRaises(EvaluationValidationError):
+            guard.check(attempt_id=self.slot["attempt_id"], surface="tool", provider_stage="send")
+
     def test_confirmatory_unknown_slot_and_a1_tool_denied(self):
         guard = self.guard()
         for attempt in ("unknown-slot", self.f.plan["blocks"][-1]["arms"][0]["attempt_slots"][0]["attempt_id"]):
@@ -326,6 +338,11 @@ class LiveUseGuardTests(LiveEvidenceFixture, unittest.TestCase):
                        ("slot", 1744, 1, 1, 0, TOKEN_CEILING, 1, 1, 0, 0, "true")):
             with self.assertRaises(EvaluationValidationError):
                 VerifiedPilotReservation(*values)
+        for value in (1, "true", None):
+            with self.assertRaises(EvaluationValidationError):
+                VerifiedPilotReservation("slot", 1744, 1, 1, 0, TOKEN_CEILING, 1, 1, 0, 0, True, 1, value)
+        with self.assertRaises(EvaluationValidationError):
+            VerifiedPilotReservation("slot", 1744, 1, 1, 0, TOKEN_CEILING, 1, 1, 0, 0, True, None, True)
 
     def test_slow_evidence_cannot_reuse_expired_window_or_changed_reservation(self):
         clock = iter(("2026-09-11T10:00:00Z", "2026-09-11T12:00:00Z"))
@@ -338,6 +355,13 @@ class LiveUseGuardTests(LiveEvidenceFixture, unittest.TestCase):
         guard.reservation_verifier = lambda _: next(snapshots)
         with self.assertRaisesRegex(EvaluationValidationError, "reservation changed"):
             guard.check(attempt_id=self.slot["attempt_id"], surface="provider")
+
+        guard.clock = lambda: "2026-09-11T10:00:00Z"
+        current = replace(self.reservation, send_intent_durable=True)
+        snapshots = iter((current, replace(current, send_intent_durable=False)))
+        guard.reservation_verifier = lambda _: next(snapshots)
+        with self.assertRaisesRegex(EvaluationValidationError, "send stage"):
+            guard.check(attempt_id=self.slot["attempt_id"], surface="provider", provider_stage="send")
         guard.clock = lambda: "2026-09-11T10:00:00Z"
         snapshots = iter((self.reservation, replace(self.reservation, reservation_ordinal=2)))
         guard.reservation_verifier = lambda _: next(snapshots)
