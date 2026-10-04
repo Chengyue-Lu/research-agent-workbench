@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import copy
+import dataclasses
 import hashlib
 import importlib
 import json
+import reprlib
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+from types import FunctionType
 
 from research_workbench.adapters.models import provider_source_closure as closure
 from research_workbench.validation.schemas import SchemaCatalog
@@ -123,6 +126,116 @@ class ProviderSourceClosureTests(unittest.TestCase):
         with patch.object(self.provider.Provider, "injected", lambda self: "drift", create=True):
             with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
                 self.verify()
+
+    def repr_fixture(self):
+        source = self.root / "repr-runtime"
+        source.mkdir()
+        (source / "repr_source_fixture.py").write_text(
+            "from dataclasses import dataclass, field\n"
+            "@dataclass(frozen=True, slots=True, kw_only=True)\n"
+            "class Record:\n"
+            "    value: int\n"
+            "    hidden: str = field(repr=False, default='hidden')\n"
+            "@dataclass\n"
+            "class Custom:\n"
+            "    value: int\n"
+            "    def __repr__(self):\n"
+            "        return 'custom:' + str(self.value)\n",
+            encoding="utf-8",
+        )
+        sys.path.insert(0, str(source))
+        self.addCleanup(sys.path.remove, str(source))
+        module = importlib.import_module("repr_source_fixture")
+        self.addCleanup(sys.modules.pop, "repr_source_fixture", None)
+        document = closure.produce_source_closure(
+            (module.__name__,), source_root=source, project_root=self.root,
+            archive_prefix="repr-source",
+        )
+        return module, document, source
+
+    def test_generated_dataclass_repr_and_explicit_custom_repr_are_supported(self):
+        module, document, source = self.repr_fixture()
+        receipt = closure.verify_loaded_source_closure(
+            document, read_bytes=self.reader.read_bytes, source_root=source,
+        )
+        self.assertTrue(receipt["actual_verified"])
+        self.assertEqual("Record(value=1)", repr(module.Record(value=1)))
+        self.assertEqual("custom:1", repr(module.Custom(1)))
+
+    def test_injected_and_forged_repr_wrappers_remain_rejected(self):
+        module, document, source = self.repr_fixture()
+        original = module.Record.__repr__
+        original_inner = original.__wrapped__
+
+        def injected(self):
+            return "drift"
+
+        injected.__wrapped__ = original_inner
+        forged_inner = FunctionType(
+            injected.__code__.replace(co_filename="<string>", co_name="__repr__",
+                                      co_qualname=original_inner.__code__.co_qualname),
+            vars(module), "__repr__",
+        )
+        wrong_inner = reprlib.recursive_repr()(forged_inner)
+        for label, replacement in (
+            ("plain injected", injected),
+            ("reprlib wrapped ordinary callable", reprlib.recursive_repr()(injected)),
+            ("canonical wrapper with forged generated filename", wrong_inner),
+        ):
+            with self.subTest(label=label), patch.object(module.Record, "__repr__", replacement):
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+        with patch.object(module.Record, "injected", original, create=True):
+            with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                closure.verify_loaded_source_closure(
+                    document, read_bytes=self.reader.read_bytes, source_root=source,
+                )
+
+    def test_repr_field_metadata_rejects_custom_objects_without_calling_them(self):
+        module, document, source = self.repr_fixture()
+        calls = []
+
+        class Flag:
+            def __bool__(self):
+                calls.append("flag bool")
+                return True
+
+        class Label(str):
+            def isidentifier(self):
+                calls.append("label isidentifier")
+                return True
+
+        class FieldSubclass(dataclasses.Field):
+            __slots__ = ()
+
+            def __getattribute__(self, name):
+                calls.append("field read:" + name)
+                return super().__getattribute__(name)
+
+        class ParametersSubclass(dataclasses._DataclassParams):
+            __slots__ = ()
+
+            def __getattribute__(self, name):
+                calls.append("parameters read:" + name)
+                return super().__getattribute__(name)
+
+        field = module.Record.__dataclass_fields__["value"]
+        injected_field = FieldSubclass(dataclasses.MISSING, dataclasses.MISSING, True, True, None, True, None, True)
+        replacement_fields = {**module.Record.__dataclass_fields__, "value": injected_field}
+        for label, context in (
+            ("kw_only custom truth", patch.object(field, "kw_only", Flag())),
+            ("field name string subclass", patch.object(field, "name", Label("value"))),
+            ("Field subclass", patch.object(module.Record, "__dataclass_fields__", replacement_fields)),
+            ("parameter subclass", patch.object(module.Record, "__dataclass_params__", object.__new__(ParametersSubclass))),
+        ):
+            with self.subTest(label=label), context:
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable|runtime dataclass metadata differs"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+                self.assertEqual([], calls)
 
     def test_wrong_outer_file_pin_is_rejected(self):
         reference = self.write_document()

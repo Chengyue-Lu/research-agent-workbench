@@ -1,0 +1,35 @@
+{
+  "kind": "compact_evidence_index",
+  "files": [
+    {
+      "path": "CAPTURE.json",
+      "bytes": 2460,
+      "sha256": "cc8a4c4eee7033ae6656d728b6758a36f539d5f6e4dd764c24d518bd3fde7ee3"
+    },
+    {
+      "path": "PLAN.original.txt",
+      "bytes": 2900,
+      "sha256": "3fcc6ba75da692923f38c790d17ee93bb4b1f8793561f755aae64954d733f5a0"
+    },
+    {
+      "path": "raw-observations.zip",
+      "bytes": 426708,
+      "sha256": "7c22ffd77681b312be16676404b84c23e9200d241bf088fe2830835018f18204"
+    },
+    {
+      "path": "RAW_INDEX.json",
+      "bytes": 18233,
+      "sha256": "86d48ad8f5bf82b0bdad498dd00567ec20ef1d486bb32e9a94d4dd4c5e019348"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1209,
+      "sha256": "f4a203c17531155a65ee20ace6af04253a8e928650b427629c550c3254d4c250"
+    },
+    {
+      "path": "WORKLOG.original.txt",
+      "bytes": 3588,
+      "sha256": "cb4b551b7aca4bc983ef24b0e12db7bbced7aa5666ccc193456d5dba0775f552"
+    }
+  ]
+}

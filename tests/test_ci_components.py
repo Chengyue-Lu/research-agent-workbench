@@ -153,6 +153,25 @@ class ComponentPlanTests(unittest.TestCase):
         workflow = self.plan(['.github/workflows/ci_components.yml'])
         self.assertEqual(common | {'test_ci_component_result', 'test_ci_checkpoint'}, set(workflow['selected_tests']))
 
+    def test_protocol_and_exclusion_policy_changes_select_position_guard(self):
+        for path in (
+            'tests/coverage_policy.yaml',
+            'src/research_workbench/adapters/models/session.py',
+            'src/research_workbench/adapters/models/session_policy.py',
+            'src/research_workbench/execution/host.py',
+        ):
+            with self.subTest(path=path):
+                report = self.plan([path])
+                self.assertIn('test_coverage_policy', report['selected_tests'])
+                self.assertNotIn('full', report)
+                if path == 'tests/coverage_policy.yaml':
+                    self.assertEqual(['ci_tooling'], report['components'])
+                    self.assertTrue(report['smoke'])
+                    self.assertTrue({
+                        'test_ci_components', 'test_ci_component_execution',
+                        'test_ci_component_smoke',
+                    }.issubset(report['selected_tests']))
+
     def test_registry_specific_prefixes_keep_domain_owners(self):
         cases = {
             'registry/providers/adapters.yaml': (['adapters'], 'test_provider_adapters'),

@@ -1,5 +1,5 @@
 policy_id: rwb-coverage-policy
-version: 2.3.6
+version: 2.3.7
 source_root: src/research_workbench
 
 suites:
@@ -833,7 +833,11 @@ negative_acceptance:
 
 justified_exclusions:
   - path: src/research_workbench/adapters/models/session.py
-    lines: [90, 91, 92, 93]
+    lines: [97, 98, 99, 100]
+    reason: Protocol method declaration has no executable implementation body.
+    owner: Chengyue-Lu
+  - path: src/research_workbench/adapters/models/session_policy.py
+    lines: [35, 36, 37, 38]
     reason: Protocol method declaration has no executable implementation body.
     owner: Chengyue-Lu
   - path: src/research_workbench/execution/host.py
