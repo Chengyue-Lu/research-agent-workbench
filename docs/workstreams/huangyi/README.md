@@ -8,6 +8,7 @@ owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`�
 
 当前研究/审计 workstream：
 
+- [`M12-M13-ENTRY/`](M12-M13-ENTRY/README.md)：PR72 的 pre-activation 输入与当前基线核对；Phase C/Topic 5 候选由 [M12 bounded continuity](../chengyue-lu/M12-BOUNDED-CONTINUITY/README.md) 接续，具名决定仍独立。
 - [`M6-BASELINE-EXECUTION/`](M6-BASELINE-EXECUTION/README.md)：
   M6-008 A1/A2 公开输入、隔离执行与文件重放已由 PR75 接受；
   [收口与交接](M6-BASELINE-EXECUTION/CLOSEOUT.md) 绑定实现证据并准备 M5-007。
