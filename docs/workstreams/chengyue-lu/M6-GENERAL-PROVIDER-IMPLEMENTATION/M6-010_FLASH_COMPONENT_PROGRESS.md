@@ -1,8 +1,14 @@
 # M6-010 Flash 真实部件进度
 
-2026-10-03。M6-009 已接受；M6-010 保持 **BLOCKED**。最后一组真实运行通过 Tool shape、
+最新收口与原报告哈希见[整项受限收口](M6-010_COMPLETION.md)。2026-10-03 后继 native005 /
+durable4 在同一累计账本、append-only 扩限 effective10 和 shared360/socket180 下完成
+Tool、往返文本、Schema 三步；新增539、累计1744 tokens、held0。第五次 native 启动和第四组
+durable Attempt 分开统计，原失败全部保留；本次收口未新增真实调用。
+
+下文是 FOLLOWUP-021 原前三组的历史快照（2026-10-03，当时 **BLOCKED**），不是当前限额或
+第四组结果。历史最后一组真实运行通过 Tool shape、
 一次纯 client Tool 执行及结果往返文本断言，Schema 请求在发送前因 `deadline-exhausted` 停止。
-完整三步 conformance 尚未通过。本文记录可观察执行事实，不是具名 Task/run 接受。
+当时完整三步 conformance 尚未通过。本文保留历史执行事实；当前完成判断与适用性在上述收口记录中。
 
 ## 基线与执行边界
 

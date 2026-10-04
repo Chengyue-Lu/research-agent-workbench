@@ -114,3 +114,11 @@ Supply/Resolver/Skill 和科研判断的权威边界保持独立。
 - native0.2绑定head/plan/Python/profile及index/count，汇总要求完整相同库存、各片实际case完整匹配和所有预定artifact；缺失/重复/漂移/失败仍拒绝。计划与components-v1汇总权威、checkpoint/发布门禁保持。
 - metadata仅对匹配且仍运行的producer尚未上传计划进行有界等待，冻结身份并重核head/attempt，过期/重复/损坏或终态缺plan立即拒绝，不借等待推导执行success。
 - 开发2的两个Provider测试文件经精确7d19提交接入，复用只读pristine准备并保留逐case真实核验/反例；Root新extended测试去除writer前重复成功校验并实际读回JSON。peer单组7.60%局部收益不当全量或新head保证。组合和最终CI证据见[FOLLOWUP-025](attempts/FOLLOWUP-025/CHECKS.md)，Provider产品/真实预算/M6-010状态及source66历史范围保持。
+
+## FOLLOWUP-026 M6-010 exact-run 收口
+
+- [收口记录](M6-010_COMPLETION.md)绑定原 source66 / installed002 / actual005，用户直接收口指令与已有 live/budget 决定在报告之外记录。原 null/false flags 不变，不代填黄毅新的 approval、reviewer 不可用或 socket/账单证明。
+- source66 到实际 developede 仅有失败报告处理及授权原文 byte/hash 读取两个 Provider 修复；离线故障/正常路径已验证。原安装/live 不重签新 source graph；后继 M5 改 source/config/purpose 必须重验适用性，必要 live 验证仍用唯一累计账本及北京18后官方闲时。
+- 原报告按 byte-exact SHA 公开，仅闭集脱敏元数据；24份 private refs 使用相对路径/大小/hash。公开索引无法替代原件访问或认证生产者；独立 SQLite ro+immutable、原40 checkpoints/前缀及 exact installed pure reader 在本次只读复核通过。没有新调用、密钥/账本操作。
+- 原三 failed Attempts、native001 启动拒绝、source/helper 失败、unknown cost、caller/input/native 信任限定及 capture gap 保留。原 negative probes 继续拒绝 source/授权篡改、预算上限及闭账本出站。Task DONE 限定 Flash Provider/session，不激活 M5/A4/OpenAI/其他厂商/科研/发布。
+- develop full37168512882 的3.13 compatibility失败/3.11 coverage运行中另记录为检查范围限制，由开发2继续诊断，不用594组件或本次文档检查替代多版本/full。可回退本次 Task 状态/文档 PR；已收到的1744 usage与失败历史不可回滚或删去。

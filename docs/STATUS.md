@@ -47,7 +47,11 @@ token 上限仍 10,000,000。新安装与 Windows 合成链通过后，第四组
 Schema 三步部件断言全部通过，父进程正常退出、报告 1.2 冷读校验通过。
 累计四组 durable Attempt、七份成功响应，input1540/output204=1744 tokens、held0。
 证据见 [FOLLOWUP-023](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-023/CHECKS.md)。
-本地结果绑定未合入的 PR131 候选；M6-010 正式状态保持 BLOCKED，具名接受和 `live_qualified` 尚未成立。
+PR131 已合入 develop `ede2bc1d`。M6-010 本候选按用户直接收口指令接受 source66 / installed002 /
+native005 的 exact Flash Provider/session 部件证据，提出 DONE；条款映射、公开脱敏报告、
+独立只读复核和当前源码 delta 见[整项受限收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md)。
+历史报告的 `live_qualified=false` 与当时接受字段保持原样，外部完成判断不改写报告；M5 消费新的
+source/config 时仍须复核同一 binding 的适用性，A4 admission 和四臂 Pilot 仍有独立 Gate。
 原 M6-004 OpenAI 验收仍 BLOCKED；保存本地 Key 和晚间时间安排不证明 Provider 或 Pilot 已可用。
 
 ## 已实现

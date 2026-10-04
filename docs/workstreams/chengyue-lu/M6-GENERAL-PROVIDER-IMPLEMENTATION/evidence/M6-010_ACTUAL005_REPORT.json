@@ -1,0 +1,501 @@
+{
+  "schema_version": "0.1.0",
+  "record_kind": "profile_conformance_report",
+  "report_version": "1.2.0",
+  "status": "completed",
+  "stop_code": "completed",
+  "provider": "deepseek",
+  "profile_id": "deepseek-responses-nonthinking-v1",
+  "requested_model": "deepseek-flash",
+  "observed_models": [
+    "deepseek-flash"
+  ],
+  "profile_ref": {
+    "path": "registry/providers/profiles/deepseek-responses-v1.json",
+    "sha256": "aeb383c278bfb974c6998683ce8d6caab859a60880a76d880142c008585f12f0"
+  },
+  "config_ref": {
+    "path": "binding/resolved-config.json",
+    "sha256": "1e8de27b6e047bd6c0a7b9eb9f5badd4243c28871c781bb7a1e5a97f07ae3ee2"
+  },
+  "source_refs": [
+    {
+      "module": "research_workbench.adapters.models.profile_conformance",
+      "source_sha256": "731bdc876cc15c6df0abf54c0556d59864ca1ef2ede9195ec548408e7fbc2ebd"
+    },
+    {
+      "module": "research_workbench.adapters.models.conformance_transport",
+      "source_sha256": "b341b1da0315af9ce754c026415c39aeaabdf6f87339e5722e4c5943899e75c8"
+    }
+  ],
+  "limits": {
+    "max_provider_invocations": 3,
+    "max_tool_executions": 1,
+    "max_output_tokens": 256,
+    "max_seconds": 360.0
+  },
+  "calls": [
+    {
+      "ordinal": 1,
+      "phase": "specific-tool",
+      "finish_reason": "tool_call",
+      "response_received": true,
+      "assertion_passed": true,
+      "input_tokens": 321,
+      "output_tokens": 49,
+      "cached_input_tokens": 128,
+      "reasoning_tokens": 0
+    },
+    {
+      "ordinal": 2,
+      "phase": "result-text",
+      "finish_reason": "complete",
+      "response_received": true,
+      "assertion_passed": true,
+      "input_tokens": 94,
+      "output_tokens": 1,
+      "cached_input_tokens": 0,
+      "reasoning_tokens": 0
+    },
+    {
+      "ordinal": 3,
+      "phase": "structured",
+      "finish_reason": "complete",
+      "response_received": true,
+      "assertion_passed": true,
+      "input_tokens": 68,
+      "output_tokens": 6,
+      "cached_input_tokens": 0,
+      "reasoning_tokens": 0
+    }
+  ],
+  "actual_counts": {
+    "provider_invocations": 3,
+    "http_entry_observations": 3,
+    "tool_executions": 1,
+    "responses_received": 3
+  },
+  "assertions": {
+    "tool_call_shape": true,
+    "tool_executed_once": true,
+    "text_exact": true,
+    "schema_exact": true
+  },
+  "accounting": {
+    "ledger_version": "1.1.0",
+    "scope": "durable-caller-attested",
+    "limits": {
+      "total_token_limit": 10000000,
+      "max_attempts": 10,
+      "max_invocations_per_attempt": 3,
+      "max_output_tokens_per_invocation": 256
+    },
+    "blocked": false,
+    "blocked_reason": null,
+    "provider_invocations": 10,
+    "http_send_attempts": 7,
+    "responses_received": 7,
+    "successful_responses": 7,
+    "failed_invocations": 3,
+    "known_input_tokens": 1540,
+    "known_output_tokens": 204,
+    "known_total_tokens": 1744,
+    "unresolved_reserved_tokens": 0,
+    "remaining_token_capacity": 9998256,
+    "cost": {
+      "status": "unknown",
+      "requirement": "not-required",
+      "provider_reported_cost": null,
+      "currency": null,
+      "estimated_cost_computed": false,
+      "billing_settlement_verified": false
+    },
+    "attempts": [
+      {
+        "ordinal": 1,
+        "status": "failed",
+        "provider_invocations": 2,
+        "repair_refreeze_asserted": false
+      },
+      {
+        "ordinal": 2,
+        "status": "failed",
+        "provider_invocations": 2,
+        "repair_refreeze_asserted": true
+      },
+      {
+        "ordinal": 3,
+        "status": "failed",
+        "provider_invocations": 3,
+        "repair_refreeze_asserted": true
+      },
+      {
+        "ordinal": 4,
+        "status": "completed",
+        "provider_invocations": 3,
+        "repair_refreeze_asserted": true
+      }
+    ],
+    "calls": [
+      {
+        "ordinal": 1,
+        "attempt_ordinal": 1,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": true,
+        "settled": true,
+        "response_received": true,
+        "successful_reported": true,
+        "outcome": "succeeded",
+        "accounting_status": "known",
+        "reported_usage": {
+          "input_tokens": 321,
+          "output_tokens": 49,
+          "cached_input_tokens": 0,
+          "reasoning_tokens": 0,
+          "provider_reported_cost": null,
+          "currency": null,
+          "cost_status": "unknown"
+        },
+        "verified_usage": null,
+        "send_intent_durable": true,
+        "http_entry_observed": true,
+        "may_have_sent": true,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 2,
+        "attempt_ordinal": 1,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": false,
+        "settled": true,
+        "response_received": false,
+        "successful_reported": false,
+        "outcome": "failed-before-send",
+        "accounting_status": "released-before-send",
+        "reported_usage": null,
+        "verified_usage": null,
+        "send_intent_durable": false,
+        "http_entry_observed": false,
+        "may_have_sent": false,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 3,
+        "attempt_ordinal": 2,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": true,
+        "settled": true,
+        "response_received": true,
+        "successful_reported": true,
+        "outcome": "succeeded",
+        "accounting_status": "known",
+        "reported_usage": {
+          "input_tokens": 321,
+          "output_tokens": 49,
+          "cached_input_tokens": 128,
+          "reasoning_tokens": 0,
+          "provider_reported_cost": null,
+          "currency": null,
+          "cost_status": "unknown"
+        },
+        "verified_usage": null,
+        "send_intent_durable": true,
+        "http_entry_observed": true,
+        "may_have_sent": true,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 4,
+        "attempt_ordinal": 2,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": false,
+        "settled": true,
+        "response_received": false,
+        "successful_reported": false,
+        "outcome": "failed-before-send",
+        "accounting_status": "released-before-send",
+        "reported_usage": null,
+        "verified_usage": null,
+        "send_intent_durable": false,
+        "http_entry_observed": false,
+        "may_have_sent": false,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 5,
+        "attempt_ordinal": 3,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": true,
+        "settled": true,
+        "response_received": true,
+        "successful_reported": true,
+        "outcome": "succeeded",
+        "accounting_status": "known",
+        "reported_usage": {
+          "input_tokens": 321,
+          "output_tokens": 49,
+          "cached_input_tokens": 128,
+          "reasoning_tokens": 0,
+          "provider_reported_cost": null,
+          "currency": null,
+          "cost_status": "unknown"
+        },
+        "verified_usage": null,
+        "send_intent_durable": true,
+        "http_entry_observed": true,
+        "may_have_sent": true,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 6,
+        "attempt_ordinal": 3,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": true,
+        "settled": true,
+        "response_received": true,
+        "successful_reported": true,
+        "outcome": "succeeded",
+        "accounting_status": "known",
+        "reported_usage": {
+          "input_tokens": 94,
+          "output_tokens": 1,
+          "cached_input_tokens": 0,
+          "reasoning_tokens": 0,
+          "provider_reported_cost": null,
+          "currency": null,
+          "cost_status": "unknown"
+        },
+        "verified_usage": null,
+        "send_intent_durable": true,
+        "http_entry_observed": true,
+        "may_have_sent": true,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 7,
+        "attempt_ordinal": 3,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": false,
+        "settled": true,
+        "response_received": false,
+        "successful_reported": false,
+        "outcome": "failed-before-send",
+        "accounting_status": "released-before-send",
+        "reported_usage": null,
+        "verified_usage": null,
+        "send_intent_durable": false,
+        "http_entry_observed": false,
+        "may_have_sent": false,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 8,
+        "attempt_ordinal": 4,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": true,
+        "settled": true,
+        "response_received": true,
+        "successful_reported": true,
+        "outcome": "succeeded",
+        "accounting_status": "known",
+        "reported_usage": {
+          "input_tokens": 321,
+          "output_tokens": 49,
+          "cached_input_tokens": 128,
+          "reasoning_tokens": 0,
+          "provider_reported_cost": null,
+          "currency": null,
+          "cost_status": "unknown"
+        },
+        "verified_usage": null,
+        "send_intent_durable": true,
+        "http_entry_observed": true,
+        "may_have_sent": true,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 9,
+        "attempt_ordinal": 4,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": true,
+        "settled": true,
+        "response_received": true,
+        "successful_reported": true,
+        "outcome": "succeeded",
+        "accounting_status": "known",
+        "reported_usage": {
+          "input_tokens": 94,
+          "output_tokens": 1,
+          "cached_input_tokens": 0,
+          "reasoning_tokens": 0,
+          "provider_reported_cost": null,
+          "currency": null,
+          "cost_status": "unknown"
+        },
+        "verified_usage": null,
+        "send_intent_durable": true,
+        "http_entry_observed": true,
+        "may_have_sent": true,
+        "token_usage_failure": null
+      },
+      {
+        "ordinal": 10,
+        "attempt_ordinal": 4,
+        "input_upper_tokens": 1048576,
+        "output_upper_tokens": 256,
+        "send_attempted": true,
+        "settled": true,
+        "response_received": true,
+        "successful_reported": true,
+        "outcome": "succeeded",
+        "accounting_status": "known",
+        "reported_usage": {
+          "input_tokens": 68,
+          "output_tokens": 6,
+          "cached_input_tokens": 0,
+          "reasoning_tokens": 0,
+          "provider_reported_cost": null,
+          "currency": null,
+          "cost_status": "unknown"
+        },
+        "verified_usage": null,
+        "send_intent_durable": true,
+        "http_entry_observed": true,
+        "may_have_sent": true,
+        "token_usage_failure": null
+      }
+    ],
+    "durable_send_intents": 7,
+    "http_entry_observations": 7,
+    "journal_version": "1.1.0",
+    "budget_namespace": "9ecac134-1d0d-448a-ba41-e0550d278ab5",
+    "events_committed": 40,
+    "recovery_required": false,
+    "baseline_limits": {
+      "total_token_limit": 10000000,
+      "max_attempts": 3,
+      "max_invocations_per_attempt": 3,
+      "max_output_tokens_per_invocation": 256
+    },
+    "effective_limits": {
+      "total_token_limit": 10000000,
+      "max_attempts": 10,
+      "max_invocations_per_attempt": 3,
+      "max_output_tokens_per_invocation": 256
+    },
+    "attempt_limit_grant": {
+      "payload": {
+        "baseline_limits": {
+          "max_attempts": 3,
+          "max_invocations_per_attempt": 3,
+          "max_output_tokens_per_invocation": 256,
+          "total_token_limit": 10000000
+        },
+        "budget_namespace": "9ecac134-1d0d-448a-ba41-e0550d278ab5",
+        "decision_ref": {
+          "path": "binding/budget-extension/decision.json",
+          "sha256": "edea0cc4aef903172e1e2be3da1bcfb070a6c13143759e2f3226bab3f67b2d3a"
+        },
+        "grant_version": "1.0.0",
+        "journal_identity": "7f0cbea6-fca6-434a-99a5-6f9623a2e9c7",
+        "new_max_attempts": 10,
+        "prefix_ref": {
+          "path": "binding/budget-extension/prefix.json",
+          "sha256": "53a7b82a1ec466b33f8b098a546fc3158fa56ec0e7793db69584583bc5624d7f"
+        },
+        "previous_chain_sha256": "fc9da8bd1213ffb8f7b482cc5c8ba85a35417bf55ca0370a704f137824d60913",
+        "previous_events": 25,
+        "record_kind": "conformance_attempt_limit_grant",
+        "retained_state_sha256": "5039d28d47aed173abe618688e6f1087de751609d49e0f904cd907770b37ee54"
+      },
+      "sha256": "9e93f98b0a5c62e7e1dace8352b9bc833718da0dc8a653cddaf644e513623d2a"
+    }
+  },
+  "remote_strict_claim": false,
+  "live_qualified": false,
+  "qualification": "external-accepted-run-gates-required",
+  "http_observation": "delegate-entry-only-not-socket-proof",
+  "warnings": [
+    "caller-attested-gates",
+    "partial-source-closure",
+    "input-bound-proof-unverified",
+    "windows-run-unaccepted",
+    "remote-strict-unclaimed"
+  ],
+  "binding": {
+    "manifest_ref": {
+      "path": "binding/manifest.json",
+      "sha256": "a77f7d0e7bec8f15347589b97acd43b493742f6967804c31a83878ed7cfcfe4f"
+    },
+    "implementation_closure_ref": {
+      "path": "binding/graph/closure.json",
+      "sha256": "7c07093cc2571f8953b056822705e87d9dc4067481b2f4a49558d12e82dcf2bc"
+    },
+    "attempt_ordinal": 4,
+    "body_policy": {
+      "policy_version": "1.0.0",
+      "max_output_tokens": 256,
+      "max_body_bytes": 4096
+    },
+    "input_upper_tokens": [
+      1048576,
+      1048576,
+      1048576
+    ],
+    "session_policy": {
+      "policy_id": "profile-conformance-specific-none",
+      "policy_version": "1.0.0"
+    },
+    "delegated_transport_class": "research_workbench.adapters.models.http.UrllibTransport"
+  },
+  "budget_extension": {
+    "attempt_limit_grant": {
+      "payload": {
+        "baseline_limits": {
+          "max_attempts": 3,
+          "max_invocations_per_attempt": 3,
+          "max_output_tokens_per_invocation": 256,
+          "total_token_limit": 10000000
+        },
+        "budget_namespace": "9ecac134-1d0d-448a-ba41-e0550d278ab5",
+        "decision_ref": {
+          "path": "binding/budget-extension/decision.json",
+          "sha256": "edea0cc4aef903172e1e2be3da1bcfb070a6c13143759e2f3226bab3f67b2d3a"
+        },
+        "grant_version": "1.0.0",
+        "journal_identity": "7f0cbea6-fca6-434a-99a5-6f9623a2e9c7",
+        "new_max_attempts": 10,
+        "prefix_ref": {
+          "path": "binding/budget-extension/prefix.json",
+          "sha256": "53a7b82a1ec466b33f8b098a546fc3158fa56ec0e7793db69584583bc5624d7f"
+        },
+        "previous_chain_sha256": "fc9da8bd1213ffb8f7b482cc5c8ba85a35417bf55ca0370a704f137824d60913",
+        "previous_events": 25,
+        "record_kind": "conformance_attempt_limit_grant",
+        "retained_state_sha256": "5039d28d47aed173abe618688e6f1087de751609d49e0f904cd907770b37ee54"
+      },
+      "sha256": "9e93f98b0a5c62e7e1dace8352b9bc833718da0dc8a653cddaf644e513623d2a"
+    },
+    "baseline_limits": {
+      "max_attempts": 3,
+      "max_invocations_per_attempt": 3,
+      "max_output_tokens_per_invocation": 256,
+      "total_token_limit": 10000000
+    },
+    "effective_limits": {
+      "max_attempts": 10,
+      "max_invocations_per_attempt": 3,
+      "max_output_tokens_per_invocation": 256,
+      "total_token_limit": 10000000
+    }
+  }
+}

@@ -1,0 +1,287 @@
+{
+  "binding_manifest_ref": {
+    "path": "binding/manifest.json",
+    "sha256": "a77f7d0e7bec8f15347589b97acd43b493742f6967804c31a83878ed7cfcfe4f"
+  },
+  "boundary": "Exact historical Flash Provider/session only; no new-source live qualification, remote strict, physical socket proof, invoice settlement, A4 admission, M5 pilot or scientific conclusion.",
+  "candidate_config_sha256": "1e5810d24f6366491d27902871c2b2c5e56ece6261dc6a9a1e3d8e50f3efc618",
+  "current_readonly_checks": {
+    "cold_reader": {
+      "archive_execution": false,
+      "current_actual_counts": {
+        "http_entry_observations": 3,
+        "provider_invocations": 3,
+        "responses_received": 3,
+        "tool_executions": 1
+      },
+      "journal_open": false,
+      "known_tokens": 1744,
+      "live_qualified": false,
+      "reader_source_sha256": "9ebf038ed38418f13d00ec104902ba9cba8053c306e5beb45ed167a4e2fd4548",
+      "real_writes": 0,
+      "remote_strict_claim": false,
+      "report_status": "completed",
+      "report_version": "1.2.0",
+      "status": "EXACT_INSTALLED002_COLD_READER_PASS"
+    },
+    "durable": {
+      "all40_checkpoints_match": true,
+      "all4_assertions": true,
+      "anchor_lines": 41,
+      "anchor_sha256": "32cada80507f410e8cf480ace5e65ff68d4f8f9ec37e0538ff32aba0debf16c2",
+      "billing_verified": false,
+      "cached_subset_tokens": 384,
+      "counts": {
+        "attempt": 4,
+        "attempt-limit-grant": 1,
+        "entry": 7,
+        "finish": 1,
+        "intent": 7,
+        "release": 3,
+        "reserve": 10,
+        "settle": 7
+      },
+      "current_calls_usage": [
+        [
+          321,
+          49
+        ],
+        [
+          94,
+          1
+        ],
+        [
+          68,
+          6
+        ]
+      ],
+      "current_entries_responses": 3,
+      "current_new_tokens": 539,
+      "current_tool_executions": 1,
+      "db_sha256": "0348110452b9bc212085466415909e8d3b9e71e154b3accced4ccbe496db3d0d",
+      "durable_attempts": 4,
+      "entry_seconds": 179.1720000000205,
+      "events": 40,
+      "held_tokens": 0,
+      "known_input_tokens": 1540,
+      "known_output_tokens": 204,
+      "known_total_tokens": 1744,
+      "last_attempt_status": "completed",
+      "live_qualified": false,
+      "named_acceptance": null,
+      "native_total_controller_observed": 5,
+      "observed_responses": 7,
+      "parent_seconds": 186.4220000000205,
+      "prefix25_and_grant26_preserved": true,
+      "reader_mode": "SQLite ro+immutable/query_only; stdlib-only; no journal.open",
+      "reasoning_subset_tokens": 0,
+      "remote_strict_claim": false,
+      "report_sha256": "1f0bef0cbf1bea5f9b1744a8801f62c7aac3e05c86f34b9b9e8b76781cda70d8",
+      "reserved_slots": 10,
+      "reviewer_real_writes": 0,
+      "status": "INDEPENDENT_ACTUAL005_DURABLE_CONCORDANCE_PASS"
+    }
+  },
+  "historical_product_source": "66f24a29335ced059a460d879418e07a6c7e6ea0",
+  "integration_baseline": "ede2bc1d5e3496b4e4c72abb1f39f0a3ce00aedf",
+  "new_real_invocations_in_closeout": 0,
+  "parent_source_manifest_sha256": "07111749be949d1b89a9813f3ea7c938ebe129998448d2931388110f48144d62",
+  "private_evidence_refs": [
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/ROOT_ACTUAL_SELECTION.json",
+      "publicly_included": false,
+      "sha256": "f609c4a98b3bb34e72085bab76613a7593f5fce977dca277460b2ee2c4395d87",
+      "size_bytes": 11806
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/ROOT_ACTUAL_INVOCATION_001.json",
+      "publicly_included": false,
+      "sha256": "f2cf598513dab8c79be7ecbab780d0809f53196188e8ded06f02dcbef0f87486",
+      "size_bytes": 579
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/ROOT_ACTUAL_RESULT_001.json",
+      "publicly_included": false,
+      "sha256": "6e4dae35b76a3ab6defbf7f66fcf86dfe583413918d7d199d42309462942f6c1",
+      "size_bytes": 852
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/ROOT_ACTUAL_EVIDENCE_001.json",
+      "publicly_included": false,
+      "sha256": "d1892e9d06d98811e731a317d43d746d4a1f343b0f51374e0051803e6e2bbe0a",
+      "size_bytes": 2188
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/actual-attempt-005-variant003/SOURCE_MANIFEST.json",
+      "publicly_included": false,
+      "sha256": "07111749be949d1b89a9813f3ea7c938ebe129998448d2931388110f48144d62",
+      "size_bytes": 5134
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/packet-002/FINAL_FREEZE.json",
+      "publicly_included": false,
+      "sha256": "d32541539079c1cac194ce7658e764becc1e37a5c945800b7babf702e703f3aa",
+      "size_bytes": 45913
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/packet-002/COMPOSER_REFS.json",
+      "publicly_included": false,
+      "sha256": "4eaf0a63673e3429cecd5765e876cb9507d6e56f1a6a5353dec2796ce4cb923b",
+      "size_bytes": 7283
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/installed-002/INSTALLED_SOURCE_CANDIDATE.json",
+      "publicly_included": false,
+      "sha256": "90a78576492a62c442cd26f2bc6090e13f57de3de218dd46e58b8f5c140f213a",
+      "size_bytes": 274217
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/installed-002/DEPENDENCY_REFS.json",
+      "publicly_included": false,
+      "sha256": "845e3ee94a4a86dc76b5c2c9f6b26b87e99e3662989d76fad547170b4c5a4694",
+      "size_bytes": 219512
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/installed-002/RUNTIME_PINS.json",
+      "publicly_included": false,
+      "sha256": "dd2f46a178884c9d901b3a40364ee1ceb2f8b284730d8f4f75f70cfefa1d2dd5",
+      "size_bytes": 222911
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/review-005/RECEIPT.json",
+      "publicly_included": false,
+      "sha256": "d6876617c5302cb4b7b93735b8f9e21e200f511a71de3ea1b97a5c4548fa5c82",
+      "size_bytes": 553
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/review-006/RECEIPT.json",
+      "publicly_included": false,
+      "sha256": "93eb95e1f9d19262465128ba4c201a1c6c8544b3542b22860af1c4f67781a0d3",
+      "size_bytes": 4241
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/review-006/DURABLE_CHECKS.json",
+      "publicly_included": false,
+      "sha256": "926de20d9db2d1f95ed4f277a4141e462ffe04d95bb456f76a3982f77a7913f8",
+      "size_bytes": 1541
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/review-006/COLD_REPORT_CHECKS.json",
+      "publicly_included": false,
+      "sha256": "a3c039020d5b83e81154866075dd393aa1a864efdcf1e04f966b8905a4bc602c",
+      "size_bytes": 536
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/OFFICIAL_FLASH_SELECTION.json",
+      "publicly_included": false,
+      "sha256": "72b8324126957a6f3a4408458174d3aa52065f4633fa075f14b7d6d365f01218",
+      "size_bytes": 2191
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-023/OFFICIAL_FLASH_RECHECK_002.json",
+      "publicly_included": false,
+      "sha256": "d9237de124d5e3ce40c81f053802d279c0e3533fb4a56ee4014a67790928c98c",
+      "size_bytes": 858
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-026/readonly-recheck/DURABLE_CHECKS.json",
+      "publicly_included": false,
+      "sha256": "926de20d9db2d1f95ed4f277a4141e462ffe04d95bb456f76a3982f77a7913f8",
+      "size_bytes": 1541
+    },
+    {
+      "origin": "owned-private-archive",
+      "path": ".rwb/m6-general-prototype/followup-026/readonly-recheck/COLD_REPORT_CHECKS.json",
+      "publicly_included": false,
+      "sha256": "a3c039020d5b83e81154866075dd393aa1a864efdcf1e04f966b8905a4bc602c",
+      "size_bytes": 536
+    },
+    {
+      "origin": "coordinator-private-archive",
+      "path": "USER_BUDGET_DECISION.md",
+      "publicly_included": false,
+      "sha256": "74f352dbbedb7ba417c3ff04cc2669dcfba6ea91d32cfb66f443bef0e97fc2e9",
+      "size_bytes": 3543
+    },
+    {
+      "origin": "coordinator-private-archive",
+      "path": "FLASH_BUDGET_CANDIDATE.md",
+      "publicly_included": false,
+      "sha256": "95b99d8105c40444abe5b8eb55ec037b5eaa8403a5d8c2bb46f136bf8fc2869b",
+      "size_bytes": 4947
+    },
+    {
+      "origin": "coordinator-private-archive",
+      "path": "flash-live-attempt-20261003-005/LIVE_ENTRY_RECEIPT.json",
+      "publicly_included": false,
+      "sha256": "9bca05727469604063fc164728185ec258b6926ab036dd6a70dccf4b3af9db10",
+      "size_bytes": 11408
+    },
+    {
+      "origin": "coordinator-private-archive",
+      "path": "flash-live-attempt-20261003-005/summary.jsonl",
+      "publicly_included": false,
+      "sha256": "530f5342da22d4a0342bafee93a331d8b673d2de8aed37df0681d177c4960437",
+      "size_bytes": 3162
+    },
+    {
+      "origin": "coordinator-private-archive",
+      "path": "flash-live-attempt-20261003-005-parent/PARENT_RECEIPT.json",
+      "publicly_included": false,
+      "sha256": "7217cb488f32a0b0fb1af2bc3a64170cede2e4cf852e2cb494890f9d15f5a457",
+      "size_bytes": 899
+    },
+    {
+      "origin": "coordinator-private-archive",
+      "path": "flash-live-attempt-20261003-005-parent/RUNTIME_DEADLINE.json",
+      "publicly_included": false,
+      "sha256": "e3c278743ddcd510d71d91cb99c571e51c2f9a7e829e8edd19c06f8ae7fc0d8e",
+      "size_bytes": 80
+    }
+  ],
+  "profile_ref": {
+    "path": "registry/providers/profiles/deepseek-responses-v1.json",
+    "sha256": "aeb383c278bfb974c6998683ce8d6caab859a60880a76d880142c008585f12f0"
+  },
+  "public_report_ref": {
+    "path": "M6-010_ACTUAL005_REPORT.json",
+    "sha256": "1f0bef0cbf1bea5f9b1744a8801f62c7aac3e05c86f34b9b9e8b76781cda70d8",
+    "size_bytes": 15578
+  },
+  "python_version": "3.11.16",
+  "record_kind": "m6_010_exact_run_closeout_evidence_index",
+  "resolved_config_ref": {
+    "path": "binding/resolved-config.json",
+    "sha256": "1e8de27b6e047bd6c0a7b9eb9f5badd4243c28871c781bb7a1e5a97f07ae3ee2"
+  },
+  "review_access": "Public report is byte-exact. Full source/config/runtime/parent/budget artifacts remain in the retained private archive and are needed for an independent full cold replay; the public index alone does not authenticate those producers or human decisions.",
+  "selected_window_utc": [
+    "2026-10-03T13:25:00+00:00",
+    "2026-10-03T15:00:00+00:00"
+  ],
+  "source_graph_module_count": 81,
+  "source_graph_ref": {
+    "path": "binding/graph/closure.json",
+    "sha256": "7c07093cc2571f8953b056822705e87d9dc4067481b2f4a49558d12e82dcf2bc"
+  },
+  "source_rebinding_performed": false,
+  "task_id": "M6-010",
+  "version": "1.0.0"
+}
