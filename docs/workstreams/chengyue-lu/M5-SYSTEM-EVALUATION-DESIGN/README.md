@@ -428,7 +428,9 @@ PR122 已[完成整项收口](M5-007_CLOSEOUT_RECEIPT.md)，Task DONE、Issue #5
 是当前准备输入；源包位于非发现目录，实际A4准入与Pilot专项freeze仍待闭合。
 
 [有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)先在隔离分支验证JSON闭集、metadata边界
-和旧H4格式隔离；它不构成live-purpose记录、实际Receipt资格、Human评分或Task接受。
+和旧H4格式隔离；它不构成实际Receipt资格、Human评分或Task接受。
+[显式v2 live Protocol/scope只读候选](M5-008_LIVE_PROTOCOL_PACKET.md)及[未接受的版本处理决定](M5-008_LIVE_PROTOCOL_DECISION.md)
+继而复用非执行H1，核对输入refs与预算/窗口声明；实际Driver、授权/适用性与全run-set验收仍待闭合。
 
 ## 9. 原始设计阶段的历史本地验证
 

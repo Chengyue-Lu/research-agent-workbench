@@ -3,7 +3,7 @@
 2026-10-04。Evaluation / Task owner：路诚钺；Provider / M6 / M11 接口 owner：黄毅。
 风险 R2；本包为离线设计候选，Task 仍 **BLOCKED**，状态与验收以
 [TASKS](../../../TASKS.md)和[Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)为准。
-核对基线：`develop@6fa105b720254fae82d2e889385c89292272b2d7`。
+当前实现核对基线：`develop@c80ec014925f0cbbbaef5486bce8422a5b4f73fb`；原准备观察仍绑定6fa。
 跟踪：[Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)。
 
 用户已授权将推进至 M5-008 run-set 验收设为目标、在 M5-004 前停止；不涉及新 Human 决断的工作
@@ -22,6 +22,7 @@
 
 本次交付是版本化 live purpose、有限审查输出、四臂集成与证据闭包的候选，
 以及可填入exact pins的进入清单。后续在隔离分支形成[有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)，
+并实现[显式v2 live Protocol/scope只读候选](M5-008_LIVE_PROTOCOL_PACKET.md)、非执行H1复用；
 仍无live执行器/调用资格。没有新增API调用、凭据读取、账本/grant、Skill admission或Task接受。
 M6-010 的部件成功证明一个选定 Provider/session；M11 live Driver、四臂集成和 M5 完成仍需本项自身验证。
 
@@ -76,8 +77,9 @@ M6-010 的部件成功证明一个选定 Provider/session；M11 live Driver、�
 
 ## 3. 版本与 authority 设计候选
 
-建议为新 Protocol/Harness/review/measurement/analysis 族提出 `2.0.0`，purpose 为
-`live-engineering-pilot`；最终 kind/version/catalog dispatch 随后续 R2 实现审查。
+新 Protocol只读实现候选采用`2.0.0`、Schema`0.2.0`、purpose=`live-pilot`与显式reader；
+默认Core分派不改。后继Harness/review/measurement/analysis族另行版本化，随R2实现审查；
+当前[版本处理决定](M5-008_LIVE_PROTOCOL_DECISION.md)仅是未接受的workstream候选。
 现有 Protocol@1.0.0 的 purpose 只有 `synthetic-contract-proof` 与 `confirmatory-protocol`，
 H3 明确拒绝 live，H4 producer/review Schema 固定 synthetic；不能仅改 phase 或连接真实端口。
 
@@ -131,7 +133,7 @@ Harness 外层时钟度量可比 wall time；Provider 内部时间或不能同�
 | 输入 | 当前候选或来源 | 冻结前必须填写/核对 |
 |---|---|---|
 | Dossier | 用户已选独立工程案例类型；scope-check cards候选 | exact case/Task/public input/private oracle identities/path/hash、选择理由、读取边界仍待Human冻结 |
-| Protocol / source / output | live purpose@2.0.0 与有限格式设计 | accepted source/validator/Schema/install、共享 Task/output/context、Protocol/config/计划 refs；本准备包不接受或实现新 Schema |
+| Protocol / source / output | live purpose@2.0.0 与有限格式设计 | accepted source/validator/Schema/install、共享Task/output/context、Protocol/config/计划refs；只读v2 Schema已在隔离分支实现，尚未接受或取得调用资格 |
 | Provider / Windows | 历史 M6-010 为 `deepseek-flash`、`deepseek-responses-nonthinking-v1`、Windows Python3.11.16 | 当前官方 slot/profile/endpoint、实际 Host/Tool/Driver 与安装；fresh applicability 与必要有界复验，不重绑 source66 |
 | A4 lineage | 一般化Skill源包/正式Need/独立评价方案候选，生产Projection为空 | exact candidate/Evaluation/Human admission/Release/provenance/Projection/Supply/Resolver/Snapshot/Bundle/View pins；准入决定由路诚钺作出 |
 | overlap / pairwise | 已有独立重算规则 | admission 与 Pilot case 两侧 typed oracle/input closure、checked/frozen times、overlay/A2/A3 qualification、pairwise；unresolved 不能因 pilot 标签放行 |

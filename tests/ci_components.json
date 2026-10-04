@@ -123,7 +123,8 @@
         "test_skill_evaluation",
         "test_skill_evaluation_helpers",
         "test_system_evaluation_protocol",
-        "test_bounded_evidence"
+        "test_bounded_evidence",
+        "test_live_evaluation_inputs"
       ],
       "flags": [
         "smoke"
@@ -474,7 +475,8 @@
       "test_evaluation_harness_review",
       "test_evaluation_overlay",
       "test_evaluation_overlap",
-      "test_system_evaluation_protocol"
+      "test_system_evaluation_protocol",
+      "test_live_evaluation_inputs"
     ],
     "tests/baseline_fixtures.py": [
       "test_evaluation_harness_proof",
@@ -643,6 +645,15 @@
     ],
     "tests/test_conformance_budget_extension.py": [
       "test_profile_conformance_extended_binding"
+    ],
+    "src/research_workbench/validation/schemas.py": [
+      "test_live_evaluation_inputs"
+    ],
+    "schemas/v0.2.0/system-evaluation-protocol.schema.json": [
+      "test_live_evaluation_inputs"
+    ],
+    "schemas/v0.2.0/evaluation-live-scope.schema.json": [
+      "test_live_evaluation_inputs"
     ]
   },
   "nearest_components": {

@@ -51,7 +51,8 @@ warnings、usage、provider_metadata、private path/hash。非完整/无效输�
 
 原Schema目录、Catalog、H1–H5 producer/source和历史报告不修改；不将这个正文塞进旧integer projection。
 独立compatibility用例直接运行旧H4 `_project`：整数继续可投影，本codec的JSON仍拒绝。
-没有新增record kind/Schema或重解释旧purpose；未来live记录版本新增时必须显式处理catalog/source身份。
+codec切片没有新增record kind/Schema或重解释旧purpose；后续[只读v2 Protocol/scope切片](M5-008_LIVE_PROTOCOL_PACKET.md)
+显式新增Evaluation版本并保留旧文件，namespaced schema identity不借用旧H4身份。
 
 [新增测试](../../../../tests/test_bounded_evidence.py)覆盖闭集/格式/规模、正文与metadata泄漏、
 解释器深度差异、非完整finish与所有未完成lifecycle、原usage/正文保留、immutable/canonical值，

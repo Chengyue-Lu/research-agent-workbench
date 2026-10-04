@@ -1,8 +1,8 @@
 # M5-008 接手与进入准备
 
 更新：2026-10-04。Task / Evaluation owner：路诚钺；Execution 接口 owner：黄毅。
-Task 风险：R2。当前状态：**BLOCKED**；本次是离线设计与文档准备，不改变 Task 状态。
-当前核对基线：`develop@6fa105b720254fae82d2e889385c89292272b2d7`；原接手观察仍绑定 b033c05。
+Task 风险：R2。当前状态：**BLOCKED**；本次包含离线设计与只读实现候选，不改变Task状态。
+当前核对基线：`develop@c80ec014925f0cbbbaef5486bce8422a5b4f73fb`；原接手/准备观察分别绑定b033c05/6fa。
 当前跟踪：[Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)。
 范围继续由 [TASKS](../../../TASKS.md) 与 [Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md) 定义。
 用户已建立推进到 M5-008 run-set 验收、M5-004 前停止的目标；当前
@@ -43,6 +43,8 @@ M5-001/002 不是 pilot hard dependencies；pilot 使用单独 Human-approved do
 Capability Resolver；不新增 arm-specific Host dispatcher、selector、fallback 或旁路 runner。
 
 隔离分支已形成[有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)，先进行离线结构/泄漏/兼容校验。
+另形成[显式v2 Protocol/scope只读实现](M5-008_LIVE_PROTOCOL_PACKET.md)：旧入口拒收新版，
+已有H1仅编译计划，声明与exact refs校验不认证applicability/checkpoint/grant。
 AGENTS将治理施加于共享接受边界；这个P0.5节点不把外部Gate写成满足，也不激活Task或执行API。
 
 ## 推进节点
@@ -70,8 +72,9 @@ pilot 数据不进入 primary confirmatory run set，不因 phase 标签而绕�
 已完成 M5-007/Issue55 和 M6-010 部件收口，独立 M5-008 tracker 继续 OPEN；当前形成有限 live-purpose/
 review 候选、exact-pin 输入清单与 P0–P4 顺序。用户另授权设为推进目标，到M5-008全部run-set具名验收后
 停止、进入M5-004之前。当前修改事实记录、导航、设计准备与`skill-lab/candidates/`中的纯说明候选；
-新增pure codec实现候选与测试；旧产品模块、Schema、Registry、Task行、默认Skill发现和所有历史Attempt保持。
-尚未冻结exact真实案例/账户/模型、取得准入或pilot授权、实现live入口、调用API/Tool或产生新live证据。
+新增pure codec与显式v2 live输入reader/Schema/测试候选；旧H1–H5/source/Schema、Registry、
+Task行、默认Skill发现和所有历史Attempt保持。
+尚未冻结exact真实案例/账户/模型、取得准入或pilot授权、实现live执行器、调用API/Tool或产生新live证据。
 真实 case、Human/Claim、科研净收益、Skill promotion、Topic 5 与发行仍按原边界处理。
 
 2026-10-02通用Provider定义修订已接受：[M6-009/010](../M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)已DONE；

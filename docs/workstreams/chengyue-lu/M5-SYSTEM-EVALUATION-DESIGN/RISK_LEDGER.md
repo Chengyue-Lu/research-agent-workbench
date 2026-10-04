@@ -228,3 +228,13 @@ that decision without asserting cross-owner approval or reviewer unavailability.
 | Existing synthetic ports reused as live authorization | H3 requires synthetic Protocol; H4 producers/Schemas and finite integer review retain that purpose | Versioned live-purpose and bounded review design within M5-008's R2 scope; no relabeling or silent legacy widening |
 | M5-007 completion treated as the pilot start gate | M6-004 BLOCKED, projection index empty, no pilot-specific authorization supplied | Exact conformance, actual A4 admission and named budget/data/Tool/time authorization before activation/calls |
 | Preparation observations treated as execution evidence | [Entry Attempt](attempts/M5-008-ENTRY-001/README.md) pins the accepted source and labels all results as static/docs checks | Complete live run set, actual facts, independent replay and Human review/freeze/reveal before M5-008 DONE |
+
+
+## Isolated live Protocol inputs candidate (2026-10-04)
+
+| Risk | Implemented control | Required downstream evidence |
+|---|---|---|
+| New live purpose silently changes historical validators | Separate v0.2 Protocol/scope, self-contained frozen fragments, explicit reader; v0.1/default and synthetic downstream rejected/unchanged; version-namespaced fingerprints | Exact new parent/source/catalog and explicit live execution/review versions, current R2 review |
+| Hash-consistent input declarations used as conformance, budget or grant authority | Scope has frozen-inputs-not-authorized status and false boundaries; tests deliberately allow qualified=false opaque applicability/checkpoint inputs | Independently verified original M6 evidence plus current source/config/Windows/Host, actual cumulative ledger, official window and named grant |
+| H1 substitutes different case closure or schedules confirmatory Pilot use | New reader compares exact scope/plan closure refs; execution phase allowlist is pilot only; H1 remains compiled-not-executed | Later scheduler enforces pilot-only full inventory and all actual guard/Receipt facts; primary eligibility remains false |
+| New preparation code treated as Task completion | [Input packet](M5-008_LIVE_PROTOCOL_PACKET.md) labels 24 offline tests separately from live/replay/Human acceptance | Actual A4 admission, Pilot authorization, full frozen run set, independent replay and named completion; M5-008 remains BLOCKED |
