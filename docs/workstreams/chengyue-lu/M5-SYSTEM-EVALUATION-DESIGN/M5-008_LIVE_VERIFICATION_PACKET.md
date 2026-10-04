@@ -60,7 +60,8 @@ checkpoint必须与真实重放的完整snapshot一致。接口仍继承M6的cal
 不会沿用慢核验开始时的时间/预算观察。默认preinvoke要求未使用reserved预占；显式send阶段
 要求同一原handle的durable intent且尚无HTTP entry，慢核验后再次核对这个状态和ordinal。
 Tool没有send阶段。该阶段区分让Driver能在写入intent后、实际HTTP entry前再核验，
-不改变事件、不授权第二次发送。实际Driver/transport仍须在入口原子使用所选单用handle。
+不改变事件、不授权第二次发送。[transport候选](M5-008_LIVE_TRANSPORT_PACKET.md)已显式
+连接Pilot book的原handle、阶段和有界encoded body；实际Driver仍须绑定当前真实guard与input proof。
 
 可信Pilot ledger接口必须返回该slot当前的typed reservation：实际已知累计、当前request预占、
 其他held、完整性、累计ceiling、包含本次预占的call计数与单Attempt/全run elapsed time。

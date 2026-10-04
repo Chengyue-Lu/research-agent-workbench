@@ -44,7 +44,10 @@ observe为[LiveUseGuard](M5-008_LIVE_VERIFICATION_PACKET.md)提供typed当前预
 其durable intent已记且HTTP entry尚未发生。它不发送、释放或回退intent；entered/settled/foreign/reopen均拒绝。
 use_verifier将preinvoke与send阶段分别绑定上述状态，不能用reserved预占代替durable intent，
 也不能把intent重用为新Provider调用。Tool观察要求无pending hold。当前source/实际官方窗口/Human
-以及transport入口与此接口的耦合仍待Driver接入，不把DTO当成执行授权。
+以及实际Driver仍待接入，不把DTO当成执行授权。
+新的[transport候选](M5-008_LIVE_TRANSPORT_PACKET.md)复用M6发送机械层，显式使用同一Pilot
+原handle及preinvoke/send阶段；编码后的正文/URL在credential.resolve前及intent前后核对。
+真实input token upper proof仍由可信端口提供，本切片没有完成实际官方规则证明或四臂Driver。
 
 ## 文件闭包与复核
 

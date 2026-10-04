@@ -91,6 +91,7 @@
         "test_provider_repository_validation",
         "test_profile_conformance",
         "test_conformance_transport",
+        "test_live_transport",
         "test_profile_conformance_cli",
         "test_profile_conformance_reporting",
         "test_profile_conformance_binding",
@@ -127,7 +128,8 @@
         "test_live_evaluation_inputs",
         "test_live_preflight",
         "test_live_verification",
-        "test_live_budget"
+        "test_live_budget",
+        "test_live_transport"
       ],
       "flags": [
         "smoke"
@@ -750,7 +752,8 @@
       "test_live_budget"
     ],
     "src/research_workbench/evaluation/live_budget.py": [
-      "test_live_budget"
+      "test_live_budget",
+      "test_live_transport"
     ],
     "src/research_workbench/evaluation/live_inputs.py": [
       "test_live_budget"
@@ -763,6 +766,24 @@
     ],
     "tests/test_live_verification.py": [
       "test_live_budget"
+    ],
+    "src/research_workbench/adapters/models/reserved_transport.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/adapters/models/request_admission.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/evaluation/live_transport.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/adapters/models/base.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/adapters/models/http.py": [
+      "test_live_transport"
+    ],
+    "src/research_workbench/adapters/models/conformance_transport.py": [
+      "test_live_transport"
     ]
   },
   "nearest_components": {
