@@ -1,0 +1,28 @@
+{
+  "kind": "compact_delegated_followup_record",
+  "observed_at_utc": "2026-10-04T06:19:36.535437+00:00",
+  "accountable_owner": "Chengyue-Lu",
+  "base": "c80ec014925f0cbbbaef5486bce8422a5b4f73fb",
+  "parent": "e9397d074a61a582bf57a430f9070af7713c3909",
+  "skills": [],
+  "own_source": [
+    {
+      "path": "src/research_workbench/adapters/models/provider_source_closure.py",
+      "sha256": "441bb66b2ab2f69cb721950e54e15690ce6aafd8bcfbbe2dd4162bbe2786ee96"
+    },
+    {
+      "path": "tests/test_provider_source_closure.py",
+      "sha256": "9fb534bd81ad467e923d895f18a53d4d2e85907d521a29c52411cc73aac45a98"
+    }
+  ],
+  "claimed_complete_agent_trace_v0_1": false,
+  "warnings": [
+    "capture-gap: complete Codex transport/event trace unavailable; visible contracts, scoped original reproductions, checks and independent review retained."
+  ],
+  "proof_boundary": "local new-source regression; old e939 hosted receipts retain original identity and are not proof for this follow-up",
+  "previous_archive_preserved": "A-20261004-001",
+  "thresholds_unchanged": "90/95/90; changed 100/100",
+  "coverage_exclusion_and_component_policy_unchanged": true,
+  "ready_switched": false,
+  "merged": false
+}

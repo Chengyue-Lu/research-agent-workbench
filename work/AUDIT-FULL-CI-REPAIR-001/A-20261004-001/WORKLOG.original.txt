@@ -1,0 +1,18 @@
+# Observable progress
+
+- Human request: cancel the old full, test latest develop, then repair.
+- 04:46:31Z: exact old6fa run37171230339 cancel POST accepted. Latestc80 run37176315620 existed, so no new dispatch.
+- 04:47:23Z: old cancelled terminal; 04:47:24Z latest first job. 3.13 suite04:47:46Z / 3.11 coverage04:48:20Z; own official full/repository plan authenticated once.
+- Isolated c80 branch created; primary11c3b57/localconfig/AGENTS preserved. Runtime generated once for local preparations, manifest193304bc586300078cf09cf17de245ae685454ba313babf10d8de3ad67fefc3c.
+- Coverage diagnosis: exact12 difference failures, not thresholds. Old receipt policy replay retains oldhead; candidate exactpins passes same old data under newevaluation identity.
+- Static real-source exclusion regression first failed old pins, then22 affected coverage tests passed on3.11 and3.13. Initial component16 tests passed. Independent review then found direct-map suppressing old nearest selection; exactci_tooling mapping fixed. Only changed regression rerun1PASS, final independent comparison preserves allfour oldsets+flags, adds oneguard.
+- Repr diagnosis:3.13 changed standard dataclass recursion wrapper. Initial implementation19PASS3.13/18PASS1FAIL3.11 exposed legacywrong-slot issue; bounded correction and actualgraph rerun3PASS each. These observations retain their own source hashes.
+- Independent security review found P1: candidate reference construction executed injectedkw_only.__bool__. Builder metadata now requires primitive/exacttype guards before reference generation. First primitive correction exposed oldmember scans reading injectedparams.__class__; those actual twoPython failures preserved. Exactmetadata precheck moved before both scans. Final newnegative + actualgraph2PASS each3.11/3.13 at f0f63804/8a53751c, no redundant original suite rerun. Final independent review pending; no blockedsource staged/published.
+- A separate M5 window supplied newerPR136 component/case costs. They remain owner-reported data, not thisfull's verified measurements; no M5/privatefunctional content read or changed by this repair.
+- Local inspection used invalidCoverage.get_option(report:exclude_list) once; corrected publickeyreport:exclude_lines. This was an inspection error, not a test/CI failure or source sideeffect.
+- 05:02:28Z lightweight live read confirms old cancelled, actualdevelop remainsc80, latestfull37176315620 stillin_progress. No second cancellation/dispatch/rerun.
+- Two metadata-only inspection paths were absent (repr-diagnosis/messages.jsonl and guessedcomponent-ci.yml); actual generated reports/commands and discoveredci_components.yml used instead. Windowsrg wildcard was passed once as literal and returned patherror; no source/test/CI operation resulted.
+
+Local command/native/readouts, independent reviews and preserved failures are in dedicated assessment directories. Complete transport AgentTrace unavailable; capture-gap is retained. No hiddenreasoning/secrets stored. No quality definition, realProvider/credential/session/live permission, protectedbranch or release change.
+
+- 05:06:52Z final independent repr review PASS at f0f63804/8a53751c; two tiny per-interpreter probes verify four injections reject with zero callback, normal dataclass/non-dataclass accepted. No suite/actualgraph repeated. Existing source trust limits stated precisely. Archive helper's guessedreview filename/status corrected from actual frozen summary before execution; one combinedpatch verification failed on a WORKLOG context and was corrected without source/test operation.

@@ -1,0 +1,100 @@
+# 最新 develop 全量故障修复
+
+Audit ID: `AUDIT-FULL-CI-REPAIR-001`；责任人：路诚钺（`Chengyue-Lu`）；
+Provider/source-closure 维护及跨 owner 审核：黄毅（`let778750-cpu`）。风险：R2。
+入口：[Issue #87](https://github.com/Chengyue-Lu/research-agent-workbench/issues/87)。
+
+用户在2026-10-04要求停止旧全量，针对最新 `develop` 测试并推进修复。
+旧 `6fa105b` 的全量37171230339已取消；实际接受基线 `c80ec014` 的现有全量
+[37176315620](https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37176315620)
+接续启动，避免额外触发同一基线。此运行按双 Python、full behavior 和 repository coverage执行，
+现已失败：3.13为生成repr问题，3.11另有两项Provider图baseline超过调用后时间预算。
+3.11测试producer没有生成coverage原生投影，质量门禁未执行；原始覆盖率数字不代表门禁通过。
+本候选的结果与该基线运行分别绑定。
+
+## 已定位故障
+
+1. Python3.13的 dataclass `__repr__` 使用 `reprlib.recursive_repr` 包装器，原 class layout
+   checker 只识别 dataclasses/Enum/typing生成方法，误报 `ProviderAdapterConfig.__repr__`。
+   两个旧全量的3.13原生结果均包含该错误。修复按标准库实际生成结构识别递归repr，
+   使用当前标准库独立生成的同字段repr作代码比较，保持外层包装器身份、模块globals、
+   closure与内层代码的检查。构造标准库参考前，先检查类本地元数据和字段的精确类型，
+   再检查字段名及repr/kw-only布尔值；自定义truth getter、字符串或元数据子类必须零调用拒绝。
+   归档源码、Provider构造、字段factory不执行。
+2. 旧全量37168512882的3.11测试体2055项通过，但coverage精确排除对账失败：
+   `session.py` 的既有Protocol排除位置已从90–93移动到97–100，
+   `session_policy.py` 的35–38已被coverage实际排除却没有登记。
+   更新policy到2.3.7只对齐这两个现有Protocol占位位置。实际源码、coverage配置和实际排除集合不变。
+   同一旧工件在原policy下产生12个差集错误，在精确位置候选下通过；这是新checker evaluation，
+   没有把旧工件重新标记为候选HEAD的全仓证明。
+
+## 提早发现位置漂移
+
+新增局部回归使用coverage公开的 `analysis2` 静态解析真实源码，核对已登记排除位置，
+不执行Provider或Host。原policy在此回归失败，修正后双Python通过。
+三个声明文件与 `tests/coverage_policy.yaml` 登记为该短检查的直接消费者，
+日常组件CI因此能在相关源码位置移动时发现漂移，无须等全量完成。
+全仓对实际排除集合的双向对账仍保留；该短检查不替代新文件的全仓排除审计。
+
+## 单次归档内的源码解析复用
+
+针对图baseline时间预算故障，本候选减少同一次归档派生内的重复AST解析：每个模块
+从该遍已读取并核对哈希的源码字节解析一次，私有tree供import、常量、默认值、
+TypeVar、闭合record与class layout检查使用。保持声明扫描顺序，不改变同名声明的选择。
+tree只在当前归档上下文内读取，验证结束后不保留；公共document与receipt不含tree，
+调用方也不能传入“已验证facts”取得通过资格。现有declarations(raw)入口保持。
+
+loaded verification仍执行原来的两遍完整归档检查。每遍重新核FileRef、当前字节/hash、
+闭图及独立claims/compile；当前loaded source、code、defaults、alias、global/class、
+wrapper和captured builtins检查全部保留。没有进程全局缓存、磁盘缓存、跨提交结果复用，
+也没有扩大时间预算、削减反例或改变组件选集。新增回归覆盖成功后同路径/大小/mtime
+的源码变化，以及后续runtime、claims和compiler变化；旧失败和正常控制继续保留。
+
+同本机未插桩原用例单配对约78/80秒降至29/30秒；相同CI path-source/branch coverage
+配置的独立单配对约98/99秒降至45/47秒。两边原用例均通过，原120秒生产预算及全部
+反例保持，没有以方法总时长推算生产预算余量。本地旧版未复现远端预算失败，
+实际新候选完整checkpoint仍待单独验证；局部减幅不外推全仓。
+源码身份、原生配对、准备工具失败和独立安全复核保存在新归档
+[A-20261004-003](../../../../work/AUDIT-FULL-CI-REPAIR-001/A-20261004-003/README.md)，
+结果在PR正文绑定实际源码；A001/A002和原c80/d7回执不重签。
+
+## 验证与接受边界
+
+当前84候选的首次完整checkpoint `37189042708` 已保留为失败身份。
+双Python各2042个原生用例通过，3.11实际producer及已有C投影已认证；
+impact检查发现7个必需行、9条outgoing branches未覆盖，导致完整质量及固定Gate失败。
+3.11兼容投影因依赖门禁未生成，不能合成或用3.13成功替代。
+
+本轮仅补充6个短的公开入口回归：相对导入越界/星号拒绝、普通链式赋值与政策声明、
+qualified dataclass及repr参数一致性、非canonical源码decorator拒绝、真实reprlib的
+普通/递归正例与fillvalue精确类型拒绝。3.11真实stdlib wrapper仅补显式元数据链接，
+不替换其code/globals/cells/builtins；恶意比较对象必须零callback拒绝。
+产品源码保持不变，原23个方法、120秒预算、排除项及质量定义保留。
+初次本地两项fixture错误及各自修正保留；实际本地缺口闭合不替代新HEAD的hosted Gate。
+本轮原始失败与补缺记录见
+[A-20261004-004](../../../../work/AUDIT-FULL-CI-REPAIR-001/A-20261004-004/README.md)。
+
+用户后续提供的P1揭示函数自身捕获的builtins仍可与模块globals不同：
+`FunctionType`克隆可保留wrapper的code、globals、closure和`__wrapped__`，
+构造时捕获替换的`id`，再恢复模块builtins。原候选在两Python版本均接受该clone，
+后续repr会执行替换引用。跟进修复同时核外层wrapper和生成inner的
+`__builtins__`为canonical builtin namespace对象，拒绝复制dict、dict子类和自定义mapping，
+不查询这些对象。正常生成与真实递归repr、既有源码/code/closure/metadata控制继续保留。
+原反例、新源码局部检查与独立复核使用新归档[A-20261004-002](../../../../work/AUDIT-FULL-CI-REPAIR-001/A-20261004-002/README.md)；
+原A001及e939 hosted结果保留原身份，不能替代跟进提交的执行证明。
+
+修复保留正常生成repr和明确源码声明的自定义repr；未知注入、伪造包装器、替换内层、
+错误属性槽均需拒绝。独立复核发现的字段truth调用与组件policy路径选集缩小问题，
+以及修复过程暴露的元数据子类getter调用，均保留原始反例与后续修复身份。
+现有源码closure、静态policy与组件选择的正常/负例继续执行。
+验证证据和exact候选身份在PR正文更新；局部PASS不代表候选全仓覆盖通过。
+原基线全量、失败日志、候选局部回归和候选组件CI各保留自己的身份。
+
+完整验收的global90%、critical95/90、changed100/100定义、实际exclusion配置、
+critical inventory和正负验收映射保持；没有删除行为测试或调低门槛。
+日常组件路线仍按已接受的开发规范执行，coverage诊断与完整checkpoint证明分开。
+本候选不修改M Task状态、Provider/session使用权限或发布资格。
+
+合并仍需要适用的cross-owner审核及必需checks；本轮没有授权合并本修复PR。
+剩余风险与回退见[风险表](RISK_LEDGER.md)。本次记录使用紧凑归档，保留capture-gap，
+不声明完整Agent Trace。归档入口：[A-20261004-001](../../../../work/AUDIT-FULL-CI-REPAIR-001/A-20261004-001/README.md)。

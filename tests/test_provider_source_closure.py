@@ -3,15 +3,20 @@
 from __future__ import annotations
 
 import copy
+import builtins
+import dataclasses
 import hashlib
 import importlib
 import json
+import os
+import reprlib
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest.mock import patch
+from types import FunctionType
 
 from research_workbench.adapters.models import provider_source_closure as closure
 from research_workbench.validation.schemas import SchemaCatalog
@@ -95,6 +100,46 @@ class ProviderSourceClosureTests(unittest.TestCase):
             with self.assertRaisesRegex(closure.SourceClosureError, "import alias differs"):
                 self.verify()
 
+    def test_successful_verification_does_not_authorize_later_source_or_runtime(self):
+        self.assertTrue(self.verify()["actual_verified"])
+        reference = self.document["modules"]["rwb_source_fixture.helper"]["source_ref"]
+        path = self.root.joinpath(*reference["path"].split("/"))
+        original = path.read_bytes()
+        timestamp = path.stat().st_mtime_ns
+        try:
+            altered = original.replace(b"fixture:", b"altered:", 1)
+            self.assertNotEqual(original, altered)
+            self.assertEqual(len(original), len(altered))
+            path.write_bytes(altered)
+            os.utime(path, ns=(timestamp, timestamp))
+            with self.assertRaisesRegex(closure.SourceClosureError, "FileRef hash differs"):
+                self.verify()
+        finally:
+            path.write_bytes(original)
+        self.assertTrue(self.verify()["actual_verified"])
+        with patch.object(self.provider.helper, "PREFIX", "changed-after-success:"):
+            with self.assertRaisesRegex(closure.SourceClosureError, "global policy differs"):
+                self.verify()
+        with patch.object(self.provider, "source_alias", lambda value: "changed-after-success"):
+            with self.assertRaisesRegex(closure.SourceClosureError, "import alias differs"):
+                self.verify()
+        self.assertTrue(self.verify()["actual_verified"])
+
+    def test_successful_read_does_not_authorize_changed_claims_or_compiler(self):
+        self.assertIn("Provider.__init__", closure.declarations(
+            (FIXTURES / "rwb_source_fixture/provider.py").read_bytes()))
+        reference = self.write_document()
+        self.assertEqual(self.document, closure.read_source_closure(self.reader, reference))
+        changed = copy.deepcopy(self.document)
+        changed["modules"][self.provider.__name__]["claims"]["compiled_callables"]["typed"] = "0" * 64
+        with self.assertRaisesRegex(closure.SourceClosureError, "source-derived claims differ"):
+            closure.read_source_closure(self.reader, self.write_document(changed))
+        changed = copy.deepcopy(self.document)
+        changed["compiler"]["optimization"] += 1
+        with self.assertRaisesRegex(closure.SourceClosureError, "compiler/runtime differs"):
+            closure.read_source_closure(self.reader, self.write_document(changed))
+        self.assertTrue(self.verify()["actual_verified"])
+
     def test_source_native_clock_default_is_independent_of_actual(self):
         function = self.provider.Provider.__init__
         original = function.__kwdefaults__
@@ -123,6 +168,287 @@ class ProviderSourceClosureTests(unittest.TestCase):
         with patch.object(self.provider.Provider, "injected", lambda self: "drift", create=True):
             with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
                 self.verify()
+
+    def repr_fixture(self, *, decorator="direct"):
+        source = self.root / "repr-runtime"
+        source.mkdir()
+        imports = "from dataclasses import dataclass, field\n"
+        declaration = "@dataclass(frozen=True, slots=True, kw_only=True)\n"
+        if decorator == "qualified":
+            imports += "import dataclasses as dc\n"
+            declaration = "@dc.dataclass(frozen=True, slots=True, kw_only=True)\n"
+        elif decorator == "indirect":
+            imports += ("def indirect(cls):\n"
+                        "    return dataclass(frozen=True, slots=True, kw_only=True)(cls)\n")
+            declaration = "@indirect\n"
+        (source / "repr_source_fixture.py").write_text(
+            imports + declaration +
+            "class Record:\n"
+            "    value: int\n"
+            "    hidden: str = field(repr=False, default='hidden')\n"
+            "@dataclass\n"
+            "class Custom:\n"
+            "    value: int\n"
+            "    def __repr__(self):\n"
+            "        return 'custom:' + str(self.value)\n",
+            encoding="utf-8",
+        )
+        sys.path.insert(0, str(source))
+        self.addCleanup(sys.path.remove, str(source))
+        module = importlib.import_module("repr_source_fixture")
+        self.addCleanup(sys.modules.pop, "repr_source_fixture", None)
+        document = closure.produce_source_closure(
+            (module.__name__,), source_root=source, project_root=self.root,
+            archive_prefix="repr-source",
+        )
+        return module, document, source
+
+    def test_closed_import_policy_rejects_escape_and_star_without_execution(self):
+        source = self.root / "import-runtime"
+        source.mkdir()
+        path = source / "import_source_fixture.py"
+        for label, statement, message in (
+            ("package escape", "from .. import unavailable", "relative import leaves declared package"),
+            ("star alias", "from math import *", "star imports are outside closed alias policy"),
+        ):
+            path.write_text("raise AssertionError('archive executed')\n" + statement + "\n", encoding="utf-8")
+            with self.subTest(label=label), self.assertRaisesRegex(closure.SourceClosureError, message):
+                closure.produce_source_closure(
+                    ("import_source_fixture",), source_root=source,
+                    project_root=self.root, archive_prefix="import-source",
+                )
+            self.assertNotIn("import_source_fixture", sys.modules)
+
+    def test_chained_ordinary_assignments_do_not_become_policy_claims(self):
+        source = self.root / "policy-runtime"
+        source.mkdir()
+        (source / "policy_source_fixture.py").write_text(
+            "lower_one = lower_two = 1\nPOLICY = 2\n", encoding="utf-8",
+        )
+        sys.path.insert(0, str(source))
+        self.addCleanup(sys.path.remove, str(source))
+        module = importlib.import_module("policy_source_fixture")
+        self.addCleanup(sys.modules.pop, "policy_source_fixture", None)
+        document = closure.produce_source_closure(
+            ("policy_source_fixture",), source_root=source,
+            project_root=self.root, archive_prefix="policy-source",
+        )
+        self.assertEqual({"POLICY": 2}, document["modules"]["policy_source_fixture"]["claims"]["globals"])
+        self.assertEqual([], SchemaCatalog(root=ROOT / "schemas").validate(closure.KIND, document))
+        self.assertEqual(document, closure.read_source_closure(self.reader, self.write_document(document)))
+        receipt = closure.verify_source_closure(document, read_bytes=self.reader.read_bytes)
+        self.assertEqual(1, receipt["module_count"])
+        self.assertFalse(receipt["archived_execution"])
+        self.assertEqual((1, 1, 2), (module.lower_one, module.lower_two, module.POLICY))
+
+    def test_qualified_dataclass_declaration_requires_matching_repr_policy(self):
+        module, document, source = self.repr_fixture(decorator="qualified")
+        receipt = closure.verify_loaded_source_closure(
+            document, read_bytes=self.reader.read_bytes, source_root=source,
+        )
+        self.assertTrue(receipt["actual_verified"])
+        self.assertEqual("Record(value=1)", repr(module.Record(value=1)))
+        with patch.object(module.Record.__dataclass_params__, "repr", False):
+            with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                closure.verify_loaded_source_closure(
+                    document, read_bytes=self.reader.read_bytes, source_root=source,
+                )
+
+    def test_indirect_dataclass_decorator_cannot_bless_generated_repr(self):
+        with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+            self.repr_fixture(decorator="indirect")
+        self.assertTrue(dataclasses.is_dataclass(sys.modules["repr_source_fixture"].Record))
+
+    def test_canonical_reprlib_wrapper_preserves_generated_repr_and_recursion(self):
+        module, document, source = self.repr_fixture()
+        inner = module.Record.__repr__.__wrapped__
+        replacement = reprlib.recursive_repr()(inner)
+        # Python 3.11's real reprlib decorator predates this metadata link.
+        if "__wrapped__" not in vars(replacement):
+            replacement.__wrapped__ = inner
+        with patch.object(module.Record, "__repr__", replacement):
+            receipt = closure.verify_loaded_source_closure(
+                document, read_bytes=self.reader.read_bytes, source_root=source,
+            )
+            self.assertTrue(receipt["actual_verified"])
+            self.assertEqual("Record(value=1)", repr(module.Record(value=1)))
+            recursive = module.Record(value=None)
+            object.__setattr__(recursive, "value", recursive)
+            self.assertEqual("Record(value=...)", repr(recursive))
+
+    def test_reprlib_fillvalue_must_be_exact_without_calling_custom_comparisons(self):
+        module, document, source = self.repr_fixture()
+        inner = module.Record.__repr__.__wrapped__
+        calls = []
+
+        class Fillvalue(str):
+            def __eq__(self, other):
+                calls.append("fillvalue equality")
+                return True
+
+            def __ne__(self, other):
+                calls.append("fillvalue inequality")
+                return False
+
+        for label, fillvalue in (("different text", "different"), ("custom comparison", Fillvalue("..."))):
+            replacement = reprlib.recursive_repr(fillvalue)(inner)
+            if "__wrapped__" not in vars(replacement):
+                replacement.__wrapped__ = inner
+            with self.subTest(label=label), patch.object(module.Record, "__repr__", replacement):
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+                self.assertEqual([], calls)
+
+    def test_generated_dataclass_repr_and_explicit_custom_repr_are_supported(self):
+        module, document, source = self.repr_fixture()
+        receipt = closure.verify_loaded_source_closure(
+            document, read_bytes=self.reader.read_bytes, source_root=source,
+        )
+        self.assertTrue(receipt["actual_verified"])
+        self.assertEqual("Record(value=1)", repr(module.Record(value=1)))
+        self.assertEqual("custom:1", repr(module.Custom(1)))
+        recursive = module.Record(value=None)
+        object.__setattr__(recursive, "value", recursive)
+        self.assertEqual("Record(value=...)", repr(recursive))
+
+    def test_generated_repr_captured_builtins_must_be_canonical(self):
+        module, document, source = self.repr_fixture()
+        original = module.Record.__repr__
+        calls = []
+
+        def injected_id(value):
+            calls.append("captured id")
+            return builtins.id(value)
+
+        class BuiltinsDict(dict):
+            def __getitem__(self, name):
+                calls.append("dict getter")
+                return super().__getitem__(name)
+
+        class BuiltinsMapping:
+            def __getitem__(self, name):
+                calls.append("mapping getter")
+                return vars(builtins)[name]
+
+        def clone_with_builtins(function, mapping):
+            globals_ = function.__globals__
+            previous = globals_["__builtins__"]
+            try:
+                globals_["__builtins__"] = mapping
+                clone = FunctionType(function.__code__, globals_, function.__name__,
+                                     function.__defaults__, function.__closure__)
+            finally:
+                globals_["__builtins__"] = previous
+            clone.__dict__.update(function.__dict__)
+            clone.__module__ = function.__module__
+            clone.__qualname__ = function.__qualname__
+            self.assertIs(previous, globals_["__builtins__"])
+            return clone
+
+        for label, mapping in (
+            ("replaced captured id", {**vars(builtins), "id": injected_id}),
+            ("dict subclass", BuiltinsDict(vars(builtins))),
+            ("custom mapping", BuiltinsMapping()),
+        ):
+            replacement = clone_with_builtins(original, mapping)
+            self.assertIs(original.__code__, replacement.__code__)
+            self.assertIs(original.__globals__, replacement.__globals__)
+            self.assertIs(original.__closure__, replacement.__closure__)
+            self.assertIs(original.__wrapped__, replacement.__wrapped__)
+            with self.subTest(label=label), patch.object(module.Record, "__repr__", replacement):
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+                self.assertEqual([], calls)
+
+        inner = clone_with_builtins(original.__wrapped__, {**vars(builtins), "id": injected_id})
+        namespace = closure._recursive_repr_namespace(original)
+        replacement = (reprlib.recursive_repr()(inner) if namespace is reprlib
+                       else dataclasses._recursive_repr(inner))
+        with patch.object(module.Record, "__repr__", replacement):
+            with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                closure.verify_loaded_source_closure(
+                    document, read_bytes=self.reader.read_bytes, source_root=source,
+                )
+            self.assertEqual([], calls)
+
+    def test_injected_and_forged_repr_wrappers_remain_rejected(self):
+        module, document, source = self.repr_fixture()
+        original = module.Record.__repr__
+        original_inner = original.__wrapped__
+
+        def injected(self):
+            return "drift"
+
+        injected.__wrapped__ = original_inner
+        forged_inner = FunctionType(
+            injected.__code__.replace(co_filename="<string>", co_name="__repr__",
+                                      co_qualname=original_inner.__code__.co_qualname),
+            vars(module), "__repr__",
+        )
+        wrong_inner = reprlib.recursive_repr()(forged_inner)
+        for label, replacement in (
+            ("plain injected", injected),
+            ("reprlib wrapped ordinary callable", reprlib.recursive_repr()(injected)),
+            ("canonical wrapper with forged generated filename", wrong_inner),
+        ):
+            with self.subTest(label=label), patch.object(module.Record, "__repr__", replacement):
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+        with patch.object(module.Record, "injected", original, create=True):
+            with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                closure.verify_loaded_source_closure(
+                    document, read_bytes=self.reader.read_bytes, source_root=source,
+                )
+
+    def test_repr_field_metadata_rejects_custom_objects_without_calling_them(self):
+        module, document, source = self.repr_fixture()
+        calls = []
+
+        class Flag:
+            def __bool__(self):
+                calls.append("flag bool")
+                return True
+
+        class Label(str):
+            def isidentifier(self):
+                calls.append("label isidentifier")
+                return True
+
+        class FieldSubclass(dataclasses.Field):
+            __slots__ = ()
+
+            def __getattribute__(self, name):
+                calls.append("field read:" + name)
+                return super().__getattribute__(name)
+
+        class ParametersSubclass(dataclasses._DataclassParams):
+            __slots__ = ()
+
+            def __getattribute__(self, name):
+                calls.append("parameters read:" + name)
+                return super().__getattribute__(name)
+
+        field = module.Record.__dataclass_fields__["value"]
+        injected_field = FieldSubclass(dataclasses.MISSING, dataclasses.MISSING, True, True, None, True, None, True)
+        replacement_fields = {**module.Record.__dataclass_fields__, "value": injected_field}
+        for label, context in (
+            ("kw_only custom truth", patch.object(field, "kw_only", Flag())),
+            ("field name string subclass", patch.object(field, "name", Label("value"))),
+            ("Field subclass", patch.object(module.Record, "__dataclass_fields__", replacement_fields)),
+            ("parameter subclass", patch.object(module.Record, "__dataclass_params__", object.__new__(ParametersSubclass))),
+        ):
+            with self.subTest(label=label), context:
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable|runtime dataclass metadata differs"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+                self.assertEqual([], calls)
 
     def test_wrong_outer_file_pin_is_rejected(self):
         reference = self.write_document()

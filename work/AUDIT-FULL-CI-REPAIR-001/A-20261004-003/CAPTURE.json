@@ -1,0 +1,41 @@
+{
+  "kind": "compact_delegated_followup_record",
+  "at": "2026-10-04T07:53:17.243724+00:00",
+  "base": "c80ec014925f0cbbbaef5486bce8422a5b4f73fb",
+  "parent": "d7c13791b8ade226a7448cacac3a05fdfe7f71c2",
+  "skills": [],
+  "accountable_owner": "Chengyue-Lu",
+  "provider_review_owner": "let778750-cpu",
+  "source": [
+    {
+      "path": "src/research_workbench/adapters/models/provider_source_closure.py",
+      "sha256": "c309208fe89f09cb29f64470d1036693fb84fd97f300e8bf01fa05702ef759f3"
+    },
+    {
+      "path": "tests/test_provider_source_closure.py",
+      "sha256": "52c10a34efbf80fce3829eec77a950f43e73e9a9f97826d2ff5c7d9e01bce96a"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/FULL-CI-REPAIR-001/README.md",
+      "sha256": "7a13958b9be344e94d99eb10b1198b3b229d41a484f35236da7711617cf1e422"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/FULL-CI-REPAIR-001/RISK_LEDGER.md",
+      "sha256": "e557c96685d7ed77f4f0ed07db9c75ab356c7a550879dcb0ab6ce04abcf1e922"
+    }
+  ],
+  "complete_agent_trace": false,
+  "warnings": [
+    "capture-gap: complete transport/event trace unavailable; scoped raw checks, tool failures, messages and reviews retained"
+  ],
+  "test_budget_seconds": 120,
+  "quality": "global90/critical95-90/changed100-100 unchanged",
+  "global_cache": false,
+  "cached_acceptance": false,
+  "ready": false,
+  "merged": false,
+  "historical_archives_preserved": [
+    "A-20261004-001",
+    "A-20261004-002"
+  ]
+}

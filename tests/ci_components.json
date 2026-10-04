@@ -294,6 +294,7 @@
       ],
       "paths": [
         "tests/ci_components.json",
+        "tests/coverage_policy.yaml",
         "tests/run_unittest_suite.py"
       ],
       "tests": [
@@ -351,6 +352,18 @@
     }
   },
   "direct_tests": {
+    "tests/coverage_policy.yaml": [
+      "test_coverage_policy"
+    ],
+    "src/research_workbench/adapters/models/session.py": [
+      "test_coverage_policy"
+    ],
+    "src/research_workbench/adapters/models/session_policy.py": [
+      "test_coverage_policy"
+    ],
+    "src/research_workbench/execution/host.py": [
+      "test_coverage_policy"
+    ],
     "tests/fixtures/provider_binding_graph_v1/": [
       "test_provider_binding_graph"
     ],

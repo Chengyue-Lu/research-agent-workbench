@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 import yaml
+from coverage import Coverage
 
 from tests import run_unittest_suite
 
@@ -82,6 +83,14 @@ def results(*, include_negative: bool = True) -> dict:
 
 
 class CoveragePolicyCheckerTests(unittest.TestCase):
+    def test_checked_in_exclusions_match_static_coverage_analysis(self) -> None:
+        manifest = yaml.safe_load(POLICY.read_text(encoding="utf-8"))
+        analyzer = Coverage(data_file=None, config_file=False)
+        for declaration in manifest["justified_exclusions"]:
+            with self.subTest(path=declaration["path"]):
+                _, _, excluded, _, _ = analyzer.analysis2(str(ROOT / declaration["path"]))
+                self.assertEqual(set(declaration["lines"]), set(excluded))
+
     def test_exact_thresholds_and_positive_negative_evidence_pass(self) -> None:
         self.assertEqual(CHECKER.check_policy(policy(), coverage(), results()), [])
 

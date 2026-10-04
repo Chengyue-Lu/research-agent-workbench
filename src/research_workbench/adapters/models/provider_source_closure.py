@@ -15,6 +15,7 @@ import json
 import math
 from pathlib import Path, PurePath, PurePosixPath
 import re
+import reprlib
 import sys
 import time
 from types import CodeType, FunctionType, MappingProxyType
@@ -62,7 +63,7 @@ def _path_for(source_root, module):
     raise SourceClosureError("declared source module unavailable: " + module)
 
 
-def _imports(module, raw, *, is_package, namespace):
+def _imports(module, tree, *, is_package, namespace):
     edges = set()
     aliases = {}
     parts = module.split(".")
@@ -76,7 +77,6 @@ def _imports(module, raw, *, is_package, namespace):
             target = ".".join(base[:len(base) - node.level + 1])
             return target + ("." + node.module if node.module else "")
         return node.module or ""
-    tree = ast.parse(raw)
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for item in node.names:
@@ -161,7 +161,7 @@ class ClosedSource:
         self.active.add(key)
         try:
             item = self.archive[module]
-            for node in ast.parse(item["raw"]).body:
+            for node in item["tree"].body:
                 targets = node.targets if isinstance(node, ast.Assign) else ([node.target] if isinstance(node, ast.AnnAssign) else [])
                 if any(isinstance(target, ast.Name) and target.id == name for target in targets):
                     result = self.evaluate(module, node.value, {})
@@ -212,7 +212,7 @@ class ClosedSource:
             if isinstance(base, dict) and set(base) == {"source_class"}:
                 full = base["source_class"]
                 target, cls = full.rsplit(".", 1)
-                class_node = next(item for item in ast.parse(self.archive[target]["raw"]).body if isinstance(item, ast.ClassDef) and item.name == cls)
+                class_node = next(item for item in self.archive[target]["tree"].body if isinstance(item, ast.ClassDef) and item.name == cls)
                 for member in class_node.body:
                     if isinstance(member, ast.Assign) and any(isinstance(name, ast.Name) and name.id == node.attr for name in member.targets):
                         value = self.evaluate(target, member.value, {})
@@ -308,7 +308,7 @@ class ClosedSource:
         raise ValueError("outside closed source literal/reference language")
 
     def check_typing_only(self, module, symbol):
-        tree = ast.parse(self.archive[module]["raw"])
+        tree = self.archive[module]["tree"]
         annotation_ids = set()
         for node in ast.walk(tree):
             for field in ("annotation", "returns"):
@@ -326,7 +326,7 @@ class ClosedSource:
         }
         if full not in allowed: raise ValueError("record class outside named closed registry")
         module, name = full.rsplit(".", 1)
-        node = next(item for item in ast.parse(self.archive[module]["raw"]).body if isinstance(item, ast.ClassDef) and item.name == name)
+        node = next(item for item in self.archive[module]["tree"].body if isinstance(item, ast.ClassDef) and item.name == name)
         if node.bases or node.keywords: raise ValueError("record inheritance unsupported")
         fields = tuple(item.target.id for item in node.body if isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name) and item.value is None)
         if fields != allowed[full]: raise ValueError("record field declaration differs")
@@ -430,14 +430,28 @@ def plain(value):
     raise ValueError("runtime value outside closed serialization")
 
 
-def declarations(raw):
+def _declarations(tree):
     result = {}
     def walk(nodes, prefix=""):
         for node in nodes:
             if isinstance(node, ast.ClassDef): walk(node.body, prefix + node.name + ".")
             elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)): result[prefix + node.name] = node
-    walk(ast.parse(raw).body)
+    walk(tree.body)
     return result
+
+
+def declarations(raw):
+    return _declarations(ast.parse(raw))
+
+
+def _check_dataclass_metadata(cls):
+    local = vars(cls)
+    parameters = local.get("__dataclass_params__")
+    fields = local.get("__dataclass_fields__")
+    if "__dataclass_params__" in local or "__dataclass_fields__" in local:
+        _fail(type(parameters) is dataclasses._DataclassParams and type(fields) is dict
+              and all(type(field) is dataclasses.Field for field in fields.values()),
+              "runtime dataclass metadata differs")
 
 
 def runtime_functions(module):
@@ -448,6 +462,9 @@ def runtime_functions(module):
         elif type(value) is LRU_TYPE and value.__wrapped__.__module__ == module.__name__:
             result[value.__wrapped__.__qualname__] = value
         elif isinstance(value, type) and value.__module__ == module.__name__:
+            # Validate these payload types before isinstance inspects their
+            # potentially overloaded __class__ during the member scan.
+            _check_dataclass_metadata(value)
             for member in vars(value).values():
                 if isinstance(member, (staticmethod, classmethod)): member = member.__func__
                 if isinstance(member, property): member = member.fget
@@ -490,7 +507,7 @@ def _wrapping(item, node):
 
 
 def _class_node(item, qualname):
-    nodes = ast.parse(item["raw"]).body
+    nodes = item["tree"].body
     found = None
     for part in qualname.split("."):
         found = next((node for node in nodes if isinstance(node, ast.ClassDef) and node.name == part), None)
@@ -525,7 +542,7 @@ def _class_policies(name, item, closed):
             result[qual] = {"policies": fields, "bases": [ast.dump(base, include_attributes=False) for base in cls.bases],
                             "decorators": [ast.dump(dec, include_attributes=False) for dec in cls.decorator_list]}
             walk(cls.body, qual + ".")
-    walk(ast.parse(item["raw"]).body)
+    walk(item["tree"].body)
     return result
 
 
@@ -533,12 +550,12 @@ def _claims(name, archive, closed):
     item = archive[name]
     defaults = {}
     wrappers = {}
-    for qual, node in declarations(item["raw"]).items():
+    for qual, node in _declarations(item["tree"]).items():
         defaults[qual] = {"positional": [plain(closed.evaluate(name, value, {})) for value in node.args.defaults],
                           "keyword": {arg.arg: plain(closed.evaluate(name, value, {})) for arg, value in zip(node.args.kwonlyargs, node.args.kw_defaults) if value is not None}}
         wrappers[qual] = _wrapping(item, node)
     globals_ = {}
-    for node in ast.parse(item["raw"]).body:
+    for node in item["tree"].body:
         if not isinstance(node, (ast.Assign, ast.AnnAssign)) or node.value is None: continue
         for target in _targets(node):
             if isinstance(target, ast.Name) and (target.id.lstrip("_").isupper() or target.id in {"__version__", "__all__"}):
@@ -588,9 +605,12 @@ def _document_archive(document, read_bytes):
         raw = _read_ref(read_bytes, value["source_ref"])
         total += len(raw)
         _fail(total <= MAX_TOTAL_BYTES, "source total byte bound")
-        edges, aliases = _imports(name, raw, is_package=value["is_package"], namespace=namespace)
+        # This tree is private to this validation and never mutated or exposed.
+        # FileRef bytes/hash and all runtime comparisons are still checked afresh.
+        tree = ast.parse(raw)
+        edges, aliases = _imports(name, tree, is_package=value["is_package"], namespace=namespace)
         _fail(edges == value["dependencies"], "source import graph claim differs: " + name)
-        archive[name] = {"raw": raw, "aliases": aliases, "dependencies": edges, "is_package": value["is_package"]}
+        archive[name] = {"raw": raw, "tree": tree, "aliases": aliases, "dependencies": edges, "is_package": value["is_package"]}
     reached, pending = set(), list(roots)
     while pending:
         name = pending.pop()
@@ -655,7 +675,74 @@ def _base_reference(module, node):
     return value
 
 
+def _recursive_repr_namespace(member):
+    if member.__code__ is reprlib.recursive_repr()(lambda self: None).__code__:
+        return reprlib
+    legacy = getattr(dataclasses, "_recursive_repr", None)
+    if isinstance(legacy, FunctionType) and member.__code__ is legacy(lambda self: None).__code__:
+        return dataclasses
+    return None
+
+
+def _generated_dataclass_repr(module, cls, member, item, node, namespace):
+    # Python 3.13 uses reprlib's recursion wrapper rather than dataclasses' own
+    # wrapper. Recognize that exact trusted wrapper, not arbitrary reprlib code
+    # or a callable which merely advertises a __wrapped__ attribute.
+    local = vars(cls)
+    parameters = local.get("__dataclass_params__")
+    field_metadata = local.get("__dataclass_fields__")
+    if not (namespace is not None and member.__globals__ is vars(namespace)
+            and member.__builtins__ is vars(builtins)
+            and type(parameters) is dataclasses._DataclassParams
+            and type(field_metadata) is dict
+            and all(type(field) is dataclasses.Field for field in field_metadata.values())):
+        return False
+    if parameters.repr is not True:
+        return False
+    declared = False
+    for decorator in node.decorator_list:
+        target = decorator.func if isinstance(decorator, ast.Call) else decorator
+        if isinstance(target, ast.Name) and item["aliases"].get(target.id) == ("dataclasses", "dataclass"):
+            declared = True
+        elif (isinstance(target, ast.Attribute) and target.attr == "dataclass"
+              and isinstance(target.value, ast.Name)
+              and item["aliases"].get(target.value.id) == ("dataclasses", None)):
+            declared = True
+    if not declared or member.__closure__ is None:
+        return False
+    cells = dict(zip(member.__code__.co_freevars, (cell.cell_contents for cell in member.__closure__)))
+    inner = cells.get("user_function")
+    expected_cells = {"repr_running", "user_function"}
+    if namespace is reprlib:
+        expected_cells.add("fillvalue")
+        if type(cells.get("fillvalue")) is not str or cells["fillvalue"] != "...":
+            return False
+    if not (set(cells) == expected_cells
+            and type(cells["repr_running"]) is set and type(inner) is FunctionType
+            and inner.__globals__ is vars(module) and inner.__module__ == module.__name__
+            and inner.__builtins__ is vars(builtins)
+            and getattr(member, "__wrapped__", None) is inner
+            and inner.__defaults__ is None and inner.__kwdefaults__ is None
+            and inner.__closure__ is None):
+        return False
+    # Only generate a fresh standard-library repr from field names/flags. No
+    # archived code, original class constructor, defaults or factories execute.
+    fields = dataclasses.fields(cls)
+    if any(type(field) is not dataclasses.Field or type(field.name) is not str
+           or type(field.repr) is not bool or type(field.kw_only) is not bool for field in fields):
+        return False
+    reference = dataclasses.make_dataclass(
+        "_ClosureRepr", [(field.name, object, dataclasses.field(repr=field.repr, kw_only=field.kw_only))
+                         for field in fields], init=False, eq=False,
+    )
+    expected = vars(reference)["__repr__"].__wrapped__
+    # Newer dataclasses compile several generated methods in one batch, so repr
+    # can start on a different line. Normalize only that synthetic line offset.
+    return code_state(inner.__code__.replace(co_firstlineno=1)) == code_state(expected.__code__.replace(co_firstlineno=1))
+
+
 def _verify_class_layout(module, qual, cls, item):
+    _check_dataclass_metadata(cls)
     node = _class_node(item, qual)
     expected_bases = tuple(_base_reference(module, base) for base in node.bases) or (object,)
     _fail(cls.__bases__ == expected_bases, "source class bases differ")
@@ -674,7 +761,14 @@ def _verify_class_layout(module, qual, cls, item):
             filename = member.__code__.co_filename
             trusted = filename != "<string>" and str(Path(filename).resolve()) in trusted_files
             generated_method = dataclasses.is_dataclass(cls) and attribute in generated and filename == "<string>"
-            _fail(trusted or generated_method, "undeclared runtime class callable: " + qual + "." + attribute)
+            namespace = _recursive_repr_namespace(member)
+            if namespace is not None:
+                # The legacy dataclasses wrapper must obey the same repr-slot
+                # and inner-code rules; its filename cannot bless an injection.
+                trusted = False
+                generated_method = False
+            repr_wrapper = attribute == "__repr__" and _generated_dataclass_repr(module, cls, member, item, node, namespace)
+            _fail(trusted or generated_method or repr_wrapper, "undeclared runtime class callable: " + qual + "." + attribute)
 
 
 def _verify_loaded(document, archive, *, source_root):
@@ -802,8 +896,9 @@ def produce_source_closure(roots, *, source_root, project_root, archive_prefix):
         total += len(raw)
         _fail(len(raw) <= MAX_SOURCE_BYTES and total <= MAX_TOTAL_BYTES, "source byte bound")
         is_package = path.name == "__init__.py"
-        edges, aliases = _imports(name, raw, is_package=is_package, namespace=namespace)
-        archive[name] = {"raw": raw, "aliases": aliases, "dependencies": edges, "is_package": is_package}
+        tree = ast.parse(raw)
+        edges, aliases = _imports(name, tree, is_package=is_package, namespace=namespace)
+        archive[name] = {"raw": raw, "tree": tree, "aliases": aliases, "dependencies": edges, "is_package": is_package}
         pending.extend(edges)
     closed = ClosedSource(archive)
     document = {"schema_version": "0.1.0", "record_kind": KIND, "version": VERSION, "policy": POLICY,

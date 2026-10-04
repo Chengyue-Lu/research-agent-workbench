@@ -1,0 +1,25 @@
+{
+  "kind": "compact_evidence_index",
+  "files": [
+    {
+      "path": "CAPTURE.json",
+      "bytes": 1200,
+      "sha256": "f6f8f0b6d97392dc74e39b7ab415411ac8385eaa786458d9bfa43e7872a0186f"
+    },
+    {
+      "path": "raw-observations.zip",
+      "bytes": 80700,
+      "sha256": "6890b0c386a439461762bfd126cdd69a7b7b617959099dfcb8962e81f4fdc7f9"
+    },
+    {
+      "path": "RAW_INDEX.json",
+      "bytes": 3789,
+      "sha256": "4f5982513c39137b36cd7d077e482b9dcf8e380f7ffab563eeb6c080b0bb56a4"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1008,
+      "sha256": "b3a4a1d0575354af7fe99f4f82eb573699b05f684c3252df6143bf30f18be1a8"
+    }
+  ]
+}

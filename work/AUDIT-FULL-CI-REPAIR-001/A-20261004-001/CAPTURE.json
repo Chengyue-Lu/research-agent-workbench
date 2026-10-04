@@ -1,0 +1,66 @@
+{
+  "kind": "compact_delegated_development_record",
+  "accountable_owner": "Chengyue-Lu",
+  "observed_at_utc": "2026-10-04T05:07:30.272539+00:00",
+  "base": "c80ec014925f0cbbbaef5486bce8422a5b4f73fb",
+  "skills": [],
+  "claimed_complete_agent_trace_v0_1": false,
+  "warnings": [
+    "capture-gap: complete Codex transport/event trace unavailable; scoped original reports, commands, visible contract and raw failures are retained."
+  ],
+  "own_source": [
+    {
+      "path": "src/research_workbench/adapters/models/provider_source_closure.py",
+      "sha256": "f0f63804d0b80625f57cd25e6805958ac44e3c3f044fdd2b38d5858184b9490e"
+    },
+    {
+      "path": "tests/test_provider_source_closure.py",
+      "sha256": "8a53751c7f4862b21cb423e1691d20e9b44bbd2ff5029d76d722a737f005d4a1"
+    },
+    {
+      "path": "tests/coverage_policy.yaml",
+      "sha256": "05a47de90603c30db301232a8828971cbaeb003b7381dd293d3a464260c8f6fc"
+    },
+    {
+      "path": "tests/test_coverage_policy.py",
+      "sha256": "248ac0eec5ad1e80f6dc62911477213689d565b9401177489ae4bc0ded8a8e93"
+    },
+    {
+      "path": "tests/ci_components.json",
+      "sha256": "1922926c7816d71d6894c2beff23741128e834c1195d1d3bb45dbf6f58ea53c2"
+    },
+    {
+      "path": "tests/test_ci_components.py",
+      "sha256": "9569400021c5532e77eb84f152265dfcf623c559b387d0d1e6014492583e51d8"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/FULL-CI-REPAIR-001/README.md",
+      "sha256": "626ce8315bbae0306174e5159a580b64b474e1b188e01c399d28e81fac05b736"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/FULL-CI-REPAIR-001/RISK_LEDGER.md",
+      "sha256": "39f24580d9058eec620272f54783433cfb332f1fbc99319485154417bd70249a"
+    }
+  ],
+  "cancelled_run": {
+    "id": 37171230339,
+    "head": "6fa105b720254fae82d2e889385c89292272b2d7",
+    "conclusion": "cancelled"
+  },
+  "accepted_baseline_full": {
+    "id": 37176315620,
+    "head": "c80ec014925f0cbbbaef5486bce8422a5b4f73fb",
+    "status": "in_progress",
+    "receipt_authority": "not completed in this capture"
+  },
+  "proof_boundary": "local affected regression and old-data policy evaluation are distinct from current full/native acceptance",
+  "preserved_failures": [
+    "old coverage exclusion mismatch",
+    "initial repr line-offset mismatch",
+    "legacy wrong-slot control",
+    "independent Field.kw_only P1",
+    "parameter subclass scan callback",
+    "component mapping P2"
+  ],
+  "no_release_or_quality_definition_change": true
+}
