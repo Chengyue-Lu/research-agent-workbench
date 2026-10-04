@@ -169,12 +169,20 @@ class ProviderSourceClosureTests(unittest.TestCase):
             with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
                 self.verify()
 
-    def repr_fixture(self):
+    def repr_fixture(self, *, decorator="direct"):
         source = self.root / "repr-runtime"
         source.mkdir()
+        imports = "from dataclasses import dataclass, field\n"
+        declaration = "@dataclass(frozen=True, slots=True, kw_only=True)\n"
+        if decorator == "qualified":
+            imports += "import dataclasses as dc\n"
+            declaration = "@dc.dataclass(frozen=True, slots=True, kw_only=True)\n"
+        elif decorator == "indirect":
+            imports += ("def indirect(cls):\n"
+                        "    return dataclass(frozen=True, slots=True, kw_only=True)(cls)\n")
+            declaration = "@indirect\n"
         (source / "repr_source_fixture.py").write_text(
-            "from dataclasses import dataclass, field\n"
-            "@dataclass(frozen=True, slots=True, kw_only=True)\n"
+            imports + declaration +
             "class Record:\n"
             "    value: int\n"
             "    hidden: str = field(repr=False, default='hidden')\n"
@@ -194,6 +202,104 @@ class ProviderSourceClosureTests(unittest.TestCase):
             archive_prefix="repr-source",
         )
         return module, document, source
+
+    def test_closed_import_policy_rejects_escape_and_star_without_execution(self):
+        source = self.root / "import-runtime"
+        source.mkdir()
+        path = source / "import_source_fixture.py"
+        for label, statement, message in (
+            ("package escape", "from .. import unavailable", "relative import leaves declared package"),
+            ("star alias", "from math import *", "star imports are outside closed alias policy"),
+        ):
+            path.write_text("raise AssertionError('archive executed')\n" + statement + "\n", encoding="utf-8")
+            with self.subTest(label=label), self.assertRaisesRegex(closure.SourceClosureError, message):
+                closure.produce_source_closure(
+                    ("import_source_fixture",), source_root=source,
+                    project_root=self.root, archive_prefix="import-source",
+                )
+            self.assertNotIn("import_source_fixture", sys.modules)
+
+    def test_chained_ordinary_assignments_do_not_become_policy_claims(self):
+        source = self.root / "policy-runtime"
+        source.mkdir()
+        (source / "policy_source_fixture.py").write_text(
+            "lower_one = lower_two = 1\nPOLICY = 2\n", encoding="utf-8",
+        )
+        sys.path.insert(0, str(source))
+        self.addCleanup(sys.path.remove, str(source))
+        module = importlib.import_module("policy_source_fixture")
+        self.addCleanup(sys.modules.pop, "policy_source_fixture", None)
+        document = closure.produce_source_closure(
+            ("policy_source_fixture",), source_root=source,
+            project_root=self.root, archive_prefix="policy-source",
+        )
+        self.assertEqual({"POLICY": 2}, document["modules"]["policy_source_fixture"]["claims"]["globals"])
+        self.assertEqual([], SchemaCatalog(root=ROOT / "schemas").validate(closure.KIND, document))
+        self.assertEqual(document, closure.read_source_closure(self.reader, self.write_document(document)))
+        receipt = closure.verify_source_closure(document, read_bytes=self.reader.read_bytes)
+        self.assertEqual(1, receipt["module_count"])
+        self.assertFalse(receipt["archived_execution"])
+        self.assertEqual((1, 1, 2), (module.lower_one, module.lower_two, module.POLICY))
+
+    def test_qualified_dataclass_declaration_requires_matching_repr_policy(self):
+        module, document, source = self.repr_fixture(decorator="qualified")
+        receipt = closure.verify_loaded_source_closure(
+            document, read_bytes=self.reader.read_bytes, source_root=source,
+        )
+        self.assertTrue(receipt["actual_verified"])
+        self.assertEqual("Record(value=1)", repr(module.Record(value=1)))
+        with patch.object(module.Record.__dataclass_params__, "repr", False):
+            with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                closure.verify_loaded_source_closure(
+                    document, read_bytes=self.reader.read_bytes, source_root=source,
+                )
+
+    def test_indirect_dataclass_decorator_cannot_bless_generated_repr(self):
+        with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+            self.repr_fixture(decorator="indirect")
+        self.assertTrue(dataclasses.is_dataclass(sys.modules["repr_source_fixture"].Record))
+
+    def test_canonical_reprlib_wrapper_preserves_generated_repr_and_recursion(self):
+        module, document, source = self.repr_fixture()
+        inner = module.Record.__repr__.__wrapped__
+        replacement = reprlib.recursive_repr()(inner)
+        # Python 3.11's real reprlib decorator predates this metadata link.
+        if "__wrapped__" not in vars(replacement):
+            replacement.__wrapped__ = inner
+        with patch.object(module.Record, "__repr__", replacement):
+            receipt = closure.verify_loaded_source_closure(
+                document, read_bytes=self.reader.read_bytes, source_root=source,
+            )
+            self.assertTrue(receipt["actual_verified"])
+            self.assertEqual("Record(value=1)", repr(module.Record(value=1)))
+            recursive = module.Record(value=None)
+            object.__setattr__(recursive, "value", recursive)
+            self.assertEqual("Record(value=...)", repr(recursive))
+
+    def test_reprlib_fillvalue_must_be_exact_without_calling_custom_comparisons(self):
+        module, document, source = self.repr_fixture()
+        inner = module.Record.__repr__.__wrapped__
+        calls = []
+
+        class Fillvalue(str):
+            def __eq__(self, other):
+                calls.append("fillvalue equality")
+                return True
+
+            def __ne__(self, other):
+                calls.append("fillvalue inequality")
+                return False
+
+        for label, fillvalue in (("different text", "different"), ("custom comparison", Fillvalue("..."))):
+            replacement = reprlib.recursive_repr(fillvalue)(inner)
+            if "__wrapped__" not in vars(replacement):
+                replacement.__wrapped__ = inner
+            with self.subTest(label=label), patch.object(module.Record, "__repr__", replacement):
+                with self.assertRaisesRegex(closure.SourceClosureError, "undeclared runtime class callable"):
+                    closure.verify_loaded_source_closure(
+                        document, read_bytes=self.reader.read_bytes, source_root=source,
+                    )
+                self.assertEqual([], calls)
 
     def test_generated_dataclass_repr_and_explicit_custom_repr_are_supported(self):
         module, document, source = self.repr_fixture()

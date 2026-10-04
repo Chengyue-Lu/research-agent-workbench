@@ -60,6 +60,20 @@ wrapper和captured builtins检查全部保留。没有进程全局缓存、磁�
 
 ## 验证与接受边界
 
+当前84候选的首次完整checkpoint `37189042708` 已保留为失败身份。
+双Python各2042个原生用例通过，3.11实际producer及已有C投影已认证；
+impact检查发现7个必需行、9条outgoing branches未覆盖，导致完整质量及固定Gate失败。
+3.11兼容投影因依赖门禁未生成，不能合成或用3.13成功替代。
+
+本轮仅补充6个短的公开入口回归：相对导入越界/星号拒绝、普通链式赋值与政策声明、
+qualified dataclass及repr参数一致性、非canonical源码decorator拒绝、真实reprlib的
+普通/递归正例与fillvalue精确类型拒绝。3.11真实stdlib wrapper仅补显式元数据链接，
+不替换其code/globals/cells/builtins；恶意比较对象必须零callback拒绝。
+产品源码保持不变，原23个方法、120秒预算、排除项及质量定义保留。
+初次本地两项fixture错误及各自修正保留；实际本地缺口闭合不替代新HEAD的hosted Gate。
+本轮原始失败与补缺记录见
+[A-20261004-004](../../../../work/AUDIT-FULL-CI-REPAIR-001/A-20261004-004/README.md)。
+
 用户后续提供的P1揭示函数自身捕获的builtins仍可与模块globals不同：
 `FunctionType`克隆可保留wrapper的code、globals、closure和`__wrapped__`，
 构造时捕获替换的`id`，再恢复模块builtins。原候选在两Python版本均接受该clone，

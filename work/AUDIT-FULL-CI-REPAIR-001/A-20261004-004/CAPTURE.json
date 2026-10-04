@@ -1,0 +1,96 @@
+{
+  "kind": "compact_delegated_test_only_gap_followup_record",
+  "parent": "84ded7c5aba5872bbb273d429289aba288c9a8aa",
+  "base": "c80ec014925f0cbbbaef5486bce8422a5b4f73fb",
+  "skills": [],
+  "accountable_owner": "Chengyue-Lu",
+  "provider_review_owner": "let778750-cpu",
+  "complete_agent_trace": false,
+  "warnings": [
+    "capture-gap: complete transport/event trace unavailable; selected original API/native/local outputs, fixture errors, scripts, scoped reviews and diagnostics retained",
+    "Initial3.11 test snapshot is identified by original native c9 hash; repaired current74 receipt is separate, no synthesized final29 receipt"
+  ],
+  "secrets_captured": false,
+  "hidden_reasoning_captured": false,
+  "test_budget_seconds": 120,
+  "quality": "global90/critical95-90/changed100-100 and exclusions unchanged",
+  "source_change": false,
+  "test_only_followup": true,
+  "historical_archives_preserved": [
+    "A-20261004-001",
+    "A-20261004-002",
+    "A-20261004-003"
+  ],
+  "failed_full_run": 37189042708,
+  "failed_full_attempt": 1,
+  "hosted_gate_pass": false,
+  "compatibility311_B_projection_synthesized": false,
+  "success_only_native_full_tool_called": false,
+  "success_only_cost_tool_called": false,
+  "repository_local_replay_resigned_as_hosted_gate": false,
+  "ready": false,
+  "merged": false,
+  "stage_commit_push": 0,
+  "at": "2026-10-04T10:09:25.171007+00:00",
+  "source": [
+    {
+      "path": "src/research_workbench/adapters/models/provider_source_closure.py",
+      "sha256": "c309208fe89f09cb29f64470d1036693fb84fd97f300e8bf01fa05702ef759f3"
+    },
+    {
+      "path": "tests/test_provider_source_closure.py",
+      "sha256": "74b882411f9fdb72d37734e3503cb6ccb13b708f3c2e400532dce61c8f26d94f"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/FULL-CI-REPAIR-001/README.md",
+      "sha256": "937fde96b14c1ec3b248e9d735e6132f8d144ee8d04e5db975549fa5453033bd"
+    },
+    {
+      "path": "docs/workstreams/chengyue-lu/FULL-CI-REPAIR-001/RISK_LEDGER.md",
+      "sha256": "0e57f6b304011cbfb6764b6593db7257c57b6b0f555703dc598773b8c3df8322"
+    }
+  ],
+  "selection_sha256": "ddffe3afb16cb73723ffbc3bc0a7b225e600d0b99ec7c0c0b11ec37302a571b8",
+  "prepare_script_sha256": "9f8c0d0ce2c720aa27a00f0483a9f874c5605ae04e8236cfedefa25ac099ed23",
+  "root_review": {
+    "independent_test_review_checked": true,
+    "repository_diagnostic_checked": true,
+    "independent_test_review_summary_sha256": "62ad38e50157e9600efc0fb8e9120012271a942ba8b69712508c00f879a0af1b",
+    "repository_diagnostic_summary_sha256": "f22063a6f6cdd1affbd8b278128dbcf2ff8b2a9c0ae21e62ec84fc5178063d33"
+  },
+  "static_checks": {
+    "static_check": "PASS",
+    "files": 76,
+    "raw_bytes": 13911890,
+    "native_frozen_entries": 33,
+    "native_manifest_separately_included": true,
+    "initial311": {
+      "selected": 29,
+      "passed": 27,
+      "fixture_errors": 2,
+      "test_sha256": "c9da9959e1f8269bc7e8d12c905f77a73cf391006bfd277a9d3f8afa9227c77f"
+    },
+    "repair311": {
+      "selected": 2,
+      "passed": 2,
+      "test_sha256": "74b882411f9fdb72d37734e3503cb6ccb13b708f3c2e400532dce61c8f26d94f"
+    },
+    "final313": {
+      "selected": 29,
+      "passed": 29,
+      "test_sha256": "74b882411f9fdb72d37734e3503cb6ccb13b708f3c2e400532dce61c8f26d94f"
+    },
+    "local_required_gap": {
+      "lines": 7,
+      "arcs": 9,
+      "remaining": 0,
+      "hosted_gate": false
+    },
+    "repository_diagnostic": "one cached-artifact local replay PASS, not hosted Gate",
+    "tests": 0,
+    "API": 0,
+    "producer": 0,
+    "downloads": 0,
+    "freeze_executed": false
+  }
+}

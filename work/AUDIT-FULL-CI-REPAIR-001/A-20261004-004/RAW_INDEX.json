@@ -1,0 +1,470 @@
+{
+  "kind": "test_only_coverage_gap_followup_scoped_evidence",
+  "files": [
+    {
+      "path": "full-failure-native/analyze_partial.py",
+      "bytes": 11876,
+      "sha256": "27a578b7963ec8d319a40a08a73f447d63037e718cb8b7d2a1f26c3e83dc63f4",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11298148669/ci-plan.json",
+      "bytes": 137173,
+      "sha256": "958c5c9867e2116ce89ad947a844c73a5045dbf4db97611d85466128f70ba91a",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11298148669.zip",
+      "bytes": 13857,
+      "sha256": "f65ab372a5750142cf83e3812db80e9585e0ef4aebbe10f435fe837a9402083a",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11298867864/full-test-results-3.13.json",
+      "bytes": 2516608,
+      "sha256": "470dc68d5ef3c3105809110d8de6e7b384923596e6e3cc3267ed9fac85490f10",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11298867864.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11298867864.zip",
+      "bytes": 214028,
+      "sha256": "61dfd8f2e9e05932c92e6b3ba869d6b21c44c55beab69fadef00139a7cac729f",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11299741295/coverage-test-results.json",
+      "bytes": 2745337,
+      "sha256": "e9858fde051c0ef248db789f03bbdb7d92810d803913c3282ef484bfaf3a3e72",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11299741295/coverage.json",
+      "bytes": 2075551,
+      "sha256": "83afca5d4138b2bdce35460d470eea4d84053b5aebb3dd7886d85f30505a666b",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11299741295/execution-test-results.json",
+      "bytes": 3027909,
+      "sha256": "d5896fd2de3193413134f2eaf3084cabf4bbdbb237db2dd2f7de7e5bb8915fc0",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11299741295.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifact-11299741295.zip",
+      "bytes": 670964,
+      "sha256": "e90eb7836795ac0273b5d4a913eb3dbfc33edccbed3ac5437db5e10145bb832d",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifacts.json",
+      "bytes": 3046,
+      "sha256": "408ea9fb71fa15a4353972dbe1e61ae3391e69a58a3004f62dda6f73b745293b",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/artifacts.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/authenticated-artifacts.json",
+      "bytes": 1696,
+      "sha256": "0d41989b9b51a7da0b4237609ad1843a39f98a50eb96ffbea5b1f08f42e035e2",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/capture-state.json",
+      "bytes": 2263,
+      "sha256": "56f67c9e81b785a0a18bde7ee2e19a72ffba79d1c434fbaa95648bedb534125f",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/capture_failure.py",
+      "bytes": 8291,
+      "sha256": "94759d80c821e60b803d31bbf109f1b90ab4da7534d2785e16dbc492951912d6",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/commands.json",
+      "bytes": 2811,
+      "sha256": "7794f23ea9a251a1ed0e39608dd74339e4be48085aed45c4b40e0d2dae01c6c6",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/coverage-gap.json",
+      "bytes": 6973,
+      "sha256": "ade5ed51843cb215462249c39689c91087c0bb06e708596597e49594e86d4475",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/inventories.json",
+      "bytes": 761664,
+      "sha256": "2acdc0c547d5deff9f7cbcf922896449a8572d17de382381683efc36f2f52423",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/job-111397214144-raw.log",
+      "bytes": 494061,
+      "sha256": "85e714cf780a6d11d4112387fac55c5dc79881dac04fa1de14d56eb04e4a6ee0",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/job-111397214144-raw.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/job-111409409380-raw.log",
+      "bytes": 23979,
+      "sha256": "6596fcff48791eb12f9465cd64e804dcd4109b89d6a3a49ca2be2b5ae020372d",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/job-111409409380-raw.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/job-111409424994-raw.log",
+      "bytes": 23986,
+      "sha256": "c04b11726dbb2cb1484d0d8d3df0cb578b5d21aa8b19204aa9410fefcf56b545",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/job-111409424994-raw.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/jobs.json",
+      "bytes": 32449,
+      "sha256": "3ec7935b220ab7178fa87ffee5802ab0b5a321ce2cc35d5dea080901fbc28766",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/jobs.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/MANIFEST.json",
+      "bytes": 5651,
+      "sha256": "834620c19f3f514368d464052e6ee2d4608371176d394feaa53aabbd3f1be54d",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/REPORT.md",
+      "bytes": 2553,
+      "sha256": "29f73c338ce9a6c2020c37d1a42ada4f542eed4a939aedf51b44001988b87fa2",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/run.json",
+      "bytes": 14292,
+      "sha256": "0d67bd7c74307913cac43c7639e34b2fb85b1e8fcf267a2d50a7084459872800",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/run.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/summary.json",
+      "bytes": 16162,
+      "sha256": "d89f9c5c099d309e7dc06fd8b60e6b1e8c95f440bf2bae50502060ce627d102c",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/target-commit.json",
+      "bytes": 2789,
+      "sha256": "58872d36e22b79285d7cf1fa9190134ac2d9d9e1bad143e6222f8774b6715186",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-failure-native/target-commit.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "original frozen failed full; 33 authenticated entries plus original manifest"
+    },
+    {
+      "path": "full-plan/artifacts.json",
+      "bytes": 1524,
+      "sha256": "97f338b335927655ad86bea61021b06847d1bf8300e6b4f6ca8558cd24ea663f",
+      "role": "cached official plan authentication and binding"
+    },
+    {
+      "path": "full-plan/ci-plan.json",
+      "bytes": 137173,
+      "sha256": "958c5c9867e2116ce89ad947a844c73a5045dbf4db97611d85466128f70ba91a",
+      "role": "cached official plan authentication and binding"
+    },
+    {
+      "path": "full-plan/official-plan.zip",
+      "bytes": 13857,
+      "sha256": "f65ab372a5750142cf83e3812db80e9585e0ef4aebbe10f435fe837a9402083a",
+      "role": "cached official plan authentication and binding"
+    },
+    {
+      "path": "full-plan/run.json",
+      "bytes": 14289,
+      "sha256": "877eb26e43b9e8c6c32456ce82643409c2f2167cf19d6e7b91f39275d2a0e7c1",
+      "role": "cached official plan authentication and binding"
+    },
+    {
+      "path": "full-plan/summary.json",
+      "bytes": 1043,
+      "sha256": "b6e0b92c6f9eda52f0d271b2131a59cd59d72019913b09236bf71184a035f3b9",
+      "role": "cached official plan authentication and binding"
+    },
+    {
+      "path": "full-plan/target-commit.json",
+      "bytes": 2789,
+      "sha256": "58872d36e22b79285d7cf1fa9190134ac2d9d9e1bad143e6222f8774b6715186",
+      "role": "cached official plan authentication and binding"
+    },
+    {
+      "path": "source-review/REPORT.md",
+      "bytes": 7267,
+      "sha256": "c98da5dc9eeb170f091453567ef97b8fed814b13e61d6b9c4b7bf83be2e98011",
+      "role": "scoped product source static review"
+    },
+    {
+      "path": "source-review/summary.json",
+      "bytes": 4255,
+      "sha256": "8d620f8933c1bd45a3d02ae5168bfef102f9d0355eaf5c294d615934cc6f3fa2",
+      "role": "scoped product source static review"
+    },
+    {
+      "path": "checkpoint-review/REPORT.md",
+      "bytes": 4907,
+      "sha256": "c5fe3e9c1b9d2b631b47b428578f26d007ae901bdbc20c9c88fd1cff3201b792",
+      "role": "scoped checkpoint contract static review"
+    },
+    {
+      "path": "checkpoint-review/summary.json",
+      "bytes": 9373,
+      "sha256": "364920fab8077300a7b7925d9255131925a051e211d41e55337cb3c2dde234db",
+      "role": "scoped checkpoint contract static review"
+    },
+    {
+      "path": "coverage-gap-review/REPORT.md",
+      "bytes": 4699,
+      "sha256": "6b4b054b8a903ed55ec27811dff28d905d6e90033d4cbf56f1b3335190f37e06",
+      "role": "initial coverage design static review; its old test snapshot not final74 authority"
+    },
+    {
+      "path": "coverage-gap-review/summary.json",
+      "bytes": 13671,
+      "sha256": "a2bfba6a43bed5e970f5cbedcc29e9d2797e799a082b4150242d1186b935a54a",
+      "role": "initial coverage design static review; its old test snapshot not final74 authority"
+    },
+    {
+      "path": "local-gap311/native.json",
+      "bytes": 34290,
+      "sha256": "160cdb2157014d1144c88539ec97985189438e3d2bed4cd36af95cab0d2f3d43",
+      "role": "initial311 c9 snapshot:29 selected/27PASS/2fixture errors"
+    },
+    {
+      "path": "local-gap311/unittest.txt",
+      "bytes": 9250,
+      "sha256": "d27832d24bf7d383c9892943f149d676fff108e1a151a27eb2cb488db301aba9",
+      "role": "initial311 c9 snapshot:29 selected/27PASS/2fixture errors"
+    },
+    {
+      "path": "local-gap311-repair/native.json",
+      "bytes": 4172,
+      "sha256": "8a19ccbb20b2cf22795980ce38234b3f8c96bd7db02226f8d2de9fab186a18b5",
+      "role": "repaired311 final74 snapshot:only two failed fixture methods rerun PASS"
+    },
+    {
+      "path": "local-gap311-repair/unittest.txt",
+      "bytes": 495,
+      "sha256": "b94f1bb107be77b9c0e0141431554f538b764f26e1ff025aa31999dfe2de63e0",
+      "role": "repaired311 final74 snapshot:only two failed fixture methods rerun PASS"
+    },
+    {
+      "path": "local-gap313/native.json",
+      "bytes": 30201,
+      "sha256": "6902c59179ad0eaba32fd51dc74ea5a3f0973703f08338438782e4f9dd3fb875",
+      "role": "final313 final74 snapshot:29 methods once PASS"
+    },
+    {
+      "path": "local-gap313/unittest.txt",
+      "bytes": 5612,
+      "sha256": "7d6a640dc8bbb2b5a941ab4730a9c035f6bcf00187a5e1113cb8e34915b6080c",
+      "role": "final313 final74 snapshot:29 methods once PASS"
+    },
+    {
+      "path": "coverage-tests-review/REPORT.md",
+      "bytes": 4219,
+      "sha256": "1d20bdd11c5aa2890c82fb49975184576560bce6ad519ba05acf282b31eb2c07",
+      "role": "independent final74 static review:old23 preserved/no new execution"
+    },
+    {
+      "path": "coverage-tests-review/summary.json",
+      "bytes": 12132,
+      "sha256": "62ad38e50157e9600efc0fb8e9120012271a942ba8b69712508c00f879a0af1b",
+      "role": "independent final74 static review:old23 preserved/no new execution"
+    },
+    {
+      "path": "repository-diagnostic/checker-command.json",
+      "bytes": 1275,
+      "sha256": "b206dd7e1f4c2183f193ea24782f4c77c46dd59e06376d9e10f9024bd0e5a383",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/checker.stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/checker.stdout.raw",
+      "bytes": 6774,
+      "sha256": "1bf4fccef84c0e46575416b90ae95380792938ed326f2f0d75dc963aca462220",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/diagnose.py",
+      "bytes": 13987,
+      "sha256": "193555d1b13bbd962dd59f773fb9672e1222c893c3e3ec8da42c16663b70f060",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/inputs.json",
+      "bytes": 4364,
+      "sha256": "52c29b38fa71de039a623a38ea72848ac23a017cc289cd30b56eaa06175af923",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/MANIFEST-FINAL.json",
+      "bytes": 1767,
+      "sha256": "17493524b1d3e06dae0bccb90a716a132cba561a5433d49f9ba5f82dba007e31",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/MANIFEST.json",
+      "bytes": 1306,
+      "sha256": "387899bf30e13f334f0e91667c8ba6c45082dcb64511fdef9c7bdc06273165dd",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/REPORT-FINAL.md",
+      "bytes": 2802,
+      "sha256": "bb2db86acf82887601206da12e7750714ac19161dd745ed66dea0f155b2ac0ab",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/REPORT.md",
+      "bytes": 2730,
+      "sha256": "b849d52259b6e04dd527e2ab1bc87c6de4a1446ddea151565d692978be7e6b2f",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/SOURCE-LINE-CORRECTION.json",
+      "bytes": 493,
+      "sha256": "19db08f9892f25985ad14cf48ba1c295e19c89376c19ce5b5614351b9952f4cf",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "repository-diagnostic/summary.json",
+      "bytes": 8101,
+      "sha256": "f22063a6f6cdd1affbd8b278128dbcf2ff8b2a9c0ae21e62ec84fc5178063d33",
+      "role": "one original artifact repository checker replay, not hosted Gate"
+    },
+    {
+      "path": "local-gap-summary.json",
+      "bytes": 1185,
+      "sha256": "250371065a9b7372b6f46f2755d88793c9c4a65dda1ae7ae27b1c5fefc40a191",
+      "role": "local coverage-gap evidence, not hosted Gate"
+    },
+    {
+      "path": "local-gap311-coverage.json",
+      "bytes": 545316,
+      "sha256": "1c60e68c7f872ec428a04629e7d663ae2001b077346be3ce6d14a03dcaed2109",
+      "role": "local coverage-gap evidence, not hosted Gate"
+    },
+    {
+      "path": "local-gap311.coverage",
+      "bytes": 143360,
+      "sha256": "e2c3886f42c6cca4c8541eabc8def492d0fcec68f30dbdb212d514607a8f4ee7",
+      "role": "local coverage-gap evidence, not hosted Gate"
+    },
+    {
+      "path": "archive-preparation/prepare_commit.py",
+      "bytes": 14393,
+      "sha256": "9f8c0d0ce2c720aa27a00f0483a9f874c5605ae04e8236cfedefa25ac099ed23",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/prepare_selection.py",
+      "bytes": 6707,
+      "sha256": "c9272d1ed5629b0e2e7929de6baa27b3ea17a672eef3d76784086e93785e114b",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/candidate.diff",
+      "bytes": 10834,
+      "sha256": "dcef14a205e72a9377001915bd8402ea56bc7503b8aa9f6373dbd6efeefbe464",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/STATIC_INSPECTION.json",
+      "bytes": 1140,
+      "sha256": "711d53ea93073a8f06982d0bb09b320df7d5e9ab71c92ede96b617fa7fa49646",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/README.template.md",
+      "bytes": 1456,
+      "sha256": "d7b11a0bf5841fc71f3a8a84eb54379b062c341578a3be0461a6155d2930eea8",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/CAPTURE.template.json",
+      "bytes": 1326,
+      "sha256": "c99686d4a5286f853b2289489c1d12669e16faab336ad645807bc61a7836737b",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/README.workstream-snapshot.md",
+      "bytes": 7890,
+      "sha256": "937fde96b14c1ec3b248e9d735e6132f8d144ee8d04e5db975549fa5453033bd",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/RISK_LEDGER.workstream-snapshot.md",
+      "bytes": 3497,
+      "sha256": "0e57f6b304011cbfb6764b6593db7257c57b6b0f555703dc598773b8c3df8322",
+      "role": "immutable preparation snapshot"
+    },
+    {
+      "path": "archive-preparation/evidence-selection.root-approved.json",
+      "bytes": 24405,
+      "sha256": "ddffe3afb16cb73723ffbc3bc0a7b225e600d0b99ec7c0c0b11ec37302a571b8",
+      "role": "root-approved frozen evidence selection"
+    }
+  ],
+  "failed_full_run": 37189042708,
+  "failed_full_head": "84ded7c5aba5872bbb273d429289aba288c9a8aa",
+  "selection_sha256": "ddffe3afb16cb73723ffbc3bc0a7b225e600d0b99ec7c0c0b11ec37302a571b8"
+}

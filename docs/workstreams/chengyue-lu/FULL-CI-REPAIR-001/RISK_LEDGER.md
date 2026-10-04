@@ -14,6 +14,7 @@
 | 修复改变未涉及的Provider行为 | 单独隔离分支，只改closure兼容、policy登记和必要回归；适用cross-owner审核 | 真实账户、模型、live资格及发布不由本修复接受 |
 | 复用源码解析结果掩盖后续输入或运行时变化 | 每遍归档内仅共享私有只读tree，保留两遍fresh读取/hash、独立claims/compile与所有current-runtime检查；成功后同路径/大小/mtime及runtime/claims/compiler漂移必须拒绝 | 不跨遍、跨调用或跨提交缓存通过资格；同环境配对和新鲜checkpoint分别接受 |
 | 私有AST长期保留增加内存或改变声明顺序 | tree仅属当前有界archive，按原body顺序读取，公共document/receipt不含AST | 本地局部成本需实测；不外推最坏16MB闭包内存或全仓收益 |
+| 全量行为成功掩盖changed覆盖义务失败 | 37189042708双Py各2042PASS但7行/9分支未覆盖；仅补真实公开路径正反例，原失败与本地fixture错误分别保留 | 本地缺口闭合不是新HEAD完整Gate；不合成因依赖失败而缺失的3.11投影，不放宽100/100 |
 
 回退通过新的revert PR恢复本修复，保留原失败记录及最新运行身份；不直接写protected分支，
 不修改ruleset、取消质量定义或自行使用review例外。
