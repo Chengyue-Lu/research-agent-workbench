@@ -198,6 +198,7 @@ class LiveEvidenceVerifiers:
     provider_owner: str
     provider: object
     budget: RetainedConformanceBudget
+    cumulative_history: object
     human_verifier: Callable
     runtime_observer: Callable
 
@@ -205,9 +206,13 @@ class LiveEvidenceVerifiers:
                  need_ref: Mapping, admission_closure_ref: Mapping, pilot_owner: str, executor_id: str,
                  applicability_decision_ref: Mapping, provider_owner: str,
                  binding_ref: Mapping, provider, retained_budget: RetainedConformanceBudget,
-                 human_verifier: Callable, runtime_observer: Callable):
+                 human_verifier: Callable, runtime_observer: Callable, cumulative_history=None):
+        # Local import keeps the journal's existing verification dependency acyclic.
+        from research_workbench.evaluation.live_budget_history import RetainedBudgetHistory
         require(isinstance(context, FrozenLiveContext) and type(retained_budget) is RetainedConformanceBudget
-                and callable(human_verifier) and callable(runtime_observer),
+                and callable(human_verifier) and callable(runtime_observer)
+                and (cumulative_history is None or (type(cumulative_history) is RetainedBudgetHistory
+                     and cumulative_history.base == retained_budget)),
                 "independent live evidence context and verifiers required")
         values = {"inputs": inputs, "context": context,
                   "_admission_json": json.dumps(_json_copy(admission_evidence), ensure_ascii=False, allow_nan=False),
@@ -217,6 +222,7 @@ class LiveEvidenceVerifiers:
                   "_binding_json": json.dumps(file_ref(binding_ref)),
                   "pilot_owner": _named(pilot_owner), "executor_id": _named(executor_id),
                   "provider_owner": _named(provider_owner), "provider": provider, "budget": retained_budget,
+                  "cumulative_history": cumulative_history,
                   "human_verifier": human_verifier, "runtime_observer": runtime_observer}
         for name, value in values.items():
             object.__setattr__(self, name, value)
@@ -356,7 +362,8 @@ class LiveEvidenceVerifiers:
 
     def budget_checkpoint(self, argument):
         self._expected_inputs(argument)
-        return self.budget.checkpoint(self.inputs, self.context)
+        selected = self.budget if self.cumulative_history is None else self.cumulative_history
+        return selected.checkpoint(self.inputs, self.context)
 
     def preflight_verifiers(self):
         return LivePreflightVerifiers(self.admission, self.authorization, self.applicability, self.budget_checkpoint)

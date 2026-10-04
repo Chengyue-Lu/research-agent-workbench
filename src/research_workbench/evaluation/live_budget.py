@@ -222,6 +222,37 @@ class PilotUsageJournal:
     def open(cls, database, anchor, **options):
         return cls._establish(database, anchor, **options, create=False)
 
+    @classmethod
+    def read_retained_snapshot(cls, database, anchor, *, inputs, context, prior_reader, journal_identity):
+        """Replay a selected archive without opening an executable journal.
+
+        Original frozen provenance is required. No clock, handle, write/recovery
+        port or permission is returned; incomplete facts remain observable.
+        """
+        def read():
+            header = _binding(inputs, context, prior_reader, journal_identity)
+            target, retained = Path(database).resolve(), Path(anchor).resolve()
+            _need(os.path.normcase(str(retained)) not in {os.path.normcase(str(target) + suffix)
+                  for suffix in ("", "-wal", "-shm", "-journal")}, "pilot-budget-path-conflict")
+            connection = sqlite3.connect(target.as_uri() + "?mode=ro", uri=True, timeout=1.0,
+                                         isolation_level=None)
+            try:
+                connection.execute("PRAGMA trusted_schema=OFF")
+                connection.execute("PRAGMA synchronous=FULL")
+                connection.execute("PRAGMA query_only=ON")
+                connection.execute("BEGIN")
+                journal = cls(connection, target, retained, inputs, context, prior_reader, None, header)
+                _, state = journal._read()
+                result = journal._snapshot(state)
+                _prior(prior_reader, context, header["limits"])
+                inputs.recheck()
+                journal._read()  # Same DB snapshot must still match the external anchor.
+                return result
+            finally:
+                connection.rollback()
+                connection.close()
+        return _safe(read)
+
     def _now(self):
         value = self._clock()
         _need(type(value) is str, "pilot-budget-clock-invalid")
@@ -464,23 +495,24 @@ class PilotUsageJournal:
         self._transaction(lambda _: None, mutation=lambda _: ("fail", {"at": self._now(), "attempt_id": attempt_id}),
                           current=False)
 
+    def _snapshot(self, state):
+        header = _parse(self._header)
+        held = [c for c in state["calls"] if c["status"] in {"reserved", "intent", "entered", "unknown"}]
+        attempts = {a["attempt_id"]: a for a in state["attempts"]}
+        return {"record_kind": "evaluation_live_budget_snapshot", "version": "2.0.0", "purpose": "live-pilot",
+            "journal_identity": header["journal_identity"], "context": header["context"], "limits": header["limits"],
+            "known_total_tokens": self._known(state), "held_total_tokens": sum(
+                c["input_upper_tokens"] + c["output_upper_tokens"] for c in held),
+            "usage_complete": not any(c["status"] == "unknown" for c in state["calls"]),
+            "stopped": state["stopped"], "recovery_required": any(c["ordinal"] not in self._owned for c in held),
+            "attempts": [attempts.get(s, {"attempt_id": s, "status": "not-started", "started_at": None,
+                                         "ended_at": None}) for s in header["slots"]],
+            "calls": state["calls"], "events_committed": self._connection.execute("SELECT COUNT(*) FROM events").fetchone()[0]}
+
     def snapshot(self):
-        def read(state):
-            header = _parse(self._header)
-            held = [c for c in state["calls"] if c["status"] in {"reserved", "intent", "entered", "unknown"}]
-            attempts = {a["attempt_id"]: a for a in state["attempts"]}
-            return {"record_kind": "evaluation_live_budget_snapshot", "version": "2.0.0", "purpose": "live-pilot",
-                "journal_identity": header["journal_identity"], "context": header["context"], "limits": header["limits"],
-                "known_total_tokens": self._known(state), "held_total_tokens": sum(
-                    c["input_upper_tokens"] + c["output_upper_tokens"] for c in held),
-                "usage_complete": not any(c["status"] == "unknown" for c in state["calls"]),
-                "stopped": state["stopped"], "recovery_required": any(c["ordinal"] not in self._owned for c in held),
-                "attempts": [attempts.get(s, {"attempt_id": s, "status": "not-started", "started_at": None,
-                                             "ended_at": None}) for s in header["slots"]],
-                "calls": state["calls"], "events_committed": self._connection.execute("SELECT COUNT(*) FROM events").fetchone()[0]}
         # Historical reporting remains possible after external provenance fails.
         # It is never the current-use permission port (observe rechecks it).
-        return self._transaction(read, current=False)
+        return self._transaction(self._snapshot, current=False)
 
     def observe(self, *, attempt_id, surface, handle=None):
         """Trusted ledger port for LiveUseGuard; not a deserialized permit."""

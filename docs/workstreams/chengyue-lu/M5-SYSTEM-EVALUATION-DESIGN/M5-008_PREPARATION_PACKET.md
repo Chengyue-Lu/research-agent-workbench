@@ -172,5 +172,8 @@ A4 Supply/Projection 或 actual binding substitution 拒绝；有限输出额外
 这些是待实现/执行的验证清单，不是本次已运行的测试或 live PASS。
 
 实际 Pilot 的受控 post-call fault injection 须在专项范围内、无外部副作用，并与成功 live arm 分列。
+新freeze可显式使用[M6+有序Pilot历史候选](M5-008_LIVE_BUDGET_PACKET.md)，按各run delta累计，
+并保留原M6 report-specific资格核对。未知/held/open历史拒绝checkpoint；Skill Trial producer仍须
+独立实现，完整历史选择、真实准入及专项授权不能由这个reader代替。
 原失败、capture gaps、未知 measurement/账单和不完整 slots 不删除；本包不产生 M5-001/002 case 接受、
 M5-004/005 研究结论、Skill promotion/pruning、Topic5 或发行资格。

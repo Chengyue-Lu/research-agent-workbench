@@ -19,7 +19,22 @@ prior reader必须返回typed VerifiedBudgetCheckpoint，实际完整known usage
 无held且绑定同一checkpoint。现有RetainedConformanceBudget可直接提供已核实的M6历史；
 不能用文件的approved/complete字段替代这个可信接口。新Attempt和Provider/Tool观察每次重验
 prior及输入bytes。后续新run的prefix必须包含所有已执行的Trial/Pilot成功与失败，不能重选旧1744
-checkpoint重置累计；本切片尚未实现跨run prefix接受或恢复。
+checkpoint重置累计。
+
+[RetainedBudgetHistory](../../../../src/research_workbench/evaluation/live_budget_history.py)候选由调用方
+明确选择一个M6 base及最多64个有序Pilot archives，使用各archive的原inputs/context、DB/anchor/UUID
+只读重放。每run必须引用exact前缀，累计只增加该run的input/output delta；重复identity/run/path、
+漏掉前缀、原输入漂移及读取中途的archive变化拒绝。后一run的case freeze不得早于前一run的
+closeout，开始时间不得早于自身freeze；M6 base没有可用的独立wall-clock chronology证明。
+已知失败及后续not-started保留，未知/partial usage保留已知部分和hold；未启动、open或held历史
+可供诊断读取，但不能形成新的预算checkpoint。这个reader不打开可执行Pilot journal、不取clock，
+不恢复handle或修复archive。
+
+factory的可选cumulative_history只用于budget_checkpoint，并须与report-specific reader选择同一
+M6 base；Provider资格仍严格要求原report.accounting等于原M6账本，不改成累计prefix。
+选中历史的一致性不证明没有遗漏外部ledger或一致替换；完整选择仍由具名Human/caller负责。
+当前producer只涵盖M6+Pilot，实际Skill Trial producer仍缺失；不能把Trial改标为Pilot/component。
+reader不提供retry授权；修复后仍需独立重新冻结、专项grant及fresh Attempt/session。
 
 ## 单用发送与结算
 
@@ -60,6 +75,10 @@ open不重建缺文件，create不覆盖；关机/reopen保留holds，不恢复�
 [离线用例](../../../../tests/test_live_budget.py)使用临时文件和明确合成authority，覆盖完整slot算术、
 actual M6 retained reader接续、重复handle、并发/子进程、失败/partial/late usage、bounds和
 closed diagnostics。它们不证明真实四臂transport、实际API、Human准入或科学正确性。
+[history用例](../../../../tests/test_live_budget_history.py)另覆盖两个独立冻结run的delta接续、
+freeze/start chronology、慢读取的base/Pilot/anchor漂移，以及实际factory预算端口经完整新H1
+冻结plan编译与独立重放。其他三个权限/资格端口仍是明确的合成authority；这不证明完整实际
+factory准入或live四臂执行。
 初始实现错误及Windows测试连接清理错误保留私有Attempt，后续结果按实际source身份记录。
 
 下一步仍是合法Model semantic Method/Requirement/Profile slice、M6 baseline与M11 generic Driver、

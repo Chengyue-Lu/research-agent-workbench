@@ -79,3 +79,8 @@ M6报告/graph和Skill admission是独立组件用例；入口用例的applicabi
 再闭合真实Receipt/cold replay、有限盲审、review freeze/
 reveal/metrics，以及具名真实输入/Skill Trial/admission/Pilot授权与完整run-set验收。
 临时21/1744等fixture用量不计作实际消耗；真实历史1744、1000万累计硬上限、Flash与18:00后官方闲时保持。
+
+factory可显式接入[有序历史reader](M5-008_LIVE_BUDGET_PACKET.md)作为新freeze的budget_checkpoint
+来源；该reader的M6 base必须等于独立report-specific retained_budget。applicability仍核对原M6
+report.accounting与其原账本全等，累计只在预算端口使用，不把跨run总量伪写成M6报告用量。
+validator identity纳入budget/history源文件；真实Skill Trial历史尚无producer，不可跳过。
