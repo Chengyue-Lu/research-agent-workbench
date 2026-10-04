@@ -90,13 +90,14 @@ Flash-only、北京时间18:00后且官方闲时约束保留；执行日/窗口�
 ## 5. 已可独立完成的工作与边界
 
 本次已形成公共scope vignette、私有评分候选、四臂 inventory 骨架、一般化Skill源包/Need/评价方案
-与资格索引事实以及 Provider
-source delta 核对。原 source66 到本候选基线的 Provider/M11/Harness/Schema 产品 delta 仍只包含
-`profile_conformance.py` 与 `conformance_journal.py` 两个已合入修复；这不认证尚未实现的 M11 live
-Driver 或新 config/Host/Tool，applicability 仍 pending。
+与资格索引事实以及Provider source delta核对。原source66到准备基线develop6fa的相关产品delta仅含
+`profile_conformance.py`和`conformance_journal.py`两个已合入修复。隔离分支随后增加
+[finite-body codec候选](M5-008_OUTPUT_CONTRACT_PACKET.md)，需以实际候选source另行判断applicability；
+它没有M11 live Driver/config/Host/Tool认证，不重绑旧source66报告。
 
 接下来独立整理 exact input/授权/applicability 的可核对形式与反例要求；完成合法的独立评价、
-Human准入与Pilot专项输入后，再按原Task进入实现与最终运行冻结。
+Human准入与Pilot专项输入后，再按原Task合法进入及最终运行冻结；隔离实现候选可先离线验证，
+共享接受仍按原Gate。
 正式实现与进入仍遵守原 Task/Gate：需要的 exact 输入缺失就保留 BLOCKED；不能将目标、
 通用“继续”、CI、Agent构造的 dossier 或外部窗口接手当作 Human admission/执行/评分决定。
 最终完成 M5-008 全部 accepted run set 与具名验收后停止；M5-004 仍由自身依赖和 case Gate 控制。

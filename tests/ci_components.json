@@ -122,7 +122,8 @@
         "test_evaluation_harness_proof",
         "test_skill_evaluation",
         "test_skill_evaluation_helpers",
-        "test_system_evaluation_protocol"
+        "test_system_evaluation_protocol",
+        "test_bounded_evidence"
       ],
       "flags": [
         "smoke"
@@ -351,6 +352,9 @@
     }
   },
   "direct_tests": {
+    "src/research_workbench/adapters/models/port.py": [
+      "test_bounded_evidence"
+    ],
     "tests/fixtures/provider_binding_graph_v1/": [
       "test_provider_binding_graph"
     ],

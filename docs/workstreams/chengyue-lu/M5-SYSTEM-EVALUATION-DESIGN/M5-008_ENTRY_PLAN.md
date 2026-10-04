@@ -42,13 +42,16 @@ M5-001/002 不是 pilot hard dependencies；pilot 使用单独 Human-approved do
 本清单不接受新 Schema 或默认授权。复用 M6 baseline、M11 Core/Skill 和唯一
 Capability Resolver；不新增 arm-specific Host dispatcher、selector、fallback 或旁路 runner。
 
+隔离分支已形成[有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)，先进行离线结构/泄漏/兼容校验。
+AGENTS将治理施加于共享接受边界；这个P0.5节点不把外部Gate写成满足，也不激活Task或执行API。
+
 ## 推进节点
 
 1. **当前准备**：列齐 dossier、source/config、conformance、admission、authorization 与审查输入；
    每个未提供字段保持待人类决定。准备完成不解除 BLOCKED。
 2. **进入核对**：收齐 A4/Pilot 两个外部 Gate 与 M6 binding 适用性的 exact identity/version/path/hash、具名决定；
    按原 Task 状态机提出合法 READY/IN_PROGRESS 候选。任何 Gate 失效即停止。
-3. **R2 实现候选**：明确版本化 live-purpose 和有限输出审查契约，接入已有四臂 transport，
+3. **R2 集成与接受**：隔离实现候选可在进入前离线准备；合法进入/共享接受再闭合版本化live-purpose与四臂transport，
    保留全部失败/retry/cost；正反用例先验证零调用拒绝、身份/预算漂移、cold replay 和用途隔离。
    完整 R2 review 与 CI 仍按该候选自身条件执行。
 4. **获批 live pilot**：冻结独立 public/private dossier、Protocol/run inventory 与 source/config；
@@ -67,7 +70,7 @@ pilot 数据不进入 primary confirmatory run set，不因 phase 标签而绕�
 已完成 M5-007/Issue55 和 M6-010 部件收口，独立 M5-008 tracker 继续 OPEN；当前形成有限 live-purpose/
 review 候选、exact-pin 输入清单与 P0–P4 顺序。用户另授权设为推进目标，到M5-008全部run-set具名验收后
 停止、进入M5-004之前。当前修改事实记录、导航、设计准备与`skill-lab/candidates/`中的纯说明候选；
-产品src、Schema、Registry、Task行、默认Skill发现和所有历史Attempt保持。
+新增pure codec实现候选与测试；旧产品模块、Schema、Registry、Task行、默认Skill发现和所有历史Attempt保持。
 尚未冻结exact真实案例/账户/模型、取得准入或pilot授权、实现live入口、调用API/Tool或产生新live证据。
 真实 case、Human/Claim、科研净收益、Skill promotion、Topic 5 与发行仍按原边界处理。
 

@@ -21,7 +21,8 @@
 | Pilot 专项授权 | UNSATISFIED；已有授权针对 M6 部件合成调用 | 人类接受本 Pilot 的独立 dossier/Protocol、exact 四臂计划、预算、账户/数据/Tool/窗口及审查安排 |
 
 本次交付是版本化 live purpose、有限审查输出、四臂集成与证据闭包的候选，
-以及可填入 exact pins 的进入清单。没有新增 API 调用、凭据读取、账本/grant、Skill admission 或 Task 接受。
+以及可填入exact pins的进入清单。后续在隔离分支形成[有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)，
+仍无live执行器/调用资格。没有新增API调用、凭据读取、账本/grant、Skill admission或Task接受。
 M6-010 的部件成功证明一个选定 Provider/session；M11 live Driver、四臂集成和 M5 完成仍需本项自身验证。
 
 ## 2. 首轮 dossier 与有限输出候选
@@ -50,6 +51,8 @@ M6-010 的部件成功证明一个选定 Provider/session；M11 live Driver、�
 
 示例只表达候选格式，不是模型输出、已批准案例或 Schema。冻结后遵守以下有限规则：
 
+- 本正文codec候选固定16,384 UTF-8 bytes、5层JSON容器，local Claim IDs为C01–C04、Source IDs为S01–S08。
+  外部冻结dossier拥有local ID到实际provenance的映射；正文上限不是API token预算或执行grant。
 - `claim_id` 和 `source_id` 只能来自该案例冻结的闭集；每个 claim 恰出现一次。
   `verdict` 仅为 `supported`、`contradicted`、`insufficient`；每个source最多两项关系，
   相同source/relation不得重复，整个claim最多为冻结source数量的两倍（八source时至多16项）。
@@ -148,8 +151,9 @@ Harness 外层时钟度量可比 wall time；Provider 内部时间或不能同�
 | 节点 | 可交付内容 | 进入/完成条件 |
 |---|---|---|
 | P0 当前准备 | 本设计候选、dossier/output、一般化Skill源包/Need/独立评价方案、Gate 与 exact-pin 清单，更新 Issue123 | docs/refs/候选边界/治理检查；零调用，Task BLOCKED |
+| P0.5 隔离实现候选 | 有限正文codec及后继live-purpose/集成候选的离线正反验证 | 按AGENTS治理接受边界先准备可审查实现；不激活Task、不授予API/准入/科学判断、不改变旧Schema/历史 |
 | P1 合法进入 | Human 冻结案例/输出、真实 A4 lineage、Pilot 专项决定、M6 binding applicability | 所有原 hard/external conditions 闭合，按 TASKS 状态机提出 READY/IN_PROGRESS；缺 exact 对象继续 BLOCKED，不以未来 SHA/占位批准制造 PASS |
-| P2 R2 实现 | 新版本 live-purpose contract；已有 M6/M11 ports 的真实 Driver/facts；有界 review/measurement 与 cold reader | 版本兼容、零调用拒绝与离线正反证据、exact-head 组件/安装验证、跨 owner R2 审查；不消费未授权 API |
+| P2 集成与R2接受 | 新版本live-purpose contract；已有M6/M11 ports的真实Driver/facts；有界review/measurement与cold reader | 候选实现可先离线准备；共享接受与Task进入仍需原Gate，版本兼容/正反证据、exact-head组件/安装及跨owner R2审查；不消费未授权API |
 | P3 冻结运行 | accepted source/config/Protocol/run inventory 与 inputs，真实四臂执行 | 首次输出前 exact Human authorization 与 use-boundary fresh guards；全部预注册 slots 和失败保留 |
 | P4 验收收口 | 新进程只读 replay→blind review/freeze→reveal→metric/analysis joins→逐项 Gate record | 路诚钺与黄毅接受 exact 证据；至少一个完整 block 且全 run set 完成，才提议 M5-008 DONE/关闭123 |
 

@@ -427,6 +427,9 @@ PR122 已[完成整项收口](M5-007_CLOSEOUT_RECEIPT.md)，Task DONE、Issue #5
 [具体决定候选](M5-008_DECISION_CANDIDATE.md)和[一般化Skill源包/Need/评价方案](M5-008_GENERAL_SKILL_CANDIDATE.md)
 是当前准备输入；源包位于非发现目录，实际A4准入与Pilot专项freeze仍待闭合。
 
+[有限正文codec实现候选](M5-008_OUTPUT_CONTRACT_PACKET.md)先在隔离分支验证JSON闭集、metadata边界
+和旧H4格式隔离；它不构成live-purpose记录、实际Receipt资格、Human评分或Task接受。
+
 ## 9. 原始设计阶段的历史本地验证
 
 - `python -m unittest tests.test_documentation tests.test_pr_governance -v`：76/76 PASS；

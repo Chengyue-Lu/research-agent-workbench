@@ -16,6 +16,7 @@ M5-007 与 M6-010 均 DONE；M5-008 仍 BLOCKED。以下控制属于
 | M5-PREP-DRIVER-001 | 将已有 Python ports 或 planned View 当作 M11 live execution | 复用通用 View/Host seam；真实 Provider/Tool及Skill pre-use/post-call typed facts；新进程独立 Receipt replay；不可只靠 self-reported PASS | 实现/验证待合法进入；未添加 runner/selector |
 | M5-PREP-GOAL-001 | 把推进目标/窗口委托视作 A4准入、冻结未发生输出或进入M5-004的授权 | 目标终点限定M5-008；具体案例/Skill选择与exact专项决定、Human review/收口分开，索引legacy/deprecated不直接执行，未决继续BLOCKED | 目标ACTIVE；无新live授权；M12独立窗口接手 |
 | M5-PREP-SKILL-001 | 用算术fixture证明语义Skill增量，或在M5 A4直接加载候选以完成自己的准入 | 复用正式Need；独立Maintainer评价覆盖scope/反证/未知与non-trigger；相同baseline/ceiling、Human盲审/准入，Requirement/Method/egress相容性独立闭合 | 纯说明候选与评价方案已准备；没有manifest/Release/Projection/实际Evaluation |
+| M5-CODEC-001 | 宽松JSON/正文metadata把transport或treatment传入审查，或把结构reviewable当真实/科学成功 | 完整有界正文、重复键/未知字段/closed IDs/枚举/cardinality/depth、纯text/完整finish、positive public_value；原response/usage归archive，actual Receipt/Human独立验证 | 隔离pure codec候选22项离线正反用例PASS；未集成live/盲审包、未获新准入 |
 
 The following original rows retain the accepted design-stage controls and downstream dependencies.
 Implementation evidence for M5-006 is recorded after the table; candidate verification does not close M6-008,

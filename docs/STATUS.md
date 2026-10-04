@@ -22,6 +22,10 @@ M5-008的目标终点是完整run-set验收、进入M5-004前停止。用户已�
 [一般化证据核对Skill候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_GENERAL_SKILL_CANDIDATE.md)；
 当前只有非发现目录的纯说明源包与独立评价方案，没有实际Skill Evaluation/admission/Projection。
 
+M5隔离分支另形成[有限正文codec候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_OUTPUT_CONTRACT_PACKET.md)，
+验证closed claim/source/relation正文与metadata隔离；原Schema/H4格式保持。该候选尚未接受，不是live Harness、
+M11真实Driver、actual Receipt资格或run-set验收；原进入Gate保持。
+
 Issue #57 / ADR-0021 的 M14-001～005 已完成首个 curated release：M14-001～004 提供受信
 source、deterministic projection、portable package 与公开文档；M1-009 scaffold 和 M0-007 MIT 已接受。
 #118 接受 active curated topology 与 source-owned live PR governance；完整远端 cutover 已执行并回读，
