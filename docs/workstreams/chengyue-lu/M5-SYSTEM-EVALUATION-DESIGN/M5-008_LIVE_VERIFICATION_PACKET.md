@@ -84,3 +84,10 @@ factory可显式接入[有序历史reader](M5-008_LIVE_BUDGET_PACKET.md)作为�
 来源；该reader的M6 base必须等于独立report-specific retained_budget。applicability仍核对原M6
 report.accounting与其原账本全等，累计只在预算端口使用，不把跨run总量伪写成M6报告用量。
 validator identity纳入budget/history源文件；真实Skill Trial历史尚无producer，不可跳过。
+
+factory另有显式选择的[Conformance→Pilot适用关系候选](M5-008_PROVIDER_APPLICABILITY_CANDIDATE.md)，
+对应[待接受ADR](ADR_CANDIDATE_CONFORMANCE_PILOT_APPLICABILITY.md)。默认严格同binding路径保持；
+只有原/新manifest的完整冷比较与真实具名Human决定绑定后，才可评价不同facade的适用性。
+relation必须等于冻结context的provider_applicability_ref；原M6 report/账本全等保持，
+当前Pilot manifest/Protocol由actual observer核对。新增reader纳入validator identity；
+结构比较与合成tests不能代替实际资格、input proof、Skill/Pilot grant或四臂验收。

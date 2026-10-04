@@ -175,5 +175,8 @@ A4 Supply/Projection 或 actual binding substitution 拒绝；有限输出额外
 新freeze可显式使用[M6+有序Pilot历史候选](M5-008_LIVE_BUDGET_PACKET.md)，按各run delta累计，
 并保留原M6 report-specific资格核对。未知/held/open历史拒绝checkpoint；Skill Trial producer仍须
 独立实现，完整历史选择、真实准入及专项授权不能由这个reader代替。
+不同Conformance/Pilot facade有[显式适用关系候选](M5-008_PROVIDER_APPLICABILITY_CANDIDATE.md)，
+保留两个原manifest、完整source差异与原report/accounting，须独立具名Human接受。
+原同binding路径严格保持；关系比较不能代替actual input proof、共同live资格或Pilot grant。
 原失败、capture gaps、未知 measurement/账单和不完整 slots 不删除；本包不产生 M5-001/002 case 接受、
 M5-004/005 研究结论、Skill promotion/pruning、Topic5 或发行资格。

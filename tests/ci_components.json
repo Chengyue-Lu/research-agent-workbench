@@ -130,7 +130,8 @@
         "test_live_verification",
         "test_live_budget",
         "test_live_transport",
-        "test_live_budget_history"
+        "test_live_budget_history",
+        "test_live_applicability"
       ],
       "flags": [
         "smoke"
@@ -488,7 +489,8 @@
       "test_live_preflight",
       "test_live_verification",
       "test_live_budget",
-      "test_live_budget_history"
+      "test_live_budget_history",
+      "test_live_applicability"
     ],
     "tests/baseline_fixtures.py": [
       "test_evaluation_harness_proof",
@@ -722,12 +724,14 @@
     "src/research_workbench/evaluation/live_preflight.py": [
       "test_live_verification",
       "test_live_budget",
-      "test_live_budget_history"
+      "test_live_budget_history",
+      "test_live_applicability"
     ],
     "src/research_workbench/evaluation/live_verification.py": [
       "test_live_verification",
       "test_live_budget",
-      "test_live_budget_history"
+      "test_live_budget_history",
+      "test_live_applicability"
     ],
     "src/research_workbench/adapters/models/conformance_budget_anchor.py": [
       "test_live_verification",
@@ -736,15 +740,18 @@
     ],
     "src/research_workbench/adapters/models/profile_conformance_report.py": [
       "test_live_verification",
-      "test_live_budget"
+      "test_live_budget",
+      "test_live_applicability"
     ],
     "src/research_workbench/adapters/models/provider_binding.py": [
       "test_live_verification",
-      "test_live_budget"
+      "test_live_budget",
+      "test_live_applicability"
     ],
     "src/research_workbench/adapters/models/provider_source_closure.py": [
       "test_live_verification",
-      "test_live_budget"
+      "test_live_budget",
+      "test_live_applicability"
     ],
     "src/research_workbench/capability/lifecycle.py": [
       "test_live_verification",
@@ -764,35 +771,41 @@
     "src/research_workbench/evaluation/live_budget.py": [
       "test_live_budget",
       "test_live_transport",
-      "test_live_budget_history"
+      "test_live_budget_history",
+      "test_live_applicability"
     ],
     "src/research_workbench/evaluation/live_inputs.py": [
       "test_live_budget"
     ],
     "src/research_workbench/evaluation/pins.py": [
       "test_live_budget",
-      "test_live_budget_history"
+      "test_live_budget_history",
+      "test_live_applicability"
     ],
     "src/research_workbench/evaluation/system_protocol.py": [
       "test_live_budget"
     ],
     "tests/test_live_verification.py": [
-      "test_live_budget"
+      "test_live_budget",
+      "test_live_applicability"
     ],
     "src/research_workbench/adapters/models/reserved_transport.py": [
       "test_live_transport"
     ],
     "src/research_workbench/adapters/models/request_admission.py": [
-      "test_live_transport"
+      "test_live_transport",
+      "test_live_applicability"
     ],
     "src/research_workbench/evaluation/live_transport.py": [
-      "test_live_transport"
+      "test_live_transport",
+      "test_live_applicability"
     ],
     "src/research_workbench/adapters/models/base.py": [
       "test_live_transport"
     ],
     "src/research_workbench/adapters/models/http.py": [
-      "test_live_transport"
+      "test_live_transport",
+      "test_live_applicability"
     ],
     "src/research_workbench/adapters/models/conformance_transport.py": [
       "test_live_transport"
@@ -802,6 +815,15 @@
     ],
     "src/research_workbench/evaluation/live_budget_history.py": [
       "test_live_budget_history"
+    ],
+    "src/research_workbench/adapters/models/configured.py": [
+      "test_live_applicability"
+    ],
+    "src/research_workbench/evaluation/live_applicability.py": [
+      "test_live_applicability"
+    ],
+    "src/research_workbench/execution/baseline_envelope.py": [
+      "test_live_applicability"
     ]
   },
   "nearest_components": {

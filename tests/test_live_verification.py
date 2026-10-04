@@ -377,7 +377,7 @@ class LiveUseGuardTests(LiveEvidenceFixture, unittest.TestCase):
         self.assertIsNone(error.exception.__cause__)
 
 
-class LiveApplicabilityTests(LiveEvidenceFixture, unittest.TestCase):
+class LiveQualifiedEvidenceFixture(LiveEvidenceFixture):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -449,6 +449,8 @@ class LiveApplicabilityTests(LiveEvidenceFixture, unittest.TestCase):
             credential=self.credential, implementation_closure_ref=document["implementation_closure_ref"])
         self.factory = self.make_factory(binding_ref=self.m6_binding, provider=self.provider)
 
+
+class LiveApplicabilityTests(LiveQualifiedEvidenceFixture, unittest.TestCase):
     def test_actual_bound_report_and_loaded_graph_are_checked_without_key_or_send(self):
         before = self.journal.snapshot()
         self.assertTrue(self.factory.applicability(self.argument()))

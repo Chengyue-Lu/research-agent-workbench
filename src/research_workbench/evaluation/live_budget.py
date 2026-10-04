@@ -27,18 +27,20 @@ _APPLICATION = 0x52574250
 _META = "CREATE TABLE meta (id INTEGER PRIMARY KEY CHECK(id=1), header TEXT NOT NULL)"
 _EVENTS = "CREATE TABLE events (seq INTEGER PRIMARY KEY, kind TEXT NOT NULL, payload TEXT NOT NULL)"
 _MAX_EVENTS = 16384
-_CODES = frozenset("""pilot-budget-invalid-state pilot-budget-prior-unverified
-pilot-budget-binding-required pilot-budget-context-mismatch pilot-budget-size-unsupported
-pilot-budget-retry-run-unsupported pilot-budget-slots-invalid pilot-budget-storage-failed
-pilot-budget-clock-required pilot-budget-path-conflict pilot-budget-create-refused
-pilot-budget-clock-invalid pilot-budget-anchor-drift pilot-budget-identity-drift
-pilot-budget-event-limit pilot-budget-clock-regressed pilot-budget-slot-order-denied
-pilot-budget-reservation-denied pilot-budget-request-bound-denied pilot-budget-token-limit
-pilot-budget-call-invalid pilot-budget-send-reused pilot-budget-release-after-intent
-pilot-budget-settlement-invalid pilot-budget-usage-invalid pilot-budget-closeout-invalid
-pilot-budget-event-invalid pilot-budget-time-exhausted pilot-budget-closed
-pilot-budget-handle-required pilot-budget-foreign-handle pilot-budget-handle-drift
-pilot-budget-current-attempt-denied pilot-budget-tool-before-settlement""".split())
+_CODES = frozenset({
+    "pilot-budget-invalid-state", "pilot-budget-prior-unverified", "pilot-budget-binding-required",
+    "pilot-budget-context-mismatch", "pilot-budget-size-unsupported", "pilot-budget-retry-run-unsupported",
+    "pilot-budget-slots-invalid", "pilot-budget-storage-failed", "pilot-budget-clock-required",
+    "pilot-budget-path-conflict", "pilot-budget-create-refused", "pilot-budget-clock-invalid",
+    "pilot-budget-anchor-drift", "pilot-budget-identity-drift", "pilot-budget-event-limit",
+    "pilot-budget-clock-regressed", "pilot-budget-slot-order-denied", "pilot-budget-reservation-denied",
+    "pilot-budget-request-bound-denied", "pilot-budget-token-limit", "pilot-budget-call-invalid",
+    "pilot-budget-send-reused", "pilot-budget-release-after-intent", "pilot-budget-settlement-invalid",
+    "pilot-budget-usage-invalid", "pilot-budget-closeout-invalid", "pilot-budget-event-invalid",
+    "pilot-budget-time-exhausted", "pilot-budget-closed", "pilot-budget-handle-required",
+    "pilot-budget-foreign-handle", "pilot-budget-handle-drift", "pilot-budget-current-attempt-denied",
+    "pilot-budget-tool-before-settlement",
+})
 
 
 class PilotBudgetError(ValueError):

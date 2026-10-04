@@ -199,6 +199,7 @@ class LiveEvidenceVerifiers:
     provider: object
     budget: RetainedConformanceBudget
     cumulative_history: object
+    _relation_json: str | None
     human_verifier: Callable
     runtime_observer: Callable
 
@@ -206,7 +207,8 @@ class LiveEvidenceVerifiers:
                  need_ref: Mapping, admission_closure_ref: Mapping, pilot_owner: str, executor_id: str,
                  applicability_decision_ref: Mapping, provider_owner: str,
                  binding_ref: Mapping, provider, retained_budget: RetainedConformanceBudget,
-                 human_verifier: Callable, runtime_observer: Callable, cumulative_history=None):
+                 human_verifier: Callable, runtime_observer: Callable, cumulative_history=None,
+                 applicability_relation_ref=None):
         # Local import keeps the journal's existing verification dependency acyclic.
         from research_workbench.evaluation.live_budget_history import RetainedBudgetHistory
         require(isinstance(context, FrozenLiveContext) and type(retained_budget) is RetainedConformanceBudget
@@ -214,6 +216,9 @@ class LiveEvidenceVerifiers:
                 and (cumulative_history is None or (type(cumulative_history) is RetainedBudgetHistory
                      and cumulative_history.base == retained_budget)),
                 "independent live evidence context and verifiers required")
+        require(applicability_relation_ref is None
+                or file_ref(applicability_relation_ref) == dict(context.provider_applicability_ref),
+                "explicit applicability relation must be the frozen context selection")
         values = {"inputs": inputs, "context": context,
                   "_admission_json": json.dumps(_json_copy(admission_evidence), ensure_ascii=False, allow_nan=False),
                   "_need_json": json.dumps(file_ref(need_ref)),
@@ -223,6 +228,8 @@ class LiveEvidenceVerifiers:
                   "pilot_owner": _named(pilot_owner), "executor_id": _named(executor_id),
                   "provider_owner": _named(provider_owner), "provider": provider, "budget": retained_budget,
                   "cumulative_history": cumulative_history,
+                  "_relation_json": None if applicability_relation_ref is None
+                                    else json.dumps(file_ref(applicability_relation_ref)),
                   "human_verifier": human_verifier, "runtime_observer": runtime_observer}
         for name, value in values.items():
             object.__setattr__(self, name, value)
@@ -325,15 +332,26 @@ class LiveEvidenceVerifiers:
 
     def applicability(self, argument):
         scope, protocol, _ = self._expected_inputs(argument)
-        report = verify_profile_conformance_report(self.inputs.read(self.context.provider_applicability_ref),
-            root=self.inputs.root, schema_root=self.inputs.catalog.directory.parent)
         binding_ref = json.loads(self._binding_json)
+        relation = None
+        if self._relation_json is None:
+            report = verify_profile_conformance_report(self.inputs.read(self.context.provider_applicability_ref),
+                root=self.inputs.root, schema_root=self.inputs.catalog.directory.parent)
+            # Preserve the original exact same-binding path.
+            require(file_ref(report["binding"]["manifest_ref"]) == binding_ref
+                    and file_ref(report["config_ref"]) == dict(self.context.provider_config_ref),
+                    "bound completed M6 evidence differs from external selection")
+        else:
+            from research_workbench.evaluation.live_applicability import read_provider_applicability_relation
+            relation_ref = json.loads(self._relation_json)
+            relation, report, pilot = read_provider_applicability_relation(self.inputs, relation_ref,
+                expected_pilot_binding_ref=binding_ref)
+            require(file_ref(pilot["resolved_config_ref"]) == dict(self.context.provider_config_ref),
+                    "Pilot applicability configuration differs from frozen selection")
         require(report["report_version"] in {"1.1.0", "1.2.0"}
                 and report["status"] == report["stop_code"] == "completed"
                 and report["accounting"] is not None and report["calls"]
-                and all(report["assertions"].values())
-                and file_ref(report["binding"]["manifest_ref"]) == binding_ref
-                and file_ref(report["config_ref"]) == dict(self.context.provider_config_ref),
+                and all(report["assertions"].values()),
                 "bound completed M6 evidence differs from external selection")
         require(report["accounting"] == self.budget.snapshot(),
                 "qualified M6 report does not match selected retained usage history")
@@ -352,11 +370,22 @@ class LiveEvidenceVerifiers:
                 "current source/Windows context differs from frozen inputs")
         pins = {"task_id": "M5-008", "purpose": "live-pilot", "context": _context_commitment(self.context),
                 "binding_ref": binding_ref, "runtime_observation_sha256": digest(actual)}
+        if relation is not None:
+            pins["applicability_relation"] = {"ref": relation_ref,
+                "qualified_report_ref": relation["qualified_report_ref"],
+                "qualified_binding_ref": relation["qualified_binding_ref"],
+                "pilot_binding_ref": relation["pilot_binding_ref"],
+                "comparison_sha256": digest(relation["comparison"]), "limitations": relation["limitations"]}
         decision = self._human(json.loads(self._applicability_json), self.provider_owner, argument["checked_at"],
-            "m5-provider-applicability", {**pins, "report": report})
+            "m5-provider-applicability", {**pins, "report": report, **({"relation": relation} if relation is not None else {})})
         require(decision["metadata"].get("m5_live_provider_applicability") == pins,
                 "named applicability does not bind current implementation/context")
         require({"M5-008", self.context.run_id} <= set(decision["scope"]), "applicability Decision scope omits Task/run")
+        if relation is not None:
+            # _human rechecked all selected evidence bytes after its callback.
+            # Now reobserve actual loaded Provider state; no Key or HTTP.
+            require(observe_provider_binding(self.provider, inputs=self.inputs, manifest_ref=binding_ref) == selected,
+                    "Pilot binding changed during Human applicability verification")
         self.inputs.recheck()
         return True
 

@@ -24,8 +24,8 @@ from research_workbench.execution.baseline_envelope import compile_baseline_enve
 
 
 KIND = "evaluation_live_preflight"
-BOUNDARIES = dict.fromkeys(("runtime_input", "execution_authority", "actual_execution",
-                           "supply_selection", "human_decision", "task_completion"), False)
+BOUNDARIES = {"runtime_input": False, "execution_authority": False, "actual_execution": False,
+              "supply_selection": False, "human_decision": False, "task_completion": False}
 REF_FIELDS = ("protocol_ref", "scope_ref", "plan_ref", "case_closure_ref", "provider_config_ref",
               "provider_applicability_ref", "windows_context_ref", "budget_checkpoint_ref", "authorization_ref")
 
@@ -128,12 +128,12 @@ def _verify(callback, argument, label):
 
 def validator_identity(inputs):
     from research_workbench.evaluation import (bounded_evidence, comparability, harness_plan, harness_preflight,
-                                             live_budget, live_budget_history, live_inputs, live_verification,
+                                             live_applicability, live_budget, live_budget_history, live_inputs, live_verification,
                                              overlap, overlay, pins, qualification, system_protocol)
     from research_workbench.execution import baseline_envelope
     from research_workbench.validation import schemas
     paths = [Path(m.__file__) for m in (bounded_evidence, comparability, harness_plan, harness_preflight,
-             live_budget, live_budget_history, live_inputs, live_verification, overlap, overlay, pins, qualification,
+             live_applicability, live_budget, live_budget_history, live_inputs, live_verification, overlap, overlay, pins, qualification,
              system_protocol, baseline_envelope, schemas)]
     paths.append(Path(__file__))
     return {"identity": "evaluation-live-preflight", "version": "2.0.0",
