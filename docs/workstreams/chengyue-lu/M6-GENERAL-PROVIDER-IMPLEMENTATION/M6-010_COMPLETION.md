@@ -1,6 +1,6 @@
 # M6-010 DeepSeek Flash 受限收口
 
-2026-10-04。本 feature 候选将 [M6-010](../../../TASKS.md) 从 BLOCKED 置为 DONE，
+2026-10-04。本 feature 将 [M6-010](../../../TASKS.md) 从 BLOCKED 置为 DONE，
 完成判断仅接受以下已经运行并保留的 exact Windows / Flash Provider 与 Session 部件证据。
 Task 定义、依赖和验收原文保持不变；共享 Task 状态随本 PR 的接受与集成生效。
 
