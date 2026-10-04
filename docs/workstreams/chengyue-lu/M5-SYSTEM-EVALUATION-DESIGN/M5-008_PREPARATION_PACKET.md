@@ -6,6 +6,10 @@
 核对基线：`develop@6fa105b720254fae82d2e889385c89292272b2d7`。
 跟踪：[Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)。
 
+用户已授权将推进至 M5-008 run-set 验收设为目标、在 M5-004 前停止；不涉及新 Human 决断的工作
+直接继续。[具体案例/Skill/运行清单决定候选](M5-008_DECISION_CANDIDATE.md)提供可审查输入，
+实际准入、专项运行、评分与具名收口仍分别保留，当前没有新执行 grant。
+
 ## 1. 进入事实与本次交付
 
 | 条件 | 已核对事实 | 本 Pilot 尚需完成 |

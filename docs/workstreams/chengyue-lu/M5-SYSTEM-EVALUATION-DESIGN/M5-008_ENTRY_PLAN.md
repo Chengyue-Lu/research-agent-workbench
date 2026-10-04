@@ -5,6 +5,8 @@ Task 风险：R2。当前状态：**BLOCKED**；本次是离线设计与文档�
 当前核对基线：`develop@6fa105b720254fae82d2e889385c89292272b2d7`；原接手观察仍绑定 b033c05。
 当前跟踪：[Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)。
 范围继续由 [TASKS](../../../TASKS.md) 与 [Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md) 定义。
+用户已建立推进到 M5-008 run-set 验收、M5-004 前停止的目标；当前
+[决定候选](M5-008_DECISION_CANDIDATE.md)把 Human 案例/准入/专项授权与可离线工作分开。
 
 ## 前置与责任
 

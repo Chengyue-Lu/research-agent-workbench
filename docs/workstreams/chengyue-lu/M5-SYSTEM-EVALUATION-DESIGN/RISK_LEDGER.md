@@ -14,6 +14,7 @@ M5-007 与 M6-010 均 DONE；M5-008 仍 BLOCKED。以下控制属于
 | M5-PREP-REVIEW-001 | 任意正文或 transport metadata 泄漏 treatment，或投影择优/自动修改答案 | 有限 claim/source/verdict 白名单；每 slice 全量 source refs；无自由文本/额外字段，非完整/无效输出 unreviewable；Human 全量 freeze 后 reveal | 格式候选；未选择案例或作匿名性证明 |
 | M5-PREP-BUDGET-001 | 将部件十组/预算授权当成四臂许可，重开账本或漏计失败 | Pilot 专项 exact 授权；10m 累计上限关联原1744；各层预算/超时/stop；失败与 unknown usage 预占留存，零自动 retry/fallback | Pilot 授权 UNSATISFIED；本次0调用/凭据/账本操作 |
 | M5-PREP-DRIVER-001 | 将已有 Python ports 或 planned View 当作 M11 live execution | 复用通用 View/Host seam；真实 Provider/Tool及Skill pre-use/post-call typed facts；新进程独立 Receipt replay；不可只靠 self-reported PASS | 实现/验证待合法进入；未添加 runner/selector |
+| M5-PREP-GOAL-001 | 把推进目标/窗口委托视作 A4准入、冻结未发生输出或进入M5-004的授权 | 目标终点限定M5-008；具体案例/Skill选择与exact专项决定、Human review/收口分开，索引legacy/deprecated不直接执行，未决继续BLOCKED | 目标ACTIVE；无新live授权；M12独立窗口接手 |
 
 The following original rows retain the accepted design-stage controls and downstream dependencies.
 Implementation evidence for M5-006 is recorded after the table; candidate verification does not close M6-008,
