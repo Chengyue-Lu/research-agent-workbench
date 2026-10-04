@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "D:\lcy\develop\_assessments\rwb-ci-review-ready-20261004\fixture\compile_evidence.py", line 53, in <module>
+    assert binding_report["same_five_hashes_as_every_real_before_case"]
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

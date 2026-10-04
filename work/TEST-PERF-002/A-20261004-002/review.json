@@ -1,0 +1,365 @@
+{
+  "verdict": "PASS",
+  "approval_scope": "Bounded independent source/evidence review of specified candidate only; no hosted/full-suite/merge authority implied",
+  "reviewed_at_utc": "2026-10-04T03:08:50.343787+00:00",
+  "accepted_base": "6fa105b720254fae82d2e889385c89292272b2d7",
+  "candidate_source_sha256": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+  "candidate_diff_sha256": "a0d908962193f1f517989e63f9777fc8669ad406e317c833144b73c9b11fb620",
+  "independent_check_script_sha256": "326547957d2567d5896bdc414d4f87b1a2fb403ec93625a25c5ca5175d459eaf",
+  "independent_checks_sha256": "9f8ec36ede18efcde7e1496bd3d79062850dcd375160b085801e514616284e83",
+  "methods": 33,
+  "preserved_assertion_calls": 69,
+  "preparation_only_changes": 11,
+  "unchanged_test_bodies": 22,
+  "selected_proofs": [
+    {
+      "method": "test_missing_typed_fact_is_rejected",
+      "candidate_line": 169,
+      "preserved_proof": "typed fact decision ref missing → exactly one rejection"
+    },
+    {
+      "method": "test_missing_actual_input_read_is_rejected",
+      "candidate_line": 175,
+      "preserved_proof": "remove content_sha256 and rehash Trace → hash-pinned read rejection"
+    },
+    {
+      "method": "test_missing_fact_capture_event_is_rejected",
+      "candidate_line": 185,
+      "preserved_proof": "replace actual capture revision path/reason → rejection"
+    },
+    {
+      "method": "test_capture_after_provider_invocation_is_rejected",
+      "candidate_line": 196,
+      "preserved_proof": "move fact capture after invocation and resequence → ordering rejection"
+    },
+    {
+      "method": "test_rehashed_host_and_fact_identity_still_require_actual_input_bytes",
+      "candidate_line": 215,
+      "preserved_proof": "forge matching Host/fact Skill identity and re-sign → real input bytes still reject"
+    },
+    {
+      "method": "test_validation_subject_closed_set_is_enforced",
+      "candidate_line": 268,
+      "preserved_proof": "drop subject and re-sign validation → exact subject closure rejects"
+    },
+    {
+      "method": "test_artifact_corruption_is_rejected",
+      "candidate_line": 275,
+      "preserved_proof": "mutate copied output bytes → actual artifact hash rejects"
+    },
+    {
+      "method": "test_checker_pin_corruption_is_rejected",
+      "candidate_line": 281,
+      "preserved_proof": "mutate copied checker bytes → checker source pin rejects"
+    },
+    {
+      "method": "test_core_closeout_does_not_silently_accept_skill_contract",
+      "candidate_line": 287,
+      "preserved_proof": "generic builder/replay reject Skill contract; Skill receipt still builds"
+    },
+    {
+      "method": "test_receipt_recomputed_fields_cannot_be_self_reported",
+      "candidate_line": 298,
+      "preserved_proof": "independent deepcopies forge resolution/actual binding/requested Skill; each real re-signed replay rejects"
+    },
+    {
+      "method": "test_receipt_versions_and_authority_fields_fail_closed",
+      "candidate_line": 312,
+      "preserved_proof": "unpublished version and unauthorized assignment/human/task fields remain schema-invalid"
+    }
+  ],
+  "findings": [],
+  "fixture_review": {
+    "seed": "one real completed SkillCloseoutFixture, sealed real Host/Trace/checker/output bytes plus recursive plain state",
+    "copy": "independent copytree root and deepcopy state; CloseoutPin rebuilt from seed metadata; real Bundle/View loaders run against copied root",
+    "no_live_cache": true,
+    "no_validation_result_cache": true,
+    "live_paths_cold_clock_unchanged": true,
+    "isolation_existing_receipt_pass": true,
+    "additional_adversarial_test_required": false
+  },
+  "measurement_review": {
+    "pairs": [
+      {
+        "pair": 1,
+        "runner": "run_pair_v1.py",
+        "runner_sha256": "6c7000bf7440ac4c47ef97d8ede5ccdf8b3f803855bf8d8eb7705e677ae6ae28",
+        "runner_hash_embedded_in_raw_summary": false,
+        "before_seconds": 28.2447471000487,
+        "after_seconds": 20.006265700096264,
+        "within_pair_reduction_percent": 29.168189648751465,
+        "conditions": {
+          "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+          "interpreter": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "packages": {
+            "coverage": "7.16.1",
+            "jsonschema": "4.26.0",
+            "PyYAML": "6.0.3"
+          },
+          "coverage": {
+            "enabled": true,
+            "branch": true,
+            "source": [
+              "research_workbench"
+            ],
+            "config_file": false
+          },
+          "timing_boundary": "suite wall includes class/each-case setup, body, teardown and class cleanup; coverage enabled; call observer enabled equally"
+        },
+        "method_order": [
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_typed_fact_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_actual_input_read_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_fact_capture_event_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_capture_after_provider_invocation_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_rehashed_host_and_fact_identity_still_require_actual_input_bytes",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_validation_subject_closed_set_is_enforced",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_artifact_corruption_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_checker_pin_corruption_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_core_closeout_does_not_silently_accept_skill_contract",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_receipt_recomputed_fields_cannot_be_self_reported",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_receipt_versions_and_authority_fields_fail_closed"
+        ],
+        "bindings": null,
+        "product_line_branch_sets_equal": true,
+        "actual_calls_before": {
+          "fixture_init": 11,
+          "execute_frozen_view": 11,
+          "load_runtime_bundle": 25,
+          "load_resolved_execution_view": 14,
+          "provider_execute": 11,
+          "receipt_build": 11
+        },
+        "actual_calls_after": {
+          "fixture_init": 1,
+          "execute_frozen_view": 1,
+          "load_runtime_bundle": 16,
+          "load_resolved_execution_view": 15,
+          "provider_execute": 1,
+          "receipt_build": 11
+        },
+        "raw_summary_sha256": {
+          "before": "5e31dcf47232dd05d075a2839192388a4283e4c5258d8beab9bb6bca4bd8a662",
+          "after": "e47d85d4d6f695e11234a50ef4ae06f8533f88563a9292b568a6992fc26458d8"
+        }
+      },
+      {
+        "pair": 2,
+        "runner": "run_pair.py",
+        "runner_sha256": "a05f4d6d8a509b488bed5253a4c730d06a11d314c8c89cfc92a0cb44913ff76d",
+        "runner_hash_embedded_in_raw_summary": true,
+        "before_seconds": 29.97905109997373,
+        "after_seconds": 20.173473700066097,
+        "within_pair_reduction_percent": 32.708097955496086,
+        "conditions": {
+          "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+          "interpreter": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "packages": {
+            "coverage": "7.16.1",
+            "jsonschema": "4.26.0",
+            "PyYAML": "6.0.3"
+          },
+          "coverage": {
+            "enabled": true,
+            "branch": true,
+            "source": [
+              "research_workbench"
+            ],
+            "config_file": false
+          },
+          "timing_boundary": "suite wall includes class/each-case setup, body, teardown and class cleanup; coverage enabled; call observer enabled equally"
+        },
+        "method_order": [
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_typed_fact_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_actual_input_read_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_fact_capture_event_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_capture_after_provider_invocation_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_rehashed_host_and_fact_identity_still_require_actual_input_bytes",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_validation_subject_closed_set_is_enforced",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_artifact_corruption_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_checker_pin_corruption_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_core_closeout_does_not_silently_accept_skill_contract",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_receipt_recomputed_fields_cannot_be_self_reported",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_receipt_versions_and_authority_fields_fail_closed"
+        ],
+        "bindings": {
+          "real_before_cases": 11,
+          "real_after_seed": 1,
+          "independent_after_copies": 11,
+          "all_copy_pins_equal_own_seed": true,
+          "manifest_view_host_equal_before_and_after": true,
+          "before_seed_raw_difference_fields": [
+            "trace_pin",
+            "validation_pin"
+          ]
+        },
+        "product_line_branch_sets_equal": true,
+        "actual_calls_before": {
+          "fixture_init": 11,
+          "execute_frozen_view": 11,
+          "load_runtime_bundle": 25,
+          "load_resolved_execution_view": 14,
+          "provider_execute": 11,
+          "receipt_build": 11
+        },
+        "actual_calls_after": {
+          "fixture_init": 1,
+          "execute_frozen_view": 1,
+          "load_runtime_bundle": 16,
+          "load_resolved_execution_view": 15,
+          "provider_execute": 1,
+          "receipt_build": 11
+        },
+        "raw_summary_sha256": {
+          "before": "805625cd9a4be77691a747110554bab384b2c665730e8656e7949e830d9e0b82",
+          "after": "df37fe8ef58c6e8d245b8451d843d8fa56f2521f32b2fdd79cea7b6fdf7d0235"
+        }
+      },
+      {
+        "pair": 3,
+        "runner": "run_pair.py",
+        "runner_sha256": "a05f4d6d8a509b488bed5253a4c730d06a11d314c8c89cfc92a0cb44913ff76d",
+        "runner_hash_embedded_in_raw_summary": true,
+        "before_seconds": 29.415990899899043,
+        "after_seconds": 20.17221360001713,
+        "within_pair_reduction_percent": 31.424327439242028,
+        "conditions": {
+          "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+          "interpreter": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "packages": {
+            "coverage": "7.16.1",
+            "jsonschema": "4.26.0",
+            "PyYAML": "6.0.3"
+          },
+          "coverage": {
+            "enabled": true,
+            "branch": true,
+            "source": [
+              "research_workbench"
+            ],
+            "config_file": false
+          },
+          "timing_boundary": "suite wall includes class/each-case setup, body, teardown and class cleanup; coverage enabled; call observer enabled equally"
+        },
+        "method_order": [
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_typed_fact_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_actual_input_read_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_missing_fact_capture_event_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_capture_after_provider_invocation_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_rehashed_host_and_fact_identity_still_require_actual_input_bytes",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_validation_subject_closed_set_is_enforced",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_artifact_corruption_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_checker_pin_corruption_is_rejected",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_core_closeout_does_not_silently_accept_skill_contract",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_receipt_recomputed_fields_cannot_be_self_reported",
+          "tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_receipt_versions_and_authority_fields_fail_closed"
+        ],
+        "bindings": {
+          "real_before_cases": 11,
+          "real_after_seed": 1,
+          "independent_after_copies": 11,
+          "all_copy_pins_equal_own_seed": true,
+          "manifest_view_host_equal_before_and_after": true,
+          "before_seed_raw_difference_fields": [
+            "trace_pin",
+            "validation_pin"
+          ]
+        },
+        "product_line_branch_sets_equal": true,
+        "actual_calls_before": {
+          "fixture_init": 11,
+          "execute_frozen_view": 11,
+          "load_runtime_bundle": 25,
+          "load_resolved_execution_view": 14,
+          "provider_execute": 11,
+          "receipt_build": 11
+        },
+        "actual_calls_after": {
+          "fixture_init": 1,
+          "execute_frozen_view": 1,
+          "load_runtime_bundle": 16,
+          "load_resolved_execution_view": 15,
+          "provider_execute": 1,
+          "receipt_build": 11
+        },
+        "raw_summary_sha256": {
+          "before": "fdcd627abecfbb19843fbce5287568a64c34cde150c536fe2a7cb2176aeacae2",
+          "after": "b95136df498a5ba84cc4c641a6a6e678a36a7196505a6fb27f687da742d0bbc6"
+        }
+      }
+    ],
+    "cross_pair_aggregate": null,
+    "scope": "eleven selected archive-only cases in one process/class lifecycle; no whole module/CI speed claim",
+    "timer_includes_real_seed_generation_class_and_case_setup_cleanup": true,
+    "actual_pins_observer_limit": "v2 records actual file hashes, not an extra runtime comparison with each returned pin.sha property; pin usage is established by factory source and real public loader/build/replay calls"
+  },
+  "preserved_assessment_failure": {
+    "path": "D:\\lcy\\develop\\_assessments\\rwb-ci-review-ready-20261004\\fixture\\evidence-first-failure.log",
+    "sha256": "6fcd6cee2b4239cb6835a4d2094d1f895e6910c541482d4bbaf46eb17370bd01",
+    "type": "aggregation AssertionError, not unittest failure",
+    "failed_assumption": "all five before-generated hashes equal after seed",
+    "actual": "manifest/View/Host hashes equal; Trace and dependent validation differ; all after copies equal own seed across all five pins",
+    "attribution": "Recorder real _now message created_at and event occurred_at are dynamic; timestamps/hash inputs were not rewritten; source inspected, old raw Trace files not independently available from cleaned roots"
+  },
+  "runner_identity_note": {
+    "sha256": "6c7000bf7440ac4c47ef97d8ede5ccdf8b3f803855bf8d8eb7705e677ae6ae28",
+    "actual_matching_file": "run_pair_v1.py",
+    "meaning": "retained legacy v1 metadata, not the v2 pair-runner binding"
+  },
+  "pr135_coexistence": {
+    "unaccepted_head": "a392f39689642480336769775a13de76b540a5ed",
+    "same_file_overlap": true,
+    "candidate_keeps_archived_methods_bodies": true,
+    "independent_semantic_changes": "none in historical methods; later composition must preserve separately authorized removals without resurrecting or silently folding them into this optimization"
+  },
+  "remaining_obligations": [
+    "Current-head official Python3.11 target-plan component CI: entire 33-case closeout module including original cold subprocess/fresh Host/clock cases, plus plan-defined short smoke",
+    "Applicable result identity/inventory and declared checks must pass; component coverage remains diagnostic; preserved quality definitions are not changed and local11 line/branch equality is not a global coverage Gate",
+    "PR135 remains separate unaccepted authority; final coexistence must preserve independent PR hunks"
+  ],
+  "reviewer_activity": {
+    "test_runs": 0,
+    "source_ref_remote_mutations": 0,
+    "writes_only": "D:\\lcy\\develop\\_assessments\\rwb-ci-review-ready-20261004\\independent-review"
+  },
+  "source_recheck_at_report_write": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+  "evidence_sha256": {
+    "candidate.diff": "a0d908962193f1f517989e63f9777fc8669ad406e317c833144b73c9b11fb620",
+    "candidate-test_skill_execution_closeout.py": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+    "accepted-test_skill_execution_closeout.py": "a429c4814ab75330e0e730c2194a7ef82848c49b264d4018fa60b0c0c47f6f8e",
+    "equivalence.json": "8cd78596d070e10f60ef7ece21119e6beb36e72ef84d38945e9e240608410b2d",
+    "isolation.json": "9bae37cfb5b9c8eac581344d486845568ddc131538c002c7038a06c272c607e3",
+    "verify_isolation.py": "f5c866cd652b2babdbafa878b7c6bdace6a4b8bd3b213667255692b552522a5c",
+    "run_pair_v1.py": "6c7000bf7440ac4c47ef97d8ede5ccdf8b3f803855bf8d8eb7705e677ae6ae28",
+    "run_pair.py": "a05f4d6d8a509b488bed5253a4c730d06a11d314c8c89cfc92a0cb44913ff76d",
+    "evidence.json": "71904c49358068568e649a32b361c042fee7a7e31efcb6f53cc0bc9003861496",
+    "evidence-first-failure.log": "6fcd6cee2b4239cb6835a4d2094d1f895e6910c541482d4bbaf46eb17370bd01",
+    "evidence-process.log": "7e581adb15662d549529e5b375f8df82c264522ba39bae5f0a5520cd84a969d5",
+    "compile_evidence.py": "3ca39ba89e4172342cd25121d1e2539119a550b9387e16909ce75c37fbe62dc4"
+  },
+  "implementation_report_historical_suggestions": {
+    "raw_report_preserved": true,
+    "suggestions": [
+      "Python3.11/3.13 required jobs",
+      "required coverage thresholds/full validation"
+    ],
+    "authority": "implementation receipt/report remaining_validation only; beyond current daily component minimum unless a separate checkpoint triggers it"
+  },
+  "scope_correction": {
+    "trigger": "root visible clarification and independently read accepted docs/DEVELOPMENT.md section6",
+    "authority_file": "D:\\lcy\\develop\\_worktrees\\RWB\\slow-fixture-seeds-20261004\\docs\\DEVELOPMENT.md",
+    "authority_sha256": "a8155269c627b6476467f1f019e8373a356925a53a59965637c5c44a86601d8a",
+    "authority_lines": [
+      187,
+      191,
+      196,
+      197
+    ],
+    "current_daily_policy": "Python3.11 stable-component/direct-tests route; coverage diagnostic; full/multiversion needs explicit checkpoint",
+    "prior_review_snapshot_sha256": {
+      "FINAL_REVIEW.v1.md": "52256f4982f6676f3121dca60f3753411a64117726d0574b1672850714f2c720",
+      "FINAL_REVIEW.v1.json": "52030d5b016335c13c77e9324ca9199950cbdfcef150eb96086fff2fa0ec941b"
+    },
+    "corrected_at_utc": "2026-10-04T03:09:46.438453+00:00",
+    "source_hash_unchanged": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38"
+  }
+}

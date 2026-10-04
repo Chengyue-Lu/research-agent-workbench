@@ -1,0 +1,431 @@
+{
+  "status": "BOUNDED_IMPLEMENTATION_PASS_PENDING_INDEPENDENT_REVIEW_AND_COMPONENT_CI",
+  "root": "D:\\lcy\\develop\\_worktrees\\RWB\\slow-fixture-seeds-20261004",
+  "base": "6fa105b720254fae82d2e889385c89292272b2d7",
+  "branch": "perf/slow-fixture-seeds-20261004",
+  "source_hashes": {
+    "before": "a429c4814ab75330e0e730c2194a7ef82848c49b264d4018fa60b0c0c47f6f8e",
+    "after": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+    "diff": "a0d908962193f1f517989e63f9777fc8669ad406e317c833144b73c9b11fb620",
+    "pair_runner": "6c7000bf7440ac4c47ef97d8ede5ccdf8b3f803855bf8d8eb7705e677ae6ae28"
+  },
+  "original_tests": 33,
+  "original_assertion_calls": 69,
+  "modified_preparation_methods": 11,
+  "pairs": [
+    {
+      "pair": 1,
+      "harness_version": "v1",
+      "runner_sha256": "6c7000bf7440ac4c47ef97d8ede5ccdf8b3f803855bf8d8eb7705e677ae6ae28",
+      "before_seconds": 28.2447471000487,
+      "after_seconds": 20.006265700096264,
+      "avoided_seconds": 8.238481399952434,
+      "within_pair_reduction_percent": 29.168189648751465,
+      "outcomes": "11 passed before and after",
+      "before_calls": {
+        "fixture_init": 11,
+        "execute_frozen_view": 11,
+        "load_runtime_bundle": 25,
+        "load_resolved_execution_view": 14,
+        "provider_execute": 11,
+        "receipt_build": 11
+      },
+      "after_calls": {
+        "fixture_init": 1,
+        "execute_frozen_view": 1,
+        "load_runtime_bundle": 16,
+        "load_resolved_execution_view": 15,
+        "provider_execute": 1,
+        "receipt_build": 11
+      },
+      "source_hashes": {
+        "before": {
+          "tests/test_skill_execution_closeout.py": "a429c4814ab75330e0e730c2194a7ef82848c49b264d4018fa60b0c0c47f6f8e",
+          "tests/skill_closeout_fixtures.py": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b",
+          "tests/skill_runtime_fixtures.py": "a4733b00281de6d7a24fb617c20da25cca8b46bdfccf0d41f8db9280b4ce840d",
+          "tests/execution_fixtures.py": "852cdeecaf49ac6e12f8faa2c7ad994795002a1c421f229b1ab21752ade12956",
+          "src/research_workbench/_runtime_pin.py": "b867750c4b5de4f3e6fdbe8aff394f1dfb1f9498db38d4d0fe0b4eae1ce4b5e3"
+        },
+        "after": {
+          "tests/test_skill_execution_closeout.py": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+          "tests/skill_closeout_fixtures.py": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b",
+          "tests/skill_runtime_fixtures.py": "a4733b00281de6d7a24fb617c20da25cca8b46bdfccf0d41f8db9280b4ce840d",
+          "tests/execution_fixtures.py": "852cdeecaf49ac6e12f8faa2c7ad994795002a1c421f229b1ab21752ade12956",
+          "src/research_workbench/_runtime_pin.py": "b867750c4b5de4f3e6fdbe8aff394f1dfb1f9498db38d4d0fe0b4eae1ce4b5e3"
+        }
+      },
+      "conditions": {
+        "interpreter": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+        "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+        "packages": {
+          "coverage": "7.16.1",
+          "jsonschema": "4.26.0",
+          "PyYAML": "6.0.3"
+        },
+        "coverage": {
+          "enabled": true,
+          "branch": true,
+          "source": [
+            "research_workbench"
+          ],
+          "config_file": false
+        },
+        "timing_boundary": "suite wall includes class/each-case setup, body, teardown and class cleanup; coverage enabled; call observer enabled equally"
+      },
+      "bindings": null,
+      "covered_product_line_arc_sets_equal": true,
+      "coverage_before_totals": {
+        "covered_lines": 4425,
+        "num_statements": 21828,
+        "percent_covered": 16.39098723625944,
+        "percent_covered_display": "16",
+        "missing_lines": 17403,
+        "excluded_lines": 22,
+        "percent_statements_covered": 20.272127542605826,
+        "percent_statements_covered_display": "20",
+        "num_branches": 8884,
+        "num_partial_branches": 403,
+        "covered_branches": 609,
+        "missing_branches": 8275,
+        "percent_branches_covered": 6.855020261143629,
+        "percent_branches_covered_display": "7"
+      },
+      "coverage_after_totals": {
+        "covered_lines": 4425,
+        "num_statements": 21828,
+        "percent_covered": 16.39098723625944,
+        "percent_covered_display": "16",
+        "missing_lines": 17403,
+        "excluded_lines": 22,
+        "percent_statements_covered": 20.272127542605826,
+        "percent_statements_covered_display": "20",
+        "num_branches": 8884,
+        "num_partial_branches": 403,
+        "covered_branches": 609,
+        "missing_branches": 8275,
+        "percent_branches_covered": 6.855020261143629,
+        "percent_branches_covered_display": "7"
+      },
+      "raw_summary_sha256": {
+        "before": "5e31dcf47232dd05d075a2839192388a4283e4c5258d8beab9bb6bca4bd8a662",
+        "after": "e47d85d4d6f695e11234a50ef4ae06f8533f88563a9292b568a6992fc26458d8"
+      }
+    },
+    {
+      "pair": 2,
+      "harness_version": "v2-with-readonly-pin-observation",
+      "runner_sha256": "a05f4d6d8a509b488bed5253a4c730d06a11d314c8c89cfc92a0cb44913ff76d",
+      "before_seconds": 29.97905109997373,
+      "after_seconds": 20.173473700066097,
+      "avoided_seconds": 9.805577399907634,
+      "within_pair_reduction_percent": 32.708097955496086,
+      "outcomes": "11 passed before and after",
+      "before_calls": {
+        "fixture_init": 11,
+        "execute_frozen_view": 11,
+        "load_runtime_bundle": 25,
+        "load_resolved_execution_view": 14,
+        "provider_execute": 11,
+        "receipt_build": 11
+      },
+      "after_calls": {
+        "fixture_init": 1,
+        "execute_frozen_view": 1,
+        "load_runtime_bundle": 16,
+        "load_resolved_execution_view": 15,
+        "provider_execute": 1,
+        "receipt_build": 11
+      },
+      "source_hashes": {
+        "before": {
+          "tests/test_skill_execution_closeout.py": "a429c4814ab75330e0e730c2194a7ef82848c49b264d4018fa60b0c0c47f6f8e",
+          "tests/skill_closeout_fixtures.py": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b",
+          "tests/skill_runtime_fixtures.py": "a4733b00281de6d7a24fb617c20da25cca8b46bdfccf0d41f8db9280b4ce840d",
+          "tests/execution_fixtures.py": "852cdeecaf49ac6e12f8faa2c7ad994795002a1c421f229b1ab21752ade12956",
+          "src/research_workbench/_runtime_pin.py": "b867750c4b5de4f3e6fdbe8aff394f1dfb1f9498db38d4d0fe0b4eae1ce4b5e3"
+        },
+        "after": {
+          "tests/test_skill_execution_closeout.py": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+          "tests/skill_closeout_fixtures.py": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b",
+          "tests/skill_runtime_fixtures.py": "a4733b00281de6d7a24fb617c20da25cca8b46bdfccf0d41f8db9280b4ce840d",
+          "tests/execution_fixtures.py": "852cdeecaf49ac6e12f8faa2c7ad994795002a1c421f229b1ab21752ade12956",
+          "src/research_workbench/_runtime_pin.py": "b867750c4b5de4f3e6fdbe8aff394f1dfb1f9498db38d4d0fe0b4eae1ce4b5e3"
+        }
+      },
+      "conditions": {
+        "interpreter": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+        "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+        "packages": {
+          "coverage": "7.16.1",
+          "jsonschema": "4.26.0",
+          "PyYAML": "6.0.3"
+        },
+        "coverage": {
+          "enabled": true,
+          "branch": true,
+          "source": [
+            "research_workbench"
+          ],
+          "config_file": false
+        },
+        "timing_boundary": "suite wall includes class/each-case setup, body, teardown and class cleanup; coverage enabled; call observer enabled equally"
+      },
+      "bindings": {
+        "copies": 11,
+        "seed": 1,
+        "unique_case_roots": 11,
+        "all_roots_rebound": true,
+        "all_five_actual_hashes_equal_seed": true,
+        "no_live_driver_recorder_in_copies": true,
+        "same_manifest_view_host_hashes_as_every_real_before_case": true,
+        "before_vs_seed_differing_hash_fields": [
+          "trace_pin",
+          "validation_pin"
+        ],
+        "difference_explanation": "Actual Recorder._now timestamps vary between independent generations; Trace hash and its validation subject pin therefore differ. No clocks or pins were rewritten for copying."
+      },
+      "covered_product_line_arc_sets_equal": true,
+      "coverage_before_totals": {
+        "covered_lines": 4425,
+        "num_statements": 21828,
+        "percent_covered": 16.39098723625944,
+        "percent_covered_display": "16",
+        "missing_lines": 17403,
+        "excluded_lines": 22,
+        "percent_statements_covered": 20.272127542605826,
+        "percent_statements_covered_display": "20",
+        "num_branches": 8884,
+        "num_partial_branches": 403,
+        "covered_branches": 609,
+        "missing_branches": 8275,
+        "percent_branches_covered": 6.855020261143629,
+        "percent_branches_covered_display": "7"
+      },
+      "coverage_after_totals": {
+        "covered_lines": 4425,
+        "num_statements": 21828,
+        "percent_covered": 16.39098723625944,
+        "percent_covered_display": "16",
+        "missing_lines": 17403,
+        "excluded_lines": 22,
+        "percent_statements_covered": 20.272127542605826,
+        "percent_statements_covered_display": "20",
+        "num_branches": 8884,
+        "num_partial_branches": 403,
+        "covered_branches": 609,
+        "missing_branches": 8275,
+        "percent_branches_covered": 6.855020261143629,
+        "percent_branches_covered_display": "7"
+      },
+      "raw_summary_sha256": {
+        "before": "805625cd9a4be77691a747110554bab384b2c665730e8656e7949e830d9e0b82",
+        "after": "df37fe8ef58c6e8d245b8451d843d8fa56f2521f32b2fdd79cea7b6fdf7d0235"
+      }
+    },
+    {
+      "pair": 3,
+      "harness_version": "v2-with-readonly-pin-observation",
+      "runner_sha256": "a05f4d6d8a509b488bed5253a4c730d06a11d314c8c89cfc92a0cb44913ff76d",
+      "before_seconds": 29.415990899899043,
+      "after_seconds": 20.17221360001713,
+      "avoided_seconds": 9.243777299881913,
+      "within_pair_reduction_percent": 31.424327439242028,
+      "outcomes": "11 passed before and after",
+      "before_calls": {
+        "fixture_init": 11,
+        "execute_frozen_view": 11,
+        "load_runtime_bundle": 25,
+        "load_resolved_execution_view": 14,
+        "provider_execute": 11,
+        "receipt_build": 11
+      },
+      "after_calls": {
+        "fixture_init": 1,
+        "execute_frozen_view": 1,
+        "load_runtime_bundle": 16,
+        "load_resolved_execution_view": 15,
+        "provider_execute": 1,
+        "receipt_build": 11
+      },
+      "source_hashes": {
+        "before": {
+          "tests/test_skill_execution_closeout.py": "a429c4814ab75330e0e730c2194a7ef82848c49b264d4018fa60b0c0c47f6f8e",
+          "tests/skill_closeout_fixtures.py": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b",
+          "tests/skill_runtime_fixtures.py": "a4733b00281de6d7a24fb617c20da25cca8b46bdfccf0d41f8db9280b4ce840d",
+          "tests/execution_fixtures.py": "852cdeecaf49ac6e12f8faa2c7ad994795002a1c421f229b1ab21752ade12956",
+          "src/research_workbench/_runtime_pin.py": "b867750c4b5de4f3e6fdbe8aff394f1dfb1f9498db38d4d0fe0b4eae1ce4b5e3"
+        },
+        "after": {
+          "tests/test_skill_execution_closeout.py": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+          "tests/skill_closeout_fixtures.py": "5ef7b3e505ef14d7a274a86a904ace5124a5caa117e1f3900893fda004c4be0b",
+          "tests/skill_runtime_fixtures.py": "a4733b00281de6d7a24fb617c20da25cca8b46bdfccf0d41f8db9280b4ce840d",
+          "tests/execution_fixtures.py": "852cdeecaf49ac6e12f8faa2c7ad994795002a1c421f229b1ab21752ade12956",
+          "src/research_workbench/_runtime_pin.py": "b867750c4b5de4f3e6fdbe8aff394f1dfb1f9498db38d4d0fe0b4eae1ce4b5e3"
+        }
+      },
+      "conditions": {
+        "interpreter": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+        "python": "3.11.16 (main, Sep  1 2026, 14:15:24) [MSC v.1944 64 bit (AMD64)]",
+        "packages": {
+          "coverage": "7.16.1",
+          "jsonschema": "4.26.0",
+          "PyYAML": "6.0.3"
+        },
+        "coverage": {
+          "enabled": true,
+          "branch": true,
+          "source": [
+            "research_workbench"
+          ],
+          "config_file": false
+        },
+        "timing_boundary": "suite wall includes class/each-case setup, body, teardown and class cleanup; coverage enabled; call observer enabled equally"
+      },
+      "bindings": {
+        "copies": 11,
+        "seed": 1,
+        "unique_case_roots": 11,
+        "all_roots_rebound": true,
+        "all_five_actual_hashes_equal_seed": true,
+        "no_live_driver_recorder_in_copies": true,
+        "same_manifest_view_host_hashes_as_every_real_before_case": true,
+        "before_vs_seed_differing_hash_fields": [
+          "trace_pin",
+          "validation_pin"
+        ],
+        "difference_explanation": "Actual Recorder._now timestamps vary between independent generations; Trace hash and its validation subject pin therefore differ. No clocks or pins were rewritten for copying."
+      },
+      "covered_product_line_arc_sets_equal": true,
+      "coverage_before_totals": {
+        "covered_lines": 4425,
+        "num_statements": 21828,
+        "percent_covered": 16.39098723625944,
+        "percent_covered_display": "16",
+        "missing_lines": 17403,
+        "excluded_lines": 22,
+        "percent_statements_covered": 20.272127542605826,
+        "percent_statements_covered_display": "20",
+        "num_branches": 8884,
+        "num_partial_branches": 403,
+        "covered_branches": 609,
+        "missing_branches": 8275,
+        "percent_branches_covered": 6.855020261143629,
+        "percent_branches_covered_display": "7"
+      },
+      "coverage_after_totals": {
+        "covered_lines": 4425,
+        "num_statements": 21828,
+        "percent_covered": 16.39098723625944,
+        "percent_covered_display": "16",
+        "missing_lines": 17403,
+        "excluded_lines": 22,
+        "percent_statements_covered": 20.272127542605826,
+        "percent_statements_covered_display": "20",
+        "num_branches": 8884,
+        "num_partial_branches": 403,
+        "covered_branches": 609,
+        "missing_branches": 8275,
+        "percent_branches_covered": 6.855020261143629,
+        "percent_branches_covered_display": "7"
+      },
+      "raw_summary_sha256": {
+        "before": "fdcd627abecfbb19843fbce5287568a64c34cde150c536fe2a7cb2176aeacae2",
+        "after": "b95136df498a5ba84cc4c641a6a6e678a36a7196505a6fb27f687da742d0bbc6"
+      }
+    }
+  ],
+  "isolation": {
+    "status": "PASS",
+    "source_sha256": "0020147294a0ab5ed4a5f30455bdf78cb1c759699f13d0242b158dcfde45ee38",
+    "first_factory_including_seed_seconds": 3.2677083999151364,
+    "second_copy_rebind_seconds": 0.2264153000432998,
+    "roots": {
+      "seed": "C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpoqi5713u",
+      "first": "C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpavqvyz8u",
+      "second": "C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpn7a3lrfi"
+    },
+    "source_hashes": {
+      "bundle/conformance.yaml": "9a8eb3b79cc58fe471db3646a8ccd35370ef0f3ceca6e74ce00e74079e7e2ea7",
+      "bundle/manifest.yaml": "9c37a0bf8685fb5e6fa49ce965349906a29f7f2e2e3153f4f397f1f1c6179767",
+      "bundle/method.yaml": "ba10c1f5e4df9f655a2d0defa57f87bfd6bc2b4479a89251bce541578b7ab5e9",
+      "bundle/requirement.yaml": "ca035cce559a1d879bf2e4ede7eca5c82670c727a1b90b9dfa8d54cd16cfa0a7",
+      "bundle/resolution.yaml": "aa0cc7e443f7ee65f187da89c4404307c41c05d1159b4db669a2a9308620b7ce",
+      "bundle/skill-projection.yaml": "58d3a7b3837056ec850d4a2ff7c6a91dc65e183fe283f48daef61b1c90da0ce4",
+      "bundle/snapshot.yaml": "014865f0fd0d1c39d055fcfb271ef57be38f78b52854c736c44e91bdc88d774d",
+      "bundle/supply.yaml": "6e6b6b369cb6dade192379082e3a178f408fdb6a3397adcf3c77005cfaa2aa8a",
+      "bundle/task.yaml": "544537a3aae11d3f3ec2445dcc67dd2fd33f02b4b271a2b3a9e4dd878da2f65b",
+      "closeout/checker.py": "f5f2885a96d75ab8d20c1721edbff6c4c9df6cd093732c00f36c5cacaa76a128",
+      "closeout/host.yaml": "03bbb7d8551a95e120911843aad378b71787f3ba6be5ebfffdf20538ef529c2d",
+      "closeout/trace/ACTORS.yaml": "ffd12b24acf23af46a1eb93221ef2ed9bc0d04581f6ce72ec8f24f83bc316aeb",
+      "closeout/trace/decisions/execution-fact-SKILL-RESULT-1.yaml": "624be7869659019d62de0aa4334663a7780a51dbeb651637c9f6e36c67d90400",
+      "closeout/trace/decisions/execution-scope-binding.yaml": "aa781d8ca209cfbe281011d84ae4ad6fa5d776355679bc4505a43cdcc87e72a7",
+      "closeout/trace/decisions/skill-execution-fact-SKILL-USE-1.yaml": "b8851d9b63bad5ec5c87fa06fff638c51993c9c3263e4ac22cc5afe81122d435",
+      "closeout/trace/events.jsonl": "98b33938be8f00bd2b4e6d1509853b18004729cdde18359372bdeceeb6aecfcd",
+      "closeout/trace/INDEX.yaml": "7fffadb33f31a220030f87814b9e11346510326723de620a3aeb2bfb599c7eb2",
+      "closeout/trace/messages/0001-provider-request.trace": "16aab496797677893498de4405a7f8216bdbb58b43554a2fac20bfd7068166ec",
+      "closeout/trace/messages/0002-provider-response.trace": "df0f888907be7032eb6bd7cca5b565db09e5d080ba1cccd9a25c78e65fe49fc0",
+      "closeout/trace/TASK.yaml": "c0714fedfbdd44e2bb0d02081e9c6a8307f5e237537844934632c661aad61406",
+      "closeout/validation.yaml": "ce3fd40bca84513ed960992c0e9f0054653dd536ca77e39e98957289d83c3109",
+      "view/binding.yaml": "ada8b9aa6a7ac83a689844539288c906383e7c6ed7990d07fb8889efc28b0fd7",
+      "view/data-policy.yaml": "2625cbb724c823504c055bffcf5af1bb87084df051d1b08146139a68fc8673a7",
+      "view/host-policy.yaml": "e6fb916192e9aa2e3a6fc96d5ec73a61aebc139a3aa27213815d99fbdd1a03d0",
+      "view/profile.yaml": "ba3f4dddfb3481abfc8dca77c45c7bab440ac13a4b9dcbe78e8836304742d3f2",
+      "view/skill.yaml": "01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f",
+      "work/TASK-MR-ES-FROZEN-001/method-resolution.yaml": "34ccf7f01e08b24f0fae02d9f4ca04972a21e90ff80cba502b183cad850a402d"
+    },
+    "files_checked": 27,
+    "view_ref": {
+      "ref": "VIEW-LOCAL-001@r1",
+      "path": "view/skill.yaml",
+      "sha256": "01170e176f0424c02de62b9129f5e9c71ee905bb86d1ef9bb9911f3bb422c48f"
+    },
+    "pins": {
+      "host_pin": {
+        "path": "closeout/host.yaml",
+        "sha256": "03bbb7d8551a95e120911843aad378b71787f3ba6be5ebfffdf20538ef529c2d"
+      },
+      "trace_pin": {
+        "path": "closeout/trace/INDEX.yaml",
+        "sha256": "7fffadb33f31a220030f87814b9e11346510326723de620a3aeb2bfb599c7eb2"
+      },
+      "validation_pin": {
+        "path": "closeout/validation.yaml",
+        "sha256": "ce3fd40bca84513ed960992c0e9f0054653dd536ca77e39e98957289d83c3109"
+      }
+    },
+    "plain_snapshot": true,
+    "file_isolation": true,
+    "nested_state_isolation": true,
+    "bundle_view_rebound": true,
+    "shared_mutable_ids": 0,
+    "live_driver_recorder_cached": false,
+    "positive_current_api_replay": "completed",
+    "calls": {
+      "fixture_init": 1,
+      "execute_frozen_view": 1,
+      "provider_execute": 1
+    },
+    "wall_seconds_including_cleanup": 4.931808699970134,
+    "roots_removed": true
+  },
+  "working_tree_status": " M .codex/config.toml\n M tests/test_skill_execution_closeout.py\n",
+  "tracked_diff_names": [
+    ".codex/config.toml",
+    "tests/test_skill_execution_closeout.py"
+  ],
+  "staged_files": [],
+  "runtime_generated_once": true,
+  "runtime_manifest_pin": "193304bc586300078cf09cf17de245ae685454ba313babf10d8de3ad67fefc3c",
+  "cross_pair_timing_aggregate": "not computed; pair 1 v1 and pairs 2/3 v2 have different observation detail",
+  "scope_limit": "single-process eleven-case family only; each fresh shard/class lifecycle creates its own real seed; no hosted/full-suite speed claim",
+  "preserved_diagnostic_failure": {
+    "path": "evidence-first-failure.log",
+    "type": "assessment aggregation AssertionError",
+    "reason": "Incorrect additional assumption that all five before-generated hashes must equal seed hashes; timestamps in original Recorder cause Trace/validation differences; unittest suites and independent-copy equality passed."
+  },
+  "remaining_validation": [
+    "independent final diff/alias/cold/negative equivalence review",
+    "whole 33-case module including true cold child process and live driver/clock cases",
+    "required current-head CI on Python 3.11/3.13 and required coverage thresholds"
+  ]
+}

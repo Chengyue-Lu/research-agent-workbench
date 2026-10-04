@@ -1,0 +1,90 @@
+{
+  "kind": "compact_evidence_index",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 332,
+      "sha256": "e1d158d5edb9e609aa94a74f8e632641664c42694d2447ff5c944fde113ddc54"
+    },
+    {
+      "path": "candidate.diff",
+      "bytes": 8630,
+      "sha256": "a0d908962193f1f517989e63f9777fc8669ad406e317c833144b73c9b11fb620"
+    },
+    {
+      "path": "CAPTURE.json",
+      "bytes": 1766,
+      "sha256": "cd128cb9eac27167d4615611bb48d0c760f2bc2821ceb2cef68f22eaf54ef9f4"
+    },
+    {
+      "path": "commit-first-failure.log",
+      "bytes": 1086,
+      "sha256": "27f97be31db270a105baff9fef60c51f459211a960ee2082b69496d2a6914754"
+    },
+    {
+      "path": "equivalence.json",
+      "bytes": 11542,
+      "sha256": "8cd78596d070e10f60ef7ece21119e6beb36e72ef84d38945e9e240608410b2d"
+    },
+    {
+      "path": "evidence-first-failure.log",
+      "bytes": 315,
+      "sha256": "6fcd6cee2b4239cb6835a4d2094d1f895e6910c541482d4bbaf46eb17370bd01"
+    },
+    {
+      "path": "evidence.json",
+      "bytes": 21086,
+      "sha256": "71904c49358068568e649a32b361c042fee7a7e31efcb6f53cc0bc9003861496"
+    },
+    {
+      "path": "freeze-first-failure.log",
+      "bytes": 296,
+      "sha256": "a67ebcfe02ade99c76ee62cd1ad748164a5738e7cdda6c1c42bffb0433ef6464"
+    },
+    {
+      "path": "implementation.original.txt",
+      "bytes": 9240,
+      "sha256": "21ca2041bb0e9df0ba16ae2772b0840dee8e538b82057fc4646cf6320be8db47"
+    },
+    {
+      "path": "isolation.json",
+      "bytes": 4427,
+      "sha256": "9bae37cfb5b9c8eac581344d486845568ddc131538c002c7038a06c272c607e3"
+    },
+    {
+      "path": "PLAN.original.txt",
+      "bytes": 2466,
+      "sha256": "136ba89842e2686f7e7799f9e527a5df3068e5ce12618cf35abfea03ba61d4f8"
+    },
+    {
+      "path": "raw-pairs.zip",
+      "bytes": 1641200,
+      "sha256": "a5d8f274f07b7fd0447760425e06fcfcf509d6dfda5ee5ba8604eba4d074a9e9"
+    },
+    {
+      "path": "RAW_INDEX.json",
+      "bytes": 6824,
+      "sha256": "ba4209df3a2863d95986b352d81d9b23f9e5e2b8dc45ad046afcae8d81f12bd0"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1011,
+      "sha256": "98bd0fe3135696aac0d9a53b8a319a172def583d86808ad22421662ef2784ef9"
+    },
+    {
+      "path": "review.json",
+      "bytes": 19887,
+      "sha256": "902a37846e05b802a42818ca0b3d92f1379a90b060c2a4ade20fbc02432e27f7"
+    },
+    {
+      "path": "review.original.txt",
+      "bytes": 7401,
+      "sha256": "21c2fdd9ae68fd3099412a6e5408fe5c67f03b2165a4cacb036aed58bc4d44e3"
+    },
+    {
+      "path": "visible-implementation-request.original.txt",
+      "bytes": 2531,
+      "sha256": "35f60298f737851699bbebb88a9c1712477a8af33f12b6ddfa0a033cd7fd4064"
+    }
+  ]
+}

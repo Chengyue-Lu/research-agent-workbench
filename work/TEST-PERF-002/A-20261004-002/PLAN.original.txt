@@ -1,0 +1,14 @@
+# CI optimization review delivery
+
+Human owner: Chengyue-Lu. Date: 2026-10-04 Asia/Shanghai.
+Authorized objective: publish a new bounded slow-test optimization PR and bring it, PR132 and PR135 to Ready for review; stop before merge.
+
+Preserve public/product behavior, product archive/Trace/replay inputs, adversarial controls, independent witness,90/95/90 and changed100/100. No source-checker production cache, budget expansion, release/main/tag, live API or credential action. Do not rerun completed target evidence or relabel old evidence. Re-read shared memory before own-entry writes.
+
+## Bounded delegation contract
+
+- Agent Profile: deterministic CI evidence auditor. Skills: none. Inputs: this plan, current repository AGENTS/README/DEVELOPMENT, exact PR132/135 metadata, existing slow-test assessments and explicit hosted inventories. Write scope: this assessment's audit subtree only. Output: persisted current-head applicability/review/CI verdict and unresolved obligations, with exact identities. Budget: one metadata pass and only missing artifact checks; no test/ref/remote changes. Stop at persisted verdict; escalate business failures without product edits.
+- Agent Profile: test fixture optimization implementer. Skills: none. Inputs: this plan, accepted tests/test_skill_execution_closeout.py and its direct fixture helpers, necessity-round NEXT_CHANGE_SPEC and explicit current timing records. Write scope: only its newly isolated candidate test module/helper and this assessment's fixture subtree. Output: measured before/after same-input results, retained assertions/method inventory and exact diff; no commit/push. Budget: at most three matched pairs and one necessary negative set; avoid repeating passed suites. Stop if deep-copy cannot preserve isolation or yields no actual savings.
+- Agent Profile: independent test review. Skills: none. Inputs: named final candidate diff, selected helper source and measured fixtures; exact accepted base. Write scope: this assessment's independent-review subtree. Output: persisted acceptance/rejection with method/assertion/alias/cold/negative equivalence. Budget: static review first, only targeted adversarial checks where necessary; no remote/source mutations. Stop at concrete review findings.
+
+Store visible delegated requests/results and hashes in this assessment. A compact captured record will preserve observable events and capture-gap honestly; do not claim unavailable complete Agent Trace.

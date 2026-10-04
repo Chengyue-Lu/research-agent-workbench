@@ -1,0 +1,13 @@
+Visible delegation captured for this bounded implementation. This is a compact request/result record, not a complete Agent Trace.
+
+Parent request (2026-10-04):
+
+> 发布独立慢fixture优化PR，与132和135一起到Ready停止，不merge。读取PLAN.md的test fixture implementer contract。新隔离WT D:/lcy/develop/_worktrees/RWB/slow-fixture-seeds-20261004，branch perf/slow-fixture-seeds-20261004，base6fa105b，已复制本地config不得stage。实现有界test-only种子复用：11次相同真实completed Host baseline可生成1次，每个case独立root、deep plain state、重新绑定Bundle/View；不能共享live recorder/driver/clock、不能删断言/改cold/调用数/重新签名攻击。132只拥有M5两fixtureJSON表示，135在同Skill模块删一历史checker/refine replay，不能偷偷带入其未接受diff。写scope仅本WT tests/test_skill_execution_closeout.py（必要专用test helper先报告）及assessment/fixture/。先确认可行，再做最多三组同输入/同版本/同coverage设置before-after配对，每个阶段hash/条件/outcomes/调用计数都保存；若复制不比生成快或隔离不成立就撤销该优化并报告下一候选。Python D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe；freshWT生成既有Runtime一次，不新增依赖。不commit/push/共享memory/产品源码。保存消息与原失败；输出REPORT、精确diff、未删methods/assertions证明、配对实际收益与剩余必要验证，然后停。
+
+Parent refinement:
+
+> 配对计时务必把第一次真实seed Host生成、clone、class cleanup都计入整组wall，不能只比较warm的单case计时。需要明确11方法实际execute调用数从11到1（完整组选集其余cold/driver cases调用保持），保存每case独立root/hash/ref重绑、交错修改一clone不污染seed/下一clone的廉价检查。先静态/有限隔离检查，不删任何原方法断言，33原inventory保持；PR135另移除的历史case此分支仍不动，提交说明会记录组合顺序。
+
+Implementation feasibility communicated:
+
+> 指定11个方法只消费封存文件、host/validation/pins、Bundle/View；不读取Driver/Recorder/clock。拟在同一测试文件加入惰性class seed：真实SkillCloseoutFixture一次，保留plain state与文件；每次copytree独立root，重新load Bundle/View，构造仅含inert state的fixture。33个方法保留，冷进程和实际driver/capture/漂移case不改，PR135的历史方法仍原样。
