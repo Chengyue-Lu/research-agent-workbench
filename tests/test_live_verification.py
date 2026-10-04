@@ -268,7 +268,7 @@ class LiveUseGuardTests(LiveEvidenceFixture, unittest.TestCase):
         blocks = [b for b in self.f.plan["blocks"] if b["phase"] == "pilot"]
         self.slot = {**blocks[0]["arms"][0]["attempt_slots"][0], "arm_id": blocks[0]["arms"][0]["arm_id"]}
         self.reservation = reservation or VerifiedPilotReservation(self.slot["attempt_id"], 1744, 512, 64,
-            0, TOKEN_CEILING, 1, 1, 0, 0, True)
+            0, TOKEN_CEILING, 1, 1, 0, 0, True, 1)
         guard = LiveUseGuard(self.factory, preflight_ref=reference, checked_at=AT, clock=clock,
             official_window_verifier=official, reservation_verifier=lambda _: self.reservation)
         # Only the observer/admission ports use the explicit old synthetic test
@@ -300,7 +300,8 @@ class LiveUseGuardTests(LiveEvidenceFixture, unittest.TestCase):
         for changes in ({"usage_complete": False}, {"other_held_tokens": 1}, {"known_total_tokens": 1743},
                         {"known_total_tokens": TOKEN_CEILING}, {"reserved_output_tokens": 65},
                         {"provider_calls": 25}, {"attempt_calls": 4}, {"attempt_elapsed_seconds": 120},
-                        {"run_elapsed_seconds": 1800}, {"reserved_input_tokens": 0}, {"attempt_id": "other"}):
+                        {"run_elapsed_seconds": 1800}, {"reserved_input_tokens": 0}, {"attempt_id": "other"},
+                        {"reservation_ordinal": None}):
             self.reservation = replace(original, **changes)
             with self.assertRaises(EvaluationValidationError):
                 guard.check(attempt_id=self.slot["attempt_id"], surface="provider")
@@ -334,6 +335,11 @@ class LiveUseGuardTests(LiveEvidenceFixture, unittest.TestCase):
         clock = iter(("2026-09-11T10:00:00Z", "2026-09-11T10:00:00Z"))
         guard.clock = lambda: next(clock)
         snapshots = iter((self.reservation, replace(self.reservation, reserved_input_tokens=1)))
+        guard.reservation_verifier = lambda _: next(snapshots)
+        with self.assertRaisesRegex(EvaluationValidationError, "reservation changed"):
+            guard.check(attempt_id=self.slot["attempt_id"], surface="provider")
+        guard.clock = lambda: "2026-09-11T10:00:00Z"
+        snapshots = iter((self.reservation, replace(self.reservation, reservation_ordinal=2)))
         guard.reservation_verifier = lambda _: next(snapshots)
         with self.assertRaisesRegex(EvaluationValidationError, "reservation changed"):
             guard.check(attempt_id=self.slot["attempt_id"], surface="provider")

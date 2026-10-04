@@ -380,6 +380,7 @@ class VerifiedPilotReservation:
     attempt_elapsed_seconds: int
     run_elapsed_seconds: int
     usage_complete: bool
+    reservation_ordinal: int | None = None
 
     def __post_init__(self):
         require(type(self.attempt_id) is str and self.attempt_id, "verified Pilot slot required")
@@ -388,6 +389,8 @@ class VerifiedPilotReservation:
             "cumulative_token_limit", "provider_calls", "attempt_calls", "attempt_elapsed_seconds",
             "run_elapsed_seconds"))
             and type(self.usage_complete) is bool, "invalid verified Pilot reservation")
+        require(self.reservation_ordinal is None or (type(self.reservation_ordinal) is int
+                and self.reservation_ordinal > 0), "invalid current request reservation identity")
 
 
 class LiveUseGuard:
@@ -429,7 +432,8 @@ class LiveUseGuard:
                 "current Pilot elapsed time exhausted")
         if surface == "provider":
             require(reservation.reserved_input_tokens > 0 and reservation.reserved_output_tokens > 0
-                    and reservation.provider_calls > 0 and reservation.attempt_calls > 0,
+                    and reservation.provider_calls > 0 and reservation.attempt_calls > 0
+                    and reservation.reservation_ordinal is not None,
                     "Provider entry needs a current counted reservation")
         return reservation
 
@@ -471,8 +475,8 @@ class LiveUseGuard:
         require(final_when >= when, "live clock moved backwards during verification")
         self._window(final_now, final_when, window)
         final = self._reservation(context, final_now, slot, surface, budget)
-        require((initial.reserved_input_tokens, initial.reserved_output_tokens) ==
-                (final.reserved_input_tokens, final.reserved_output_tokens),
+        require((initial.reservation_ordinal, initial.reserved_input_tokens, initial.reserved_output_tokens) ==
+                (final.reservation_ordinal, final.reserved_input_tokens, final.reserved_output_tokens),
                 "current request reservation changed during verification")
         inputs.recheck()
         return True

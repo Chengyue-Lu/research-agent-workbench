@@ -56,21 +56,22 @@ checkpoint必须与真实重放的完整snapshot一致。接口仍继承M6的cal
 只接受预注册pilot attempt ID，拒绝confirmatory/unknown slot及A1 Tool。
 执行成功路径前独立重算原preflight，并以当前时间重算资格、权限、applicability、overlap与pairwise。
 时间、slot和预算的快速拒绝放在完整重算前，所有检查均先于实际执行端口。
-完整核验后再读取当前时间、官方窗口与同一request预占；过期、时钟回退或预占被更改时拒绝，
+完整核验后再读取当前时间、官方窗口与同一request预占ordinal；过期、时钟回退或预占被更改时拒绝，
 不会沿用慢核验开始时的时间/预算观察。实际Driver/transport仍须在入口原子使用所选单用handle。
 
 可信Pilot ledger接口必须返回该slot当前的typed reservation：实际已知累计、当前request预占、
 其他held、完整性、累计ceiling、包含本次预占的call计数与单Attempt/全run elapsed time。
 未知、其他held、历史不足、上限/turn/time耗尽均拒绝；Provider入口要求非零、已计数的预占。
 DTO本身不能证明预占。实际ledger必须拥有原子单用handle、durable send intent、usage settlement和失败保留，
-这些仍需与后续Pilot Driver一起实现。入口检查不是可保存后复用的permit，也不启动执行。
+这些行为已有[有界Pilot账本候选](M5-008_LIVE_BUDGET_PACKET.md)，实际入口仍须与后续Pilot Driver接合。
+入口检查不是可保存后复用的permit，也不启动执行。
 
 [离线用例](../../../../tests/test_live_verification.py)分别检查真实确定性M6 journal/report/source-binding API、
 共有Skill Evaluation及新入口边界；Human、运行环境、官方窗口与Pilot reservation均明确为合成test authority。
 M6报告/graph和Skill admission是独立组件用例；入口用例的applicability/admission端口仍使用已声明合成authority，
 不宣称当前已完成实际四臂链路。原始失败与修复复验保存在私有Attempt内。
 
-后继继续实现继承全部实际用量的有界多slot Pilot reservation/settlement、合法Model semantic Method/
-Requirement/Profile slice和M6/M11 generic Driver，再闭合真实Receipt/cold replay、有限盲审、review freeze/
+后继接合有界多slot账本与合法Model semantic Method/Requirement/Profile slice、M6/M11 generic Driver，
+再闭合真实Receipt/cold replay、有限盲审、review freeze/
 reveal/metrics，以及具名真实输入/Skill Trial/admission/Pilot授权与完整run-set验收。
 临时21/1744等fixture用量不计作实际消耗；真实历史1744、1000万累计硬上限、Flash与18:00后官方闲时保持。

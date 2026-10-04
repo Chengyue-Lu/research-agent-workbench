@@ -17,6 +17,9 @@ H4c 的历史 [Attempt 与验证](attempts/M5-007-H4C-001/README.md) 保留；PR
 [Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)继续跟踪 A4/Pilot 两个未满足外部 Gate、
 新 Provider binding 适用性和 live-purpose/有限审查缺口，Task 仍 BLOCKED。
 
+[有界Pilot账本候选](M5-008_LIVE_BUDGET_PACKET.md)保存单用预占、durable intent与成功/失败/未知usage，
+保持旧conformance终态；actual Driver/权限端口与完整live验收仍待接入。
+
 实施导航：[M5-007 进入计划](M5-007_ENTRY_PLAN.md)、[M5-008 Live Pilot Gate](M5-008_LIVE_PILOT_GATE.md)、[M5-006 历史进入计划](ENTRY_PLAN.md)、[Protocol / validator contract](../../../implementation/SYSTEM_EVALUATION_PROTOCOL.md)、
 [工作记录与验证](WORKLOG.md)、[Risk Ledger](RISK_LEDGER.md)。
 
