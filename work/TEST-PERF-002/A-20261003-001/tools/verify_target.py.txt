@@ -1,0 +1,45 @@
+"""Scoped checks after serialized timing experiments, with unchanged real test bodies."""
+import ast
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+
+root = Path(sys.argv[1]).resolve()
+out = Path(__file__).resolve().parent
+assert (out / 'format-pairs-complete.json').exists(), 'Keep timing trials serial.'
+env = dict(os.environ, PYTHONPATH=os.pathsep.join(map(str, (root / 'src', root, root / 'tests'))))
+steps = []
+def run(name, command):
+    with (out / (name + '.log')).open('x', encoding='utf-8') as log:
+        result = subprocess.run(command, cwd=root, env=env, stdout=log, stderr=subprocess.STDOUT)
+    steps.append({'name': name, 'command': command, 'exit_code': result.returncode})
+    (out / 'validation-progress.json').write_text(json.dumps(steps, indent=2), encoding='utf-8')
+    print(name, result.returncode, flush=True)
+    if result.returncode: raise SystemExit(result.returncode)
+
+run('format-contract', [sys.executable, '-B', '-X', 'utf8', str(out / 'check_format_contract.py'), str(root)])
+run('provider-isolation', [sys.executable, '-B', '-X', 'utf8', str(out / 'provider-after-isolation.py'), str(out / 'provider-isolation.json')])
+before = json.loads((out / 'provider-before-coverage-v1/binding.json').read_text(encoding='utf-8'))
+excluded = set(before['cases'])
+cases = []
+for file, cls in [('test_provider_binding_graph.py', 'ProviderBindingGraphTests'), ('test_profile_conformance_binding.py', 'ProfileConformanceBindingTests')]:
+    module = ast.parse((root / 'tests' / file).read_text(encoding='utf-8'))
+    methods = next(n for n in module.body if isinstance(n, ast.ClassDef) and n.name == cls)
+    for method in methods.body:
+        if isinstance(method, ast.FunctionDef) and method.name.startswith('test_'):
+            name = 'tests.' + Path(file).stem + '.' + cls + '.' + method.name
+            if name not in excluded: cases.append(name)
+run('provider-remaining-311', [sys.executable, '-B', '-X', 'utf8', str(out / 'run_probe.py'), '--root', str(root), '--output', str(out / 'provider-remaining-311'), *cases])
+checks311 = ['tests.test_evaluation_harness_analysis.HarnessAnalysisIntegrationTests.test_real_four_arm_chain_and_cold_analysis_replay',
+             'tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority',
+             'tests.test_evaluation_harness_execution.HarnessReplayTests.test_runtime_output_hash_drift_is_rejected',
+             'tests.test_evaluation_harness_execution.HarnessReplayTests.test_hash_consistent_shortened_completed_run_still_fails']
+run('harness-cold-311', [sys.executable, '-B', '-X', 'utf8', str(out / 'run_probe.py'), '--root', str(root), '--output', str(out / 'harness-cold-311'), *checks311])
+python313 = out.parent / 'rwb-ci-schema-parse-20260917/venv313/Scripts/python.exe'
+checks313 = ['tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay',
+             'tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry',
+             'tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority']
+run('harness-cold-313', [str(python313), '-B', '-X', 'utf8', str(out / 'run_probe.py'), '--root', str(root), '--output', str(out / 'harness-cold-313'), *checks313])
+(out / 'validation-complete.json').write_text(json.dumps(steps, indent=2), encoding='utf-8')

@@ -1,0 +1,71 @@
+"""Compare real fixture document graphs and demonstrate fresh byte-pin rejection."""
+import copy
+import hashlib
+import json
+from pathlib import Path
+import sys
+import tempfile
+
+root = Path(sys.argv[1]).resolve()
+sys.path[:0] = [str(root), str(root / 'src'), str(root / 'tests')]
+from research_workbench.io import load_document
+from research_workbench.execution.host import load_runtime_bundle
+from tests.harness_execution_fixtures import ExecutionFixture
+from tests.system_evaluation_fixtures import ROOT
+
+out = Path(__file__).resolve().parent / 'format-contract'
+assert not out.exists()
+out.mkdir()
+with tempfile.TemporaryDirectory() as directory:
+    parent = Path(directory)
+    class YamlFixture(ExecutionFixture):
+        def build_overlay(self, **kwargs):
+            return super().build_overlay(document_suffix=None)
+    yaml_fixture = YamlFixture(parent / 'yaml').build_execution()
+    json_fixture = ExecutionFixture(parent / 'json').build_execution()
+    old_files = {p.relative_to(yaml_fixture.root).as_posix(): p for p in yaml_fixture.root.rglob('*') if p.is_file()}
+    new_files = {p.relative_to(json_fixture.root).as_posix(): p for p in json_fixture.root.rglob('*') if p.is_file()}
+    paths = {name: str(Path(name).with_suffix('.json')).replace('\\', '/')
+             if name.startswith('a4/bundle/') and name.endswith('.yaml') else name for name in old_files}
+    assert set(paths.values()) == set(new_files)
+    hashes = {hashlib.sha256(old_files[name].read_bytes()).hexdigest(): hashlib.sha256(new_files[target].read_bytes()).hexdigest()
+              for name, target in paths.items()}
+    def normalized(value):
+        if isinstance(value, dict): return {k: normalized(v) for k, v in value.items()}
+        if isinstance(value, list): return [normalized(v) for v in value]
+        if isinstance(value, str):
+            if value in paths: return paths[value]
+            if value in hashes: return hashes[value]
+            if value.startswith('sha256:') and value[7:] in hashes: return 'sha256:' + hashes[value[7:]]
+        return value
+    compared = []
+    for name, target in paths.items():
+        if name.startswith('a4/bundle/'):
+            left = load_document(old_files[name])
+            right = load_document(new_files[target])
+            assert normalized(left) == right, name
+            compared.append(name)
+    assert yaml_fixture.plan['cases'] == json_fixture.plan['cases']
+    assert yaml_fixture.plan['design'] == json_fixture.plan['design']
+    assert [[a['arm_id'] for a in b['arms']] for b in yaml_fixture.plan['blocks']] == [[a['arm_id'] for a in b['arms']] for b in json_fixture.plan['blocks']]
+    bundle = load_runtime_bundle(json_fixture.a4_bundle_ref['path'], project_root=json_fixture.root,
+                                 schema_root=ROOT / 'schemas')
+    source = json_fixture.root / 'a4/bundle/supply.json'
+    original = source.read_bytes()
+    yaml_original = old_files['a4/bundle/supply.yaml'].read_bytes()
+    source.write_bytes(original + b'\n')
+    rejected = False
+    try:
+        load_runtime_bundle(json_fixture.a4_bundle_ref['path'], project_root=json_fixture.root,
+                            schema_root=ROOT / 'schemas')
+    except ValueError as error:
+        rejected = True
+        diagnostic = str(error)
+    assert rejected, 'real loader must reject changed bytes, even equivalent JSON whitespace'
+    assert old_files['a4/bundle/supply.yaml'].read_bytes() == yaml_original
+    result = {'success': True, 'fixture_file_count': len(old_files), 'compared_documents': compared,
+              'cases': len(json_fixture.plan['cases']), 'design_equal': True,
+              'fresh_byte_drift_rejected': rejected, 'diagnostic': diagnostic,
+              'path_map': {k:v for k,v in paths.items() if k != v}}
+    (out / 'result.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
+    print(json.dumps(result, ensure_ascii=False))

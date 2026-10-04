@@ -1,0 +1,39 @@
+task_id: TEST-PERF-002
+attempt_id: A-20261003-001
+owner: Chengyue-Lu
+risk: R0
+authorization: Inspect current full CI; narrowly fix slow tests and publish an independent
+  Draft PR with experiments.
+required_skills: []
+delegation: true
+read_allowlist:
+- AGENTS.md
+- README.md
+- docs/README.md
+- docs/DEVELOPMENT.md
+- tests/**
+- .github/**
+- src/research_workbench/**
+- build_backend.py
+- pyproject.toml
+- work/TEST-PERF-002/**
+- docs/workstreams/chengyue-lu/TEST-PERF-002/**
+- PROJECT_MEMORY.md
+- GitHub full CI receipts and Issue87
+- task-local assessment evidence
+write_scope:
+- tests/test_provider_binding_graph.py
+- tests/test_profile_conformance_binding.py
+- tests/harness_fixtures.py
+- tests/system_evaluation_fixtures.py
+- docs/workstreams/chengyue-lu/TEST-PERF-002/SLOW_TESTS_20261003.md
+- work/TEST-PERF-002/A-20261003-001/**
+- own CI entry in shared PROJECT_MEMORY.md
+- own phase in Issue87
+- new branch and independent Draft PR
+- task-local assessment evidence
+stop_conditions:
+- No production, selection, workflow or threshold changes.
+- No Ready/merge/release/tag/main changes.
+- No overlapping CPU performance trials.
+- Keep unsuccessful original attempts and capture gaps.

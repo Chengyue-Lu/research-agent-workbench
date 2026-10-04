@@ -1,0 +1,62 @@
+"""Verify pristine stage reuse with independent copies and real hash checks."""
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+from tests.test_provider_binding_graph import ProviderBindingGraphTests
+from research_workbench.adapters.models.provider_binding import read_provider_binding_manifest, stage_provider_binding
+from research_workbench.adapters.models.provider_source_closure import SourceClosureError
+from research_workbench.evaluation.pins import EvaluationValidationError
+
+stages = []
+def count_stage(frame, event, arg):
+    if event == "call" and frame.f_code is stage_provider_binding.__code__:
+        stages.append({name: frame.f_locals[name] for name in ("destination", "source_closure", "include_conformance")})
+
+left, right = ProviderBindingGraphTests(), ProviderBindingGraphTests()
+sys.setprofile(count_stage)
+try:
+    ProviderBindingGraphTests.setUpClass()
+    left.setUp()
+    right.setUp()
+finally:
+    sys.setprofile(None)
+try:
+    left_ref, right_ref = left.stage(), right.stage()
+    assert left.root != right.root
+    assert left.provider is not right.provider
+    assert left.provider.credential is not right.provider.credential
+    assert left.provider.transport is not right.provider.transport
+    assert left_ref == right_ref and left_ref is not right_ref
+    left_manifest = read_provider_binding_manifest(left.inputs(), left_ref).to_mapping()
+    right_manifest = read_provider_binding_manifest(right.inputs(), right_ref).to_mapping()
+    assert left_manifest == right_manifest
+    graph = left.inputs().read(left_manifest["implementation_closure_ref"])
+    source_ref = next(iter(graph["modules"].values()))["source_ref"]
+    left_path, right_path = left.root / source_ref["path"], right.root / source_ref["path"]
+    pristine = right_path.read_bytes()
+    assert left_path.read_bytes() == pristine
+    left_path.write_bytes(pristine + b"\n# isolated source drift\n")
+    try:
+        read_provider_binding_manifest(left.inputs(), left_ref)
+    except (EvaluationValidationError, SourceClosureError):
+        rejected = True
+    else:
+        raise AssertionError("real checker accepted source drift")
+    assert right_path.read_bytes() == pristine
+    assert read_provider_binding_manifest(right.inputs(), right_ref).to_mapping() == right_manifest
+    assert stages == [{"destination": "graph-binding", "source_closure": True, "include_conformance": True}]
+    assert left.provider.credential.resolutions == right.provider.credential.resolutions == 0
+    assert left.provider.transport.requests == right.provider.transport.requests == []
+    result = {"successful": True, "stage_calls": stages, "independent_roots": True,
+              "fresh_provider_credential_transport": True, "reference_copy_independent": True,
+              "source_copy_sha256": hashlib.sha256(pristine).hexdigest(),
+              "left_drift_rejected": rejected, "right_pristine_reverified": True,
+              "credential_resolutions": [0, 0], "transport_requests": [0, 0]}
+    Path(sys.argv[1]).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps(result))
+finally:
+    left.doCleanups()
+    right.doCleanups()
+    ProviderBindingGraphTests.doClassCleanups()

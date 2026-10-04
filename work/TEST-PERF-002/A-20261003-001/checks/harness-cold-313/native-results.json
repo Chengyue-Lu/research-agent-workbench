@@ -1,0 +1,89 @@
+{
+  "duration_seconds": {
+    "p50": 36.69564,
+    "p95": 43.507967
+  },
+  "events": {
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay",
+    "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+    "tests/test_evaluation_overlay.py::EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority"
+  ],
+  "outcomes": {
+    "errors": 0,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 3,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "checkpoints": [],
+      "duration_seconds": 43.507967,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay",
+      "checkpoints": [],
+      "duration_seconds": 36.69564,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_overlay.py::EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "checkpoints": [],
+      "duration_seconds": 0.68773,
+      "id": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "module": "tests.test_evaluation_overlay",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority"
+    }
+  ],
+  "successful": true,
+  "suite": "scoped-performance-probe",
+  "test_count": 3,
+  "tests": [
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "checkpoints": [],
+      "duration_seconds": 43.507967,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay",
+      "checkpoints": [],
+      "duration_seconds": 36.69564,
+      "id": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay",
+      "module": "tests.test_evaluation_harness_execution",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_four_arms_execute_all_slices_and_cold_replay"
+    },
+    {
+      "canonical_id": "tests/test_evaluation_overlay.py::EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "checkpoints": [],
+      "duration_seconds": 0.68773,
+      "id": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority",
+      "module": "tests.test_evaluation_overlay",
+      "outcome": "passed",
+      "scenario": "tests.test_evaluation_overlay.EvaluationOverlayTests.test_pre_run_lineage_is_valid_but_not_actual_execution_or_admission_authority"
+    }
+  ],
+  "wall_seconds": 90.171369
+}

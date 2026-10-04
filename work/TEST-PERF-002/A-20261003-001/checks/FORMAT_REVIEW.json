@@ -1,0 +1,130 @@
+{
+  "task_id": "TEST-PERF-002-FORMAT-REVIEW",
+  "accountable_owner": "Chengyue-Lu",
+  "reviewed_at_utc": "2026-10-03T15:55:39.501071+00:00",
+  "worktree": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003",
+  "base_head": "3579e67124836559d7932287591e4d77053a1e94",
+  "verdict": "Static review passes; dynamic fixture equivalence and real cold replay remain required.",
+  "source_paths_and_hashes": [
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/system_evaluation_fixtures.py",
+      "sha256": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53",
+      "HEAD_blob_sha256": "caa28eba0e5aaf400a586dfe458fd2e23bd7fd06c76cdd6c79a8c5a2c6133179"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/harness_fixtures.py",
+      "sha256": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+      "HEAD_blob_sha256": "32178051bc456c664dd133eea172f4ad09efe703e940b889a564044eb73ac083"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/src/research_workbench/io.py",
+      "sha256": "004a2b70aac052aaff8daae23ccab63e63495a9bd45c05c8bd5c7dc5debb62c1",
+      "read_scope": "Necessary loader and fixture declarations only."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/src/research_workbench/execution/runtime_bundle.py",
+      "sha256": "5c24a3abf255f224ebf678928dc58d29741affec74ebd6c12385d5e7990a9053",
+      "read_scope": "Necessary loader and fixture declarations only."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/execution_fixtures.py",
+      "sha256": "852cdeecaf49ac6e12f8faa2c7ad994795002a1c421f229b1ab21752ade12956",
+      "read_scope": "Necessary loader and fixture declarations only."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/skill_runtime_fixtures.py",
+      "sha256": "a4733b00281de6d7a24fb617c20da25cca8b46bdfccf0d41f8db9280b4ce840d",
+      "read_scope": "Necessary loader and fixture declarations only."
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/harness_execution_fixtures.py",
+      "sha256": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+      "read_scope": "Necessary loader and fixture declarations only."
+    }
+  ],
+  "reviewed_diffs": {
+    "tests/system_evaluation_fixtures.py": {
+      "sha256": "8b51cf5e20bc5bac2079cde087846909a2fb71cef03221b11b0084d704d38179",
+      "text": "diff --git a/tests/system_evaluation_fixtures.py b/tests/system_evaluation_fixtures.py\nindex 595a232..537937c 100644\n--- a/tests/system_evaluation_fixtures.py\n+++ b/tests/system_evaluation_fixtures.py\n@@ -862,7 +862,7 @@ class SystemEvaluationFixture:\n             },\n         )\n \n-    def build_overlay(self):\n+    def build_overlay(self, *, document_suffix=None):\n         import tempfile\n \n         from research_workbench.artifacts.integrity import hash_directory\n@@ -1076,7 +1076,9 @@ class SystemEvaluationFixture:\n             identity\n         )\n         path_map = {\n-            old: (old if old == \"bundle/task.yaml\" else \"a4/\" + old)\n+            old: (old if old == \"bundle/task.yaml\" else\n+                  (\"a4/\" + old if document_suffix is None else\n+                   (Path(\"a4\") / Path(old).with_suffix(document_suffix)).as_posix()))\n             for old in source_documents\n         }\n \n@@ -1139,7 +1141,7 @@ class SystemEvaluationFixture:\n             schema_root=ROOT / \"schemas\",\n         )\n         view_ref = self.write(\"a4/view/view.json\", view)\n-        supply = self.doc(\"a4/bundle/supply.yaml\")\n+        supply = self.doc(path_map[\"bundle/supply.yaml\"])\n         interface = record(\n             \"evaluation_provider_interface\",\n             \"interface_id\",\n@@ -1156,7 +1158,7 @@ class SystemEvaluationFixture:\n         interface_ref = self.write(\"a4/view/interface.json\", interface)\n         manifest = self.doc(self.manifest_ref[\"path\"])\n         manifest[\"arms\"][3][\"treatment_control\"][\"method_resolution_refs\"] = [\n-            self.ref(\"a4/bundle/method.yaml\")\n+            self.ref(path_map[\"bundle/method.yaml\"])\n         ]\n         manifest[\"arms\"][3][\"skill_binding\"] = {\n             \"skill_id\": release[\"skill_id\"],\n@@ -1185,11 +1187,11 @@ class SystemEvaluationFixture:\n             accountable_human=\"Synthetic Reviewer\",\n             release_ref=release_ref,\n             lifecycle_ref=lifecycle_ref,\n-            projection_ref=self.ref(\"a4/bundle/skill-projection.yaml\"),\n+            projection_ref=self.ref(path_map[\"bundle/skill-projection.yaml\"]),\n             promotion_provenance_ref=None,\n             runtime_bindings=[\n                 {\n-                    \"snapshot_ref\": self.ref(\"a4/bundle/snapshot.yaml\"),\n+                    \"snapshot_ref\": self.ref(path_map[\"bundle/snapshot.yaml\"]),\n                     \"bundle_ref\": bundle_ref,\n                     \"view_ref\": view_ref,\n                     \"interface_ref\": interface_ref,\n@@ -1204,7 +1206,7 @@ class SystemEvaluationFixture:\n             evidence_phase=\"pre-run-qualification\",\n         )\n         extra_snapshot = self.requirement_slice(\n-            self.ref(\"a4/bundle/snapshot.yaml\"), \"a4/document-read\"\n+            self.ref(path_map[\"bundle/snapshot.yaml\"]), \"a4/document-read\"\n         )\n         self.overlay[\"runtime_bindings\"].append(\n             self.runtime_binding(\n"
+    },
+    "tests/harness_fixtures.py": {
+      "sha256": "a45b5da4cf574e854d84b5f8a86c821f8438d1c5ea494e01439feb4ca4fd125b",
+      "text": "diff --git a/tests/harness_fixtures.py b/tests/harness_fixtures.py\nindex 5b30890..b0b24d9 100644\n--- a/tests/harness_fixtures.py\n+++ b/tests/harness_fixtures.py\n@@ -45,7 +45,9 @@ class HarnessFixture(BaselineFixture):\n             self.protocol[\"design\"].update(replicates_per_case=1, pilot_replicates_per_case=0)\n             self.protocol[\"design\"][\"stopping\"][\"completed_blocks\"] = 2\n         self.protocol_ref = self.write(\"evaluation/protocol.json\", self.protocol)\n-        self.build_overlay()\n+        # Synthetic A4 documents are serialized as JSON by the fixture writer.\n+        # Use their actual format; YAML loader behavior has separate bundle tests.\n+        self.build_overlay(document_suffix=\".json\")\n         self.build_pairwise()\n         self.a2 = produce_a2_qualification(\n             self.inputs(),\n"
+    }
+  },
+  "static_checks": {
+    "tests/system_evaluation_fixtures.py": {
+      "syntax_parsed": true,
+      "normalized_ast_equals_HEAD": true,
+      "normalization": "Restore only new optional signature, path-map expression, five A4 path lookups, or Harness suffix call; all remaining AST is identical."
+    },
+    "tests/harness_fixtures.py": {
+      "syntax_parsed": true,
+      "normalized_ast_equals_HEAD": true,
+      "normalization": "Restore only new optional signature, path-map expression, five A4 path lookups, or Harness suffix call; all remaining AST is identical."
+    }
+  },
+  "findings": [],
+  "observations": [
+    {
+      "id": "default-format",
+      "status": "verified_static",
+      "evidence": [
+        "system_evaluation_fixtures.py:1078-1083",
+        "system_evaluation_fixtures.py:1144",
+        "system_evaluation_fixtures.py:1161",
+        "system_evaluation_fixtures.py:1190-1209"
+      ],
+      "statement": "With document_suffix=None, path_map is exactly the previous identity task / a4-prefix mapping. All five replaced literal consumers resolve to their old strings, and no other behavior changes after AST normalization."
+    },
+    {
+      "id": "path-and-hash-closure",
+      "status": "verified_static",
+      "evidence": [
+        "system_evaluation_fixtures.py:1086-1123"
+      ],
+      "statement": "Existing recursive rename updates string values including path, document_path, from_path and to_path. Existing save/refresh topologically rewrites targeted node hashes before writer ref hashes are returned. Bundle document refs, entrypoint and projection refs traverse the same refresh."
+    },
+    {
+      "id": "real-runtime-validation",
+      "status": "verified_static",
+      "evidence": [
+        "system_evaluation_fixtures.py:1125-1142",
+        "src/research_workbench/execution/runtime_bundle.py:581-716",
+        "src/research_workbench/io.py:13-29"
+      ],
+      "statement": "Unchanged load_runtime_bundle reads actual bytes, checks SHA-256 and schemas, enforces runtime qualification, lineage and exact derived import closure. Fixture output remains JSON serialization; suffix selects the production json.loads branch rather than YAML safe_load for only mapped A4 docs."
+    },
+    {
+      "id": "execution-coverage",
+      "status": "verified_static",
+      "evidence": [
+        "tests/harness_fixtures.py:19-86",
+        "tests/harness_execution_fixtures.py:60-100"
+      ],
+      "statement": "AST outside the fixture-format changes is identical to HEAD: public case iteration, four-arm manifest consumption, retry configuration, compact replication conditions, A2/A3 qualification and plan construction remain. LocalDriver still records real skill input/use/result via production helpers; no cached checker or mocked loader is introduced. Executed scenario and cold-replay equivalence remain unverified here."
+    },
+    {
+      "id": "yaml-scope",
+      "status": "verified_static",
+      "evidence": [
+        "tests/system_evaluation_fixtures.py:59-60",
+        "tests/execution_fixtures.py:34-50",
+        "tests/skill_runtime_fixtures.py:106-251"
+      ],
+      "statement": "OverlayFixtureMixin still calls build_overlay with its default; RuntimeBundleFixture and SkillRuntimeBundleFixture keep original YAML writing, paths and manifests. Harness-specific YAML parsing coverage shifts to the JSON branch, while the default independent fixture path remains."
+    },
+    {
+      "id": "external-consumer-literals",
+      "status": "parent_reported",
+      "statement": "Root reports scanning all tests for a4/bundle supply/snapshot/method/skill-projection literals: only these five helper consumers were present and now use path_map. Reviewer did not independently read all consumer test files."
+    }
+  ],
+  "dynamic_checks_not_run": [
+    "Build old/default and JSON fixtures, normalize renamed paths and re-signed hashes, compare documents plus arm/case/protocol semantics and verify every nested file pin against actual bytes.",
+    "Run root paired YAML/JSON probe with actual loader, qualification, Host execution and a fresh-process cold replay; retain all four arms, failure retry and original assertions.",
+    "Run one independent default-overlay or runtime-bundle YAML consumer to retain the existing format path."
+  ],
+  "production_change_required": false,
+  "limits": "Read-only static review only. No source changes, commits, network calls, fixture builds, test execution, or performance claims."
+}

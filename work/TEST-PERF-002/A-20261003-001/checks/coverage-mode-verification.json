@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "TEST-PERF-002",
+  "accountable_owner": "Chengyue-Lu",
+  "verified_date_local": "2026-10-04",
+  "scope": "Read-only coverage metadata verification; no test execution or modification of original comparison or coverage evidence.",
+  "coverage_mode_authority": "CoverageData.read(), has_arcs(), measured_files() on each persisted coverage database",
+  "actual_branch_coverage": true,
+  "datasets": [
+    {
+      "path": "provider-before-coverage-v1.coverage",
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30",
+      "has_arcs": true,
+      "measured_file_count": 120
+    },
+    {
+      "path": "provider-after-coverage-v1.coverage",
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30",
+      "has_arcs": true,
+      "measured_file_count": 120
+    }
+  ],
+  "project_configuration": {
+    "path": "pyproject.toml",
+    "section": "tool.coverage.run",
+    "branch": true,
+    "line": 45
+  },
+  "preserved_comparison": {
+    "path": "provider-after-comparison.json",
+    "sha256": "01e818ecb35a69310f9a66e41bde6dcedad73611071dc7c190877e6f206b5967",
+    "branch_coverage_observed": true,
+    "modified": false
+  },
+  "verification": {
+    "inference_note": "The root initially misread CLI omission of --branch as a false field. Readback confirmed the original receipt already reports true; that misreading has been clarified.",
+    "correct_basis": "CLI omission does not disable the project branch=True configuration. Both persisted data files actually contain arcs, so both runs used branch coverage.",
+    "receipt_reconciliation": "The original comparison field and both actual CoverageData has_arcs values agree: branch coverage was enabled. The original receipt and hash remain unchanged."
+  },
+  "tests_rerun": 0,
+  "timing_outcome_or_speedup_changed": false
+}

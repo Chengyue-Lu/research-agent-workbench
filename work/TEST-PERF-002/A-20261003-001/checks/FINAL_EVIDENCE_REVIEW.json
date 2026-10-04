@@ -1,0 +1,733 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "TEST-PERF-002",
+  "accountable_owner": "Chengyue-Lu",
+  "reviewed_at_utc": "2026-10-03T16:20:52.275445+00:00",
+  "scope": "Read-only final commits and existing timing/coverage evidence. No tests, fixtures, network, source changes, or earlier evidence modifications.",
+  "baseline_commit": "3579e67124836559d7932287591e4d77053a1e94",
+  "final_commit_chain": [
+    {
+      "sha": "7d19adf2bf4aa07a74dde736b966423c89fcbf2c",
+      "parent": "3579e67124836559d7932287591e4d77053a1e94",
+      "changed_files": [
+        "tests/test_profile_conformance_binding.py",
+        "tests/test_provider_binding_graph.py"
+      ]
+    },
+    {
+      "sha": "fc158961b9cad70e6b681ef81bddbb0022242f86",
+      "parent": "7d19adf2bf4aa07a74dde736b966423c89fcbf2c",
+      "changed_files": [
+        "tests/harness_fixtures.py",
+        "tests/system_evaluation_fixtures.py"
+      ]
+    }
+  ],
+  "changed_files": [
+    "tests/harness_fixtures.py",
+    "tests/system_evaluation_fixtures.py",
+    "tests/test_profile_conformance_binding.py",
+    "tests/test_provider_binding_graph.py"
+  ],
+  "production_changes_in_final_diff": false,
+  "final_diff_sha256": "3bf4193800b68c540e1be41813146fc6f505be0ca9687a68a5dc2235f8c6b477",
+  "final_diff": "diff --git a/tests/harness_fixtures.py b/tests/harness_fixtures.py\nindex 5b30890..b0b24d9 100644\n--- a/tests/harness_fixtures.py\n+++ b/tests/harness_fixtures.py\n@@ -45,7 +45,9 @@ class HarnessFixture(BaselineFixture):\n             self.protocol[\"design\"].update(replicates_per_case=1, pilot_replicates_per_case=0)\n             self.protocol[\"design\"][\"stopping\"][\"completed_blocks\"] = 2\n         self.protocol_ref = self.write(\"evaluation/protocol.json\", self.protocol)\n-        self.build_overlay()\n+        # Synthetic A4 documents are serialized as JSON by the fixture writer.\n+        # Use their actual format; YAML loader behavior has separate bundle tests.\n+        self.build_overlay(document_suffix=\".json\")\n         self.build_pairwise()\n         self.a2 = produce_a2_qualification(\n             self.inputs(),\ndiff --git a/tests/system_evaluation_fixtures.py b/tests/system_evaluation_fixtures.py\nindex 595a232..537937c 100644\n--- a/tests/system_evaluation_fixtures.py\n+++ b/tests/system_evaluation_fixtures.py\n@@ -862,7 +862,7 @@ class SystemEvaluationFixture:\n             },\n         )\n \n-    def build_overlay(self):\n+    def build_overlay(self, *, document_suffix=None):\n         import tempfile\n \n         from research_workbench.artifacts.integrity import hash_directory\n@@ -1076,7 +1076,9 @@ class SystemEvaluationFixture:\n             identity\n         )\n         path_map = {\n-            old: (old if old == \"bundle/task.yaml\" else \"a4/\" + old)\n+            old: (old if old == \"bundle/task.yaml\" else\n+                  (\"a4/\" + old if document_suffix is None else\n+                   (Path(\"a4\") / Path(old).with_suffix(document_suffix)).as_posix()))\n             for old in source_documents\n         }\n \n@@ -1139,7 +1141,7 @@ class SystemEvaluationFixture:\n             schema_root=ROOT / \"schemas\",\n         )\n         view_ref = self.write(\"a4/view/view.json\", view)\n-        supply = self.doc(\"a4/bundle/supply.yaml\")\n+        supply = self.doc(path_map[\"bundle/supply.yaml\"])\n         interface = record(\n             \"evaluation_provider_interface\",\n             \"interface_id\",\n@@ -1156,7 +1158,7 @@ class SystemEvaluationFixture:\n         interface_ref = self.write(\"a4/view/interface.json\", interface)\n         manifest = self.doc(self.manifest_ref[\"path\"])\n         manifest[\"arms\"][3][\"treatment_control\"][\"method_resolution_refs\"] = [\n-            self.ref(\"a4/bundle/method.yaml\")\n+            self.ref(path_map[\"bundle/method.yaml\"])\n         ]\n         manifest[\"arms\"][3][\"skill_binding\"] = {\n             \"skill_id\": release[\"skill_id\"],\n@@ -1185,11 +1187,11 @@ class SystemEvaluationFixture:\n             accountable_human=\"Synthetic Reviewer\",\n             release_ref=release_ref,\n             lifecycle_ref=lifecycle_ref,\n-            projection_ref=self.ref(\"a4/bundle/skill-projection.yaml\"),\n+            projection_ref=self.ref(path_map[\"bundle/skill-projection.yaml\"]),\n             promotion_provenance_ref=None,\n             runtime_bindings=[\n                 {\n-                    \"snapshot_ref\": self.ref(\"a4/bundle/snapshot.yaml\"),\n+                    \"snapshot_ref\": self.ref(path_map[\"bundle/snapshot.yaml\"]),\n                     \"bundle_ref\": bundle_ref,\n                     \"view_ref\": view_ref,\n                     \"interface_ref\": interface_ref,\n@@ -1204,7 +1206,7 @@ class SystemEvaluationFixture:\n             evidence_phase=\"pre-run-qualification\",\n         )\n         extra_snapshot = self.requirement_slice(\n-            self.ref(\"a4/bundle/snapshot.yaml\"), \"a4/document-read\"\n+            self.ref(path_map[\"bundle/snapshot.yaml\"]), \"a4/document-read\"\n         )\n         self.overlay[\"runtime_bindings\"].append(\n             self.runtime_binding(\ndiff --git a/tests/test_profile_conformance_binding.py b/tests/test_profile_conformance_binding.py\nindex 273f45d..8210031 100644\n--- a/tests/test_profile_conformance_binding.py\n+++ b/tests/test_profile_conformance_binding.py\n@@ -126,7 +126,6 @@ class ProfileConformanceBindingTests(unittest.TestCase):\n         self.assertEqual(report[\"actual_counts\"][\"tool_executions\"], 1)\n         self.assertFalse(report[\"live_qualified\"])\n         self.assertFalse(report[\"remote_strict_claim\"])\n-        self.assertEqual(verify_profile_conformance_report(report, root=self.root, schema_root=ROOT / \"schemas\"), report)\n         output = self.root / \"report.json\"\n         write_profile_conformance_report(report, output, root=self.root, schema_root=ROOT / \"schemas\")\n         self.assertEqual(json.loads(output.read_bytes()), report)\ndiff --git a/tests/test_provider_binding_graph.py b/tests/test_provider_binding_graph.py\nindex bed7315..854b019 100644\n--- a/tests/test_provider_binding_graph.py\n+++ b/tests/test_provider_binding_graph.py\n@@ -7,6 +7,7 @@ import importlib.util\n import json\n from pathlib import Path\n from types import SimpleNamespace\n+import shutil\n import subprocess\n import sys\n import tempfile\n@@ -43,6 +44,21 @@ def _unexpected(*args, **kwargs):\n \n \n class ProviderBindingGraphTests(unittest.TestCase):\n+    @classmethod\n+    def setUpClass(cls):\n+        from test_provider_binding import configured_fixture\n+        cls.template = tempfile.TemporaryDirectory(prefix=\"rwb-provider-graph-template-\")\n+        cls.addClassCleanup(cls.template.cleanup)\n+        cls.template_root = Path(cls.template.name)\n+        original = configured_fixture(cls.template_root)\n+        module = _components()\n+        provider = ConfiguredProvider(original.profile, original.resolved_config,\n+            module.SyntheticCredential(), module.SyntheticTransport(), cls.template_root)\n+        # Every graph case selects this same v1.1 conformance closure. Produce it\n+        # once; each case still verifies its own files and current runtime state.\n+        cls.reference = stage_provider_binding(provider, root=cls.template_root,\n+            destination=\"graph-binding\", source_closure=True, include_conformance=True)\n+\n     def setUp(self):\n         from test_provider_binding import configured_fixture\n         temporary = tempfile.TemporaryDirectory(prefix=\"rwb-provider-graph-\")\n@@ -52,13 +68,13 @@ class ProviderBindingGraphTests(unittest.TestCase):\n         module = _components()\n         self.provider = ConfiguredProvider(original.profile, original.resolved_config,\n             module.SyntheticCredential(), module.SyntheticTransport(), self.root)\n+        shutil.copytree(self.template_root / \"graph-binding\", self.root / \"graph-binding\")\n \n     def inputs(self):\n         return EvaluationInputs(self.root, ROOT / \"schemas\")\n \n     def stage(self):\n-        return stage_provider_binding(self.provider, root=self.root, destination=\"graph-binding\",\n-                                      source_closure=True, include_conformance=True)\n+        return dict(self.reference)\n \n     def bound(self, reference):\n         manifest = read_provider_binding_manifest(self.inputs(), reference).to_mapping()\n",
+  "sources": [
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pairs-complete.json",
+      "kind": "receipt",
+      "bytes": 17478,
+      "sha256": "998d8cbe50d01ac6e7cfcb6808f86de7396007270d4c6455224d5f291df4074c"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-yaml/binding.json",
+      "kind": "receipt",
+      "bytes": 1692,
+      "sha256": "93902be3b8dd5636f36b7410416ac224a58c3d49061901c67698c784fbeb6f65"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-yaml/native-results.json",
+      "kind": "receipt",
+      "bytes": 3075,
+      "sha256": "a874cd561f427c5ab38eea49d3205facb5a214c587118de99327b514c6c84722"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-yaml.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 512000,
+      "sha256": "220e6e0779f30d3f08026092a1da727acfa00e6a73035676535078111ed678a8"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-json/binding.json",
+      "kind": "receipt",
+      "bytes": 1691,
+      "sha256": "a8a1615db7050d7eddc046043893083b2b51f2d2dcb7ae7fe8bcf09f0bf9d677"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-json/native-results.json",
+      "kind": "receipt",
+      "bytes": 3073,
+      "sha256": "8e2dd930f6d601bb379306b5af23c87c260ebd457bfd6e7dc3462c536a2d72fe"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-json.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 512000,
+      "sha256": "0b2f50426a62175f3f81feae5b481a6519dd50c2b3f306002f44834ed0a18b3e"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-yaml/binding.json",
+      "kind": "receipt",
+      "bytes": 1692,
+      "sha256": "8cc99e3b14a25cb623b1703558e77626ad9c2e485b8caf3761fd4808c73d1a1a"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-yaml/native-results.json",
+      "kind": "receipt",
+      "bytes": 3075,
+      "sha256": "a5605285d8a4cfd3e7712646d25f6987dae86609ea8e9246afd95e01a589c3f1"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-yaml.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 512000,
+      "sha256": "a8a60cdf62df520dd733c7cf91f7f3a01e2f2046d33748ee898ad227716081fb"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-json/binding.json",
+      "kind": "receipt",
+      "bytes": 1691,
+      "sha256": "2fdeb36b14436b292dce03c07e45d1fc341b11dcb2ee99bd7bb4d6909056393c"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-json/native-results.json",
+      "kind": "receipt",
+      "bytes": 3074,
+      "sha256": "0ba99bb336091c5bf83ef032602be043128e61a12d989b8389cc977ee179b58e"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-json.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 512000,
+      "sha256": "d9490de8192a3248fa18163b845976bfb79b98c8f8f9214b70c16d61bb92dbab"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-yaml/binding.json",
+      "kind": "receipt",
+      "bytes": 1692,
+      "sha256": "323007325fd83139cfde5114732c8d20f1fc4b282b0cc2168abdacfca936e15a"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-yaml/native-results.json",
+      "kind": "receipt",
+      "bytes": 3075,
+      "sha256": "d673ef92c73801ea5ae74de8ef6217d7fba0f13ddf7c6a7a2b0e129e1d31ac0f"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-yaml.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 512000,
+      "sha256": "bd4b3dcf79e8cfe78a2afec36e8969bccce0f86675858beb359690384b611d18"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-json/binding.json",
+      "kind": "receipt",
+      "bytes": 1691,
+      "sha256": "0e3927a9cce7cbcc9be324469adee54f9327959eeb9148490c13b45d8631b499"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-json/native-results.json",
+      "kind": "receipt",
+      "bytes": 3074,
+      "sha256": "155add3d53c6a596a46f6d69f639823ee3881ef2dfe88b716fec86a898ca73ce"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-json.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 512000,
+      "sha256": "6c0cdac77e423e616c15614351f601aaad5a7f63fe1a38e85c037c435db80656"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-before-coverage-v1/binding.json",
+      "kind": "receipt",
+      "bytes": 1676,
+      "sha256": "9127dd9e2336e481667c071214b967e44dfb190ac9e13a3f7311ad905eda074f"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-before-coverage-v1/native-results.json",
+      "kind": "receipt",
+      "bytes": 9625,
+      "sha256": "9cf7b907bfed54efe6a2755a41e0c13cd102643d3fb1d4a4690f2873d9c67ff6"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-before-coverage-v1.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 401408,
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-coverage-v1/binding.json",
+      "kind": "receipt",
+      "bytes": 1815,
+      "sha256": "ac149b288f2a3c093c289d69afc2a9b0cb4827b7769ce409ccb19005ca1f4344"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-coverage-v1/native-results.json",
+      "kind": "receipt",
+      "bytes": 9625,
+      "sha256": "eb71f4d9977b17eeea0fd76661d91fdb7f79a43046eb5f25e4b9902b1ea24d44"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-coverage-v1.coverage",
+      "kind": "coverage_sqlite",
+      "bytes": 401408,
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/harness_fixtures.py",
+      "kind": "final_changed_source",
+      "bytes": 7883,
+      "sha256": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/system_evaluation_fixtures.py",
+      "kind": "final_changed_source",
+      "bytes": 51543,
+      "sha256": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/test_profile_conformance_binding.py",
+      "kind": "final_changed_source",
+      "bytes": 11302,
+      "sha256": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/test_provider_binding_graph.py",
+      "kind": "final_changed_source",
+      "bytes": 17315,
+      "sha256": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-comparison.json",
+      "kind": "receipt",
+      "bytes": 5323,
+      "sha256": "01e818ecb35a69310f9a66e41bde6dcedad73611071dc7c190877e6f206b5967"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-isolation.py",
+      "kind": "comparison_checksum_input",
+      "bytes": 3220,
+      "sha256": "636818b557c11082e60883b914f733b40ed58655bd5317ae18bd503ac3f8e184"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-contract/result.json",
+      "kind": "receipt",
+      "bytes": 1849,
+      "sha256": "31dc265dede3d8189a82e8bef0e250d3535ae55cc010a0efdac3756beaac1de9"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-isolation.json",
+      "kind": "receipt",
+      "bytes": 553,
+      "sha256": "43f89d6b2f9a7c3870e45eaf3229631d2b6e98ffc8096cde27c75e6f5f1289fb"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/validation-progress.json",
+      "kind": "receipt",
+      "bytes": 3304,
+      "sha256": "26983a8146b0d62bbb48a71e0ff588eee1eb8c9704de50f071c2de5fe6740de4"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/run_probe.py",
+      "kind": "supporting_script_or_receipt",
+      "bytes": 3194,
+      "sha256": "369600f63bf20afa35ee85e009b572486ca4aaf194483287f447862a369adff9"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/run_format_pairs.py",
+      "kind": "supporting_script_or_receipt",
+      "bytes": 2185,
+      "sha256": "af593cc3adfbe2acfb8976e29348e6f59e3805c1f4c24fc0bf408805ce3bc3ca"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/check_format_contract.py",
+      "kind": "supporting_script_or_receipt",
+      "bytes": 3933,
+      "sha256": "db83f969a72ce0528de5668c313dd4d9a60dda921e7dd6ab08e4b81a19dc66c0"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/coverage-mode-verification.json",
+      "kind": "supporting_script_or_receipt",
+      "bytes": 1870,
+      "sha256": "c55f2d2dc64e280e6452e4ecba863cf58a97dd884ffab82a2d4ad557c327ad8a"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-contract.log",
+      "kind": "supporting_script_or_receipt",
+      "bytes": 1739,
+      "sha256": "153033d7538203cd81f92dbc1e510795f8a00e89f11d29b9cbd23db9f28ed4b5"
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-isolation.log",
+      "kind": "supporting_script_or_receipt",
+      "bytes": 452,
+      "sha256": "6f16629bf931e4334acf709de939ee06e2097d70cee70130f2be95b01336f11a"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/tests/run_unittest_suite.py",
+      "kind": "timing_or_coverage_authority",
+      "bytes": 25083,
+      "sha256": "36bf86a6325e5465dc624356455e5376702ac6475b515572c405e7a487a607f9"
+    },
+    {
+      "path": "D:/lcy/develop/_worktrees/RWB/ci-slow-tests-20261003/pyproject.toml",
+      "kind": "timing_or_coverage_authority",
+      "bytes": 1214,
+      "sha256": "fa00fc4ae7d7bd41f958df05011441c33ad9f83b40c6ba1d95fad98d1e2f1492"
+    }
+  ],
+  "source_binding_checks": [
+    {
+      "file": "tests/harness_fixtures.py",
+      "baseline_blob_sha256": "32178051bc456c664dd133eea172f4ad09efe703e940b889a564044eb73ac083",
+      "final_blob_sha256": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+      "worktree_sha256": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+      "format_six_receipts_match_final_blob": true
+    },
+    {
+      "file": "tests/system_evaluation_fixtures.py",
+      "baseline_blob_sha256": "caa28eba0e5aaf400a586dfe458fd2e23bd7fd06c76cdd6c79a8c5a2c6133179",
+      "final_blob_sha256": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53",
+      "worktree_sha256": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53",
+      "format_six_receipts_match_final_blob": true
+    },
+    {
+      "file": "tests/test_profile_conformance_binding.py",
+      "baseline_blob_sha256": "5c4676082fee5738510cb0a7a6eb9c7e179fe1b05a69cd593125be4f4791b7e7",
+      "final_blob_sha256": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+      "worktree_sha256": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+      "format_six_receipts_match_final_blob": true
+    },
+    {
+      "file": "tests/test_provider_binding_graph.py",
+      "baseline_blob_sha256": "508f8529f497d346b470bef23366f217398c464595adf200b28d1328ab14c12c",
+      "final_blob_sha256": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+      "worktree_sha256": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+      "format_six_receipts_match_final_blob": true
+    }
+  ],
+  "format_paired_statistics": {
+    "pair_count": 3,
+    "selected_case_count_per_run": 2,
+    "yaml_wall_median_seconds": 106.805093,
+    "json_wall_median_seconds": 95.773378,
+    "difference_of_mode_medians_seconds": 11.031715,
+    "reduction_from_mode_median_ratio_percent": 10.328829,
+    "median_of_paired_differences_seconds": 10.545369,
+    "median_of_paired_reductions_percent": 9.87347,
+    "pairs": [
+      {
+        "pair": 1,
+        "order": [
+          "yaml",
+          "json"
+        ],
+        "yaml_wall_seconds": 103.771436,
+        "json_wall_seconds": 95.773378,
+        "decrease_seconds": 7.998059,
+        "decrease_percent": 7.70738,
+        "both_passed_cases": 2
+      },
+      {
+        "pair": 2,
+        "order": [
+          "json",
+          "yaml"
+        ],
+        "yaml_wall_seconds": 106.805093,
+        "json_wall_seconds": 96.259724,
+        "decrease_seconds": 10.545369,
+        "decrease_percent": 9.87347,
+        "both_passed_cases": 2
+      },
+      {
+        "pair": 3,
+        "order": [
+          "yaml",
+          "json"
+        ],
+        "yaml_wall_seconds": 107.660041,
+        "json_wall_seconds": 95.110329,
+        "decrease_seconds": 12.549712,
+        "decrease_percent": 11.656796,
+        "both_passed_cases": 2
+      }
+    ],
+    "case_metrics": [
+      {
+        "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+        "yaml_median_case_seconds": 83.133494,
+        "json_median_case_seconds": 75.068725,
+        "decrease_of_case_medians_percent": 9.700986,
+        "class_setup_included": false
+      },
+      {
+        "canonical_id": "tests/test_evaluation_harness_execution.py::HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch",
+        "yaml_median_case_seconds": 8.289331,
+        "json_median_case_seconds": 7.294993,
+        "decrease_of_case_medians_percent": 11.995395,
+        "class_setup_included": false
+      }
+    ],
+    "suite_minus_case_sums": [
+      {
+        "name": "format-pair-1-yaml",
+        "suite_wall_seconds": 103.771436,
+        "case_sum_seconds": 89.146789,
+        "outside_per_case_timers_seconds": 14.624647,
+        "not_an_exclusive_class_setup_measurement": true
+      },
+      {
+        "name": "format-pair-1-json",
+        "suite_wall_seconds": 95.773378,
+        "case_sum_seconds": 82.4695,
+        "outside_per_case_timers_seconds": 13.303878,
+        "not_an_exclusive_class_setup_measurement": true
+      },
+      {
+        "name": "format-pair-2-yaml",
+        "suite_wall_seconds": 106.805093,
+        "case_sum_seconds": 92.22751,
+        "outside_per_case_timers_seconds": 14.577583,
+        "not_an_exclusive_class_setup_measurement": true
+      },
+      {
+        "name": "format-pair-2-json",
+        "suite_wall_seconds": 96.259724,
+        "case_sum_seconds": 82.982485,
+        "outside_per_case_timers_seconds": 13.277239,
+        "not_an_exclusive_class_setup_measurement": true
+      },
+      {
+        "name": "format-pair-3-yaml",
+        "suite_wall_seconds": 107.660041,
+        "case_sum_seconds": 92.29127,
+        "outside_per_case_timers_seconds": 15.368771,
+        "not_an_exclusive_class_setup_measurement": true
+      },
+      {
+        "name": "format-pair-3-json",
+        "suite_wall_seconds": 95.110329,
+        "case_sum_seconds": 81.820582,
+        "outside_per_case_timers_seconds": 13.289747,
+        "not_an_exclusive_class_setup_measurement": true
+      }
+    ]
+  },
+  "provider_single_pair_statistics": {
+    "pair_count": 1,
+    "replicate_median_claim_supported": false,
+    "selected_case_count_per_run": 4,
+    "before_wall_seconds": 197.071647,
+    "after_wall_seconds": 182.098508,
+    "decrease_seconds": 14.973139,
+    "decrease_percent": 7.597815,
+    "before_case_sum_seconds": 192.760678,
+    "after_case_sum_seconds": 173.255426,
+    "case_sum_decrease_percent": 10.118896,
+    "before_outside_case_timers_seconds": 4.310969,
+    "after_outside_case_timers_seconds": 8.843082,
+    "class_setup_included_in_suite_wall": true,
+    "cases": [
+      {
+        "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_actual_urllib_three_call_driver_and_cold_report_match_selected_graph",
+        "before_seconds": 156.059482,
+        "after_seconds": 147.950902,
+        "decrease_percent": 5.195827,
+        "before_checkpoints": 5,
+        "after_checkpoints": 5
+      },
+      {
+        "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_changed_archive_or_outer_graph_ref_never_reaches_credential",
+        "before_seconds": 18.057286,
+        "after_seconds": 14.497814,
+        "decrease_percent": 19.71211,
+        "before_checkpoints": 0,
+        "after_checkpoints": 0
+      },
+      {
+        "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_cold_manifest_read_does_not_import_synthetic_component",
+        "before_seconds": 9.761732,
+        "after_seconds": 5.903519,
+        "decrease_percent": 39.523857,
+        "before_checkpoints": 0,
+        "after_checkpoints": 0
+      },
+      {
+        "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_version_pairing_cannot_downgrade_graph_fields",
+        "before_seconds": 8.882178,
+        "after_seconds": 4.903191,
+        "decrease_percent": 44.797425,
+        "before_checkpoints": 3,
+        "after_checkpoints": 3
+      }
+    ]
+  },
+  "coverage_database_checks": [
+    {
+      "name": "format-pair-1-yaml",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-yaml.coverage",
+      "sha256": "220e6e0779f30d3f08026092a1da727acfa00e6a73035676535078111ed678a8",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 13475,
+      "files_with_arc_rows": 94,
+      "file_table_count": 120,
+      "arc_set_sha256": "0aa6bdcf37dd9f6bf79a04dfd825fd3dd39265ee1b97cd03897b3cc57f522107"
+    },
+    {
+      "name": "format-pair-1-json",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-1-json.coverage",
+      "sha256": "0b2f50426a62175f3f81feae5b481a6519dd50c2b3f306002f44834ed0a18b3e",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 13475,
+      "files_with_arc_rows": 94,
+      "file_table_count": 120,
+      "arc_set_sha256": "0aa6bdcf37dd9f6bf79a04dfd825fd3dd39265ee1b97cd03897b3cc57f522107"
+    },
+    {
+      "name": "format-pair-2-yaml",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-yaml.coverage",
+      "sha256": "a8a60cdf62df520dd733c7cf91f7f3a01e2f2046d33748ee898ad227716081fb",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 13475,
+      "files_with_arc_rows": 94,
+      "file_table_count": 120,
+      "arc_set_sha256": "0aa6bdcf37dd9f6bf79a04dfd825fd3dd39265ee1b97cd03897b3cc57f522107"
+    },
+    {
+      "name": "format-pair-2-json",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-2-json.coverage",
+      "sha256": "d9490de8192a3248fa18163b845976bfb79b98c8f8f9214b70c16d61bb92dbab",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 13475,
+      "files_with_arc_rows": 94,
+      "file_table_count": 120,
+      "arc_set_sha256": "0aa6bdcf37dd9f6bf79a04dfd825fd3dd39265ee1b97cd03897b3cc57f522107"
+    },
+    {
+      "name": "format-pair-3-yaml",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-yaml.coverage",
+      "sha256": "bd4b3dcf79e8cfe78a2afec36e8969bccce0f86675858beb359690384b611d18",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 13475,
+      "files_with_arc_rows": 94,
+      "file_table_count": 120,
+      "arc_set_sha256": "0aa6bdcf37dd9f6bf79a04dfd825fd3dd39265ee1b97cd03897b3cc57f522107"
+    },
+    {
+      "name": "format-pair-3-json",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/format-pair-3-json.coverage",
+      "sha256": "6c0cdac77e423e616c15614351f601aaad5a7f63fe1a38e85c037c435db80656",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 13475,
+      "files_with_arc_rows": 94,
+      "file_table_count": 120,
+      "arc_set_sha256": "0aa6bdcf37dd9f6bf79a04dfd825fd3dd39265ee1b97cd03897b3cc57f522107"
+    },
+    {
+      "name": "provider-before-coverage-v1",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-before-coverage-v1.coverage",
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 10025,
+      "files_with_arc_rows": 95,
+      "file_table_count": 120,
+      "arc_set_sha256": "abbb183c54323f0c01ad2deb19df466674a8f7bc56a61f0d1e4b9ecad78d2be1"
+    },
+    {
+      "name": "provider-after-coverage-v1",
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-coverage-v1.coverage",
+      "sha256": "e65cc3e292fa04380ca79b2561133ae6f3378c219ac2163d331088c2e3fafb30",
+      "coverage_version": "7.16.1",
+      "has_arcs": true,
+      "arc_row_count": 10025,
+      "files_with_arc_rows": 95,
+      "file_table_count": 120,
+      "arc_set_sha256": "abbb183c54323f0c01ad2deb19df466674a8f7bc56a61f0d1e4b9ecad78d2be1"
+    }
+  ],
+  "format_arc_sets_all_equal": true,
+  "provider_arc_sets_equal": true,
+  "existing_checksum_checks": [
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-before-coverage-v1/binding.json",
+      "matches_saved_checksum": true
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-before-coverage-v1/native-results.json",
+      "matches_saved_checksum": true
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-coverage-v1/binding.json",
+      "matches_saved_checksum": true
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-coverage-v1/native-results.json",
+      "matches_saved_checksum": true
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-before-coverage-v1.coverage",
+      "matches_saved_checksum": true
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-coverage-v1.coverage",
+      "matches_saved_checksum": true
+    },
+    {
+      "path": "D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/provider-after-isolation.py",
+      "matches_saved_checksum": true
+    }
+  ],
+  "timing_boundaries": {
+    "suite_wall": "run_probe.py perf_counter immediately before runner.run(suite) through its return; includes setUpClass/tearDownClass/class cleanups, per-test setup/body/teardown/cleanups, and text runner overhead.",
+    "excluded_from_suite_wall": [
+      "interpreter and coverage startup",
+      "imports and test discovery/loadTestsFromNames",
+      "output-directory creation",
+      "native receipt and binding metadata writes",
+      "coverage-data flush after probe returns",
+      "outer launcher and CI queue/install/export"
+    ],
+    "case_duration": "TimedTextResult.startTest/stopTest per case; includes per-test setup/body/teardown/cleanup but excludes class setup/cleanup.",
+    "no_remote_job_duration": true
+  },
+  "existing_dynamic_evidence": {
+    "format_contract": {
+      "success": true,
+      "fixture_file_count": 124,
+      "compared_documents": [
+        "a4/bundle/conformance.yaml",
+        "a4/bundle/manifest.json",
+        "a4/bundle/method.yaml",
+        "a4/bundle/requirement.yaml",
+        "a4/bundle/resolution.yaml",
+        "a4/bundle/skill-projection.yaml",
+        "a4/bundle/snapshot.yaml",
+        "a4/bundle/supply.yaml"
+      ],
+      "cases": 2,
+      "design_equal": true,
+      "fresh_byte_drift_rejected": true,
+      "diagnostic": "Runtime Bundle validation failed: C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\supply.json:RUNTIME-BUNDLE-HASH-MISMATCH:a4/bundle/supply.json; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json:RUNTIME-BUNDLE-CARDINALITY:Core bundle requires exactly one capability_supply_report; found 0; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-IMPORT-GRAPH-MISMATCH:declared imports must equal the derived closure; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-UNDECLARED-IMPORT:a4/bundle/supply.json; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-UNDECLARED-IMPORT:a4/bundle/supply.json; C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpguf_55k1\\json\\a4\\bundle\\manifest.json:RUNTIME-BUNDLE-CLOSURE-MISMATCH:documents must be the exact entrypoint closure",
+      "path_map": {
+        "a4/bundle/conformance.yaml": "a4/bundle/conformance.json",
+        "a4/bundle/method.yaml": "a4/bundle/method.json",
+        "a4/bundle/requirement.yaml": "a4/bundle/requirement.json",
+        "a4/bundle/resolution.yaml": "a4/bundle/resolution.json",
+        "a4/bundle/skill-projection.yaml": "a4/bundle/skill-projection.json",
+        "a4/bundle/snapshot.yaml": "a4/bundle/snapshot.json",
+        "a4/bundle/supply.yaml": "a4/bundle/supply.json"
+      }
+    },
+    "provider_isolation": {
+      "successful": true,
+      "stage_calls": [
+        {
+          "destination": "graph-binding",
+          "source_closure": true,
+          "include_conformance": true
+        }
+      ],
+      "independent_roots": true,
+      "fresh_provider_credential_transport": true,
+      "reference_copy_independent": true,
+      "source_copy_sha256": "edcabfb7172658e20678bfac479fa0f26a113e9d400956514b8c8972c2769ef8",
+      "left_drift_rejected": true,
+      "right_pristine_reverified": true,
+      "credential_resolutions": [
+        0,
+        0
+      ],
+      "transport_requests": [
+        0,
+        0
+      ]
+    },
+    "launcher_validation_exit_codes": [
+      {
+        "name": "format-contract",
+        "command": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\check_format_contract.py",
+          "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "provider-isolation",
+        "command": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\provider-after-isolation.py",
+          "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\provider-isolation.json"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "provider-remaining-311",
+        "command": [
+          "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+          "--root",
+          "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+          "--output",
+          "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\provider-remaining-311",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+          "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+          "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt",
+          "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest",
+          "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest",
+          "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt",
+          "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history",
+          "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "provider_comparison_isolation_note_stale": true,
+    "stale_note_reconciliation": "Saved provider comparison precedes later isolation run. Preserve it; cite the later provider-isolation.json and validation-progress.json as successful additional evidence."
+  },
+  "recommended_draft_text": "在 Windows/Python 3.11.16 的真实 branch coverage 下，两个既有 Harness 案例进行了三组新进程配对测量，全部通过。包含类设置/清理的测试运行 wall 中位数为 106.805→95.773 秒，按两组中位数比值减少 10.33%；逐对降幅中位数为 9.87%。四个 Provider 选定案例单次配对为 197.072→182.099 秒，减少 7.60%。这些结果只代表本地选例计时，完整回归与 hosted CI 效果分别验证。",
+  "inference_limits": [
+    "This review parses local receipt JSON and checks counts, identities, source and evidence hashes. It does not formally validate these performance receipts against a receipt JSON Schema or re-execute production schema validation.",
+    "The existing format-contract run compares file-path sets for 124 files, normalized contents for eight A4 bundle documents, plan cases/design and arm-id lists, plus one real supply-byte drift rejection. It does not prove equality of all 124 document contents or exhaustively mutate every schema/path/hash edge. Temporary fixture outputs were deleted; reviewer cannot independently reread their original graph bytes.",
+    "SHA-256 readback protects the present artifact bytes and links the four changed files to final commit blobs, not the completeness of runtime inputs. Schema directory, all production/imported sources, interpreter binary, test runner and probe script bytes were not fully recorded at measurement time.",
+    "Recorded binding.head is the baseline commit because measurements ran on uncommitted candidate files; source_sha256 proves the four candidate files now match final commits. Format YAML mode is a controlled wrapper selecting the old default on the candidate implementation, not a complete checkout benchmark of the baseline SHA.",
+    "Provider has one before/after pair only. It is a local selected-case observation, not a repeated median, confidence interval or hosted CI prediction. The probe script gained unused overlay-format logic between provider samples; its measurement-time hash was not frozen.",
+    "The data files prove branch arcs are present and matched selected arcs are equal. They do not prove complete branch coverage, branch-percentage preservation for the full suite, or that every child subprocess was traced. Native cold subprocess tests still pass but are not automatically included in parent coverage data.",
+    "Suite-minus-case-sum is outside all per-case timers, including class setup/cleanup and runner overhead; it is not a direct isolated measurement of class setup. Moving staging into setUpClass can lower case durations by relocating work; suite wall is the correct compared boundary.",
+    "No full-suite, hosted-CI or Python 3.13 speedup follows from these selected Windows/Python 3.11.16 measurements. Real complete regression is being performed by root; this reviewer ran no tests, fixtures or network requests."
+  ],
+  "verification_status": "Selected receipt identities/outcomes/hash bindings and actual branch arcs verified from existing files; full regression is root-owned and not certified here."
+}

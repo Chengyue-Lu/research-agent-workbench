@@ -1,0 +1,12 @@
+{
+  "base": "3579e67124836559d7932287591e4d77053a1e94",
+  "implementation_head": "fc158961b9cad70e6b681ef81bddbb0022242f86",
+  "source_sha256": {
+    "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+    "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+    "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+    "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+  },
+  "provider_commit": "7d19adf2bf4aa07a74dde736b966423c89fcbf2c",
+  "harness_commit": "fc158961b9cad70e6b681ef81bddbb0022242f86"
+}

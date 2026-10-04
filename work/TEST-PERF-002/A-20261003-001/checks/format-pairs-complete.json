@@ -1,0 +1,350 @@
+[
+  {
+    "pair": 1,
+    "mode": "yaml",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-1-yaml.coverage",
+      "--source=research_workbench",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-1-yaml",
+      "--overlay-format",
+      "yaml",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    ],
+    "exit_code": 0,
+    "binding": {
+      "head": "3579e67124836559d7932287591e4d77053a1e94",
+      "python": "3.11.16",
+      "cases": [
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+      ],
+      "platform": "Windows-10-10.0.26200-SP0",
+      "dependencies": {
+        "coverage": "7.16.1",
+        "jsonschema": "4.26.0",
+        "PyYAML": "6.0.3"
+      },
+      "traced": true,
+      "profiled": false,
+      "wall_seconds": 103.77143630001228,
+      "overlay_format": "yaml",
+      "successful": true,
+      "test_count": 2,
+      "source_sha256": {
+        "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+        "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+        "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+        "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+        "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+        "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+        "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+        "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+        "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+      }
+    },
+    "native_sha256": "a874cd561f427c5ab38eea49d3205facb5a214c587118de99327b514c6c84722"
+  },
+  {
+    "pair": 1,
+    "mode": "json",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-1-json.coverage",
+      "--source=research_workbench",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-1-json",
+      "--overlay-format",
+      "json",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    ],
+    "exit_code": 0,
+    "binding": {
+      "head": "3579e67124836559d7932287591e4d77053a1e94",
+      "python": "3.11.16",
+      "cases": [
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+      ],
+      "platform": "Windows-10-10.0.26200-SP0",
+      "dependencies": {
+        "coverage": "7.16.1",
+        "jsonschema": "4.26.0",
+        "PyYAML": "6.0.3"
+      },
+      "traced": true,
+      "profiled": false,
+      "wall_seconds": 95.77337770001031,
+      "overlay_format": "json",
+      "successful": true,
+      "test_count": 2,
+      "source_sha256": {
+        "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+        "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+        "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+        "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+        "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+        "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+        "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+        "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+        "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+      }
+    },
+    "native_sha256": "8e2dd930f6d601bb379306b5af23c87c260ebd457bfd6e7dc3462c536a2d72fe"
+  },
+  {
+    "pair": 2,
+    "mode": "json",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-2-json.coverage",
+      "--source=research_workbench",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-2-json",
+      "--overlay-format",
+      "json",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    ],
+    "exit_code": 0,
+    "binding": {
+      "head": "3579e67124836559d7932287591e4d77053a1e94",
+      "python": "3.11.16",
+      "cases": [
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+      ],
+      "platform": "Windows-10-10.0.26200-SP0",
+      "dependencies": {
+        "coverage": "7.16.1",
+        "jsonschema": "4.26.0",
+        "PyYAML": "6.0.3"
+      },
+      "traced": true,
+      "profiled": false,
+      "wall_seconds": 96.25972420000471,
+      "overlay_format": "json",
+      "successful": true,
+      "test_count": 2,
+      "source_sha256": {
+        "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+        "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+        "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+        "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+        "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+        "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+        "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+        "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+        "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+      }
+    },
+    "native_sha256": "0ba99bb336091c5bf83ef032602be043128e61a12d989b8389cc977ee179b58e"
+  },
+  {
+    "pair": 2,
+    "mode": "yaml",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-2-yaml.coverage",
+      "--source=research_workbench",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-2-yaml",
+      "--overlay-format",
+      "yaml",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    ],
+    "exit_code": 0,
+    "binding": {
+      "head": "3579e67124836559d7932287591e4d77053a1e94",
+      "python": "3.11.16",
+      "cases": [
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+      ],
+      "platform": "Windows-10-10.0.26200-SP0",
+      "dependencies": {
+        "coverage": "7.16.1",
+        "jsonschema": "4.26.0",
+        "PyYAML": "6.0.3"
+      },
+      "traced": true,
+      "profiled": false,
+      "wall_seconds": 106.80509309994522,
+      "overlay_format": "yaml",
+      "successful": true,
+      "test_count": 2,
+      "source_sha256": {
+        "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+        "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+        "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+        "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+        "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+        "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+        "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+        "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+        "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+      }
+    },
+    "native_sha256": "a5605285d8a4cfd3e7712646d25f6987dae86609ea8e9246afd95e01a589c3f1"
+  },
+  {
+    "pair": 3,
+    "mode": "yaml",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-3-yaml.coverage",
+      "--source=research_workbench",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-3-yaml",
+      "--overlay-format",
+      "yaml",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    ],
+    "exit_code": 0,
+    "binding": {
+      "head": "3579e67124836559d7932287591e4d77053a1e94",
+      "python": "3.11.16",
+      "cases": [
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+      ],
+      "platform": "Windows-10-10.0.26200-SP0",
+      "dependencies": {
+        "coverage": "7.16.1",
+        "jsonschema": "4.26.0",
+        "PyYAML": "6.0.3"
+      },
+      "traced": true,
+      "profiled": false,
+      "wall_seconds": 107.66004079999402,
+      "overlay_format": "yaml",
+      "successful": true,
+      "test_count": 2,
+      "source_sha256": {
+        "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+        "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+        "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+        "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+        "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+        "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+        "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+        "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+        "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+      }
+    },
+    "native_sha256": "d673ef92c73801ea5ae74de8ef6217d7fba0f13ddf7c6a7a2b0e129e1d31ac0f"
+  },
+  {
+    "pair": 3,
+    "mode": "json",
+    "command": [
+      "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "coverage",
+      "run",
+      "--data-file",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-3-json.coverage",
+      "--source=research_workbench",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\run_probe.py",
+      "--root",
+      "D:\\lcy\\develop\\_worktrees\\RWB\\ci-slow-tests-20261003",
+      "--output",
+      "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\format-pair-3-json",
+      "--overlay-format",
+      "json",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+      "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+    ],
+    "exit_code": 0,
+    "binding": {
+      "head": "3579e67124836559d7932287591e4d77053a1e94",
+      "python": "3.11.16",
+      "cases": [
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_transient_failure_retains_fresh_retry",
+        "tests.test_evaluation_harness_execution.HarnessExecutionTests.test_outer_authority_and_clock_reject_before_dispatch"
+      ],
+      "platform": "Windows-10-10.0.26200-SP0",
+      "dependencies": {
+        "coverage": "7.16.1",
+        "jsonschema": "4.26.0",
+        "PyYAML": "6.0.3"
+      },
+      "traced": true,
+      "profiled": false,
+      "wall_seconds": 95.11032919993158,
+      "overlay_format": "json",
+      "successful": true,
+      "test_count": 2,
+      "source_sha256": {
+        "tests/test_evaluation_harness_execution.py": "a33ae8d1427f587bbc6646d02fdc7fe45dcb58ffc76d6f961b27bda79b4e3af8",
+        "tests/test_evaluation_harness_evidence.py": "65ea86b79490f7d88ffea9c770931b470ed80661876c9860970a0ad948322342",
+        "tests/test_evaluation_harness_analysis.py": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+        "tests/harness_fixtures.py": "a9858b85fb85c60cab87dadfb7c2b64fae07f12f1188d43852583efda3e06b0c",
+        "tests/harness_execution_fixtures.py": "aef9a50e541c5872d2a4ec2bdf41488e41a1a5295d9641a5e43672435f4bb59f",
+        "tests/harness_analysis_fixtures.py": "2442cba5a3464be28ff941493ab7f734069af5b3d8c7560f48595f9d0a06f3e4",
+        "tests/test_profile_conformance_binding.py": "fc5e05388c830b7f69d8e4eaaa2fbeeeaab40d76fcc12359408aeb06fecd5114",
+        "tests/test_provider_binding_graph.py": "a4f95668a695442790a9e34d17a4419da6e14fec470fddbbfb68345ee6724307",
+        "tests/system_evaluation_fixtures.py": "53cc629f96db11d25490b1515a87d0aff5d6fb461ac95b0c52636ae83a9bae53"
+      }
+    },
+    "native_sha256": "155add3d53c6a596a46f6d69f639823ee3881ef2dfe88b716fec86a898ca73ce"
+  }
+]

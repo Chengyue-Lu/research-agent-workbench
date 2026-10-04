@@ -1,0 +1,23 @@
+{
+  "audit_id": "TEST-PERF-002",
+  "decision": "retain-source-unchanged",
+  "reason": "setup is about 2.3 percent of measured class wall; candidate copytree plus deepcopy is slower than original construction",
+  "unit_tests": 23,
+  "unit_test_exit_code": 0,
+  "before_class_wall_seconds": 106.428237,
+  "before_unittest_seconds": 105.800,
+  "original_setup_median_seconds": 0.10628489998634905,
+  "candidate_clone_median_seconds": 0.1313548000762239,
+  "estimated_23_case_savings_seconds": -0.6828926020534709,
+  "seed_file_count": 149,
+  "isolation": "PASS",
+  "before_source_sha256": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+  "after_source_sha256": "41b7708c3e4b1371940aa925e5c9d4d12f6d62e84b719e9a656e44e9aabe9374",
+  "source_diff": "empty",
+  "after_suite": "not run: implementation stop condition triggered before source editing",
+  "integration_class": "byte-identical",
+  "new_test_mock_substitution": false,
+  "hosted_speedup_claim": false,
+  "measurement_limit": "single local ordinary unittest wall; independent same-machine root profile may compete for resources",
+  "elapsed_work_seconds_approx": 176
+}

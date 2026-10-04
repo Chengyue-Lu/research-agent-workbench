@@ -1,0 +1,316 @@
+{
+  "duration_seconds": {
+    "p50": 11.568193,
+    "p95": 139.216226
+  },
+  "events": {
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+    "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+    "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt",
+    "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest",
+    "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest",
+    "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt",
+    "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history",
+    "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials"
+  ],
+  "outcomes": {
+    "errors": 0,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 14,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history",
+      "checkpoints": [],
+      "duration_seconds": 139.216226,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+      "checkpoints": [],
+      "duration_seconds": 76.788271,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+      "checkpoints": [
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation (mutation='missing')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation (mutation='extra')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 75.190842,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+      "checkpoints": [],
+      "duration_seconds": 72.586747,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt",
+      "checkpoints": [],
+      "duration_seconds": 36.451855,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+      "checkpoints": [],
+      "duration_seconds": 28.449404,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+      "checkpoints": [],
+      "duration_seconds": 11.593738,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest",
+      "checkpoints": [],
+      "duration_seconds": 11.542647,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+      "checkpoints": [],
+      "duration_seconds": 9.631231,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+      "checkpoints": [],
+      "duration_seconds": 9.416635,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently",
+      "checkpoints": [],
+      "duration_seconds": 3.822995,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt",
+      "checkpoints": [],
+      "duration_seconds": 0.445344,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials",
+      "checkpoints": [],
+      "duration_seconds": 0.422811,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest",
+      "checkpoints": [],
+      "duration_seconds": 0.118767,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest"
+    }
+  ],
+  "successful": true,
+  "suite": "scoped-performance-probe",
+  "test_count": 14,
+  "tests": [
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history",
+      "checkpoints": [],
+      "duration_seconds": 139.216226,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_fresh_second_attempt_uses_its_own_bounds_without_borrowing_failed_history"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+      "checkpoints": [],
+      "duration_seconds": 76.788271,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_baseline_consumes_graph_sources_at_each_use_and_replays_cold"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+      "checkpoints": [
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation (mutation='missing')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation (mutation='extra')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 75.190842,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_rehashed_use_facts_require_exact_source_closure_per_invocation"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+      "checkpoints": [],
+      "duration_seconds": 72.586747,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_v12_cold_replay_rejects_helper_source_drift_without_provider_reuse"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt",
+      "checkpoints": [],
+      "duration_seconds": 36.451855,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_post_send_guard_helper_drift_releases_unsent_and_preserves_cold_receipt"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+      "checkpoints": [],
+      "duration_seconds": 28.449404,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_opt_in_manifest_consumes_complete_pinned_graph_and_actual_provider"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+      "checkpoints": [],
+      "duration_seconds": 11.593738,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_unbound_provider_and_cleared_graph_ref_cannot_use_new_manifest"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest",
+      "checkpoints": [],
+      "duration_seconds": 11.542647,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_configuration_drift_cannot_reuse_valid_manifest"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+      "checkpoints": [],
+      "duration_seconds": 9.631231,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_source_bound_instance_cannot_downgrade_to_legacy_manifest"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+      "checkpoints": [],
+      "duration_seconds": 9.416635,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_outside_seven_helper_and_retained_alias_mutation_stop_before_key"
+    },
+    {
+      "canonical_id": "tests/test_provider_binding_graph.py::ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently",
+      "checkpoints": [],
+      "duration_seconds": 3.822995,
+      "id": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently",
+      "module": "tests.test_provider_binding_graph",
+      "outcome": "passed",
+      "scenario": "tests.test_provider_binding_graph.ProviderBindingGraphTests.test_rehashed_false_source_claim_is_rejected_independently"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt",
+      "checkpoints": [],
+      "duration_seconds": 0.445344,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_bad_manifest_ref_never_reaches_credential_or_attempt"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials",
+      "checkpoints": [],
+      "duration_seconds": 0.422811,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_archived_graph_drift_blocks_before_credentials"
+    },
+    {
+      "canonical_id": "tests/test_profile_conformance_binding.py::ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest",
+      "checkpoints": [],
+      "duration_seconds": 0.118767,
+      "id": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest",
+      "module": "tests.test_profile_conformance_binding",
+      "outcome": "passed",
+      "scenario": "tests.test_profile_conformance_binding.ProfileConformanceBindingTests.test_missing_body_or_custom_delegate_never_uses_selected_manifest"
+    }
+  ],
+  "wall_seconds": 482.552705
+}

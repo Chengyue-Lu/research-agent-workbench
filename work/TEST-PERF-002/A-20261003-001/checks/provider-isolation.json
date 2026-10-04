@@ -1,0 +1,24 @@
+{
+  "successful": true,
+  "stage_calls": [
+    {
+      "destination": "graph-binding",
+      "source_closure": true,
+      "include_conformance": true
+    }
+  ],
+  "independent_roots": true,
+  "fresh_provider_credential_transport": true,
+  "reference_copy_independent": true,
+  "source_copy_sha256": "edcabfb7172658e20678bfac479fa0f26a113e9d400956514b8c8972c2769ef8",
+  "left_drift_rejected": true,
+  "right_pristine_reverified": true,
+  "credential_resolutions": [
+    0,
+    0
+  ],
+  "transport_requests": [
+    0,
+    0
+  ]
+}

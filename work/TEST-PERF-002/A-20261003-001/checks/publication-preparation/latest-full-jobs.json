@@ -1,0 +1,1065 @@
+{
+  "total_count": 9,
+  "jobs": [
+    {
+      "id": 111224108223,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xk0vw",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224108223",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224108223",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T14:39:11Z",
+      "started_at": "2026-10-03T14:39:13Z",
+      "completed_at": "2026-10-03T14:39:24Z",
+      "name": "governance",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:14Z",
+          "completed_at": "2026-10-03T14:39:14Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:14Z",
+          "completed_at": "2026-10-03T14:39:16Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:16Z",
+          "completed_at": "2026-10-03T14:39:16Z"
+        },
+        {
+          "name": "Run python -m pip install 'PyYAML>=6,<7'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:16Z",
+          "completed_at": "2026-10-03T14:39:19Z"
+        },
+        {
+          "name": "Verify merged PR governance",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:19Z",
+          "completed_at": "2026-10-03T14:39:21Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:21Z",
+          "completed_at": "2026-10-03T14:39:22Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-03T14:39:22Z",
+          "completed_at": "2026-10-03T14:39:22Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-03T14:39:22Z",
+          "completed_at": "2026-10-03T14:39:22Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-03T14:39:22Z",
+          "completed_at": "2026-10-03T14:39:22Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224108223",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004587,
+      "runner_name": "GitHub Actions 1000004587",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224108369,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xk1UQ",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224108369",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224108369",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T14:39:11Z",
+      "started_at": "2026-10-03T14:39:13Z",
+      "completed_at": "2026-10-03T14:39:22Z",
+      "name": "plan",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:14Z",
+          "completed_at": "2026-10-03T14:39:15Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:15Z",
+          "completed_at": "2026-10-03T14:39:17Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:17Z",
+          "completed_at": "2026-10-03T14:39:17Z"
+        },
+        {
+          "name": "Run python -m pip install 'PyYAML>=6,<7'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:17Z",
+          "completed_at": "2026-10-03T14:39:19Z"
+        },
+        {
+          "name": "Run python .github/scripts/plan_ci.py --output ci-plan.json",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:19Z",
+          "completed_at": "2026-10-03T14:39:19Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:19Z",
+          "completed_at": "2026-10-03T14:39:20Z"
+        },
+        {
+          "name": "Explain selected obligations",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-03T14:39:20Z",
+          "completed_at": "2026-10-03T14:39:20Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-03T14:39:20Z",
+          "completed_at": "2026-10-03T14:39:20Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-03T14:39:20Z",
+          "completed_at": "2026-10-03T14:39:20Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-03T14:39:20Z",
+          "completed_at": "2026-10-03T14:39:20Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224108369",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004588,
+      "runner_name": "GitHub Actions 1000004588",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224142871,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xm8Fw",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224142871",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224142871",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T14:39:22Z",
+      "started_at": "2026-10-03T14:39:24Z",
+      "completed_at": "2026-10-03T14:39:36Z",
+      "name": "CI contract shadow (diagnostic)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:26Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:27Z",
+          "completed_at": "2026-10-03T14:39:30Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:30Z",
+          "completed_at": "2026-10-03T14:39:30Z"
+        },
+        {
+          "name": "Run python -m pip install 'PyYAML>=6,<7'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:30Z",
+          "completed_at": "2026-10-03T14:39:32Z"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:32Z",
+          "completed_at": "2026-10-03T14:39:33Z"
+        },
+        {
+          "name": "Audit typed inputs and retained consumer boundaries",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:33Z",
+          "completed_at": "2026-10-03T14:39:33Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-03T14:39:33Z",
+          "completed_at": "2026-10-03T14:39:34Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-03T14:39:34Z",
+          "completed_at": "2026-10-03T14:39:34Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-10-03T14:39:34Z",
+          "completed_at": "2026-10-03T14:39:35Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-10-03T14:39:35Z",
+          "completed_at": "2026-10-03T14:39:35Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224142871",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004592,
+      "runner_name": "GitHub Actions 1000004592",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224142876,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xm8HA",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224142876",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224142876",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T14:39:22Z",
+      "started_at": "2026-10-03T14:39:24Z",
+      "completed_at": "2026-10-03T14:39:40Z",
+      "name": "repository_smoke",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:27Z",
+          "completed_at": "2026-10-03T14:39:27Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:27Z",
+          "completed_at": "2026-10-03T14:39:29Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:29Z",
+          "completed_at": "2026-10-03T14:39:29Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:29Z",
+          "completed_at": "2026-10-03T14:39:35Z"
+        },
+        {
+          "name": "Run python -m research_workbench validate examples registry --root .",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:35Z",
+          "completed_at": "2026-10-03T14:39:38Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-03T14:39:38Z",
+          "completed_at": "2026-10-03T14:39:38Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-03T14:39:38Z",
+          "completed_at": "2026-10-03T14:39:38Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-03T14:39:38Z",
+          "completed_at": "2026-10-03T14:39:38Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224142876",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004590,
+      "runner_name": "GitHub Actions 1000004590",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224142891,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xm8Kw",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224142891",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224142891",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T14:39:22Z",
+      "started_at": "2026-10-03T14:39:24Z",
+      "completed_at": "2026-10-03T14:39:36Z",
+      "name": "documentation",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:26Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:26Z",
+          "completed_at": "2026-10-03T14:39:28Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:28Z",
+          "completed_at": "2026-10-03T14:39:28Z"
+        },
+        {
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:28Z",
+          "completed_at": "2026-10-03T14:39:33Z"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:33Z",
+          "completed_at": "2026-10-03T14:39:34Z"
+        },
+        {
+          "name": "Documentation and task surface evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:34Z",
+          "completed_at": "2026-10-03T14:39:34Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-03T14:39:34Z",
+          "completed_at": "2026-10-03T14:39:34Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-03T14:39:34Z",
+          "completed_at": "2026-10-03T14:39:34Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-10-03T14:39:34Z",
+          "completed_at": "2026-10-03T14:39:34Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224142891",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004593,
+      "runner_name": "GitHub Actions 1000004593",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224142896,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xm8MA",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224142896",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224142896",
+      "status": "completed",
+      "conclusion": "failure",
+      "created_at": "2026-10-03T14:39:22Z",
+      "started_at": "2026-10-03T14:39:24Z",
+      "completed_at": "2026-10-03T15:08:53Z",
+      "name": "compatibility (3.13)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:26Z"
+        },
+        {
+          "name": "Start wall-time clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:26Z",
+          "completed_at": "2026-10-03T14:39:27Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:27Z",
+          "completed_at": "2026-10-03T14:39:29Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:30Z",
+          "completed_at": "2026-10-03T14:39:30Z"
+        },
+        {
+          "name": "Run python -m pip install -e \".[test]\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:30Z",
+          "completed_at": "2026-10-03T14:39:37Z"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:37Z",
+          "completed_at": "2026-10-03T14:39:38Z"
+        },
+        {
+          "name": "Run selected compatibility suite",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7,
+          "started_at": "2026-10-03T14:39:38Z",
+          "completed_at": "2026-10-03T15:08:50Z"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-03T15:08:50Z",
+          "completed_at": "2026-10-03T15:08:51Z"
+        },
+        {
+          "name": "Report job wall time",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-03T15:08:51Z",
+          "completed_at": "2026-10-03T15:08:51Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17,
+          "started_at": "2026-10-03T15:08:51Z",
+          "completed_at": "2026-10-03T15:08:51Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-10-03T15:08:51Z",
+          "completed_at": "2026-10-03T15:08:51Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-10-03T15:08:51Z",
+          "completed_at": "2026-10-03T15:08:51Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224142896",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004594,
+      "runner_name": "GitHub Actions 1000004594",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224142924,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xm8TA",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224142924",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224142924",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-10-03T14:39:23Z",
+      "started_at": "2026-10-03T14:39:24Z",
+      "completed_at": null,
+      "name": "coverage-quality (3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:26Z"
+        },
+        {
+          "name": "Start wall-time clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:26Z",
+          "completed_at": "2026-10-03T14:39:26Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:26Z",
+          "completed_at": "2026-10-03T14:39:30Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:30Z",
+          "completed_at": "2026-10-03T14:39:30Z"
+        },
+        {
+          "name": "Run python -m pip install -e \".[test]\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:30Z",
+          "completed_at": "2026-10-03T14:39:39Z"
+        },
+        {
+          "name": "Run actions/download-artifact@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:39Z",
+          "completed_at": "2026-10-03T14:39:40Z"
+        },
+        {
+          "name": "Run ordered behavior and coverage-only cases once",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 7,
+          "started_at": "2026-10-03T14:39:40Z",
+          "completed_at": null
+        },
+        {
+          "name": "Export coverage evidence",
+          "status": "pending",
+          "conclusion": null,
+          "number": 8,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Preserve coverage and duration evidence",
+          "status": "pending",
+          "conclusion": null,
+          "number": 9,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Enforce coverage obligations",
+          "status": "pending",
+          "conclusion": null,
+          "number": 10,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Report job wall time",
+          "status": "pending",
+          "conclusion": null,
+          "number": 11,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "pending",
+          "conclusion": null,
+          "number": 21,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "pending",
+          "conclusion": null,
+          "number": 22,
+          "started_at": null,
+          "completed_at": null
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224142924",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004595,
+      "runner_name": "GitHub Actions 1000004595",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224142930,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xm8Ug",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224142930",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224142930",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T14:39:23Z",
+      "started_at": "2026-10-03T14:39:24Z",
+      "completed_at": "2026-10-03T14:40:33Z",
+      "name": "package-smoke (3.11)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:26Z"
+        },
+        {
+          "name": "Start wall-time clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:26Z",
+          "completed_at": "2026-10-03T14:39:26Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:26Z",
+          "completed_at": "2026-10-03T14:39:29Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:29Z",
+          "completed_at": "2026-10-03T14:39:29Z"
+        },
+        {
+          "name": "Run python -m pip install \"build>=1.2,<2\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:29Z",
+          "completed_at": "2026-10-03T14:39:32Z"
+        },
+        {
+          "name": "Validate both distribution routes outside checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:32Z",
+          "completed_at": "2026-10-03T14:40:18Z"
+        },
+        {
+          "name": "Run python -m build --wheel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-03T14:40:18Z",
+          "completed_at": "2026-10-03T14:40:19Z"
+        },
+        {
+          "name": "Run python -m venv .venv-smoke",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-03T14:40:19Z",
+          "completed_at": "2026-10-03T14:40:23Z"
+        },
+        {
+          "name": "Run .venv-smoke/bin/python -m pip install dist/*.whl",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-03T14:40:23Z",
+          "completed_at": "2026-10-03T14:40:25Z"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb schema list",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-03T14:40:25Z",
+          "completed_at": "2026-10-03T14:40:27Z"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb validate examples registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-03T14:40:27Z",
+          "completed_at": "2026-10-03T14:40:30Z"
+        },
+        {
+          "name": "Report job wall time",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-03T14:40:30Z",
+          "completed_at": "2026-10-03T14:40:30Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-03T14:40:30Z",
+          "completed_at": "2026-10-03T14:40:30Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-03T14:40:30Z",
+          "completed_at": "2026-10-03T14:40:30Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-03T14:40:30Z",
+          "completed_at": "2026-10-03T14:40:30Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224142930",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004591,
+      "runner_name": "GitHub Actions 1000004591",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 111224142934,
+      "run_id": 37130368701,
+      "workflow_name": "CI",
+      "head_branch": "develop",
+      "run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOT2gtDc8AAAAZ5Xm8Vg",
+      "head_sha": "3579e67124836559d7932287591e4d77053a1e94",
+      "url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/actions/jobs/111224142934",
+      "html_url": "https://github.com/Chengyue-Lu/research-agent-workbench/actions/runs/37130368701/job/111224142934",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-10-03T14:39:23Z",
+      "started_at": "2026-10-03T14:39:24Z",
+      "completed_at": "2026-10-03T14:40:03Z",
+      "name": "package-smoke (3.13)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:25Z"
+        },
+        {
+          "name": "Start wall-time clock",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:25Z"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-10-03T14:39:25Z",
+          "completed_at": "2026-10-03T14:39:27Z"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-10-03T14:39:27Z",
+          "completed_at": "2026-10-03T14:39:28Z"
+        },
+        {
+          "name": "Run python -m pip install \"build>=1.2,<2\"",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-10-03T14:39:28Z",
+          "completed_at": "2026-10-03T14:39:29Z"
+        },
+        {
+          "name": "Validate both distribution routes outside checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-10-03T14:39:29Z",
+          "completed_at": "2026-10-03T14:39:54Z"
+        },
+        {
+          "name": "Run python -m build --wheel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-10-03T14:39:54Z",
+          "completed_at": "2026-10-03T14:39:55Z"
+        },
+        {
+          "name": "Run python -m venv .venv-smoke",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-10-03T14:39:55Z",
+          "completed_at": "2026-10-03T14:39:57Z"
+        },
+        {
+          "name": "Run .venv-smoke/bin/python -m pip install dist/*.whl",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-10-03T14:39:57Z",
+          "completed_at": "2026-10-03T14:39:58Z"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb schema list",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-10-03T14:39:58Z",
+          "completed_at": "2026-10-03T14:39:59Z"
+        },
+        {
+          "name": "Run .venv-smoke/bin/rwb validate examples registry",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-10-03T14:39:59Z",
+          "completed_at": "2026-10-03T14:40:00Z"
+        },
+        {
+          "name": "Report job wall time",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-10-03T14:40:00Z",
+          "completed_at": "2026-10-03T14:40:00Z"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-10-03T14:40:00Z",
+          "completed_at": "2026-10-03T14:40:01Z"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-10-03T14:40:01Z",
+          "completed_at": "2026-10-03T14:40:01Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-10-03T14:40:01Z",
+          "completed_at": "2026-10-03T14:40:01Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/Chengyue-Lu/research-agent-workbench/check-runs/111224142934",
+      "labels": [
+        "ubuntu-latest"
+      ],
+      "runner_id": 1000004596,
+      "runner_name": "GitHub Actions 1000004596",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ]
+}
