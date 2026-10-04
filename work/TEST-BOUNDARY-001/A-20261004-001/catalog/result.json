@@ -1,0 +1,74 @@
+{
+  "head": "ede2bc1d5e3496b4e4c72abb1f39f0a3ce00aedf",
+  "python_executable": "D:\\lcy\\develop\\_assessments\\rwb-ci-schema-parse-20260917\\venv311\\Scripts\\python.exe",
+  "python_version": "3.11.16",
+  "python_flags": [
+    "-B",
+    "-X",
+    "utf8"
+  ],
+  "pythonpath": "D:/lcy/develop/_worktrees/RWB/product-doc-ci-boundary-20261004/src;D:/lcy/develop/_worktrees/RWB/product-doc-ci-boundary-20261004;D:/lcy/develop/_worktrees/RWB/product-doc-ci-boundary-20261004/tests",
+  "named_methods": [
+    "test_catalog.CandidateCatalogTests.test_quarantine_candidates_cannot_be_confused_with_trial",
+    "test_catalog.CandidateCatalogTests.test_mode_filter_is_metadata_only"
+  ],
+  "runs": 2,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "successful": true,
+  "wall_seconds": 0.006796699948608875,
+  "coverage": false,
+  "timing_claim": "current named cases only; includes setup and cleanup; no before-after performance comparison",
+  "observations": [
+    {
+      "case": "test_catalog.CandidateCatalogTests.test_quarantine_candidates_cannot_be_confused_with_trial",
+      "elapsed_seconds_including_setup_cleanup": 0.004550500074401498,
+      "temporary_root": "C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmp8xz_ousq",
+      "temporary_root_cleaned": true
+    },
+    {
+      "case": "test_catalog.CandidateCatalogTests.test_mode_filter_is_metadata_only",
+      "elapsed_seconds_including_setup_cleanup": 0.0020297999726608396,
+      "temporary_root": "C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpoaycu8vi",
+      "temporary_root_cleaned": true
+    }
+  ],
+  "actual_parser_file_reads": [
+    {
+      "case": "test_catalog.CandidateCatalogTests.test_quarantine_candidates_cannot_be_confused_with_trial",
+      "path": "C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmp8xz_ousq\\candidates.json",
+      "sha256": "17ba9471468bbd9a96e2bce7242a4a1450af9afdd93207abc9caae325d784aa3",
+      "bytes": 168,
+      "registry_kind": "skill_candidates",
+      "records": 2
+    },
+    {
+      "case": "test_catalog.CandidateCatalogTests.test_mode_filter_is_metadata_only",
+      "path": "C:\\Users\\lcy20\\AppData\\Local\\Temp\\tmpoaycu8vi\\candidates.json",
+      "sha256": "5a62d910b5ca009f0b922671bce3f620dfb488c83c2cc0e6ae6c323c39340f76",
+      "bytes": 456,
+      "registry_kind": "skill_candidates",
+      "records": 3
+    }
+  ],
+  "independent_input_isolation": true,
+  "committed_candidate_corpus_read_forbidden_by_observer": "D:\\lcy\\develop\\_worktrees\\RWB\\product-doc-ci-boundary-20261004\\registry\\skills\\candidates.json",
+  "test_source_sha256": "0da0ccc8c0ce9474c4f5ed22d445beb5918c589b6253defc6e204411c5a2beab",
+  "retained_method_bodies": {
+    "test_quarantine_candidates_cannot_be_confused_with_trial": {
+      "line": 23,
+      "end_line": 35,
+      "sha256": "d5f996fb232e10eda7b3abbe4ee080a64c94755d56f8af063420fd50652c5d78"
+    },
+    "test_mode_filter_is_metadata_only": {
+      "line": 37,
+      "end_line": 66,
+      "sha256": "a1338d8e508274a800647e50959088af4b16bc777a0140072c5c745d69f0f30d"
+    }
+  },
+  "production_sources_sha256": {
+    "src/research_workbench/capability/catalog.py": "56159ae8bdc7606babc2b30680953a50e8a8265bf27408e50308d186f84c1eab",
+    "src/research_workbench/io.py": "004a2b70aac052aaff8daae23ccab63e63495a9bd45c05c8bd5c7dc5debb62c1"
+  }
+}

@@ -1,0 +1,11 @@
+test_archived_candidate_pins_and_replay_are_portable (tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable) ... ok
+test_repaired_archive_replays_with_pinned_validation_subjects (tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 20.443s
+
+OK
+suite_duration suite=development-record-boundary tests=2 wall_seconds=20.443 p50_seconds=10.221 p95_seconds=11.383
+slowest_5_tests
+    11.383s  tests.test_skill_closeout_review.SkillCloseoutReviewTests.test_repaired_archive_replays_with_pinned_validation_subjects  passed
+     9.059s  tests.test_skill_execution_closeout.SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable  passed

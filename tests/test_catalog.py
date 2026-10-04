@@ -1,119 +1,69 @@
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
 from research_workbench.capability.catalog import filter_candidates, load_candidates
 
 
-ROOT = Path(__file__).resolve().parents[1]
-
-
 class CandidateCatalogTests(unittest.TestCase):
+    def setUp(self) -> None:
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+
+    def _load_candidates(self, records: list[dict]) -> list[dict]:
+        path = self.root / "candidates.json"
+        path.write_text(
+            json.dumps({"registry_kind": "skill_candidates", "candidates": records}),
+            encoding="utf-8",
+        )
+        return load_candidates(path)
+
     def test_quarantine_candidates_cannot_be_confused_with_trial(self) -> None:
-        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
+        records = [
+            {"candidate_id": "quarantined-skill", "status": "quarantine"},
+            {"candidate_id": "trial-skill", "status": "trial"},
+        ]
+        candidates = self._load_candidates(records)
+
         quarantined = filter_candidates(candidates, status="quarantine")
-        self.assertEqual(
-            [
-                "rc-sci-employee-deep-research",
-                "rc-giiisp-scientific-image-generation",
-                "lingzhi-citation-management",
-                "lingzhi-literature-search",
-                "lingzhi-symbolic-equation",
-            ],
-            [item["candidate_id"] for item in quarantined],
-        )
+        trial = filter_candidates(candidates, status="trial")
 
-    def test_community_intake_has_one_decision_per_selected_skill(self) -> None:
-        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
-        source_ids = {
-            "github-awesome-copilot",
-            "k-dense-scientific-agent-skills",
-            "lingzhi-agent-research-skills",
-            "ngtiendong-academic-research-agent-skill",
-            "superpowers",
-        }
-        selected = [item for item in candidates if item["source_id"] in source_ids]
-
-        self.assertEqual(35, len(selected))
-        self.assertEqual(35, len({(item["source_id"], item["source_path"]) for item in selected}))
-        self.assertTrue(all(item.get("content_hash", "").startswith("sha256:") for item in selected))
-        self.assertEqual(
-            {
-                "gh-build-evidence-map",
-                "kdense-citation-management",
-                "kdense-experimental-design",
-                "kdense-peer-review",
-                "kdense-scientific-visualization",
-                "kdense-statistical-power",
-            },
-            {item["candidate_id"] for item in selected if item["status"] == "triage"},
-        )
-
-    def test_first_party_intake_has_pinned_non_executable_decisions(self) -> None:
-        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
-        expected_counts = {
-            "openai-skills": 5,
-            "anthropic-skills": 6,
-            "googleworkspace-cli": 8,
-        }
-        selected = [item for item in candidates if item["source_id"] in expected_counts]
-
-        self.assertEqual(19, len(selected))
-        self.assertEqual(
-            expected_counts,
-            {
-                source_id: sum(item["source_id"] == source_id for item in selected)
-                for source_id in expected_counts
-            },
-        )
-        self.assertEqual(19, len({(item["source_id"], item["source_path"]) for item in selected}))
-        self.assertTrue(all(item.get("content_hash", "").startswith("sha256:") for item in selected))
-        self.assertEqual(
-            {"reference": 18, "rejected": 1},
-            {
-                status: sum(item["status"] == status for item in selected)
-                for status in {item["status"] for item in selected}
-            },
-        )
-        self.assertEqual(
-            ["google-persona-researcher"],
-            [item["candidate_id"] for item in selected if item["status"] == "rejected"],
-        )
+        self.assertEqual(["quarantined-skill"], [item["candidate_id"] for item in quarantined])
+        self.assertEqual(["trial-skill"], [item["candidate_id"] for item in trial])
+        self.assertEqual(records, candidates)
 
     def test_mode_filter_is_metadata_only(self) -> None:
-        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
-        experiment = filter_candidates(candidates, mode="experiment", capability="experiment-design")
-        self.assertEqual(["rc-experiment-design"], [item["candidate_id"] for item in experiment])
-
-    def test_user_archive_has_one_pinned_candidate_per_skill_entrypoint(self) -> None:
-        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
-        archive_candidates = [
-            item
-            for item in candidates
-            if item["source_id"] == "research-copilot-archive-1.0.0"
+        records = [
+            {
+                "candidate_id": "experiment-design",
+                "status": "quarantine",
+                "applicable_modes": ["experiment"],
+                "capabilities": ["experiment-design"],
+                "source_path": "missing-skill/SKILL.md",
+            },
+            {
+                "candidate_id": "simulation-design",
+                "applicable_modes": ["simulation"],
+                "capabilities": ["experiment-design"],
+            },
+            {
+                "candidate_id": "experiment-observer",
+                "applicable_modes": ["experiment"],
+                "capabilities": ["observation"],
+            },
         ]
-        paths = [item["source_path"] for item in archive_candidates]
+        candidates = self._load_candidates(records)
+        source_path = self.root / candidates[0]["source_path"]
+        self.assertFalse(source_path.exists())
 
-        self.assertEqual(18, len(archive_candidates))
-        self.assertEqual(18, len(set(paths)))
-        self.assertTrue(all(path.endswith("/SKILL.md") for path in paths))
-        self.assertTrue(all(item.get("content_hash", "").startswith("sha256:") for item in archive_candidates))
+        experiment = filter_candidates(candidates, mode="experiment", capability="experiment-design")
 
-    def test_new_archive_candidates_have_explicit_non_executable_decisions(self) -> None:
-        candidates = load_candidates(ROOT / "registry" / "skills" / "candidates.json")
-        by_id = {item["candidate_id"]: item for item in candidates}
-        expected = {
-            "rc-giiisp-scientific-image-generation": "quarantine",
-            "rc-manim-agent": "reference",
-            "rc-mcp-criticagent": "reference",
-            "rc-practical-course-producer": "rejected",
-            "rc-scientific-humanization": "reference",
-            "rc-world-threads-entry": "rejected",
-        }
-
-        self.assertEqual(
-            expected,
-            {candidate_id: by_id[candidate_id]["status"] for candidate_id in expected},
-        )
+        self.assertEqual(["experiment-design"], [item["candidate_id"] for item in experiment])
+        self.assertEqual("quarantine", experiment[0]["status"])
+        self.assertEqual(records, candidates)
+        self.assertFalse(source_path.exists())
 
 
 if __name__ == "__main__":

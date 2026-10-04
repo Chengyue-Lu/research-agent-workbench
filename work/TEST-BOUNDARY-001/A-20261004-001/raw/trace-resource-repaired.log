@@ -1,0 +1,15 @@
+test_recorder_captures_before_send_redacts_and_validates (tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates) ... ok
+test_hash_tamper_is_blocking (tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking) ... ok
+test_completed_trace_with_capture_gap_is_blocking (tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking) ... ok
+test_index_path_escape_is_blocking (tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 2.147s
+
+OK
+suite_duration suite=development-record-boundary tests=4 wall_seconds=2.148 p50_seconds=0.320 p95_seconds=1.189
+slowest_5_tests
+     1.189s  tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates  passed
+     0.321s  tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking  passed
+     0.319s  tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking  passed
+     0.316s  tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking  passed

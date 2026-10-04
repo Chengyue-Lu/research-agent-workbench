@@ -1,0 +1,50 @@
+# M11 两条混合 replay 的实际边界
+
+2026-10-04；只读 regression-boundary review。新工作树为 `.`，实查 HEAD `ede2bc1d5e3496b4e4c72abb1f39f0a3ce00aedf`，含 root 正在准备的测试侧改动；不把此前 b263 审计快照当成新工作树 HEAD。只核两个指定测试、它们两个 vertical-proof manifest、两个 replay.py、直接引用的八份 checker 元数据及两份同 hash checker 正文。没有扩读其他历史目录、执行脚本/测试、导入产品模块、网络或仓库修改。
+
+**结论：两条 replay 的真正 SUT 都是当前正式产品 API。** 冻结 replay.py 只是同内容四行 launcher，不能把它们整个测试归为“永远只在开发线的脚本检查”。旧审计中对 repaired replay 是否调用当前产品的未确认项现已消除。
+
+## 逐项实际调用
+
+| 测试 | 实际 SUT 与现有要求 |
+|---|---|
+| `tests/test_skill_execution_closeout.py::SkillExecutionCloseoutTests.test_archived_candidate_pins_and_replay_are_portable`，401 | 用 M11-002 四份用户式归档输入，经当前 `validate_skill_execution_receipt` 校验。三个非 blocked one-stage 旧候选要求抛 `GenericCloseoutValidationError`；preflight-blocked 要求输出与预期一致。没有把旧 completed/failed 结果当当前接受结果。 |
+| `tests/test_skill_closeout_review.py::SkillCloseoutReviewTests.test_repaired_archive_replays_and_its_checkers_reject_bad_subjects`，179 | M11-003 的 completed-with-tool、failed-model、failed-projection、preflight-blocked 四份归档均经当前 API，并比较 status、completion_claim、task_completion 和 receipt_sha256。之后另执行冻结 checker，检查真 subject 集合及 missing/outside/wrong-hash。 |
+
+两份 `replay.py:1-4` 均直接 `from research_workbench.execution import validate_skill_execution_receipt`，只传 receipt、expected_sha256、project_root，并格式化返回值。没有从 sources.zip 加载产品源码，也没有替换 sys.path。测试是在自身当前产品导入环境中 runpy 这个薄入口；本审阅没有新运行结果，以上是源码要求。
+
+M11-002 和003各有四个 case。002 manifest 的14份source_refs、003的16份source_refs只是另行验证历史源码 ZIP 内容，未作为参数进入 replay API；实际 receipt/Bundle/View/Host/Trace/validation 工件则作为产品输入。两 manifest 的 base、implementation_commit、generated_at 等历史记账字段没有参与当前 API 判定。
+
+## 可删留痕与不可混删的输入
+
+- **可分离的纯开发留痕：** 两测试的 `proof['source_refs']` 对 `tests/fixtures/skill_closeout_sources/sources.zip` 的旧产品源码 byte/hash 比对（002:404–407，003:182–185），以及002:408的历史 launcher SHA 对账。当前 API 不装载这些旧源码。去掉这些历史来源真实性断言，不等于去掉 receipt 或 Trace 的产品 pins。
+- **应保留的产品预期：** 002三条旧候选的当前拒绝、blocked接受，003四种修复后状态/边界/receipt hash 的比较。可把这些预期写成显式兼容 fixture metadata，不能随旧 `case['result']` 记录一起删除。
+- **case文件完整性需要保留其作用：** 002:411–412、003:188–189遍历的 bundle/view/receipt/trace/checker/validation等 bytes 是实际产品输入。它们在ROOT历史目录里是存储位置，不是断言性质。特别是002只有宽泛 `assertRaises(GenericCloseoutValidationError)`：若同时撤掉fixture完整性保护，缺文件或误改pin也能满足异常断言，不能再证明因旧 one-stage 语义而拒绝。可改为测试 fixture 的固定checksum/闭包前置检查，并强化具体拒绝原因；不能仅把所有hash循环称为开发留痕而删除。
+
+## checker 的角色
+
+八份直接 checker.py 的 SHA256完全相同：`f5f2885a96d75ab8d20c1721edbff6c4c9df6cd093732c00f36c5cacaa76a128`。正文只有stdlib hashlib、root内路径与文件存在性、subject SHA检查，**没有调用当前产品 checker API**。
+
+因此003:196–199的另一个 SUT 确是冻结fixture checker实现。它与当前产品 replay 是两层不同证明：正向check为validation subject提供独立确定性 witness；三个负例是该冻结checker的实现行为。不能称这些负例就是当前产品验证器的覆盖。
+
+若进一步清理，可把003:198–199的三个冻结checker负例移出默认产品套件，同时保留196–197的合法subject正向witness与完整input pins，或以明确的通用fixture校验取得同等输入真实性。checker文件本身仍是 receipt/validation 引用与source pin的数据，不能删文件或更改其hash后仍宣称沿用旧fixture。当前root限界补丁无需删除这两条方法；保留产品replay部分不会收窄正式用户归档/兼容行为。
+
+## 最小保留与迁移方案
+
+本轮最小方案是保留两个method的当前API replay与闭包输入，只撤掉旧source ZIP provenance、002的launcher历史SHA，以及003的三个冻结checker实现负例；保留合法subject正向witness。实际输入checksum、receipt expected_sha256及所有产品输出/接受拒绝断言保持。准确标为产品兼容fixture，不按 `work/**` 排除；root已取消的独立冻结checker方法不扩大为取消当前API四场景验证。
+
+需要彻底解耦开发目录时，只复制各 manifest 指定的 `synthetic/<case>` 完整项目闭包到明确的 `tests/fixtures/skill_closeout_compatibility/`，采用精简fixture index（case/root/receipt hash、输入checksum、预期接受/拒绝），不带开发commit/源码ZIP provenance。测试可直接调用当前 `validate_skill_execution_receipt`；原两launcher既同内容又没有独立逻辑，迁移不需要继续校验它们的历史身份。分别保留002的3拒绝+1接受和003的4接受状态，并在独立temp root验证路径、pins和fixture隔离。迁移必须另作实际回归，本次没有实施或运行。
+
+仍保留的ROOT历史访问目前提供的是：当前产品处理旧用户式归档的兼容输入、确切预期与输入真实性；003 checker正向执行是独立fixture witness。它们并非仅验证某次内部任务的状态或开发决策文案。M14独立release witness未在本次新读集合中，不重签其结论。
+
+## 输入绑定
+
+| 文件 | SHA256 |
+|---|---|
+| tests/test_skill_execution_closeout.py | 7ca1697fc6ed90b9452e72105a9946e77c713c7cfe71773286ca650b01c33d44 |
+| tests/test_skill_closeout_review.py | d13c94e917ca7bf83a099d4a5ed510187fc75f93643f653f9c05c71f2ab15ffa |
+| work/M11-007/A-20260915-002/checks/vertical-proof.json | eeb86f824c398885df181e36d9e84c02bc3f3294e491da5649518a4114a6d312 |
+| work/M11-007/A-20260915-003/checks/vertical-proof.json | c71dd8394d19ee93afd1e036a9705dfae5107c8cf3ea0cd27bb2f65d1b7e59f0 |
+| 两份直接replay.py | c8669f219ce33e43095a5e250e9778a640bca80ccea7e35bead7b87c6f8b9d72 |
+
+未打开receipt、trace fact、validation正文或源码ZIP；不判断新执行是否通过、不估计节省时间，也不推导新的发布承诺。

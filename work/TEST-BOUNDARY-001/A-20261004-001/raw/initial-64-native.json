@@ -1,0 +1,1824 @@
+{
+  "duration_seconds": {
+    "p50": 0.003824,
+    "p95": 0.10505
+  },
+  "events": {
+    "errors": 4,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_documentation.py::DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones",
+    "tests/test_documentation.py::DocumentationTests.test_getting_started_uses_recommended_not_replay_path",
+    "tests/test_documentation.py::DocumentationTests.test_public_projection_documentation_and_build_closure",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_build_input_removal_is_rejected",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_excluded_files_are_not_selected",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_markdown_reference_html_and_unicode_anchor_resolve",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_missing_target_and_anchor_are_rejected",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_product_sources_and_schemas_are_complete",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_projection_without_license_is_not_build_ready",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_provider_build_inputs_are_exact_disabled_public_templates",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_public_navigation_and_support_have_one_source",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_rendered_public_entity_and_reference_destinations_resolve",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_selected_source_has_closed_docs_and_build_inputs",
+    "tests/test_public_surface.py::PublicSurfaceTests.test_user_project_attempt_paths_are_not_repository_archive_links",
+    "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths",
+    "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_curated_release_policy_is_strict_declarative_and_active",
+    "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow",
+    "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_policy_has_three_by_three_model",
+    "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_published_identity_policy_declares_all_protected_kinds",
+    "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_template_omits_machine_known_and_retired_fields",
+    "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_versioned_research_mode_directory_is_protected",
+    "tests/test_ci_components.py::ComponentPlanTests.test_build_change_requests_install_compatibility_smokes",
+    "tests/test_ci_components.py::ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests",
+    "tests/test_ci_components.py::ComponentPlanTests.test_component_source_selects_whole_group_on_baseline",
+    "tests/test_ci_components.py::ComponentPlanTests.test_every_mapping_names_an_actual_test_module",
+    "tests/test_ci_components.py::ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation",
+    "tests/test_ci_components.py::ComponentPlanTests.test_known_component_keeps_new_source_own_test",
+    "tests/test_ci_components.py::ComponentPlanTests.test_new_and_deleted_source_stay_with_their_components",
+    "tests/test_ci_components.py::ComponentPlanTests.test_pure_docs_skip_product_smoke_and_install_docs_are_explicit",
+    "tests/test_ci_components.py::ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners",
+    "tests/test_ci_components.py::ComponentPlanTests.test_rename_considers_old_and_new_component_paths",
+    "tests/test_ci_components.py::ComponentPlanTests.test_schema_and_registry_changes_request_contract_checks",
+    "tests/test_ci_components.py::ComponentPlanTests.test_shared_fixture_uses_only_its_declared_direct_map",
+    "tests/test_ci_components.py::ComponentPlanTests.test_tests_are_direct_and_deleted_tests_are_not_run",
+    "tests/test_ci_components.py::ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners",
+    "tests/test_ci_components.py::ComponentPlanTests.test_unknown_path_selects_nearest_and_self_test_without_full",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_branch_collection_is_mandatory",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed",
+    "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail",
+    "tests/test_agent_trace.py::AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+    "tests/test_agent_trace.py::AgentTraceTests.test_hash_tamper_is_blocking",
+    "tests/test_agent_trace.py::AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+    "tests/test_agent_trace.py::AgentTraceTests.test_index_path_escape_is_blocking"
+  ],
+  "outcomes": {
+    "errors": 4,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 60,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [
+    {
+      "checkpoint": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates"
+    },
+    {
+      "checkpoint": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking"
+    },
+    {
+      "checkpoint": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking",
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking"
+    },
+    {
+      "checkpoint": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking",
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking"
+    }
+  ],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files",
+      "checkpoints": [
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal](https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal](https://github.com/Example/project/blob/main/docs/S&#x54;ATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal](docs/S&#84;ATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal][state]\\n\\n[state]: https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[archive][]\\n\\n[archive]: work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[archive]\\n\\n[archive]: work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='<https://github.com/Example/project/blob/main/work/demo/record.md>')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='https://github.com/Example/project/blob/main/work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[archive](work&sol;demo/record.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='<img src=\"work&#47;demo/record.svg\">')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.132663,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files"
+    },
+    {
+      "canonical_id": "tests/test_documentation.py::DocumentationTests.test_public_projection_documentation_and_build_closure",
+      "checkpoints": [],
+      "duration_seconds": 0.115936,
+      "id": "tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure",
+      "module": "tests.test_documentation",
+      "outcome": "passed",
+      "scenario": "tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests",
+      "checkpoints": [
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/check_coverage_policy.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/check_pr_governance.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_checks.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_component_smoke.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_component_metadata.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_ruleset_migration.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_components.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_consumer_contracts.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_consumer_shadow.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_contract_shadow.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_dependencies.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_domain_audit.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_input_facts.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_shadow_pair.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/plan_ci.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/portable_package_smoke.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_preflight.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_source_ci.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_governance.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_install.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_surface.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/run_component_ci.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/selection_witness.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='tests/run_unittest_suite.py')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.10877,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding",
+      "checkpoints": [
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[internal][state]\\n\\n[state]: docs/STATUS.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='<a href=\"docs/TASKS.md\">internal</a>')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[internal](docs/%53TATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[internal](https://github.com/Example/project/blob/main/docs/STATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[archive](work/demo/record.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[archive][a]\\n\\n[a]: work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='<a href=\"%77ork/demo/record.md\">archive</a>')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[archive](https://github.com/Example/project/blob/main/work/demo/record.md)')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.10505,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal",
+      "checkpoints": [
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='`<https://github.com/Example/project/blob/main/work/demo/record.md>`')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='`https://github.com/Example/project/blob/main/work/demo/record.md`')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='```text\\n<https://github.com/Example/project/blob/main/work/demo/record.md>\\n```\\n')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='    <https://github.com/Example/project/blob/main/work/demo/record.md>\\n')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='`[record](work/demo/record.md)`')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.073947,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal"
+    }
+  ],
+  "successful": false,
+  "suite": "development-record-boundary",
+  "test_count": 64,
+  "tests": [
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files",
+      "checkpoints": [
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal](https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal](https://github.com/Example/project/blob/main/docs/S&#x54;ATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal](docs/S&#84;ATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[internal][state]\\n\\n[state]: https://github.com/Example/project/blob/main/docs/S&#84;ATUS.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[archive][]\\n\\n[archive]: work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[archive]\\n\\n[archive]: work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='<https://github.com/Example/project/blob/main/work/demo/record.md>')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='https://github.com/Example/project/blob/main/work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='[archive](work&sol;demo/record.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files (link='<img src=\"work&#47;demo/record.svg\">')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.132663,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_rendered_entities_and_autolinks_cannot_reach_excluded_files"
+    },
+    {
+      "canonical_id": "tests/test_documentation.py::DocumentationTests.test_public_projection_documentation_and_build_closure",
+      "checkpoints": [],
+      "duration_seconds": 0.115936,
+      "id": "tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure",
+      "module": "tests.test_documentation",
+      "outcome": "passed",
+      "scenario": "tests.test_documentation.DocumentationTests.test_public_projection_documentation_and_build_closure"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests",
+      "checkpoints": [
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/check_coverage_policy.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/check_pr_governance.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_checks.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_component_smoke.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_component_metadata.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_ruleset_migration.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_components.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_consumer_contracts.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_consumer_shadow.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_contract_shadow.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_dependencies.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_domain_audit.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_input_facts.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/ci_shadow_pair.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/plan_ci.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/portable_package_smoke.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_preflight.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_source_ci.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_governance.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_install.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/release_surface.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/run_component_ci.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='.github/scripts/selection_witness.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests (path='tests/run_unittest_suite.py')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.10877,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_ci_scripts_keep_their_own_explicit_direct_tests"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding",
+      "checkpoints": [
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[internal][state]\\n\\n[state]: docs/STATUS.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='<a href=\"docs/TASKS.md\">internal</a>')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[internal](docs/%53TATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[internal](https://github.com/Example/project/blob/main/docs/STATUS.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[archive](work/demo/record.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[archive][a]\\n\\n[a]: work/demo/record.md')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='<a href=\"%77ork/demo/record.md\">archive</a>')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding (link='[archive](https://github.com/Example/project/blob/main/work/demo/record.md)')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.10505,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_excluded_links_cannot_hide_in_reference_html_or_encoding"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal",
+      "checkpoints": [
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='`<https://github.com/Example/project/blob/main/work/demo/record.md>`')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='`https://github.com/Example/project/blob/main/work/demo/record.md`')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='```text\\n<https://github.com/Example/project/blob/main/work/demo/record.md>\\n```\\n')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='    <https://github.com/Example/project/blob/main/work/demo/record.md>\\n')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal (text='`[record](work/demo/record.md)`')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.073947,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_autolink_syntax_in_code_remains_literal"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+      "checkpoints": [
+        {
+          "detail": "No module named 'research_workbench._runtime_pin'",
+          "id": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+          "outcome": "error"
+        }
+      ],
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "duration_seconds": 0.052863,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_missing_target_and_anchor_are_rejected",
+      "checkpoints": [
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_missing_target_and_anchor_are_rejected (link='[missing](missing.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_missing_target_and_anchor_are_rejected (link='[bad](docs/PUBLIC_GUIDE.md#absent)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_missing_target_and_anchor_are_rejected (link='[escape](../outside.md)')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_public_surface.PublicSurfaceTests.test_missing_target_and_anchor_are_rejected (link='[windows](C:/secret.md)')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.052818,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_missing_target_and_anchor_are_rejected",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_missing_target_and_anchor_are_rejected"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_every_mapping_names_an_actual_test_module",
+      "checkpoints": [
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_agent_trace')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_api_session_runner')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_artifacts_admission')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_artifacts_promotion')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_artifacts_validation_host')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_baseline_envelope')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_baseline_execution')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_baseline_replay_integrity')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_candidate_claim_rewrite')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_capability_consumer')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_capability_requirements')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_capability_resolution')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_capability_resolver_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_catalog')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_checkpoint')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_checks')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_component_execution')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_component_metadata')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_component_result')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_component_smoke')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_components')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_consumer_contracts')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_consumer_shadow')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_contract_shadow')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_dependencies')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_domain_audit')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_input_facts')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_plan')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_ruleset_migration')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_ci_shadow_pair')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_claim_trace')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_cli')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_cli_command_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_configured_provider')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_conformance_body')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_conformance_budget_anchor')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_conformance_budget_extension')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_conformance_journal')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_conformance_session_policy')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_conformance_transport')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_conformance_usage_ledger')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_context_model_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_contracts')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_coverage_policy')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_critical_contract_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_decision_authority')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_documentation')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_comparability')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_contracts')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_harness_analysis')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_harness_evidence')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_harness_execution')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_harness_plan')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_harness_preflight')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_harness_proof')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_harness_review')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_manifest')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_overlap')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_evaluation_overlay')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_execution_archive_helpers')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_execution_contract_helpers')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_execution_host')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_execution_trace_adapter')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_execution_view')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_gemma_profile')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_generic_execution_closeout')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_governance_helper_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_handoff_transfer')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_integrity')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_kernel')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_m2_registry_runtime')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_m3_context_observability')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_method_resolutions')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_method_trace_candidate')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_mode_actions')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_model_pool')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_observability_model_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_phase_b_evolution_gate')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_phase_c_gate')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_portable_build')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_pr_governance')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_conformance')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_conformance_binding')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_conformance_cli')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_conformance_deadlines')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_conformance_extended_binding')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_conformance_reporting')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_conformance_usage_consistency')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_profile_wire_codecs')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_protocol_profiles')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_adapters')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_binding')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_binding_graph')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_conformance')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_contract_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_port')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_profile_configuration')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_reference_security')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_repository_validation')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_source_closure')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_text_profiles')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_provider_transport_security')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_public_surface')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_registry_require_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_relationships')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_checkpoint_ci')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_governance')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_install')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_oracle_replay')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_preflight')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_public')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_ruleset_cutover')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_source_ci')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_release_surface')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_research_attempt_failure')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_research_mode_migration')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_research_state_candidate')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_research_state_critical_branches')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_run_reconstruction')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_runtime_bundle')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_runtime_resources')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_scaffold')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_schemas')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_selection_witness')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_archive_audit')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_closeout_review')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_evaluation')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_evaluation_helpers')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_execution_closeout')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_lifecycle')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_needs')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_release_projection')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_skill_runtime_extension')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_system_evaluation_protocol')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_test_runner')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_trace_properties')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_trace_risk_codes')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_validation')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_validation_critical_surfaces')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module (module='test_validation_helpers')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.05199,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_every_mapping_names_an_actual_test_module"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners",
+      "checkpoints": [
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/providers/adapters.yaml')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/models/pool.example.yaml')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/agents/evidence-scout.yaml')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/modes/actions.json')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/authority/decision-authority-matrix.yaml')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/protocol-profiles.json')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/skills/lifecycle-v2.json')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/skill-needs.json')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners (path='registry/skills/release-projections.json')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.041501,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_registry_specific_prefixes_keep_domain_owners"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces",
+      "checkpoints": [],
+      "duration_seconds": 0.036784,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_repository_policy_covers_bounded_capability_validation_surfaces"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners",
+      "checkpoints": [
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners (path='src/research_workbench/__init__.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners (path='src/research_workbench/__main__.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners (path='src/research_workbench/cli.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners (path='src/research_workbench/io.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners (path='src/research_workbench/resources.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners (path='src/research_workbench/scaffold.py')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.036761,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_top_level_source_and_exact_override_keep_stable_owners"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation",
+      "checkpoints": [
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation (path='../escape.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation (path='/absolute.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation (path='src\\\\file.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation (path='C:/file.py')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.032093,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_invalid_inputs_fail_and_planning_is_deterministic_without_mutation"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+      "checkpoints": [
+        {
+          "detail": "No module named 'research_workbench._runtime_pin'",
+          "id": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+          "outcome": "error"
+        }
+      ],
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "duration_seconds": 0.028123,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_hash_tamper_is_blocking",
+      "checkpoints": [
+        {
+          "detail": "No module named 'research_workbench._runtime_pin'",
+          "id": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking",
+          "outcome": "error"
+        }
+      ],
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "duration_seconds": 0.027821,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_user_project_attempt_paths_are_not_repository_archive_links",
+      "checkpoints": [],
+      "duration_seconds": 0.024947,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_user_project_attempt_paths_are_not_repository_archive_links",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_user_project_attempt_paths_are_not_repository_archive_links"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_index_path_escape_is_blocking",
+      "checkpoints": [
+        {
+          "detail": "No module named 'research_workbench._runtime_pin'",
+          "id": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking",
+          "outcome": "error"
+        }
+      ],
+      "detail": "No module named 'research_workbench._runtime_pin'",
+      "duration_seconds": 0.022837,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "error",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_selected_source_has_closed_docs_and_build_inputs",
+      "checkpoints": [],
+      "duration_seconds": 0.014416,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_selected_source_has_closed_docs_and_build_inputs",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_selected_source_has_closed_docs_and_build_inputs"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_markdown_reference_html_and_unicode_anchor_resolve",
+      "checkpoints": [],
+      "duration_seconds": 0.014019,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_markdown_reference_html_and_unicode_anchor_resolve",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_markdown_reference_html_and_unicode_anchor_resolve"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_rendered_public_entity_and_reference_destinations_resolve",
+      "checkpoints": [],
+      "duration_seconds": 0.012987,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_rendered_public_entity_and_reference_destinations_resolve",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_rendered_public_entity_and_reference_destinations_resolve"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback",
+      "checkpoints": [],
+      "duration_seconds": 0.011185,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_main_reports_pass_and_fail_without_traceback"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_known_component_keeps_new_source_own_test",
+      "checkpoints": [
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_known_component_keeps_new_source_own_test (source='.github/scripts/new_checker.py')",
+          "outcome": "passed"
+        },
+        {
+          "id": "tests.test_ci_components.ComponentPlanTests.test_known_component_keeps_new_source_own_test (source='src/research_workbench/evaluation/new_checker.py')",
+          "outcome": "passed"
+        }
+      ],
+      "duration_seconds": 0.010724,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_known_component_keeps_new_source_own_test",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_known_component_keeps_new_source_own_test"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_unknown_path_selects_nearest_and_self_test_without_full",
+      "checkpoints": [],
+      "duration_seconds": 0.009839,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_unknown_path_selects_nearest_and_self_test_without_full",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_unknown_path_selects_nearest_and_self_test_without_full"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases",
+      "checkpoints": [],
+      "duration_seconds": 0.009501,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_rejects_same_canonical_test_loaded_through_module_aliases"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_tests_are_direct_and_deleted_tests_are_not_run",
+      "checkpoints": [],
+      "duration_seconds": 0.009064,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_tests_are_direct_and_deleted_tests_are_not_run",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_tests_are_direct_and_deleted_tests_are_not_run"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_pure_docs_skip_product_smoke_and_install_docs_are_explicit",
+      "checkpoints": [],
+      "duration_seconds": 0.008595,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_pure_docs_skip_product_smoke_and_install_docs_are_explicit",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_pure_docs_skip_product_smoke_and_install_docs_are_explicit"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates",
+      "checkpoints": [],
+      "duration_seconds": 0.00615,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_coverage_suite_supports_exact_test_selectors_without_duplicates"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_rename_considers_old_and_new_component_paths",
+      "checkpoints": [],
+      "duration_seconds": 0.00518,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_rename_considers_old_and_new_component_paths",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_rename_considers_old_and_new_component_paths"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_schema_and_registry_changes_request_contract_checks",
+      "checkpoints": [],
+      "duration_seconds": 0.005141,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_schema_and_registry_changes_request_contract_checks",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_schema_and_registry_changes_request_contract_checks"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_build_change_requests_install_compatibility_smokes",
+      "checkpoints": [],
+      "duration_seconds": 0.005045,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_build_change_requests_install_compatibility_smokes",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_build_change_requests_install_compatibility_smokes"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_shared_fixture_uses_only_its_declared_direct_map",
+      "checkpoints": [],
+      "duration_seconds": 0.004978,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_shared_fixture_uses_only_its_declared_direct_map",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_shared_fixture_uses_only_its_declared_direct_map"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_component_source_selects_whole_group_on_baseline",
+      "checkpoints": [],
+      "duration_seconds": 0.004869,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_component_source_selects_whole_group_on_baseline",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_component_source_selects_whole_group_on_baseline"
+    },
+    {
+      "canonical_id": "tests/test_ci_components.py::ComponentPlanTests.test_new_and_deleted_source_stay_with_their_components",
+      "checkpoints": [],
+      "duration_seconds": 0.004844,
+      "id": "tests.test_ci_components.ComponentPlanTests.test_new_and_deleted_source_stay_with_their_components",
+      "module": "tests.test_ci_components",
+      "outcome": "passed",
+      "scenario": "tests.test_ci_components.ComponentPlanTests.test_new_and_deleted_source_stay_with_their_components"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_excluded_files_are_not_selected",
+      "checkpoints": [],
+      "duration_seconds": 0.002804,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_excluded_files_are_not_selected",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_excluded_files_are_not_selected"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_build_input_removal_is_rejected",
+      "checkpoints": [],
+      "duration_seconds": 0.00189,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_build_input_removal_is_rejected",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_build_input_removal_is_rejected"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass",
+      "checkpoints": [],
+      "duration_seconds": 0.001778,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exact_thresholds_and_positive_negative_evidence_pass"
+    },
+    {
+      "canonical_id": "tests/test_documentation.py::DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones",
+      "checkpoints": [],
+      "duration_seconds": 0.001705,
+      "id": "tests.test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones",
+      "module": "tests.test_documentation",
+      "outcome": "passed",
+      "scenario": "tests.test_documentation.DocumentationTests.test_first_contact_surfaces_do_not_own_internal_milestones"
+    },
+    {
+      "canonical_id": "tests/test_documentation.py::DocumentationTests.test_getting_started_uses_recommended_not_replay_path",
+      "checkpoints": [],
+      "duration_seconds": 0.00149,
+      "id": "tests.test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path",
+      "module": "tests.test_documentation",
+      "outcome": "passed",
+      "scenario": "tests.test_documentation.DocumentationTests.test_getting_started_uses_recommended_not_replay_path"
+    },
+    {
+      "canonical_id": "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow",
+      "checkpoints": [],
+      "duration_seconds": 0.001326,
+      "id": "tests.test_pr_governance.PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow",
+      "module": "tests.test_pr_governance",
+      "outcome": "passed",
+      "scenario": "tests.test_pr_governance.PolicyAndCodeownersTests.test_curated_release_required_checks_exist_in_ci_workflow"
+    },
+    {
+      "canonical_id": "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_versioned_research_mode_directory_is_protected",
+      "checkpoints": [],
+      "duration_seconds": 0.001276,
+      "id": "tests.test_pr_governance.PolicyAndCodeownersTests.test_versioned_research_mode_directory_is_protected",
+      "module": "tests.test_pr_governance",
+      "outcome": "passed",
+      "scenario": "tests.test_pr_governance.PolicyAndCodeownersTests.test_versioned_research_mode_directory_is_protected"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates",
+      "checkpoints": [],
+      "duration_seconds": 0.001248,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_reject_internal_duplicates"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_product_sources_and_schemas_are_complete",
+      "checkpoints": [],
+      "duration_seconds": 0.001239,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_product_sources_and_schemas_are_complete",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_product_sources_and_schemas_are_complete"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_projection_without_license_is_not_build_ready",
+      "checkpoints": [],
+      "duration_seconds": 0.001195,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_projection_without_license_is_not_build_ready",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_projection_without_license_is_not_build_ready"
+    },
+    {
+      "canonical_id": "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_template_omits_machine_known_and_retired_fields",
+      "checkpoints": [],
+      "duration_seconds": 0.001194,
+      "id": "tests.test_pr_governance.PolicyAndCodeownersTests.test_template_omits_machine_known_and_retired_fields",
+      "module": "tests.test_pr_governance",
+      "outcome": "passed",
+      "scenario": "tests.test_pr_governance.PolicyAndCodeownersTests.test_template_omits_machine_known_and_retired_fields"
+    },
+    {
+      "canonical_id": "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths",
+      "checkpoints": [],
+      "duration_seconds": 0.001192,
+      "id": "tests.test_pr_governance.PolicyAndCodeownersTests.test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths",
+      "module": "tests.test_pr_governance",
+      "outcome": "passed",
+      "scenario": "tests.test_pr_governance.PolicyAndCodeownersTests.test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail",
+      "checkpoints": [],
+      "duration_seconds": 0.001135,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_undeclared_actual_and_nonexistent_declared_exclusions_fail"
+    },
+    {
+      "canonical_id": "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_published_identity_policy_declares_all_protected_kinds",
+      "checkpoints": [],
+      "duration_seconds": 0.00112,
+      "id": "tests.test_pr_governance.PolicyAndCodeownersTests.test_published_identity_policy_declares_all_protected_kinds",
+      "module": "tests.test_pr_governance",
+      "outcome": "passed",
+      "scenario": "tests.test_pr_governance.PolicyAndCodeownersTests.test_published_identity_policy_declares_all_protected_kinds"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed",
+      "checkpoints": [],
+      "duration_seconds": 0.001114,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_malformed_coverage_exclusions_fail_closed"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit",
+      "checkpoints": [],
+      "duration_seconds": 0.001109,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_checker_helpers_and_structural_failures_are_explicit"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_provider_build_inputs_are_exact_disabled_public_templates",
+      "checkpoints": [],
+      "duration_seconds": 0.001096,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_provider_build_inputs_are_exact_disabled_public_templates",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_provider_build_inputs_are_exact_disabled_public_templates"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates",
+      "checkpoints": [],
+      "duration_seconds": 0.001096,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_each_critical_file_has_independent_line_and_branch_gates"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed",
+      "checkpoints": [],
+      "duration_seconds": 0.001092,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_source_root_is_canonical_and_cannot_be_narrowed"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed",
+      "checkpoints": [],
+      "duration_seconds": 0.001083,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_line_shape_and_duplicates_are_fail_closed"
+    },
+    {
+      "canonical_id": "tests/test_public_surface.py::PublicSurfaceTests.test_public_navigation_and_support_have_one_source",
+      "checkpoints": [],
+      "duration_seconds": 0.001081,
+      "id": "tests.test_public_surface.PublicSurfaceTests.test_public_navigation_and_support_have_one_source",
+      "module": "tests.test_public_surface",
+      "outcome": "passed",
+      "scenario": "tests.test_public_surface.PublicSurfaceTests.test_public_navigation_and_support_have_one_source"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists",
+      "checkpoints": [],
+      "duration_seconds": 0.001071,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_nonempty_lists"
+    },
+    {
+      "canonical_id": "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_curated_release_policy_is_strict_declarative_and_active",
+      "checkpoints": [],
+      "duration_seconds": 0.001068,
+      "id": "tests.test_pr_governance.PolicyAndCodeownersTests.test_curated_release_policy_is_strict_declarative_and_active",
+      "module": "tests.test_pr_governance",
+      "outcome": "passed",
+      "scenario": "tests.test_pr_governance.PolicyAndCodeownersTests.test_curated_release_policy_is_strict_declarative_and_active"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json",
+      "checkpoints": [],
+      "duration_seconds": 0.001055,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_declared_exclusions_exactly_match_coverage_json"
+    },
+    {
+      "canonical_id": "tests/test_pr_governance.py::PolicyAndCodeownersTests.test_policy_has_three_by_three_model",
+      "checkpoints": [],
+      "duration_seconds": 0.001027,
+      "id": "tests.test_pr_governance.PolicyAndCodeownersTests.test_policy_has_three_by_three_model",
+      "module": "tests.test_pr_governance",
+      "outcome": "passed",
+      "scenario": "tests.test_pr_governance.PolicyAndCodeownersTests.test_policy_has_three_by_three_model"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed",
+      "checkpoints": [],
+      "duration_seconds": 0.001026,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_global_line_threshold_is_fail_closed"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_branch_collection_is_mandatory",
+      "checkpoints": [],
+      "duration_seconds": 0.001023,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_branch_collection_is_mandatory",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_branch_collection_is_mandatory"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location",
+      "checkpoints": [],
+      "duration_seconds": 0.001011,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_exclusion_requires_exact_auditable_location"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.001,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_negative_acceptance_result_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint",
+      "checkpoints": [],
+      "duration_seconds": 0.001,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_positive_and_negative_evidence_must_be_disjoint"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.000992,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_missing_critical_file_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_coverage_policy.py::CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor",
+      "checkpoints": [],
+      "duration_seconds": 0.000972,
+      "id": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor",
+      "module": "tests.test_coverage_policy",
+      "outcome": "passed",
+      "scenario": "tests.test_coverage_policy.CoveragePolicyCheckerTests.test_policy_cannot_downgrade_the_quality_floor"
+    }
+  ],
+  "wall_seconds": 1.278587
+}

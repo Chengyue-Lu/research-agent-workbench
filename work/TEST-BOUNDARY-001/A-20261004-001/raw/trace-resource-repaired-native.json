@@ -1,0 +1,108 @@
+{
+  "duration_seconds": {
+    "p50": 0.320195,
+    "p95": 1.188575
+  },
+  "events": {
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "execution_order": [
+    "tests/test_agent_trace.py::AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+    "tests/test_agent_trace.py::AgentTraceTests.test_hash_tamper_is_blocking",
+    "tests/test_agent_trace.py::AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+    "tests/test_agent_trace.py::AgentTraceTests.test_index_path_escape_is_blocking"
+  ],
+  "outcomes": {
+    "errors": 0,
+    "expected_failure": 0,
+    "failed": 0,
+    "passed": 4,
+    "passed_with_skips": 0,
+    "skipped": 0,
+    "unexpected_success": 0
+  },
+  "problems": [],
+  "schema_version": "1.2.0",
+  "slowest": [
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+      "checkpoints": [],
+      "duration_seconds": 1.188575,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.321404,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_hash_tamper_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.318985,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_index_path_escape_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.316433,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking"
+    }
+  ],
+  "successful": true,
+  "suite": "development-record-boundary",
+  "test_count": 4,
+  "tests": [
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+      "checkpoints": [],
+      "duration_seconds": 1.188575,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_recorder_captures_before_send_redacts_and_validates"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.321404,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_completed_trace_with_capture_gap_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_hash_tamper_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.318985,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_hash_tamper_is_blocking"
+    },
+    {
+      "canonical_id": "tests/test_agent_trace.py::AgentTraceTests.test_index_path_escape_is_blocking",
+      "checkpoints": [],
+      "duration_seconds": 0.316433,
+      "id": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking",
+      "module": "tests.test_agent_trace",
+      "outcome": "passed",
+      "scenario": "tests.test_agent_trace.AgentTraceTests.test_index_path_escape_is_blocking"
+    }
+  ],
+  "wall_seconds": 2.147582
+}

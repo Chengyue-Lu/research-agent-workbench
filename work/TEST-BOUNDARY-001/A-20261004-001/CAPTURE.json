@@ -1,0 +1,8 @@
+{
+  "complete_agent_trace_v0_1": false,
+  "warning": "capture-gap: some pre-compaction transmissions and runtime event payloads are unavailable",
+  "available_formal_outputs_preserved": true,
+  "visible_message_summaries_are_not_original_event_payloads": true,
+  "local_test_failure_and_bootstrap_failure_preserved": true,
+  "config_preserved_not_staged": true
+}

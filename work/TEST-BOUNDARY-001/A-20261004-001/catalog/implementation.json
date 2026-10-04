@@ -1,0 +1,56 @@
+{
+  "write_scope": [
+    "tests/test_catalog.py",
+    "D:\\lcy\\develop\\_assessments\\rwb-slow-full-ci-20261003\\workstream-boundary-20261004\\catalog-implementation"
+  ],
+  "head": "ede2bc1d5e3496b4e4c72abb1f39f0a3ce00aedf",
+  "before_test_source_sha256": "6d3d46d7cd08468e2dc723cf1e9369478676b92776fead7cbd0f05d3a513ecf4",
+  "after_test_source_sha256": "0da0ccc8c0ce9474c4f5ed22d445beb5918c589b6253defc6e204411c5a2beab",
+  "removed_methods": [
+    "test_community_intake_has_one_decision_per_selected_skill",
+    "test_first_party_intake_has_pinned_non_executable_decisions",
+    "test_new_archive_candidates_have_explicit_non_executable_decisions",
+    "test_user_archive_has_one_pinned_candidate_per_skill_entrypoint"
+  ],
+  "retained_method_bodies": {
+    "test_quarantine_candidates_cannot_be_confused_with_trial": {
+      "line": 23,
+      "end_line": 35,
+      "sha256": "d5f996fb232e10eda7b3abbe4ee080a64c94755d56f8af063420fd50652c5d78"
+    },
+    "test_mode_filter_is_metadata_only": {
+      "line": 37,
+      "end_line": 66,
+      "sha256": "a1338d8e508274a800647e50959088af4b16bc777a0140072c5c745d69f0f30d"
+    }
+  },
+  "production_catalog_and_io_unchanged": true,
+  "source_bindings": {
+    "src/research_workbench/capability/catalog.py": "56159ae8bdc7606babc2b30680953a50e8a8265bf27408e50308d186f84c1eab",
+    "src/research_workbench/io.py": "004a2b70aac052aaff8daae23ccab63e63495a9bd45c05c8bd5c7dc5debb62c1"
+  },
+  "test_result": {
+    "runs": 2,
+    "successful": true,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "wall_seconds": 0.006796699948608875,
+    "python_version": "3.11.16",
+    "coverage": false
+  },
+  "independent_record_input_isolation": true,
+  "release_policy_changed_by_agent": false,
+  "git_diff_check_exit": 0,
+  "command": "$env:PYTHONPATH = 'D:/lcy/develop/_worktrees/RWB/product-doc-ci-boundary-20261004/src;D:/lcy/develop/_worktrees/RWB/product-doc-ci-boundary-20261004;D:/lcy/develop/_worktrees/RWB/product-doc-ci-boundary-20261004/tests'\n& 'D:/lcy/develop/_assessments/rwb-ci-schema-parse-20260917/venv311/Scripts/python.exe' -B -X utf8 'D:/lcy/develop/_assessments/rwb-slow-full-ci-20261003/workstream-boundary-20261004/catalog-implementation/run_catalog.py'",
+  "performance_comparison": null,
+  "evidence_sha256": {
+    "before.json": "870e714d349ce4cc9f3f1497a7d964a61d64b9efb04844e3b4f741f1dbfed7db",
+    "result.json": "73fb766ab0a8e6a85f128b5f31ef3ce143b73535a9002c43d2dcb6c5e352e6ee",
+    "native.log": "65238a76043230d7ed1f72619a2760f784e9cbdd85f45e65a8a515775155c5a1",
+    "run_catalog.py": "434e4e5abcc08d0d910aef35fb1922d954470d20c0cdf9137fc124ed7598c9d9",
+    "test_catalog.diff": "ed4b65b4eb8055bede2c51d831f49b65b44ca8414015ee1f754252b9a532ef70",
+    "command.ps1": "fea5846a687af061675b88fe99b75a93560f5e8e48b92409a6311ad6bf283fce",
+    "test_catalog.before.py": "6d3d46d7cd08468e2dc723cf1e9369478676b92776fead7cbd0f05d3a513ecf4"
+  }
+}
