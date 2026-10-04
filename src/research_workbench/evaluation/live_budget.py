@@ -55,12 +55,19 @@ def _safe(operation):
     try:
         result = operation()
     except PilotBudgetError as error:
-        code = str(error) if str(error) in _CODES else "pilot-budget-operation-failed"
+        args = error.args if type(error) is PilotBudgetError else ()
+        code = args[0] if len(args) == 1 and type(args[0]) is str and args[0] in _CODES else "pilot-budget-operation-failed"
     except Exception:
         code = "pilot-budget-operation-failed"
     if code is not None:
-        # Raise after the handler; do not retain hostile exception text/context.
-        raise PilotBudgetError(code) from None
+        # An exception handler in the caller can still supply implicit context.
+        error = PilotBudgetError(code)
+        try:
+            raise error from None
+        finally:
+            error.__cause__ = None
+            error.__context__ = None
+            error.__suppress_context__ = True
     return result
 
 

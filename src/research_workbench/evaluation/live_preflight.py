@@ -116,8 +116,14 @@ def _verify(callback, argument, label):
         # Untrusted exception text can contain payloads or credentials.
         failed = True
     if failed:
-        # Raise outside the handler so introspection cannot recover that text.
-        raise EvaluationValidationError(f"external {label} verifier failed") from None
+        # A caller's active exception also must not become implicit context.
+        error = EvaluationValidationError(f"external {label} verifier failed")
+        try:
+            raise error from None
+        finally:
+            error.__cause__ = None
+            error.__context__ = None
+            error.__suppress_context__ = True
 
 
 def validator_identity(inputs):

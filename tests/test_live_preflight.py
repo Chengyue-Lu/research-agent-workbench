@@ -136,6 +136,22 @@ class LivePreflightTests(unittest.TestCase):
                 self.assertIsNone(captured.exception.__context__)
                 self.assertIsNone(captured.exception.__cause__)
 
+    def test_caller_active_exception_never_enters_verifier_diagnostics(self):
+        from research_workbench.evaluation.live_preflight import _verify
+
+        def fail(_):
+            raise RuntimeError("callback-private-fixture")
+
+        try:
+            raise RuntimeError("caller-private-fixture")
+        except RuntimeError:
+            with self.assertRaises(EvaluationValidationError) as captured:
+                _verify(fail, {}, "authorization")
+            self.assertEqual(str(captured.exception), "external authorization verifier failed")
+            self.assertIsNone(captured.exception.__context__)
+            self.assertIsNone(captured.exception.__cause__)
+            self.assertTrue(captured.exception.__suppress_context__)
+
     def test_external_callback_cannot_mutate_frozen_inputs_by_argument_alias(self):
         def authorize(argument):
             argument["scope"]["budget"]["prior_tokens"] = 0

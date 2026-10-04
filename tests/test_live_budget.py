@@ -369,6 +369,25 @@ with PilotUsageJournal.open(v['database'],v['anchor'],inputs=inputs,context=cont
         self.assertNotIn("private secret", str(raised.exception))
         self.assertIsNone(raised.exception.__context__)
 
+    def test_caller_exception_and_hostile_error_string_never_enter_diagnostics(self):
+        from research_workbench.evaluation.live_budget import _safe
+        class Hostile:
+            def __str__(self):
+                raise RuntimeError("synthetic private detail")
+        def fail():
+            raise PilotBudgetError(Hostile())
+        try:
+            raise RuntimeError("synthetic caller detail")
+        except RuntimeError:
+            try:
+                _safe(fail)
+            except PilotBudgetError as error:
+                self.assertEqual("pilot-budget-operation-failed", str(error))
+                self.assertIsNone(error.__context__)
+                self.assertIsNone(error.__cause__)
+            else:
+                self.fail("hostile callback was accepted")
+
     def test_snapshot_is_detached_and_contains_no_cost_or_credentials(self):
         handle = self.reserve()
         self.sent(handle)
