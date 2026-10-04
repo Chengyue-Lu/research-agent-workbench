@@ -7,7 +7,8 @@
 跟踪：[Issue #123](https://github.com/Chengyue-Lu/research-agent-workbench/issues/123)。
 
 用户已授权将推进至 M5-008 run-set 验收设为目标、在 M5-004 前停止；不涉及新 Human 决断的工作
-直接继续。[具体案例/Skill/运行清单决定候选](M5-008_DECISION_CANDIDATE.md)提供可审查输入，
+直接继续。用户选择独立工程案例、希望先考虑一般化Skill；[决定候选](M5-008_DECISION_CANDIDATE.md)
+与[一般化Skill候选包](M5-008_GENERAL_SKILL_CANDIDATE.md)提供可审查输入，
 实际准入、专项运行、评分与具名收口仍分别保留，当前没有新执行 grant。
 
 ## 1. 进入事实与本次交付
@@ -30,21 +31,32 @@ M6-010 的部件成功证明一个选定 Provider/session；M11 live Driver、�
 案例必须与获准 A4 Skill 的 Method、输入和输出契约相容；不为 A4 添加专属转换 Method 或补写答案。
 该规模只是准备建议，尚非批准的样本量、真实输入或执行计划。
 
-所有 arm 使用相同公共任务和输出格式候选 `bounded-evidence-verdict-v1`。形状示例：
+所有 arm 使用相同公共任务和输出格式候选 `bounded-evidence-relations-v1`。形状示例：
 
 ```json
 {
-  "format": "bounded-evidence-verdict-v1",
+  "format": "bounded-evidence-relations-v1",
   "claims": [
-    {"claim_id": "C01", "verdict": "supported", "source_ids": ["S01"]}
+    {
+      "claim_id": "C01",
+      "verdict": "insufficient",
+      "relations": [
+        {"source_id": "S01", "relation": "limits", "scope_status": "different"}
+      ]
+    }
   ]
 }
 ```
 
 示例只表达候选格式，不是模型输出、已批准案例或 Schema。冻结后遵守以下有限规则：
 
-- `claim_id` 和 `source_ids` 只能来自该案例冻结的闭集；每个 claim 恰出现一次，引用去重；
-  `verdict` 仅为 `supported`、`contradicted`、`insufficient`，允许空 source 集合并由人类判断其适当性。
+- `claim_id` 和 `source_id` 只能来自该案例冻结的闭集；每个 claim 恰出现一次。
+  `verdict` 仅为 `supported`、`contradicted`、`insufficient`；每个source最多两项关系，
+  相同source/relation不得重复，整个claim最多为冻结source数量的两倍（八source时至多16项）。
+  允许空relations并由人类判断；不能用无引用的确定判定掩盖反证或合法未知。
+- `relation`仅为`supports`、`counters`、`limits`、`unknown`；`scope_status`仅为`matched`、
+  `different`、`unknown`、`not-applicable`，相对于该claim的声明范围逐来源记录。
+  关系是有限审查表达，不自动推导科学正确性；同一source的有限支持可同时带来泛化限制。
 - 本地按有界 JSON 精确解析，拒绝重复键、非有限值、未知字段、额外正文/代码围栏、缺项或越界数量。
   不截取前缀、不修正模型答案、不通过重试选择满意结果；原响应、失败与 usage 仍按授权归档。
 - M6 的最终完整 ModelResponse 与 M11 的输出工件分别保留原 transport envelope；相同白名单
@@ -115,10 +127,10 @@ Harness 外层时钟度量可比 wall time；Provider 内部时间或不能同�
 
 | 输入 | 当前候选或来源 | 冻结前必须填写/核对 |
 |---|---|---|
-| Dossier | 上述 finite-output 工程案例建议 | case/Task/public input/private oracle identities/path/hash、选择理由、读取边界；人类尚未选择案例 |
+| Dossier | 用户已选独立工程案例类型；scope-check cards候选 | exact case/Task/public input/private oracle identities/path/hash、选择理由、读取边界仍待Human冻结 |
 | Protocol / source / output | live purpose@2.0.0 与有限格式设计 | accepted source/validator/Schema/install、共享 Task/output/context、Protocol/config/计划 refs；本准备包不接受或实现新 Schema |
 | Provider / Windows | 历史 M6-010 为 `deepseek-flash`、`deepseek-responses-nonthinking-v1`、Windows Python3.11.16 | 当前官方 slot/profile/endpoint、实际 Host/Tool/Driver 与安装；fresh applicability 与必要有界复验，不重绑 source66 |
-| A4 lineage | 当前为空 | exact candidate/Evaluation/Human admission/Release/provenance/Projection/Supply/Resolver/Snapshot/Bundle/View pins；准入决定由路诚钺作出 |
+| A4 lineage | 一般化Skill源包/正式Need/独立评价方案候选，生产Projection为空 | exact candidate/Evaluation/Human admission/Release/provenance/Projection/Supply/Resolver/Snapshot/Bundle/View pins；准入决定由路诚钺作出 |
 | overlap / pairwise | 已有独立重算规则 | admission 与 Pilot case 两侧 typed oracle/input closure、checked/frozen times、overlay/A2/A3 qualification、pairwise；unresolved 不能因 pilot 标签放行 |
 | Tokens / calls / Attempts | 用户累计 input+output ceiling 10,000,000；M6 历史已计1744 | 为 Pilot 明确总/每 arm/每 request 输入输出、调用/Tool/turn/Attempt/retry 上限；不得将原部件十组授权当成四臂许可或重置累计历史 |
 | 时间 / stop | 用户 Flash-only、北京18:00后且官方闲时的约束继续保留 | fresh 官方窗口、执行日与截止、request/arm/run/父进程有界超时、停止/取消策略；不无限等待响应 |
@@ -135,7 +147,7 @@ Harness 外层时钟度量可比 wall time；Provider 内部时间或不能同�
 
 | 节点 | 可交付内容 | 进入/完成条件 |
 |---|---|---|
-| P0 当前准备 | 本设计候选、dossier/output 建议、Gate 与 exact-pin 清单，更新 Issue123 | docs/refs/治理检查；零调用，Task BLOCKED |
+| P0 当前准备 | 本设计候选、dossier/output、一般化Skill源包/Need/独立评价方案、Gate 与 exact-pin 清单，更新 Issue123 | docs/refs/候选边界/治理检查；零调用，Task BLOCKED |
 | P1 合法进入 | Human 冻结案例/输出、真实 A4 lineage、Pilot 专项决定、M6 binding applicability | 所有原 hard/external conditions 闭合，按 TASKS 状态机提出 READY/IN_PROGRESS；缺 exact 对象继续 BLOCKED，不以未来 SHA/占位批准制造 PASS |
 | P2 R2 实现 | 新版本 live-purpose contract；已有 M6/M11 ports 的真实 Driver/facts；有界 review/measurement 与 cold reader | 版本兼容、零调用拒绝与离线正反证据、exact-head 组件/安装验证、跨 owner R2 审查；不消费未授权 API |
 | P3 冻结运行 | accepted source/config/Protocol/run inventory 与 inputs，真实四臂执行 | 首次输出前 exact Human authorization 与 use-boundary fresh guards；全部预注册 slots 和失败保留 |

@@ -423,6 +423,10 @@ PR122 已[完成整项收口](M5-007_CLOSEOUT_RECEIPT.md)，Task DONE、Issue #5
 [M5-008 进入准备](M5-008_ENTRY_PLAN.md)不解除 live Gate；M5-001/002 保留 Human boundary，M5-008/004/005
 按各自 live/admission/case/Human dependencies 保持 BLOCKED。
 
+2026-10-04用户设定目标到M5-008 run-set验收后停止，选择独立工程案例并希望先考虑一般化Skill。
+[具体决定候选](M5-008_DECISION_CANDIDATE.md)和[一般化Skill源包/Need/评价方案](M5-008_GENERAL_SKILL_CANDIDATE.md)
+是当前准备输入；源包位于非发现目录，实际A4准入与Pilot专项freeze仍待闭合。
+
 ## 9. 原始设计阶段的历史本地验证
 
 - `python -m unittest tests.test_documentation tests.test_pr_governance -v`：76/76 PASS；

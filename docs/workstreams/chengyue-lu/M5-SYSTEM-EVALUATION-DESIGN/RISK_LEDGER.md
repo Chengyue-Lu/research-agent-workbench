@@ -11,10 +11,11 @@ M5-007 与 M6-010 均 DONE；M5-008 仍 BLOCKED。以下控制属于
 | M5-PREP-PURPOSE-001 | 仅把 synthetic Harness 接到 API 或放宽旧 purpose，污染历史回放并取得隐式执行权 | 新 live-purpose/version 明确分派；保留 v1.0.0 producer/Schema/历史；未知版本、混合用途及 confirmatory 接收 Pilot 均拒绝 | 离线设计；产品与 Schema 未改 |
 | M5-PREP-BINDING-001 | M6-010 DONE 被泛化成任何新 Driver/Host/model 已通过 | source66 原报告保留；新 exact source/install/config/Host/Tool 逐项 applicability；未知/漂移零调用，必要复验关联原累计历史 | M6-010 受限完成；Pilot binding 尚未冻结 |
 | M5-PREP-ADMISSION-001 | 测试 Projection、同名 Skill 或 candidate direct-load 冒充真实 A4 准入 | exact Human candidate/evaluation Decision 与 immutable Release/provenance/Projection/Supply/Resolver→View 链；use-boundary actual consumption 与 replay 独立相等 | UNSATISFIED；生产 index entries=[] |
-| M5-PREP-REVIEW-001 | 任意正文或 transport metadata 泄漏 treatment，或投影择优/自动修改答案 | 有限 claim/source/verdict 白名单；每 slice 全量 source refs；无自由文本/额外字段，非完整/无效输出 unreviewable；Human 全量 freeze 后 reveal | 格式候选；未选择案例或作匿名性证明 |
+| M5-PREP-REVIEW-001 | 任意正文或 transport metadata 泄漏 treatment，或投影择优/自动修改答案 | 有限 claim/source/relation/verdict 白名单；每 slice 全量 source refs；无自由文本/额外字段，非完整/无效输出 unreviewable；Human 全量 freeze 后 reveal | 用户选独立工程类型；exact cards/格式/anchors未冻结，未作匿名性证明 |
 | M5-PREP-BUDGET-001 | 将部件十组/预算授权当成四臂许可，重开账本或漏计失败 | Pilot 专项 exact 授权；10m 累计上限关联原1744；各层预算/超时/stop；失败与 unknown usage 预占留存，零自动 retry/fallback | Pilot 授权 UNSATISFIED；本次0调用/凭据/账本操作 |
 | M5-PREP-DRIVER-001 | 将已有 Python ports 或 planned View 当作 M11 live execution | 复用通用 View/Host seam；真实 Provider/Tool及Skill pre-use/post-call typed facts；新进程独立 Receipt replay；不可只靠 self-reported PASS | 实现/验证待合法进入；未添加 runner/selector |
 | M5-PREP-GOAL-001 | 把推进目标/窗口委托视作 A4准入、冻结未发生输出或进入M5-004的授权 | 目标终点限定M5-008；具体案例/Skill选择与exact专项决定、Human review/收口分开，索引legacy/deprecated不直接执行，未决继续BLOCKED | 目标ACTIVE；无新live授权；M12独立窗口接手 |
+| M5-PREP-SKILL-001 | 用算术fixture证明语义Skill增量，或在M5 A4直接加载候选以完成自己的准入 | 复用正式Need；独立Maintainer评价覆盖scope/反证/未知与non-trigger；相同baseline/ceiling、Human盲审/准入，Requirement/Method/egress相容性独立闭合 | 纯说明候选与评价方案已准备；没有manifest/Release/Projection/实际Evaluation |
 
 The following original rows retain the accepted design-stage controls and downstream dependencies.
 Implementation evidence for M5-006 is recorded after the table; candidate verification does not close M6-008,

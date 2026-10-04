@@ -35,7 +35,10 @@ M5-001/002 不是 pilot hard dependencies；pilot 使用单独 Human-approved do
 | A4 index | `registry/skills/release-projections.json` entries=[] | 提供合法 Release→Projection→Supply lineage；不能用测试 Projection、candidate direct-load 或同名 substitution 代替 |
 
 第一工程设计节点已形成[准备与设计候选](M5-008_PREPARATION_PACKET.md)：建议独立 live-purpose@2.0.0、
-有限 claim/source/verdict 输出与四臂接入；具体案例/准入、版本/输出/模型/Tool及预算仍待冻结与人类接受。
+有限 claim/source/relation 输出与四臂接入。用户已选独立工程案例类型、希望先考虑一般化Skill；
+[具体决定候选](M5-008_DECISION_CANDIDATE.md)和[Skill候选包](M5-008_GENERAL_SKILL_CANDIDATE.md)
+提供scope cards、非发现目录源包、正式Need与独立准入前评价方案；exact案例/准入、版本/输出/模型/Tool
+及预算仍待冻结与人类接受。
 本清单不接受新 Schema 或默认授权。复用 M6 baseline、M11 Core/Skill 和唯一
 Capability Resolver；不新增 arm-specific Host dispatcher、selector、fallback 或旁路 runner。
 
@@ -62,10 +65,13 @@ pilot 数据不进入 primary confirmatory run set，不因 phase 标签而绕�
 ## 本次交接输出与停止点
 
 已完成 M5-007/Issue55 和 M6-010 部件收口，独立 M5-008 tracker 继续 OPEN；当前形成有限 live-purpose/
-review 候选、exact-pin 输入清单与 P0–P4 顺序。只修改事实记录、导航及设计准备；源码、Schema、Registry、
-Task 行与所有历史 Attempt 保持。
-尚未选择真实案例/账户/模型、取得准入或 pilot 授权、实现 live 入口、调用 API/Tool 或产生新 live 证据。
+review 候选、exact-pin 输入清单与 P0–P4 顺序。用户另授权设为推进目标，到M5-008全部run-set具名验收后
+停止、进入M5-004之前。当前修改事实记录、导航、设计准备与`skill-lab/candidates/`中的纯说明候选；
+产品src、Schema、Registry、Task行、默认Skill发现和所有历史Attempt保持。
+尚未冻结exact真实案例/账户/模型、取得准入或pilot授权、实现live入口、调用API/Tool或产生新live证据。
 真实 case、Human/Claim、科研净收益、Skill promotion、Topic 5 与发行仍按原边界处理。
 
 2026-10-02通用Provider定义修订已接受：[M6-009/010](../M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)已DONE；
 原M6-004 OpenAI范围保留。M6的已保留部件调用不等于本Pilot；本次准备没有新增调用或live PASS。
+
+M12按用户指示委托现有「RWB开发 (1)」窗口，先处理Phase C/Topic5进入候选；不成为本Pilot新增依赖。

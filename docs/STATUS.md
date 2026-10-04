@@ -18,6 +18,10 @@ M4-001～004 已全部 accepted / merged：Source Admission、Artifact Promotion
 M11-007 Skill closeout 与 Gate B 已按 PR81 实现及具名证据接受收口；M6-008 baseline envelope/closeout 已由 PR75 接受并收口。M5-007 H1–H5 bounded synthetic Harness 已完成，整项验收与证据映射见[收口记录](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)；M6-010 已受限收口为 DONE。后继 M5-008 正在[离线准备 live purpose/有限审查候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_PREPARATION_PACKET.md)，仍受真实 A4 admission、Pilot 专项授权及新 Provider binding 适用性核对约束；Task 保持 BLOCKED，本次没有四臂 live 执行。
 M4 的 bounded 验收不替代真实 Case Dossier、live Provider/session conformance 或正式系统评价。
 
+M5-008的目标终点是完整run-set验收、进入M5-004前停止。用户已选择独立工程案例，并希望先考虑
+[一般化证据核对Skill候选](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_GENERAL_SKILL_CANDIDATE.md)；
+当前只有非发现目录的纯说明源包与独立评价方案，没有实际Skill Evaluation/admission/Projection。
+
 Issue #57 / ADR-0021 的 M14-001～005 已完成首个 curated release：M14-001～004 提供受信
 source、deterministic projection、portable package 与公开文档；M1-009 scaffold 和 M0-007 MIT 已接受。
 #118 接受 active curated topology 与 source-owned live PR governance；完整远端 cutover 已执行并回读，
