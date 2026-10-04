@@ -128,7 +128,7 @@ flowchart LR
     SCG["M5-SKILL-CLOSEOUT-REPLAY-GATE<br/>Issue #55 / satisfied"] --> M5007
     M1106 -. "Projection + Supply" .-> A4G
     M1106 --> M5004
-    M6009["M6-009 IN_PROGRESS<br/>general offline Provider"] --> M6010["M6-010 BLOCKED<br/>DeepSeek Flash live"]
+    M6009["M6-009 DONE<br/>general offline Provider"] --> M6010["M6-010 DONE<br/>exact Windows Flash Provider/session"]
     M6010 --> M5004
     M6010 --> M5008
 ```
@@ -137,8 +137,11 @@ M4-001～004 已闭合 bounded admission、promotion、Claim evidence localizati
 promotion eligibility 仍只由当次 pinned pipeline 重执行确立，不证明自报历史 provenance。当前开发入口是
 `M5-006 DONE → M6-008 DONE → M5-007 DONE`；H1–H5 bounded synthetic Harness 的[整项收口](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)保留验收、失败/缺测量与冷回放边界。后继入口是仍受外部 Gate 阻断的 M5-008 live pilot。
 M5-004 的 M4 provenance 链、M5-003 计划契约、M11-006 mapping 机制、M6-008 baseline closeout 与 Skill replay Gate 已满足；
-M5-007 synthetic Harness 已闭合；仍等待两个 Human-approved public/private Case Dossier、M5-008 live pilot 验收、真实 A4 admission 与 M6-010 live
-Provider/session Gate。M5-008 使用独立获批的 pilot dossier，在完整 Harness、live conformance、A4 admission
+M5-007 synthetic Harness 已闭合；M6-009/010 的离线合同与 exact Flash Provider/session
+[受限收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md)已完成。
+仍等待两个 Human-approved public/private Case Dossier、M5-008 live pilot 验收和真实 A4 admission；
+M5 消费前仍须复核 M6-010 同一 source/config/model/Host/Tool binding 的适用性。
+M5-008 使用独立获批的 pilot dossier，在完整 Harness、适用 live conformance、A4 admission
 与专项授权闭合后验证四臂真实 Provider/Tool execution；当前 BLOCKED。验收只证明 exact source/config 的
 live 工程闭包，pilot runs 不进入 primary confirmatory run set；pilot 观察或调参影响的案例不能重新标为
 未观察 held-out。详见 [Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)。ADR-0020 已 exact-pin
