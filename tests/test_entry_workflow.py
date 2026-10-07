@@ -96,6 +96,20 @@ class EntryWorkflowTests(unittest.TestCase):
             self.assertEqual("safe-paused", result.status)
             self.assertEqual(1, len(executor.invocations))
 
+    def test_canonical_network_permissions_allow_narrowing_and_block_expansion(self):
+        for network, expected in (("none", "stage-completed"),
+                                  ("search-and-fetch", "stage-completed"),
+                                  ("allowed", "safe-paused")):
+            with self.subTest(network=network):
+                parent = task()
+                parent["permissions"]["network"] = "search-and-fetch"
+                proposed = child("CANONICAL-NETWORK")
+                proposed["permissions"]["network"] = network
+                executor = ScriptedExecutor([output("delegate", [proposed]), output(), output()])
+                result, _, _ = self.run_case(executor, main=parent)
+                self.assertEqual(expected, result.status, result.summary)
+                self.assertEqual(3 if expected == "stage-completed" else 1, len(executor.invocations))
+
     def test_child_input_permission_and_depth_expansion_are_rejected(self):
         for field in ("input", "permission", "depth", "mode", "budget"):
             item = child("C")

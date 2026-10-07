@@ -1,5 +1,9 @@
 # 通用入口：使用与接合范围
 
+2026-10-08 当前可复用接口及 trusted caller 责任见 [chain-proof-002/USAGE](chain-proof-002/USAGE.md)，真实结果见 [ROOT_REPORT](chain-proof-002/ROOT_REPORT.md)，覆盖见 [COVERAGE](chain-proof-002/COVERAGE.md)。PR140 未合并，不能记为 develop 支持。
+
+以下保留 `d630f8e174846f4932d05a7a0d69076930b53ee1` 的使用快照；末段的零 Tool/direct-tool 阻断描述属于该历史阶段，后续只读 Tool 接合的实际结果与停点以当前报告为准。非空 required Skill 仍阻断；提示词和三个 Skill 文件仍是未加载、未准入候选。
+
 本分支增加可选的应用调用层，复用既有文件契约与执行内核。接口参数决定预算、委派数量上限、深度、输入和输出位置；main 的实际模型输出决定是否委派及具体子 Task。当前按顺序执行子 Task，再向新的 main 请求传入实际结果。没有固定角色编制，也没有常驻调度服务。
 
 ## 人类输入到执行结果

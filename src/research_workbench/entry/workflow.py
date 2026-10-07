@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Callable, Mapping, Protocol
 
 from research_workbench.artifacts.integrity import resolve_within_root
+from research_workbench.capability.resolver import permission_policy_covers
 from research_workbench.tasks import TaskPacket
 from research_workbench.validation.schemas import SchemaCatalog
 
@@ -41,10 +42,11 @@ class WorkflowBudget:
     max_seconds: float
     max_children_per_task: int
     max_depth: int
+    max_session_model_turns: int = 1
 
     def __post_init__(self):
         for name in ("max_model_calls", "max_total_tokens", "input_reservation_per_call",
-                     "max_output_tokens_per_call"):
+                     "max_output_tokens_per_call", "max_session_model_turns"):
             value = getattr(self, name)
             if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
                 raise ValueError(f"{name} must be a positive integer")
@@ -80,6 +82,8 @@ class RoleObservation:
     output_tokens: int | None
     artifact_refs: tuple[Mapping[str, str], ...] = ()
     limitations: tuple[str, ...] = ()
+    tool_calls: int = 0
+    receipt_refs: tuple[Mapping[str, str], ...] = ()
 
 
 class RoleExecutor(Protocol):
@@ -147,12 +151,8 @@ def _validate_child(child, parent, *, depth, budget, catalog):
     if not all(any(_scope_within(scope, ceiling) for ceiling in parent_packet.write_scope)
                for scope in child_packet.write_scope):
         raise ValueError("child write scope exceeds parent")
-    for field, order in (("filesystem", ("forbidden", "read-only", "worktree-write")),
-                         ("network", ("forbidden", "restricted", "allowed"))):
-        ceiling = getattr(parent_packet.permissions, field)
-        actual = getattr(child_packet.permissions, field)
-        if actual not in order or ceiling not in order or order.index(actual) > order.index(ceiling):
-            raise ValueError(f"child {field} permission exceeds parent")
+    if not permission_policy_covers(parent_packet.permissions, child_packet.permissions):
+        raise ValueError("child permission exceeds parent")
     if child_packet.permissions.external_write and not parent_packet.permissions.external_write:
         raise ValueError("child external write exceeds parent")
     parent_roots = parent_packet.permissions.allowed_roots
@@ -244,7 +244,11 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
     def account(observation, reservation):
         nonlocal calls, known, held
         if isinstance(observation.model_calls, bool) or not isinstance(observation.model_calls, int) or observation.model_calls < 0:
+            held += reservation
             raise ValueError("executor returned invalid model call count")
+        if type(observation.tool_calls) is not int or observation.tool_calls < 0:
+            held += reservation
+            raise ValueError("executor returned invalid Tool call count")
         calls += observation.model_calls
         if observation.model_calls == 0:
             return
@@ -276,18 +280,24 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
             raise ValueError("workflow cancellation requested")
         if remaining <= 0 or calls >= budget.max_model_calls or held:
             raise ValueError("workflow time/call budget exhausted or actual usage is unknown")
+        session_calls = min(budget.max_session_model_turns, budget.max_model_calls-calls,
+                            node["budget"].get("max_turns", budget.max_model_calls)-own_calls)
         cap = min(budget.max_output_tokens_per_call,
-                  node["budget"].get("max_output_tokens", budget.max_total_tokens)-own_output)
+                  (node["budget"].get("max_output_tokens", budget.max_total_tokens)-own_output)
+                  // session_calls)
         if cap <= 0:
             raise ValueError("role Task output budget exhausted across sessions")
-        reservation = budget.input_reservation_per_call + cap
+        # Authorize and reserve every possible request before entering a Session.
+        # Unknown usage holds the entire slice, including its unused turns.
+        reservation = session_calls * (budget.input_reservation_per_call + cap)
         if known + reservation > budget.max_total_tokens:
             raise ValueError("workflow token reservation exceeds remaining budget")
         ordinal += 1
-        invocation = RoleInvocation(role, copy.deepcopy(node), ordinal, depth, copy.deepcopy(context), 1, cap,
+        invocation = RoleInvocation(role, copy.deepcopy(node), ordinal, depth, copy.deepcopy(context), session_calls, cap,
                                     min(remaining, node["budget"].get("max_seconds", remaining)), reservation)
         event("role-started", {"ordinal": ordinal, "role": role, "task_id": node["task_id"],
-                               "depth": depth, "context": invocation.context, "reserved_tokens": reservation})
+                               "depth": depth, "context": invocation.context, "reserved_tokens": reservation,
+                               "reserved_model_calls": session_calls, "output_tokens_per_call": cap})
         try:
             result = executor(invocation)
         except Exception as exc:
@@ -301,16 +311,17 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
         node_usage[key] = (own_calls + result.model_calls,
                           own_output + (result.output_tokens or 0))
         node_calls, node_output = node_usage[key]
-        if result.output_tokens is not None and result.output_tokens > cap:
+        if result.output_tokens is not None and result.output_tokens > session_calls * cap:
             raise ValueError("executor exceeded its dispatched output token cap")
         if node_calls > node["budget"].get("max_turns", budget.max_model_calls):
             raise ValueError("role Task turn budget exceeded after execution")
         if node_output > node["budget"].get("max_output_tokens", budget.max_total_tokens):
             raise ValueError("role Task output budget exceeded across sessions")
-        if result.model_calls > 1 or calls > budget.max_model_calls or known > budget.max_total_tokens:
+        if result.model_calls > session_calls or calls > budget.max_model_calls or known > budget.max_total_tokens:
             raise ValueError("executor exceeded its dispatched model/token budget")
         if result.status != "completed":
-            raise ValueError("role execution did not complete; retain its failure and stop")
+            reason = "; ".join(result.limitations) or "no completion evidence"
+            raise ValueError(f"role execution did not complete ({result.status}): {reason}")
         if held:
             raise ValueError("actual role usage is unknown; stop subsequent dispatch")
         finished = clock()
@@ -343,14 +354,27 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
                 seen_tasks.add(child_packet.task_id)
             event("delegation-proposed", {"parent": node["task_id"], "tasks": children})
             for index, child in enumerate(children):
+                observation_start = len(observations)
                 try:
                     child_control = node_run(child, depth+1, "child")
                 except ValueError:
                     unstarted.extend(i["task_id"] for i in children[index+1:])
                     raise
+                actual = copy.deepcopy(observations[observation_start:])
+                usage = {name: (None if any(item[name] is None for item in actual)
+                                else sum(item[name] for item in actual))
+                         for name in ("model_calls", "tool_calls", "input_tokens", "output_tokens")}
                 outcomes.append({"task_id": child["task_id"], "disposition": child_control["decision"],
                                  "summary": child_control["summary"], "limitations": child_control["limitations"],
-                                 "next_actions": child_control["next_actions"]})
+                                 "next_actions": child_control["next_actions"],
+                                 "execution_status": actual[-1]["status"], "usage": usage,
+                                 "usage_scope": "child-task-and-descendants",
+                                 "artifact_refs": [pin for item in actual for pin in item["artifact_refs"]],
+                                 "receipt_refs": [pin for item in actual for pin in item["receipt_refs"]],
+                                 "execution_observations": [{key: item[key] for key in (
+                                     "ordinal", "role", "task_id", "status", "model_calls", "tool_calls",
+                                     "input_tokens", "output_tokens", "artifact_refs", "receipt_refs")}
+                                     for item in actual]})
             control = invoke(role, node, depth, {"phase": "consume-child-results", "child_results": outcomes})
             event("child-results-consumed", {"parent": node["task_id"], "task_ids": [i["task_id"] for i in outcomes]})
         return control

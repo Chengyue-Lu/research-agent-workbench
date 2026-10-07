@@ -1,5 +1,9 @@
 # 风险与剩余边界
 
+2026-10-08：以下为原 `d630f8e174846f4932d05a7a0d69076930b53ee1` 风险快照，保留正文。当前失败、未开始与修复状态见 [ROOT_REPORT](chain-proof-002/ROOT_REPORT.md)，范围见 [COVERAGE](chain-proof-002/COVERAGE.md)，caller 责任见 [USAGE](chain-proof-002/USAGE.md)。PR140 未合并；正式 Source/Human/Skill 资格、真实科研及 M12 未完成。
+
+当前接合必须保留实际 intake pins、逐 Task 独立冻结、可信实际 binding 观测、typed conformance 检查和显式 Tool/session 边界。Guide caller 还须检查响应是否完整并记录实际 usage；项目未写入与模型回答完整性是不同事实。候选资产文件存在不证明 request 装配或准入。
+
 | 风险 | 应对与验收 | 当前状态 |
 |---|---|---|
 | Role配置存在而未进入模型请求 | 实际startup/request内容pin与消费测试；必载baseline | no-Skill路径已实现/离线验证；required Skill未实现阻断 |

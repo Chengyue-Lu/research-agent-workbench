@@ -174,7 +174,7 @@ def _derived_edges(
             if expected is not None:
                 edges.add((method_path, task_path, "method-task"))
                 pins.append((task_path, expected))
-            if task_ref.get("task_id") != task.get("task_id") or task_ref.get("revision") != task.get("revision"):
+            if task_ref.get("task_id") != task.get("task_id") or task_ref.get("revision") != task.get("revision", 1):
                 pins.append((task_path, "identity-mismatch"))
     return edges, pins
 

@@ -56,9 +56,66 @@ class EntryRoleTests(unittest.TestCase):
         self.assertTrue(request.data_policy.local_only)
         self.assertEqual((), request.tools)
 
+    def test_verified_input_snapshot_and_baseline_explain_existing_read(self):
+        request = self.request()
+        baseline = request.messages[0].content[0].text
+        user_text = request.messages[1].content[0].text
+        payload = json.loads(user_text)
+        raw = (self.root / "source.txt").read_bytes()
+        expected_hash = hashlib.sha256(raw).hexdigest()
+        self.assertEqual([{"path": "source.txt", "sha256": expected_hash,
+                           "revision": None, "text": raw.decode("utf-8")}], payload["inputs"])
+        self.assertEqual(self.task["input_refs"][0]["sha256"], expected_hash)
+        self.assertEqual(hashlib.sha256(user_text.encode("utf-8")).hexdigest(),
+                         request.metadata["input_snapshot_sha256"])
+        self.assertEqual(hashlib.sha256(baseline.encode("utf-8")).hexdigest(),
+                         request.metadata["baseline_sha256"])
+        for role, role_baseline in ROLE_BASELINES.items():
+            with self.subTest(role=role):
+                self.assertIn("caller actually read from Task.input_refs", role_baseline)
+                self.assertIn("verified against its SHA-256", role_baseline)
+                self.assertIn("decoded from those same UTF-8 bytes", role_baseline)
+                self.assertIn("pinned revisions are checked when present", role_baseline)
+                self.assertIn("Use inputs[].text as already read input", role_baseline)
+                self.assertIn("no independent file open or local file tool", role_baseline)
+                self.assertIn("no additional file access, automatic reference traversal or write authority", role_baseline)
+                self.assertIn("A list of refs does not mean those files have been opened", role_baseline)
+                self.assertIn("only to payload.inputs, not arbitrary caller_context", role_baseline)
+
+    def test_driver_publication_baseline_is_conditional_and_pending(self):
+        publication = {"publisher": "SessionExecutionDriver", "status": "pending",
+                       "output_path": "work/role.json", "output_contract": "summary",
+                       "boundaries": {"permission_grant": False, "publication_complete": False}}
+        request = self.request(context={"driver_output_publication": publication})
+        payload = json.loads(request.messages[1].content[0].text)
+        baseline = request.messages[0].content[0].text
+        self.assertEqual(publication, payload["caller_context"]["driver_output_publication"])
+        self.assertEqual((), request.tools)
+        self.assertIn("Only when caller_context provides driver_output_publication", baseline)
+        self.assertIn("pending metadata, not permission or completed publication", baseline)
+        self.assertIn("A missing file-write tool does not by itself block returning that text", baseline)
+        self.assertIn("Do not claim publication success without a real Receipt", baseline)
+        self.assertIn("actual permission or I/O failures still require stopping", baseline)
+        self.assertIn("Without this record, assume no Driver publication", baseline)
+        self.assertIn("unequal strings alone establish neither permission nor failure", baseline)
+        self.assertIsNone(json.loads(self.request().messages[1].content[0].text)["caller_context"])
+
     def test_fresh_requests_do_not_inherit_previous_context(self):
         self.request(context={"actual_child_results": ["private prior result"]})
         self.assertNotIn("private prior result", self.request().messages[1].content[0].text)
+
+    def test_child_receives_own_task_snapshot_without_delegation_or_prior_results(self):
+        task = copy.deepcopy(self.task)
+        task["delegation"] = {"allowed": False, "max_depth": 0, "max_parallel": 0}
+        request = self.request(role="child", task=task,
+                               context={"phase": "plan-or-execute", "child_results": []})
+        payload = json.loads(request.messages[1].content[0].text)
+        self.assertFalse(payload["task"]["delegation"]["allowed"])
+        self.assertEqual([], payload["caller_context"]["child_results"])
+        self.assertEqual((self.root / "source.txt").read_bytes().decode("utf-8"),
+                         payload["inputs"][0]["text"])
+        self.assertIn("does not prohibit executing this Task directly", request.messages[0].content[0].text)
+        self.assertEqual("child", request.metadata["entry_role"])
 
     def test_existing_dataclass_inputs_are_consumed(self):
         from research_workbench.capability.models import AgentProfile
@@ -72,13 +129,23 @@ class EntryRoleTests(unittest.TestCase):
         payload = json.loads(request.messages[1].content[0].text)
         self.assertIn("task_packet", payload["control_output_schemas"])
         self.assertIn("unknowns", request.messages[0].content[0].text)
+        self.assertIsNone(payload["caller_context"])
+        self.assertIn("intake uses its own draft compiler", request.messages[0].content[0].text)
         self.assertEqual("application-request-no-skill", request.metadata["qualification"])
+
+    def test_main_receives_child_contract_and_only_actual_profile_identity(self):
+        request = self.request(role="main")
+        payload = json.loads(request.messages[1].content[0].text)
+        schema = payload["delegation_output_schemas"]["task_packet"]
+        self.assertIn("forbidden_skills", schema["required"])
+        self.assertIn("common", payload["delegation_output_schemas"])
+        self.assertEqual([self.profile["agent_profile_id"]], payload["available_agent_profiles"])
 
     def test_hash_drift_and_extra_inputs_are_rejected(self):
         (self.root / "source.txt").write_text("changed", encoding="utf-8")
-        with self.assertRaises(EntryInputError):
+        with self.assertRaisesRegex(EntryInputError, "input hash mismatch"):
             self.request()
-        with self.assertRaises(EntryInputError):
+        with self.assertRaisesRegex(EntryInputError, "outside Task exact read set"):
             self.request(input_refs=[{"path": "extra.txt", "sha256": "0" * 64}])
 
     def test_required_skill_and_ceiling_budget_policy_mismatches_block(self):

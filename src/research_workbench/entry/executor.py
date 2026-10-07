@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
-from research_workbench.adapters.models import ApiSessionLimits, ModelProvider
+from research_workbench.adapters.models import ApiSessionLimits, ClientTool, ModelProvider
 from research_workbench.entry.driver import ObservedExecutionBinding, execute_role_slice
 from research_workbench.entry.roles import build_role_request
 from research_workbench.entry.workflow import RoleInvocation, RoleObservation
@@ -28,6 +28,9 @@ class FrozenRoleBinding:
     schema_root: str | Path | None = None
     host_clock: Any = None
     session_clock: Any = None
+    tools: tuple[ClientTool, ...] = ()
+    tool_refs: Mapping[str, str] = field(default_factory=dict)
+    session_limits: ApiSessionLimits | None = None
 
 
 class FrozenRoleExecutor:
@@ -67,20 +70,50 @@ class FrozenRoleExecutor:
         if plain(frozen_task) != plain(invocation.task):
             raise ValueError("binding factory substituted a different role Task")
 
+        supply_pin = view.document["selected_supply_report_ref"]
+        supply = bundle.documents[(self.root / supply_pin["path"]).resolve()]
+        context = plain(invocation.context)
+        context["execution_adapter_constraints"] = {
+            "supply_ref": plain(supply_pin),
+            "required_permissions": plain(supply["required_permissions"]),
+            "data_egress_behavior": plain(supply["data_egress_behavior"]),
+            "purpose": "Execution prerequisites only; no additional permission or selection authority.",
+        }
+        context["driver_output_publication"] = {
+            "publisher": "SessionExecutionDriver",
+            "status": "pending",
+            "output_path": binding.output_path,
+            "output_contract": binding.output_contract,
+            "boundaries": {"permission_grant": False, "publication_complete": False},
+        }
+
         def builder(*args, **kwargs):
-            return build_role_request(*args, **kwargs, context=invocation.context,
+            return build_role_request(*args, **kwargs, context=context,
                                       instructions=invocation.instructions)
 
+        limits = binding.session_limits or ApiSessionLimits(
+            max_model_turns=invocation.max_model_calls, max_tool_calls=0,
+            max_parallel_tool_calls=0, max_tool_result_chars=1,
+            max_output_tokens_per_turn=invocation.max_output_tokens,
+            max_total_tokens=invocation.max_total_tokens, max_seconds=invocation.max_seconds)
+        if binding.tools and binding.session_limits is None:
+            raise ValueError("Tools require explicit bounded Session limits")
+        if (limits.max_model_turns > invocation.max_model_calls
+                or limits.max_output_tokens_per_turn > invocation.max_output_tokens
+                or limits.max_seconds > invocation.max_seconds
+                or (limits.max_total_tokens is not None
+                    and limits.max_total_tokens > invocation.max_total_tokens)):
+            raise ValueError("Session limits exceed the caller's reserved slice")
+        limits = replace(limits, max_total_tokens=(limits.max_total_tokens
+            if limits.max_total_tokens is not None else invocation.max_total_tokens),
+            allowed_tool_side_effects=frozenset(limits.allowed_tool_side_effects))
         options = dict(bundle_ref=binding.bundle_ref, view_ref=binding.view_ref, role=invocation.role,
                        provider=binding.provider, binding_observer=binding.binding_observer,
                        output_dir=binding.output_dir, output_path=binding.output_path,
                        output_contract=binding.output_contract, attempt_id=binding.attempt_id,
                        report_id="HOST-"+binding.attempt_id, receipt_id="RECEIPT-"+binding.attempt_id,
                        accountable_owner=self.owner, request_builder=builder, cancel_requested=self.cancel,
-                       limits=ApiSessionLimits(max_model_turns=invocation.max_model_calls, max_tool_calls=0,
-                          max_parallel_tool_calls=0, max_tool_result_chars=1,
-                          max_output_tokens_per_turn=invocation.max_output_tokens,
-                          max_total_tokens=invocation.max_total_tokens, max_seconds=invocation.max_seconds),
+                       limits=limits, tools=tuple(binding.tools), tool_refs=dict(binding.tool_refs),
                        schema_root=binding.schema_root)
         if binding.host_clock is not None:
             options["host_clock"] = binding.host_clock
@@ -99,6 +132,11 @@ class FrozenRoleExecutor:
             pins.append(result.receipt_ref)
         status = result.host_report["status"]
         limitations = () if result.closeout_error is None else (result.closeout_error,)
+        if status != "completed":
+            limitations += tuple(str(item["code"]) for item in result.host_report.get("diagnostics", ())
+                                 if isinstance(item, Mapping) and item.get("code"))
+            if session is not None:
+                limitations += ("Session stopped: " + session.stop_reason,)
         if status == "completed" and result.receipt_ref is None:
             status = "post-call-failed"
         facts = result.host_report["actual_facts"]
@@ -118,8 +156,16 @@ class FrozenRoleExecutor:
         output_tokens = session.usage.output_tokens if session is not None and usage_known else None
         if attempted == 0:
             input_tokens = output_tokens = 0
+        tool_calls = facts.get("tool_invocations", 0)
+        if isinstance(tool_calls, bool) or not isinstance(tool_calls, int) or tool_calls < 0:
+            raise ValueError("actual Tool calls are unavailable; execution requires review")
+        artifact_refs = [{"path": p.path, "sha256": p.sha256} for p in pins]
+        artifact_refs.extend({"path": item["path"], "sha256": item["sha256"]}
+                             for item in result.host_report.get("artifacts", ()))
         return RoleObservation(status, text, attempted, input_tokens, output_tokens,
-             tuple({"path": p.path, "sha256": p.sha256} for p in pins), limitations)
+             tuple(artifact_refs), limitations, tool_calls,
+             () if result.receipt_ref is None else ({"path": result.receipt_ref.path,
+                                                    "sha256": result.receipt_ref.sha256},))
 
 
 __all__ = ["FrozenRoleBinding", "FrozenRoleExecutor"]

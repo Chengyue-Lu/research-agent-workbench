@@ -1,5 +1,7 @@
 # 交付文件与检查
 
+**历史交付清单：PR140 `d630f8e174846f4932d05a7a0d69076930b53ee1` 的 65 项离线入口套、零付费 API/生产 Tool 快照。** 以下 hash 和验证事实只定位该次交付；本次新增顶部标签及后续文件不由这些历史 pins 认证。最新结果见 [ROOT_REPORT](chain-proof-002/ROOT_REPORT.md)，[API_RESULTS](chain-proof-002/API_RESULTS.md) 和 [DELIVERY](chain-proof-002/DELIVERY.md) 待 Root 交付并冻结。本文没有提前验证后两份文件存在或 hash。候选尚未合并，资格及科研接受仍各自未完成。
+
 2026-10-07；isolated branch candidate，base d3c4d23206339ebc7f18b5621f3aa5453f96335e。
 
 11个预先声明的source/planning handoff pins一致；137个内部Markdown file targets存在；机器绝对路径0。链接检查不认证网页、anchor语义或科学正确性。最终源码验证：入口65 PASS、原消费者53 PASS、candidate wheel实际安装与CLI2 PASS；原R1～R4限定独立复查闭合。

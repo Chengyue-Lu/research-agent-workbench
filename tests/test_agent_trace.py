@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -238,6 +239,63 @@ class AgentTraceTests(unittest.TestCase):
                 arguments={},
                 result_entered_context=True,
             )
+
+    def test_long_unsafe_tool_operation_id_uses_short_result_filename(self) -> None:
+        recorder = self.recorder()
+        operation_id = "../very-long\\operation:<>|?*研究/" * 1000
+        expected_result = {"text": "synthetic tool result"}
+        recorder.record_tool_call(
+            operation_id=operation_id,
+            tool_name="read_file",
+            status="delivered",
+            arguments={"path": "inputs/a.txt"},
+            result=expected_result,
+            result_entered_context=True,
+        )
+        recorder.seal("safe-paused")
+
+        events = [json.loads(line) for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+        payload = next(event["payload"] for event in events if event["event_type"] == "tool-call")
+        self.assertEqual(operation_id, payload["operation_id"])
+        result_ref = payload["result_ref"]
+        result_path = self.attempt / result_ref["path"]
+        self.assertEqual(self.attempt / "tool-events", result_path.parent)
+        self.assertRegex(result_path.name, r"^\d+-[0-9a-f]{12}\.json$")
+        self.assertLessEqual(len(result_path.name), 32)
+        self.assertEqual(expected_result, json.loads(result_path.read_text(encoding="utf-8")))
+        self.assertEqual(hashlib.sha256(result_path.read_bytes()).hexdigest(), result_ref["sha256"])
+        index = yaml.safe_load(recorder.index_path.read_text(encoding="utf-8"))
+        self.assertEqual([result_ref], index["tool_event_refs"])
+        self.assertFalse(validate_attempt_trace(self.root, self.attempt).blocked)
+
+    def test_repeated_and_sanitization_colliding_tool_ids_keep_distinct_results(self) -> None:
+        recorder = self.recorder()
+        operation_ids = ("lookup/id", "lookup\\id", "lookup/id")
+        for position, operation_id in enumerate(operation_ids):
+            recorder.record_tool_call(
+                operation_id=operation_id,
+                tool_name="read_file",
+                status="delivered",
+                arguments={"path": "inputs/a.txt"},
+                result={"position": position},
+                result_entered_context=True,
+            )
+        recorder.seal("safe-paused")
+
+        events = [json.loads(line) for line in (self.attempt / "events.jsonl").read_text(encoding="utf-8").splitlines()]
+        payloads = [event["payload"] for event in events if event["event_type"] == "tool-call"]
+        self.assertEqual(list(operation_ids), [payload["operation_id"] for payload in payloads])
+        result_refs = [payload["result_ref"] for payload in payloads]
+        self.assertEqual(3, len({reference["path"] for reference in result_refs}))
+        self.assertEqual(3, len(list((self.attempt / "tool-events").iterdir())))
+        for position, reference in enumerate(result_refs):
+            result_path = self.attempt / reference["path"]
+            self.assertLessEqual(len(result_path.name), 32)
+            self.assertEqual({"position": position}, json.loads(result_path.read_text(encoding="utf-8")))
+            self.assertEqual(hashlib.sha256(result_path.read_bytes()).hexdigest(), reference["sha256"])
+        index = yaml.safe_load(recorder.index_path.read_text(encoding="utf-8"))
+        self.assertEqual(result_refs, index["tool_event_refs"])
+        self.assertFalse(validate_attempt_trace(self.root, self.attempt).blocked)
 
     def test_hash_tamper_is_blocking(self) -> None:
         recorder = self.recorder()

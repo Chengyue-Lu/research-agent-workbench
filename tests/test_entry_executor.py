@@ -67,6 +67,15 @@ class EntryExecutorTests(unittest.TestCase):
             self.assertEqual(0, result.held_tokens)
             self.assertEqual(1, len(provider.requests))
             self.assertIn("delegations", provider.requests[0].messages[1].content[0].text)
+            binding = executor.factory(None)
+            context = json.loads(provider.requests[0].messages[1].content[0].text)["caller_context"]
+            publication = context["driver_output_publication"]
+            self.assertEqual(binding.output_path, publication["output_path"])
+            self.assertEqual(binding.output_contract, publication["output_contract"])
+            self.assertEqual("SessionExecutionDriver", publication["publisher"])
+            self.assertEqual("pending", publication["status"])
+            self.assertEqual({"permission_grant": False, "publication_complete": False}, publication["boundaries"])
+            self.assertTrue((root / binding.output_path).is_file())
             self.assertIsNotNone(executor.results[0].receipt_ref)
             self.assertFalse(result.task_completion)
             raw = json.dumps(_protocol("JOINT")).encode("utf-8")
@@ -80,7 +89,10 @@ class EntryExecutorTests(unittest.TestCase):
             before = {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()}
             request = build_guide_request(root, question="Explain this stage", main_state_ref=state_ref, model="offline-model")
             self.assertEqual((), request.tools)
-            self.assertEqual([state_ref.path], [r["path"] for r in json.loads(request.messages[1].content[0].text)["approved_inputs"]])
+            guide_payload = json.loads(request.messages[1].content[0].text)
+            self.assertEqual([state_ref.path], [r["path"] for r in guide_payload["approved_inputs"]])
+            self.assertNotIn("driver_output_publication", guide_payload)
+            self.assertNotIn("caller_context", guide_payload)
             self.assertEqual(before, {p.relative_to(root).as_posix(): p.read_bytes() for p in root.rglob("*") if p.is_file()})
 
     def test_failed_actual_send_is_one_call_and_full_unknown_hold_without_retry(self):

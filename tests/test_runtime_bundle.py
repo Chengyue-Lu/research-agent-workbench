@@ -48,6 +48,27 @@ class RuntimeBundleTests(RuntimeBundleFixture, unittest.TestCase):
         self._write(root, "bundle/manifest.yaml", manifest)
         return manifest_path
 
+    def test_optional_task_revision_preserves_default_one_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self._build_bundle(root)
+            task = load_document(root / "bundle/task.yaml")
+            task.pop("revision")
+            task_hash = self._write(root, "bundle/task.yaml", task)
+            snapshot = load_document(root / "bundle/snapshot.yaml")
+            snapshot["task_ref"]["content_hash"] = "sha256:" + task_hash
+            self._write(root, "bundle/snapshot.yaml", snapshot)
+            manifest = self._rewrite_method_chain(root,
+                lambda method: method["task_ref"].update(sha256=task_hash))
+            document = load_document(manifest)
+            for item in document["documents"]:
+                if item["path"] == "bundle/task.yaml":
+                    item["sha256"] = task_hash
+            self._write(root, "bundle/manifest.yaml", document)
+            bundle = load_runtime_bundle(manifest.relative_to(root),
+                project_root=root, schema_root=ROOT / "schemas")
+            self.assertNotIn("revision", bundle.documents[(root / "bundle/task.yaml").resolve()])
+
     def test_zero_skill_bundle_uses_only_explicit_exact_closure(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)

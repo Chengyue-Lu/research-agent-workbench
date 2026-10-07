@@ -1,5 +1,7 @@
 # 任务名称与完成度
 
+**历史快照：PR140 候选提交 `d630f8e174846f4932d05a7a0d69076930b53ee1`，65 项离线入口套、零付费 API/生产 Tool。** 以下正文保留当时事实和限制，不能用作最新桥接完成度。当前阅读 [ROOT_REPORT](chain-proof-002/ROOT_REPORT.md)、[COVERAGE](chain-proof-002/COVERAGE.md) 和 [USAGE](chain-proof-002/USAGE.md)；[API_RESULTS](chain-proof-002/API_RESULTS.md) 由 Root 后续交付，本文未验证其存在或内容。PR140 尚未合并，正式资格、真实科研及 M12 未完成。
+
 2026-10-07；Audit `AUDIT-RWB-ENTRY-001`，分支 `codex/research-entry-integration`，base develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`。完成度只描述本分支候选。逐项区分支持路径已实现、实际验证和仍缺桥接；不累计为系统整体百分比或 canonical M Task DONE。
 
 ## 本轮实际交付

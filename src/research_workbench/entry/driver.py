@@ -8,13 +8,14 @@ qualification, Task completion, Skill admission, or recovery authority.
 from __future__ import annotations
 
 import json
+import math
 import time
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
 from research_workbench.adapters.models import (
-    ApiSessionLimits, ApiSessionResult, ApiSessionStatus,
+    ApiSessionLimits, ApiSessionResult, ApiSessionStatus, ClientTool,
     IsolatedApiSessionRunner, ModelProvider, ModelRequest, ProviderRegistry,
 )
 from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
@@ -123,8 +124,14 @@ def _default_request_builder(*args: Any, **kwargs: Any) -> ModelRequest:
     return build_role_request(*args, **kwargs)
 
 
+def _tool_signature(definitions: Sequence[Any]) -> str:
+    return json.dumps([{"name": item.name, "description": item.description,
+                        "input_schema": _plain(item.input_schema), "strict": item.strict}
+                       for item in definitions], sort_keys=True, allow_nan=False)
+
+
 class SessionExecutionDriver:
-    """One caller-prebound, zero-Tool procedure Driver with actual Session facts."""
+    """One prebound no-Skill Session, with optional explicit readonly Tools."""
 
     def __init__(
         self, root: str | Path, *, view: ValidatedExecutionView, role: str,
@@ -136,6 +143,7 @@ class SessionExecutionDriver:
         request_builder: Callable[..., ModelRequest] | None = None,
         request_payloads: Sequence[str] = ("project-context",),
         observation: ObservedExecutionBinding | None = None,
+        tools: Sequence[ClientTool] = (), tool_refs: Mapping[str, str] | None = None,
     ) -> None:
         self.root = Path(root).resolve()
         if self.root != view.project_root:
@@ -158,15 +166,24 @@ class SessionExecutionDriver:
         self.clock, self.cancel = session_clock, cancel_requested
         self.builder = request_builder or _default_request_builder
         budget = view.document["effective_constraints"]["budget"]
-        self.limits = limits or ApiSessionLimits(
+        self.limits = replace(limits, allowed_tool_side_effects=frozenset(limits.allowed_tool_side_effects)) if limits else ApiSessionLimits(
             max_model_turns=1, max_tool_calls=0, max_parallel_tool_calls=0,
             max_tool_result_chars=1, max_output_tokens_per_turn=int(budget.get("max_output_tokens", 1024)),
             max_seconds=float(budget.get("max_seconds", 60)),
         )
-        if self.limits.max_tool_calls or self.limits.max_parallel_tool_calls:
-            raise EntryDriverError("this no-Skill Driver permits zero Tools")
+        for name in ("max_model_turns", "max_tool_calls", "max_parallel_tool_calls",
+                     "max_tool_result_chars", "max_output_tokens_per_turn"):
+            if type(getattr(self.limits, name)) is not int:
+                raise EntryDriverError("Session count/token limits must be integers")
+        if (isinstance(self.limits.max_seconds, bool)
+                or not isinstance(self.limits.max_seconds, (int, float))
+                or not math.isfinite(self.limits.max_seconds)):
+            raise EntryDriverError("Session deadline must be finite")
+        if self.limits.max_total_tokens is not None and type(self.limits.max_total_tokens) is not int:
+            raise EntryDriverError("Session total token limit must be an integer")
         if (self.limits.max_model_turns > budget.get("max_turns", self.limits.max_model_turns)
-                or self.limits.max_output_tokens_per_turn > budget.get("max_output_tokens", self.limits.max_output_tokens_per_turn)
+                or self.limits.max_model_turns * self.limits.max_output_tokens_per_turn
+                > budget.get("max_output_tokens", self.limits.max_model_turns * self.limits.max_output_tokens_per_turn)
                 or self.limits.max_seconds > budget.get("max_seconds", self.limits.max_seconds)):
             raise EntryDriverError("Session limits exceed frozen Host budget")
         self.remote = provider.capabilities().deployment != "local"
@@ -181,13 +198,49 @@ class SessionExecutionDriver:
             raise EntryDriverError("request payload classification exceeds frozen egress policy")
         supply_path = resolve_within_root(self.root, view.document["selected_supply_report_ref"]["path"])
         supply = view.runtime_bundle.documents[supply_path]
-        if supply["supply_identity"]["supply_kind"] != "procedure" or view.runtime_bundle.manifest["skill_extension"]["enabled"]:
-            raise EntryDriverError("only procedure no-Skill Supply is supported by this Driver")
+        if supply["supply_identity"]["supply_kind"] not in {"procedure", "tool"} or view.runtime_bundle.manifest["skill_extension"]["enabled"]:
+            raise EntryDriverError("only procedure/direct Tool no-Skill Supply is supported by this Driver")
+        self.tools = tuple(ClientTool(replace(item.definition, input_schema=_plain(item.definition.input_schema)),
+                                      item.execute, item.side_effect) for item in tools)
+        self.tool_refs = dict(tool_refs or {})
+        names = {item.definition.name for item in self.tools}
+        if len(names) != len(self.tools) or set(self.tool_refs) != names:
+            raise EntryDriverError("each unique ClientTool requires exactly one explicit Supply component ref")
+        if self.tools and (limits is None or self.limits.max_tool_calls < 1
+                           or self.limits.max_parallel_tool_calls < 1):
+            raise EntryDriverError("Tools require explicit positive call and batch limits")
+        if not self.tools and (self.limits.max_tool_calls or self.limits.max_parallel_tool_calls):
+            raise EntryDriverError("Tool budgets require declared ClientTools")
+        if (self.limits.allowed_tool_side_effects - {"read-only"}
+                or any(item.side_effect != "read-only" for item in self.tools)):
+            raise EntryDriverError("this Driver supports readonly Tool handlers only")
+        selected_refs = {item["component_ref"] for item in supply["supply_identity"].get("components", ())
+                         if item["component_kind"] == "tool"}
+        if not set(self.tool_refs.values()).issubset(selected_refs):
+            raise EntryDriverError("Tool identity is outside the selected Supply components")
+        if self.tools:
+            profile_pin = view.document["agent_profile_ref"]
+            profile_path, profile_bytes = _read_pin(self.root, CloseoutPin(profile_pin["path"], profile_pin["sha256"]))
+            self.recorder.record_content_read(profile_pin["path"], access="content",
+                allowlist_basis="frozen View Profile Tool ceiling", content_sha256=hash_bytes(profile_bytes))
+            profile = load_document_bytes(profile_path, profile_bytes)
+            if (not names.issubset(set(_task(view).get("required_capabilities", ())))
+                    or not names.issubset(set(profile.get("allowed_tool_capabilities", ())))
+                    or not names.issubset(set(supply.get("provided_capabilities", ())))):
+                raise EntryDriverError("Tool names must be explicitly allowed by Task, Profile and selected Supply")
+        if supply["supply_identity"]["supply_kind"] == "tool" and not self.tools:
+            raise EntryDriverError("direct Tool Supply requires explicit ClientTools")
+        self.tool_definitions = tuple(item.definition for item in self.tools)
+        self.tool_signature = _tool_signature(self.tool_definitions)
         self.session: ApiSessionResult | None = None
         self.requests = 0
         self.responses: list[Any] = []
         self.gaps: list[str] = []
         self.failure: str | None = None
+        self.tool_invocations = 0
+        self.used_tool_refs: set[str] = set()
+        self.tool_call_ids: set[str] = set()
+        self.started: float | None = None
         self._executed = False
 
     @property
@@ -198,14 +251,34 @@ class SessionExecutionDriver:
     def selected_supply_report_ref(self) -> str:
         return self._declared.supply_report_ref
 
+    def _check_use(self) -> None:
+        self._actual = _observe(self.provider, self.observer)
+        if self._actual != self._declared:
+            self.failure = "ENTRY-ACTUAL-BINDING-DRIFT"
+            raise EntryDriverError("actual implementation Binding/Supply changed before use")
+        if self.cancel and self.cancel():
+            self.failure = "ENTRY-CANCELLED"
+            raise EntryDriverError("execution cancellation requested before use")
+        if self.started is not None and self.clock()-self.started >= self.limits.max_seconds:
+            self.failure = "ENTRY-TIME-BUDGET"
+            raise EntryDriverError("Session deadline exhausted before use")
+        if _tool_signature(self.tool_definitions) != self.tool_signature:
+            self.failure = "ENTRY-TOOL-DEFINITION-DRIFT"
+            raise EntryDriverError("declared Tool definitions changed before use")
+        profile = self.view.document["agent_profile_ref"]
+        _read_pin(self.root, CloseoutPin(profile["path"], profile["sha256"]))
+        for item in self.input_refs:
+            _read_pin(self.root, CloseoutPin(item["path"], item["sha256"]))
+
     def record(self, kind: str, payload: Mapping[str, Any]) -> None:
         if kind == "provider-request":
-            self._actual = _observe(self.provider, self.observer)
-            if self._actual != self._declared:
-                self.failure = "ENTRY-ACTUAL-BINDING-DRIFT"
-                raise EntryDriverError("actual implementation Binding/Supply changed before dispatch")
-            for item in self.input_refs:
-                _read_pin(self.root, CloseoutPin(item["path"], item["sha256"]))
+            self._check_use()
+            current = payload["request"]
+            if (self.requests >= self.limits.max_model_turns
+                    or current.model != self._declared.binding["model"]["ref"]
+                    or _tool_signature(current.tools) != self.tool_signature):
+                self.failure = "ENTRY-REQUEST-BOUNDARY"
+                raise EntryDriverError("request exceeds frozen model/Tool/call boundary")
             self.recorder.record(kind, payload)
             self.requests += 1
         elif kind == "provider-response":
@@ -219,6 +292,25 @@ class SessionExecutionDriver:
                 self.gaps.append("response-binding-disagrees-with-configured-observation")
                 self.recorder.record_capture_gap("events", self.gaps[-1])
                 raise EntryDriverError("response/configured Binding drift")
+        elif kind in {"tool-attempted", "tool-result"}:
+            name, call_id = payload["name"], payload["call_id"]
+            if name not in self.tool_refs:
+                raise EntryDriverError("undeclared Tool event")
+            if kind == "tool-attempted":
+                self._check_use()
+                if self.tool_invocations >= self.limits.max_tool_calls or call_id in self.tool_call_ids:
+                    raise EntryDriverError("Tool count exhausted or call identity reused")
+            elif call_id not in self.tool_call_ids:
+                raise EntryDriverError("Tool result has no retained invocation")
+            # Trace/Host/Receipt use frozen component identity; Session keeps the
+            # request's client name for result assembly and handler lookup.
+            self.recorder.record(kind, {**payload, "name": self.tool_refs[name]})
+            if kind == "tool-attempted":
+                self.tool_invocations += 1
+                self.tool_call_ids.add(call_id)
+                self.used_tool_refs.add(self.tool_refs[name])
+            elif payload.get("status") == "failed":
+                self.failure = self.failure or "ENTRY-TOOL-FAILED"
         else:
             if kind == "capture-gap":
                 self.gaps.append(str(payload.get("reason", "capture-gap")))
@@ -240,19 +332,23 @@ class SessionExecutionDriver:
             self.recorder.record_content_read(item["path"], access="content", allowlist_basis="exact Task input", content_sha256=hash_bytes(content))
         model_request = self.builder(self.root, role=self.role, task=task, profile=profile,
             model=str(self._declared.binding["model"]["ref"]), input_refs=self.input_refs,
-            tools=(), max_output_tokens=self.limits.max_output_tokens_per_turn)
-        if not isinstance(model_request, ModelRequest) or model_request.tools or model_request.model != self._declared.binding["model"]["ref"]:
-            raise EntryDriverError("Role builder must return the frozen model and zero Tools")
+            tools=self.tool_definitions, max_output_tokens=self.limits.max_output_tokens_per_turn)
+        if (not isinstance(model_request, ModelRequest)
+                or _tool_signature(model_request.tools) != self.tool_signature
+                or model_request.model != self._declared.binding["model"]["ref"]):
+            raise EntryDriverError("Role builder must return the frozen model and exact declared Tools")
         model_request = replace(model_request, data_policy=replace(
             model_request.data_policy, local_only=model_request.data_policy.local_only or not self.remote,
             allow_provider_server_tools=False))
         registry = ProviderRegistry()
         registry.register(str(self._declared.binding["provider"]["ref"]), self.provider)
-        runner = IsolatedApiSessionRunner(registry, clock=self.clock)
+        runner = IsolatedApiSessionRunner(registry, tools=self.tools, clock=self.clock)
         started = self.clock()
+        self.started = started
         try:
             self.session = runner.run(provider_name=str(self._declared.binding["provider"]["ref"]),
-                request=model_request, limits=self.limits, event_sink=self, cancel_requested=self.cancel)
+                request=model_request, limits=self.limits, event_sink=self,
+                cancel_requested=lambda: bool(self.failure) or bool(self.cancel and self.cancel()))
         except Exception as exc:
             self.failure = self.failure or "ENTRY-SESSION-EXCEPTION"
             if not isinstance(exc, EntryDriverError):
@@ -276,6 +372,7 @@ class SessionExecutionDriver:
             actual_supply_report_ref=self._actual.supply_report_ref,
             turns=len(self.responses), output_tokens=sum(response.usage.output_tokens or 0 for response in self.responses),
             elapsed_seconds=max(0.0, self.clock() - started), provider_invocations=self.requests,
+            tool_invocations=self.tool_invocations, tool_refs=tuple(sorted(self.used_tool_refs)),
             data_egress_payloads=self.payloads if self.requests else (), artifacts=artifacts,
             facts_complete=not self.gaps, capture_gaps=tuple(self.gaps),
             failure_code=self.failure or (None if completed else "ENTRY-SESSION-NOT-COMPLETED"),
@@ -294,6 +391,7 @@ def execute_role_slice(
     request_builder: Callable[..., ModelRequest] | None = None,
     request_payloads: Sequence[str] = ("project-context",),
     dispatch_guard: Callable[[str], bool] | None = None,
+    tools: Sequence[ClientTool] = (), tool_refs: Mapping[str, str] | None = None,
 ) -> RoleSliceResult:
     """Save actual execution files, then verify their Core Receipt independently.
 
@@ -328,12 +426,12 @@ def execute_role_slice(
     actual_inputs = tuple(input_refs) or tuple(task.get("input_refs", ()))
     read_allowlist += [str(item["path"]) for item in actual_inputs]
     recorder = AgentTraceRecorder(destination / "trace", task_id=task["task_id"],
-        task_revision=task["revision"], attempt_id=attempt_id, task_snapshot=task,
+        task_revision=task.get("revision", 1), attempt_id=attempt_id, task_snapshot=task,
         accountable_owner=accountable_owner, actor_id="entry-role-driver",
         runtime_identity=str(observed.binding["runtime"]["ref"]), provider=str(observed.binding["provider"]["ref"]),
         read_allowlist=read_allowlist,
         write_scope=[str(item).rstrip("/") + "/**" for item in view.document["effective_constraints"]["permissions"]["allowed_roots"]],
-        tool_allowlist=[], created_at=clock.now().isoformat())
+        tool_allowlist=list((tool_refs or {}).values()), created_at=clock.now().isoformat())
     view_reference = {"ref": f"{view.document['view_id']}@r{view.document['revision']}", "path": view_ref.path, "sha256": view_ref.sha256}
     recorder.record_decision_snapshot("execution-scope-binding", {
         "schema_version": "0.1.0", "record_kind": "execution-scope-binding",
@@ -343,7 +441,17 @@ def execute_role_slice(
         binding_observer=binding_observer, observation=observed, recorder=recorder,
         output_path=output_path, output_contract=output_contract, input_refs=actual_inputs,
         limits=limits, session_clock=session_clock, cancel_requested=cancel_requested,
-        request_builder=request_builder, request_payloads=request_payloads)
+        request_builder=request_builder, request_payloads=request_payloads,
+        tools=tools, tool_refs=tool_refs)
+    if driver.tools:
+        recorder.record_decision_snapshot("entry-client-tool-binding", {
+            "client_tool_bindings": [{"client_name": item.definition.name,
+                "component_ref": driver.tool_refs[item.definition.name], "side_effect": item.side_effect}
+                for item in driver.tools],
+            "definitions_sha256": hash_bytes(driver.tool_signature.encode("utf-8")),
+            "limits": {name: getattr(driver.limits, name) for name in (
+                "max_model_turns", "max_tool_calls", "max_parallel_tool_calls", "max_tool_result_chars")},
+        })
     host = execute_frozen_view(view, driver, report_id=report_id, attempt_id=attempt_id,
         clock=clock, schema_root=schema_root, dispatch_guard=dispatch_guard)
     host_pin = _persist(project_root, destination / "host.json", host)
