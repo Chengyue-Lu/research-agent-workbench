@@ -1,64 +1,30 @@
-# 实现文档索引
+# 实现接口导航
 
-这里说明“如何实现或验证一个已接受接口”。当前成熟度仍以 [`STATUS.md`](../STATUS.md) 为准，实时工作项仍以 [`TASKS.md`](../TASKS.md) 为准。
+本页说明哪个文件定义接口和验证边界。当前实现成熟度见 [STATUS](../STATUS.md)，exact Task 定义、依赖及状态见
+[TASKS](../TASKS.md)；接口文档存在、Schema PASS 与真实 API/科研验收分别判断。
 
-## Active implementation contracts
+## 按产物与消费者查找
 
-- [Mode Action contract and registry](MODE_ACTION_CONTRACT.md)
-- [Method Resolution contract](METHOD_RESOLUTION_CONTRACT.md)
-- [Capability Requirement demand contract](CAPABILITY_REQUIREMENT_CONTRACT.md)
-- [Skill Need requirements contract](SKILL_NEED_CONTRACT.md)
-- [Skill lifecycle v2](SKILL_LIFECYCLE_V2.md)
-- [Protocol Profile contract](PROTOCOL_PROFILE_CONTRACT.md)
-- [Capability Resolution and Snapshot Core](CAPABILITY_RESOLUTION_CONTRACT.md)
-- [Phase B migration/replay/replacement Gate](PHASE_B_EVOLUTION_GATE.md)
-- [Runtime Bundle / Consumer Profile](RUNTIME_BUNDLE_PROFILE.md)
-- [Resolved Execution View Core](RESOLVED_EXECUTION_VIEW.md)
-- [Thin Execution Host](THIN_EXECUTION_HOST.md)
-- [Generic Execution Closeout and M11 Core Gate](GENERIC_EXECUTION_CLOSEOUT.md)
-- [Skill execution closeout 1.0.0 and independent replay](SKILL_EXECUTION_CLOSEOUT.md)
-- [Research Mode v0.1 to v0.2 migration](RESEARCH_MODE_MIGRATION.md)
-- [Decision Authority Matrix and Authority Rule Eligibility](DECISION_AUTHORITY.md)
-- [Durable Research State composition candidate (M10-001)](RESEARCH_STATE_CANDIDATE_CONTRACT.md)
-- [Research Attempt lineage and Research Failure candidate (M10-002)](RESEARCH_ATTEMPT_FAILURE_CONTRACT.md)
-- [Ref-only Method Trace v0.1 candidate (M3-009)](METHOD_TRACE_CANDIDATE_CONTRACT.md)
-- [Phase C runner-owned bounded Gate (M10-003)](PHASE_C_BOUNDED_GATE.md)
-- [Accepted source admission implementation (M4-001)](SOURCE_ADMISSION_CONTRACT.md)
-- [Accepted artifact promotion implementation (M4-002)](ARTIFACT_PROMOTION_CONTRACT.md)
-- [Accepted Claim evidence localization implementation (M4-003)](CLAIM_TRACE_CONTRACT.md)
-- [Accepted bounded Run reconstruction implementation and synthetic case (M4-004)](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)
-- [Deterministic release surface (M14-002)](RELEASE_SURFACE.md)
-- [Portable Runtime resources (M14-003)](RUNTIME_RESOURCES.md)
-- [Evaluation Manifest and non-executing plan contract (M5-003)](EVALUATION_MANIFEST_CONTRACT.md)
-- [System-Level Evaluation Protocol (M5-006)](SYSTEM_EVALUATION_PROTOCOL.md)
-- [System-Level Evaluation Harness plan, evidence and blind review (M5-007 H1–H4b)](SYSTEM_EVALUATION_HARNESS.md)
-- [Baseline A1/A2 transport (M6-008)](../workstreams/huangyi/M6-BASELINE-EXECUTION/README.md)
-- [File-authoritative Trace Core](TRACE_CORE.md)
-- [Execution Trace Adapter](EXECUTION_TRACE_ADAPTER.md)
-- [Provider Adapter plan and seam](PROVIDER_ADAPTER_PLAN.md)
-- [Testing strategy](TESTING_STRATEGY.md)
+| 责任域 | 接口说明 | 主要产物/消费者 |
+|---|---|---|
+| 问题与方法 | [Protocol Profile](PROTOCOL_PROFILE_CONTRACT.md)、[Mode Action](MODE_ACTION_CONTRACT.md)、[Method Resolution](METHOD_RESOLUTION_CONTRACT.md)、[Decision Authority](DECISION_AUTHORITY.md) | Task/Mode → Method 决策与能力需求；不绑定供应商 |
+| 能力需求与供给 | [Requirement](CAPABILITY_REQUIREMENT_CONTRACT.md)、[Resolution/Snapshot](CAPABILITY_RESOLUTION_CONTRACT.md) | 显式 Report 比较、唯一选择、冻结 Snapshot → Runtime |
+| 冻结执行 | [Bundle](RUNTIME_BUNDLE_PROFILE.md)、[View](RESOLVED_EXECUTION_VIEW.md)、[Thin Host](THIN_EXECUTION_HOST.md) | 完整输入闭包 → effective constraints → 单个预绑定 Driver 的 actual facts |
+| 执行交接证据 | [Trace Core](TRACE_CORE.md)、[Trace Adapter](EXECUTION_TRACE_ADAPTER.md)、[generic closeout](GENERIC_EXECUTION_CLOSEOUT.md)、[Skill closeout](SKILL_EXECUTION_CLOSEOUT.md) | 实际事件/输出/检查 → 可独立文件重放的 slice Receipt |
+| Provider/API Adapter | [端口、配置与会话边界](PROVIDER_ADAPTER_PLAN.md) | 显式 ModelRequest → ModelResponse/usage；是可选 Driver building block |
+| 材料与科学对象 | [Source admission](SOURCE_ADMISSION_CONTRACT.md)、[artifact promotion](ARTIFACT_PROMOTION_CONTRACT.md)、[Claim localization](CLAIM_TRACE_CONTRACT.md) | 合格材料/确切验证产物 → 有定位的 Evidence/Claim 关系 |
+| 研究状态 | [State composition](RESEARCH_STATE_CANDIDATE_CONTRACT.md)、[Attempt/Failure](RESEARCH_ATTEMPT_FAILURE_CONTRACT.md)、[Method Trace](METHOD_TRACE_CANDIDATE_CONTRACT.md)、[bounded Gate](PHASE_C_BOUNDED_GATE.md) | 显式对象闭包与引用；Human/R2 semantic closeout 独立 |
+| Skill 维护者外环 | [Need](SKILL_NEED_CONTRACT.md)、[candidate pipeline](SKILL_CANDIDATE_PIPELINE.md)、[evaluation](SKILL_EVALUATION_PROTOCOL.md)、[lifecycle](SKILL_LIFECYCLE_V2.md)、[Release Projection](SKILL_RELEASE_PROJECTION.md) | Need → 评价/具名准入 → immutable release/projection；普通 no-Skill 执行不依赖此环 |
+| 系统评价 | [Manifest](EVALUATION_MANIFEST_CONTRACT.md)、[Protocol](SYSTEM_EVALUATION_PROTOCOL.md)、[Harness](SYSTEM_EVALUATION_HARNESS.md) | 冻结计划/资格 → 运行证据 → 盲审/分析；与通用桥接测试分开 |
+| 包、项目与发布 | [scaffold](PROJECT_SCAFFOLD.md)、[Runtime resources](RUNTIME_RESOURCES.md)、[release surface](RELEASE_SURFACE.md) | 显式 root、安装资源和确定性发行闭包 |
+| 验证 | [测试与证据策略](TESTING_STRATEGY.md)、[Phase B Gate](PHASE_B_EVOLUTION_GATE.md) | 结构/边界、集成消费、live 与科研评价逐级证明 |
 
-M4 入口对应已接受的有界实现；各契约继续分别负责 source admission、promotion、Claim evidence
-localization 与 synthetic Run reconstruction，不因此取得 Claim/Human acceptance 或科学正确性权威。
+## 兼容与证据入口
 
-Evaluation 的 active implementation contracts 包括 M5-003 Manifest/check/non-executing plan，以及
-M5-006 System-Level Evaluation Protocol、资格/overlap/overlay/pairwise 校验器，以及 M5-007 H1/H2 非执行 plan/preflight。
-[ADR-0020](../decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) 已接受 Phase D dual transport
-与 system-level estimand；M6-008 baseline envelope/closeout 已由 PR75 接受，M11-007 Skill closeout
-与 Gate B 已收口。后继 M5-007 Harness 和真实案例/live/admission 由 [TASKS](../TASKS.md) 与
-[ROADMAP](../ROADMAP.md) 跟踪，施工入口见 [Harness 进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
+[Mode 迁移](RESEARCH_MODE_MIGRATION.md)及旧 Assignment/Receipt 的适用条件统一从
+[兼容性](../compatibility/README.md)进入。旧 [总体计划](IMPLEMENTATION_PLAN.md)、
+[迁移计划](MIGRATION_PLAN.md)和 [仓库布局](REPOSITORY_LAYOUT.md)仅为历史输入，不承担当前规划。
 
-## Evaluation and intake protocols
-
-- [Skill evaluation protocol](SKILL_EVALUATION_PROTOCOL.md)
-- [Skill candidate pipeline](SKILL_CANDIDATE_PIPELINE.md)
-
-这些协议用于设计试验和候选入口，不代表候选已准入或证明有科学价值。
-
-## Superseded planning records
-
-- [旧总体实施计划](IMPLEMENTATION_PLAN.md)
-- [旧迁移计划](MIGRATION_PLAN.md)
-- [早期仓库布局](REPOSITORY_LAYOUT.md)
-
-这些文件保留为历史输入，不承担当前架构、状态或规划权威。历史导航见[历史与审计](../history/README.md)。
+需要 exact 接受/失败原件时，从 [STATUS](../STATUS.md) 或对应 Task 的来源链接进入 workstream；
+[历史索引](../history/README.md)保留迁移与重大决定。普通入口的接口接合不改变 Mode/方法语义、
+Skill admission、科学主张、人类接受或自动恢复的权威边界。

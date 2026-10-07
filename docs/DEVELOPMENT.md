@@ -68,7 +68,7 @@ Task status、hard dependency 与 implementation scheduling 只在 [`TASKS.md`](
 - Handoff 给出基线提交、修改路径、验证证据、未证明内容和下一动作。
 
 M Task 是 implementation / acceptance identity；PR 是 integration / review unit，二者不要求 1:1。
-单 Task 分支仍推荐 `agent/m10-002-research-failure`。同一强耦合 module/workstream 的预定义 dependency
+单 Task 分支使用清晰的任务名，例如 `codex/m10-002-research-failure`。同一强耦合 module/workstream 的预定义 dependency
 DAG 可以使用 module-level 分支和 PR 原子集成，但 PR 必须列出 exact `M*` IDs、每项 transition、独立
 implementation slice/commit/evidence 与拓扑顺序，不能只写“Phase C implementation”“Topic 4 work”或
 “Runtime improvements”。Phase、Topic、M-group 或 PR 都不能替代 M Task 的验收 identity。
@@ -206,7 +206,7 @@ R0/R1/R2 规定审查强度，不等价于测试或 coverage 范围。coverage �
 - 责任人、必要 Task/Archive 与风险触发的证据是否充分，而非机械齐全？
 - 示例是否代表当前推荐路径，而不是旧工件回放？
 - 确定性测试是否覆盖新增不变量与错误路径？
-- 文档链接、示例、Schema/Registry 验证和完整测试是否通过？
+- 变更适用的文档链接、示例、Schema/Registry 与组件/安装检查是否通过？完整 checkpoint 另按明确范围执行。
 - 是否明确未证明科学正确性、真实 Provider 兼容性或机制净收益？
 
 实现协议见[implementation 索引](implementation/README.md)，架构决定见[ADR 索引](decisions/README.md)，历史材料见[历史与审计](history/README.md)。

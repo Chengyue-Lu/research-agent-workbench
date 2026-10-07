@@ -1,6 +1,8 @@
 # Attempt Archive 与 Worklog 模板
 
-复制到 `work/<TASK>/<ATTEMPT>/`。Worklog 只是导航摘要；Assignment、Agent 间消息、Handoff、检查和输出必须保存为独立文件。
+在 Task policy、正式委派、R2 或其他 [Archive 触发条件](../DEVELOPMENT.md#3-留存与克制读取)成立时，复制到
+`work/<TASK>/<ATTEMPT>/`；普通开发不因存在模板就新增 Archive。Worklog 是导航摘要，可见消息、适用 Handoff、
+检查与输出分别留存。Assignment 仅在声明的 legacy Skill-bound 兼容路径需要；当前 no-Skill/direct Tool 不生成占位 Assignment。
 
 ## 目录
 

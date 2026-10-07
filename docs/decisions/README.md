@@ -25,6 +25,11 @@ ADR 保存已接受架构决定及其理由；当前系统说明仍以[总体架
 | [0019](0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md) | Accepted | Skill Evolution 作为可选 Maintainer 外环 |
 | [0020](0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md) | Accepted | Phase D 显式双传输与系统级 estimand 解释上限 |
 | [0021](0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) | Accepted | 从 develop 确定性生成精选 main 发行视图 |
-| [0022](0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md) | Accepted by named maintainer；本 PR 集成 | Reviewer 不可用时的单次维护者审核例外与独立硬门禁 |
+| [0022](0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md) | Accepted by named maintainer | Reviewer 不可用时的单次维护者审核例外与独立硬门禁 |
 
 `0017` 原文件曾与 Assignment Handoff 决定重复使用编号 `0005`；2026-08-22 只修正文件名和标题，Git 历史保留原路径与内容关系。
+
+ADR 正文是历史决定及其接受状态的记录；本索引不替未完成的正式接受补签。
+当前执行边界以 [Architecture](../ARCHITECTURE.md) 的 Bundle → View → Thin Host 为准；ADR-0010 的 API isolation
+路径属于可选 Adapter 实现，不要求每个运行平台使用纯 API。现行贡献/合并规则及其源码政策见
+[Development](../DEVELOPMENT.md)；ADR-0018 的 Proposed 状态不应被误读为当前治理器没有规则。

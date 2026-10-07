@@ -1,444 +1,196 @@
 # 架构演进路线图
 
-状态：方向与依赖基线；不记录逐项实时状态
+状态：方向与 Gate 基线；逐项状态、依赖和验收只由 [TASKS](TASKS.md) 承载，成熟度见 [STATUS](STATUS.md)。
 
-更新：2026-09-11
+路线图解释框架接口为什么按这个顺序构建、哪些权威不得跨越。Phase 不是工期承诺，也不是科研项目的固定 DAG。
+施工导航见 [M-series 施工图](M_SERIES_IMPLEMENTATION_MAP.md)；日常授权与 PR 规则见 [DEVELOPMENT](DEVELOPMENT.md)。
 
-逐项状态和唯一下一任务只在 [`TASKS.md`](TASKS.md) 更新。本文件说明依赖顺序、阶段 Gate 与
-停止条件，不是工期承诺，也不是研究项目必须遵循的固定流程。
+## 1. Phase / Topic / M-group / Task
 
-## 1. 总体顺序
+| 层次 | 回答什么 | 权威与使用方式 |
+|---|---|---|
+| Phase | 接口的宏观依赖与成熟度 Gate | 本页；不能代替 Task 启动条件 |
+| Topic | 架构责任域与 authority boundary | accepted Architecture 与本页；冻结仍是 Task 上限 |
+| M-group | implementation family / development route | 施工图；family 箭头不是 hard dependency |
+| `Mxx-yyy` | 可执行、可验收的原子工作 | TASKS；branch/PR/CI 引用 exact ID |
 
-| Phase | 目标 | 主要产物 | 启动条件 |
+一个 Task 可以跨多个 Topic，一个 Phase 可以聚合多个 M-group。近期工作没有 exact Task 时，先做
+独立 docs-only `task-definition`。TASKS 控制 scheduling，architecture freeze 仍约束其 scope；
+分支候选的 READY 不等于共享接受，完成身份不因一个 PR 原子集成多个切片而合并。
+
+| Phase / area | 目标与主要产物 | 依赖与 authority Gate | M-group 导航 |
 |---|---|---|---|
-| A — Core Formalization | 把 Mode-first 方法论变成正式语义 | Mode Action、Method Resolution、Mode v0.2、Decision Authority | ADR-0013/0016 |
-| B — Evolution Foundation | 支持可迁移、可评测的能力演化 | Skill Need、Lifecycle v2、Migration、Protocol、Resolved Capability Snapshot | Phase A 稳定接口 |
-| C — Research State & Verification | 保存跨 Runtime 的研究意义 | State/Frontier、Failure、Evidence–Claim relation、Method Trace | A；部分依赖 B |
-| D — Evaluation Loop | 证明完整系统相对简单 baseline 的可复核净增量 | Evaluation Manifest、public/private Case Dossier、frozen Protocol、统一 Harness、blind Review、system-level analysis 与 disposition | ADR-0020 已接受 dual transport，M4 bounded provenance 链已实现；M5-006 Protocol 与 baseline/Skill closeout 已闭合，M5-007 正在实现 plan/preflight，真实执行仍需获批案例及其 provenance、live execution 与人类批准 |
-| E — Strategy & Governed Evolution | 有界吸收新策略和外部候选 | Strategy interface、candidate pipeline、merge/prune/promotion | B+C+D |
-| F — Execution Reintegration | 让 Runtime 消费冻结科研契约 | M11 Core：runtime bundle、supply-neutral resolved execution、Thin Host、Trace/Receipt integration；可选 Skill supply：release projection、统一 View semantic mapping | ADR-0019 与 M9-005 Core；Skill release projection 不 Gate Topic 4 Core；Topic 5 另受 Phase C Human/R2 closeout 约束 |
+| Foundation / pre-A | 文件契约、Profile、Trace、Provider 和 Mode–Skill baseline | 各层保持具名 owner 与权限边界 | M0/M1/M2/M3/M6/M7 |
+| A — Core Formalization | Mode Action、Method Resolution、Mode migration、Decision Authority | ADR-0013/0016；方法需求先于供给绑定 | M8 |
+| B — Evolution Foundation | Requirement、Need、Lifecycle、Protocol、Report/Resolution/Snapshot | Phase A 接口；Maintainer 演化外环与 Runtime consumer 分离 | M9 |
+| C — Research State & Verification | State、Failure、Evidence–Claim、Method Trace | A；部分依赖 B；machine verification 与 Human/R2 closeout 分开 | M10，复用 M3-009；M4 supporting |
+| D — Evaluation Loop | frozen Cases/Protocol、四臂 Harness、blind Review、analysis/disposition | 真实案例、适用 live conformance、pilot、A4 admission 与 Human Review 独立闭合 | M5，复用 M4/M6/M11；M7 比较按 Task 激活 |
+| E — Strategy & Governed Evolution | bounded strategy/candidate experimentation | B/C/D evidence；不自动修改 Core | 既有 M2/M7；M13 reservation |
+| F / Topic 4 — Execution Reintegration | Bundle/View/Host、actual facts、Trace/Receipt | ADR-0019 与 Snapshot Core；Skill 只 Gate 其可选支线 | M11/M6 |
+| Topic 5 residual | Handoff/context rollover、recovery/continuation | Phase C Human/R2 closeout 后另做 R2 review/task-definition | M12 reservation |
+| Product / Release | source trust、projection、portable package、public surface | exact frozen source/current main parent 与每次具名 release decision | M14 |
 
-Phase 不是一条科研 DAG。它只表示框架接口的构建依赖；真实 Task 仍按 Mode/Action 选择路径。
+M12/M13 只保留 namespace，没有 Task state、owner、dependency、Schema 或 implementation authority。
+激活需 accepted architecture Gate、既有 family 不足的证据和独立 task-definition；不创建预猜的原子 ID。
 
-### 1.1 Phase / Topic / M-group / M Task
+### 1.1 普通入口的桥接方向
 
-本文件只回答 Phase 的 macro maturity、Topic responsibility、architecture Gate 以及为什么某类工作允许或
-冻结。日常施工的 status、hard dependency、owner、scope、negative acceptance 与 evidence 只由
-[`TASKS.md`](TASKS.md) 的 M Task 控制：
+M1-010（需求/材料与契约产物）、M2-009（角色与有界主子消费）、M11-008（冻结执行/closeout 全桥 Gate）
+复用 Foundation、Research Control 与 Phase F 的文件接口。可用合成材料证明通路；它们不要求先启动真实科研案例，
+也不产生 Phase D 四臂净价值结论。exact scope、owner、risk、入口依赖与验收只看 [TASKS](TASKS.md)。
 
-```text
-Phase   = macro maturity / architecture Gate
-Topic   = architecture responsibility / authority domain
-M-group = implementation family / development route
-Mxx-yyy = atomic executable Task / branch / PR / CI identity
-```
+新建输入和人工既有材料是入口策略，共用 Protocol/Task/Mode/Method 流程。材料必须显式声明、授权并冻结；
+缺 MainState 时保持 unknown，不补造历史接受或自动恢复。角色职责可合并，必载职责提示与可选方法 Skill 分开；
+main 在已授权上限内提出 0..N child，每个 child 仍有有界 Task、fresh context、权限预算预检及独立冻结。
+这属于 caller 消费既有接口，不授予 Host 组队、重选 Supply 或修改科研权威。
 
-一个 Phase 聚合多个 M-group 与 M Task，一个 M Task 可以跨多个 Topic。ROADMAP 中出现但 TASKS 中没有 ID 的近期
-工作不能直接实现；必须先建立 docs-only `task-definition`。若两者对当前施工顺序表述冲突，TASKS 控制
-implementation scheduling，ROADMAP 的 architecture freeze 仍是上限，Task 必须据此标为 BLOCKED/PARKED。
+Guide 使用独立只读上下文，只读取 approved MainState/必要 refs；不默认读取主聊天、原 logs 或全仓，
+不自动回传 main，不写科研 Trace/Handoff/state。人类明确采纳时，答案及 refs 作为新的 main 输入。
+定义及候选代码边界见 [任务定义记录](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)。
 
-日常施工只使用 M-series。完整的 M-group 与原子 Task 导航见
-[`M_SERIES_IMPLEMENTATION_MAP.md`](M_SERIES_IMPLEMENTATION_MAP.md)；本文件中的 Phase/Topic mapping 只解释
-family 为什么存在、由什么 authority boundary 约束、何时允许启动，不是第二套 queue。
+## 2. Phase A Gate：方法与决策权
 
-### 1.2 Architecture Map：Phase / Topic → M-group
+Mode Action 固定 trigger/non-trigger、failure/artifact/Claim/Gate/stop；Method Resolution 正式表达
+no-Skill、direct Tool、Skill Need、Human Gate、split、blocked 与 rejected alternatives。
+Mode 不隐式携带 Skill；Agent proposal、deterministic resolution 与具名 Human Decision 保持分离。
 
-| Architecture area | Responsibility / authority boundary | M-group aggregation | Freeze / unlock Gate |
-|---|---|---|---|
-| Foundation / pre-A | Repository、Core contract、Trace、Provider 与 Mode–Skill baseline；各层 authority 分离 | M0、M1、M2、M3、M6、M7 | 已接受的 historical foundation；未完成项仍按 TASKS |
-| Phase A | Method/Core 与 Authority Rule Eligibility；不产生执行或 Human Decision | M8 | 已收口 |
-| Phase B | Capability demand/supply、Skill evolution、Protocol；不授予 Runtime authority | M9 | 已收口 |
-| Phase C | Research State、Failure、Method Trace 与 bounded verification | M10，复用历史 `M3-009`；M4 为 provenance support | bounded machine DAG 已实现；Human/R2 semantic closeout 仍独立 pending |
-| Phase D | Evaluation record、system-level baseline/net benefit 与 pruning；不自动 promotion | M5；baseline transport 复用 M6；部分 M7 experiments 由 TASKS 决定是否恢复 | ADR-0020 Gate A、M5-006 Protocol 与 M11-007 Skill replay / Gate B 已闭合；M6-008 与 M5-007 bounded synthetic Harness 已 DONE；M5-008 BLOCKED，作为 M5-004 前的四臂 live 工程验收；真实 case/provenance/live execution/Human review 保持独立 Gate |
-| Phase E | Strategy candidate 与 governed evolution；不得自动修改 Core | 既有 M2/M7；M13 仅 **RESERVED** | Phase C/D evidence 证明旧 group 不足后另行接受 |
-| Phase F / Topic 4 | Agent/Model/Provider/Runtime 消费 frozen contract；不拥有 Method/Claim/Gate/fallback authority | M11 Core 与 optional extension；M6 live conformance | M11 Core 与 optional Skill extension 已 bounded 实现；live conformance 仍依独立 Gate |
-| Topic 5 residual | Handoff、context rollover、safe pause/resume、recovery/continuation | M12 仅 **RESERVED** | Phase C closeout + 独立 Topic 5 R2 review/task-definition |
-| Product / release closure | Ordinary-user E2E、package/runtime/release governance | M14-001～005 curated release chain DONE | 首个 `v0.1.0` GitHub alpha prerelease 已完成 R2/merge/tag/附件下载核验；后续产品修复从 develop 经独立 frozen-source release 发布，不解除 live/research evaluation Gate（见第 7 节） |
+停止 Gate 是可引用的 `Task → Method Resolution → downstream demand` 接口及兼容 migration；
+它不证明 Supply binding、Runtime 执行或科学适用性。版本迁移显式调用，旧对象保留 identity/hash，
+不在读取时静默升级。协议见 [Method Resolution](implementation/METHOD_RESOLUTION_CONTRACT.md)、
+[Decision Authority](implementation/DECISION_AUTHORITY.md)与[Mode migration](implementation/RESEARCH_MODE_MIGRATION.md)。
 
-```mermaid
-flowchart LR
-    A["Phase A<br/>Method/Core Gate"] --> M8["M8"]
-    B["Phase B<br/>Evolution Gate"] --> M9["M9"]
-    C["Phase C<br/>Research meaning Gate"] --> M10["M10 + historical M3-009"]
-    D["Phase D<br/>Evaluation evidence"] --> M5["M5"]
-    E["Phase E<br/>Strategy boundary"] -. "future activation only" .-> M13["M13 — RESERVED"]
-    F["Phase F / Topic 4<br/>thin execution ceiling"] --> M11["M11"]
-    T5["Topic 5<br/>continuity/recovery frozen"] -. "Phase C closeout + R2 Gate" .-> M12["M12 — RESERVED"]
-    Release["Issue #57 / ADR-0021<br/>release activation Gate"] --> M14["M14<br/>Product / Release Closure"]
+## 3. Phase B / Topic 4 Gate：需求、供给与执行
 
-    M8 --> M9
-    M9 --> C
-    C --> D
-    M10 -. "evidence" .-> T5
-    M11 -. "bounded runtime maturity" .-> Release
-    M5 -. "plan/evidence boundary" .-> Release
-```
-
-实线表达已接受的 architecture aggregation，虚线表达 maturity evidence 或尚未授予 implementation authority
-的 activation condition。M12/M13 没有 Task 状态、owner、dependency、acceptance 或 Schema；不创建
-`M12-001`、`M13-001`，也不继续推测 M15+。M14 已完成独立 R2 task-definition；其 exact 状态和依赖只看
-`TASKS.md`，不能从本图推导 release 已可执行。
-
-## 2. Phase A：Core Formalization
-
-1. 把两个正式 Mode 的 Action Catalog 转成版本化、可引用文档；
-2. 新增 provider-neutral `Method Resolution`；
-3. 将八个既有 routing fixture 无损转换为正式 Resolution fixture；
-4. 建立 Research Mode v0.2，移除直接 Skill recommendation；
-5. 冻结 Mode/Action/Mechanism/Skill/Tool/Claim/permission 的 Decision Authority；
-6. 明确稳定 Core invariants 与 replaceable implementation boundary。
-
-停止 Gate：
-
-- `Task → Method Resolution → Execution` 成为明确接口；
-- no-Skill、tool-only、Human Gate、split、blocked 都能正式表达；
-- 新 Mode 不再隐式携带 Skill；
-- 在 Gate 通过前不新增 accepted Skill 或正式 Mode。
-
-### Phase A 收口判定（2026-08-24）
-
-**PASS — Core contract closure。** M8-001～005 已在 PR #30 接受 R2 跨负责人审查，并以
-`develop@ead1270` 形成集成边界：Mode Action、Task-bound Method Resolution、Research Mode v0.2
-migration 与 Authority Rule Eligibility 均有版本化对象、确定性验证和正反 fixture。
-
-这里的 `Task → Method Resolution → Execution` Gate 指稳定的输出/消费接口已经明确：Method
-Resolution 只产生需求、Gate、blocked 与最小机制语义，供后续 Capability / Execution 层消费；它不表示
-Capability binding、Resolved Execution View、Receipt migration 或 Runtime consumer 已实现。后者继续属于
-Phase B/F，不能反向写成 Phase A 未完成，也不能借 Phase A 收口宣称端到端执行闭环。
-
-## 3. Phase B：Evolution Foundation
-
-Phase B 保持“需求语义先于供给绑定”的顺序：
-
-1. `Capability Requirement` 先成为 provider-neutral 的需求侧契约，不表达 available/gap 或具体供给；
-2. 具名 Maintainer 可在独立 triage 后把可复用语义缺口发布为版本化 `Skill Need`，定义 gap、
-   direct/no-Skill baseline、预期增量、evaluation criteria、
-   required evidence classes 与 domain scope/variants；它不累积实际 trial/evaluation/promotion 结果；
-3. lifecycle v2 分离 intake、evaluation state、admission 与 runtime eligibility，引用 baseline/trial/
-   evaluation record/decision 和 promotion evidence；完整 benchmark/metric/experiment framework 留在 Phase D；
-4. Protocol Profile 独立表达 PRISMA、V&V 或项目方法标准的适用性、method obligations 与 Gate/evidence
-   expectations，不复制 Mode Action、不固定研究 DAG，也不绑定 Skill/Tool/Provider；
-5. M9-005 建立显式供给缝：`Capability Requirement → Capability Supply Report(s) → Capability Resolution
-   → Resolved Capability Snapshot`。Report 只陈述 supply identity、实现版本/hash、能力、I/O、权限、
-   data-egress、副作用、typed conformance artifact、scoped availability 与限制，不拥有选择、fallback、Method、Claim 或
-   Human Gate authority；Resolution 比较零个或多个 Report 并给出 satisfied/gap/ambiguous/blocked；
-   Snapshot 区分不具执行资格的 `structural-replay` 与具有非 fixture typed-evidence 资格、仍待 Topic 4
-   完成最终执行准入的 `runtime-execution`；
-6. migration 保持 append-only 和显式调用。Phase A 的 Mode v0.1→v0.2 是首个已完成 exemplar，Phase B
-   不重造通用 migration framework，只在新增对象确有版本迁移需求时扩展。
-
-`Capability Requirement` 是 Runtime 主链的需求入口；它只有在具名 Maintainer 独立 triage 后才可形成
-`Skill Need`，capability gap/failure 不自动完成该转换。两者可在冻结共同引用语义后顺序推进；M9-004
-Protocol Profile
-与 M9-002/003 并行，不阻塞 M9-005。M9-005 的 Snapshot Core 只依赖 M9-001 与 M8 Decision Authority，
-先覆盖 Method no-Skill 对应的 procedure、direct Tool、Adapter/Provider supply facts 的 structural replay；
-fixture 不得声明 final effective boundary 或 execution eligibility。Skill 作为合法供给候选的扩展额外等待
-M9-003，并且新绑定还必须解析独立 evidence 与 Human decision。Resolved Capability Snapshot 涉及
-Method 与 Provider 两侧，必须跨负责人审查：路诚钺维护需求词汇、Resolution/Snapshot authority ceiling
-与 provider-neutral fixture，黄毅维护 Adapter/Provider 的真实供给映射与 conformance。Phase B 不接管
-API/Runtime 实现。
-
-停止 Gate：至少一个 fixture 在 Task、Mode、Action、Method Resolution 与 Capability Requirement 均不变时，
-将 Supply A/Snapshot A 替换为 Supply B/Snapshot B；permission、data-egress 与 side-effect ceiling 不放宽，
-Runtime 不获得 Method authority，旧研究对象仍可解释和重放。
-
-### Phase B 实现判定（2026-08-25）
-
-**IMPLEMENTED AS STRUCTURAL CONTRACT。** M9-001～006 已形成 Requirement、Need、lifecycle v2、两个
-bounded Protocol Profile、typed Report→Resolution→两级 Snapshot、repository-wide structural consumer 与
-Skill Supply
-Extension。M9-006 Gate 固定同一 Task/Mode/Action/Method/Requirement，并证明 Supply A→B 只改变 exact
-supply，三类 Supply boundary facts 保持一致；Research Mode 与 Skill lifecycle
-migration 均保持 exact-pin replay。
-
-此判定不证明 live Provider 可用、Skill 科研净收益、Human Decision 或真实执行。checked-in 的三条
-Phase B fixture 都是 `structural-replay`；后续 M11 bounded tests 只在临时项目构造并消费合格的
-`runtime-execution` Snapshot/Bundle/View，仓库仍没有可供真实执行的 checked-in input。Topic 5 继续冻结。
-
-### Topic 4 thin-layer Architecture Hold
-
-以下四项是 Phase B 已接受的供给侧前置契约：
-
-- Capability Requirement；
-- Capability Supply Report；
-- Capability Resolution boundary；
-- Resolved Capability Snapshot Core。
-
-依据 [ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)，Topic 4 将 Core 与可选
-Skill Runtime Extension 拆成两条依赖。
-
-**Topic 4 Core Gate**：
-
-- `runtime-bundle` 使用显式 closure manifest，不接受目录输入，不递归扫描 `registry/examples`，import
-  graph 不包含 Skill Need、Candidate、Evaluation 或 Lifecycle validator；
-- no-Skill、direct Tool、procedure 与 Adapter/Provider 可以在零 Skill、零 Evolution Registry 情况下形成
-  Resolved Execution View；
-- 供给更新创建新的 Resolution/Snapshot/View，不能改变运行中的冻结输入；gap/failure 不自动创建 Skill Need。
-
-Topic 4 的 implementation vocabulary 已落到 M11：Runtime Bundle/Profile → supply-neutral Resolved
-Execution View → Thin Execution Host → actual execution facts → generic Trace/Receipt Core Gate。当前
-bounded Core 已证明 no-Skill/direct Tool 路径可在零 Evolution Registry 下闭合；procedure 与
-Adapter/Provider 仍使用同一 supply-neutral 契约，不等待 SkillReleaseProjection。四层保持独立
-producer/consumer authority；同一强耦合 workstream 的 module-level PR 集成历史不合并 Task identity。
-
-**Skill Runtime Extension Gate**：
-
-- SkillReleaseProjection 只发布不可变、exact hash-pinned 的 Skill Release；
-- Projection contract 被接受且 exact-pin validation 可用后，才启用 Skill-bearing binding；
-- 投影未实现、缺失、stale 或不匹配时，Skill new-binding fail closed，且不得回退读取完整 Lifecycle；
-- View/Capability semantic owner 将 eligible Skill supply 映射进统一、supply-kind-neutral 的
-  Resolved Execution View；不建立 Skill-specific Runtime seam。该 extension 只在明确 Skill-bearing
-  需求出现后依 `TASKS.md` 激活，不阻塞任何非 Skill Core 路径。
-
-解冻范围只包括 Topic 4 的上游 Research Control / View producer 冻结 external hash pin、执行时 freshness、
-精确 Provider/Adapter/Model/Runtime/Host binding，以及 Task/Profile/DataPolicy/Host policy 与 selected supply
-ceilings 的最终收紧交集；仅在 Skill Extension 存在时加入可选 Skill/Assignment。Execution Host 只消费
-exact frozen View 与其绑定的 closure-valid Runtime Bundle、报告 actual execution facts，
-并执行 permission/data-egress/side-effect boundary。它不得重新选择 Supply、在当前 View 内 rebind 或执行
-automatic fallback；model auto-routing、multi-Agent orchestration、critic voting、hidden routing，以及
-Runtime 修改 Method、Claim 或 Gate 继续禁止。
-
-## 4. Phase C：Research State 与 Verification
-
-Phase C 的唯一 implementation chain 是：
+需求侧 `Capability Requirement` 不含 Provider/Model、可用性或具体供给。Maintainer 独立 triage 后才能
+形成 Skill Need；gap/failure 不自动成为 Need、candidate 或 admission。Need 只声明未来所需证据，
+Lifecycle 引用 trial/evaluation/decision，完整比较与净价值分析留在 Phase D。
+Protocol Profile 独立表达方法适用性和 obligations，不绑定 Skill/Tool/Provider，也不固定科研 DAG。
 
 ```text
-M10-001 minimal Research State
-→ M10-002 Attempt / Research Failure
-→ M3-009 Method Trace v0.1
-→ M10-003 bounded verification Gate
+Method / Requirement
+  → Supply Report(s) → Capability Resolution → Snapshot
+  → Runtime Bundle → Resolved Execution View → Thin Host
+  → actual facts → Trace / Artifact / Validation / Receipt
 ```
 
-bounded State composition 的 entries 引用 Question/Hypothesis/Evidence/Claim/Decision/Run/Task，`open_items`
-承载轻量 Unknown/Assumption；Contradiction 由 Evidence–Claim relation 表达，Frontier 是派生视图。
-Research Attempt lineage 与 Research Failure 是独立 sidecar/candidate，Failure 至少记录 learned result 与
-revisit condition。M4-001～004 是 provenance/promotion/reproduction supporting Tasks，不替代上述 Phase C
-closeout chain。
+Report 陈述 identity/version/hash、能力、I/O、availability、conformance 与 ceiling；Capability Resolver
+是唯一 selector。`structural-replay` 没有执行资格，`runtime-execution` 还需相应实际证据和执行准入。
+替换性 Gate 固定 Task/Mode/Action/Method/Requirement，只产生新的供给冻结，permission/data-egress/
+side-effect ceiling 不放宽。具体契约与 replay Gate 见 [Capability Resolution](implementation/CAPABILITY_RESOLUTION_CONTRACT.md)
+和 [Phase B Gate](implementation/PHASE_B_EVOLUTION_GATE.md)。
 
-Method Trace v0.1 已在 M3-008 可观察执行 Trace 之上形成独立的 ref-only candidate：它绑定
-Attempt/Task/Method Resolution/Mode/Action/State 与 path disposition；有 authoritative execution fact 时
-绑定 actual capability/supply path effect，缺失时显式记录 per-Attempt gap。Snapshot 不得冒充 actual
-execution fact，该 candidate 也不证明科学正确性或 reviewer reconstruction。
+Topic 4 Core 在零 Skill、零 Evolution Registry 下消费 no-Skill/procedure/direct Tool/Adapter–Provider。
+Bundle 使用 exact closure manifest，拒绝目录输入、递归 Registry 扫描和 Evolution validator import。
+View producer 冻结 external pins、freshness、exact Provider/Adapter/Model/Runtime/Host 与最严 policy 交集；
+Host 只执行这个 View，报告 actual facts、diagnostic 或 re-resolution request，不 reselect/rebind/fallback。
+Host/Runtime 自动路由、critic voting、隐藏编排和修改 Method/Claim/Gate 的权限继续禁止。
+caller 的有界主子 Task 仍逐次通过这些接口，不把动态委派放入 Host。
 
-不一次建设统一知识图谱。当前 evidence-synthesis 与 simulation-negative 两个 synthetic bounded
-case 只证明 compact State/Method Trace 的 exact closure、fresh-process 受控读取与固定 fixture
-behavior；它们不是真实案例，也不证明跨 Runtime 恢复或 reviewer reconstruction。
+可选 Skill 路径按 [ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)
+只消费 immutable admitted Release → runtime-minimal Projection →统一 Supply/Resolution/Snapshot/View。
+缺失/stale/mismatch 只阻断相应 Skill new-binding，不阻断 Core，也不允许回读完整 Need/Evaluation/Lifecycle。
+Skill actual closeout 使用独立版本的[Skill closeout/replay](implementation/SKILL_EXECUTION_CLOSEOUT.md)，
+不能把 Core Receipt 写成 Skill 执行证明；[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md)保留 exact 接受记录。
+Projection publication、供给资格、实际消费和研究净收益分别验收。
 
-minimal Research State、Failure/Attempt、Method Trace v0.1 与 bounded machine Gate 的 implementation prerequisites
-已完成；Human semantic review 与 R2/Phase C closeout 仍独立 pending，因此 Topic 5 继续冻结。
-M9-005 或 Topic 4 Core 的完成不能替代 Phase C 语义接受。
+执行接口分别见 [Bundle](implementation/RUNTIME_BUNDLE_PROFILE.md)、[View](implementation/RESOLVED_EXECUTION_VIEW.md)、
+[Host](implementation/THIN_EXECUTION_HOST.md)与[Core closeout](implementation/GENERIC_EXECUTION_CLOSEOUT.md)。
 
-Phase C 的 `M10-001 → M10-002 → M3-009 → M10-003` 是 Topic 5 的 activation prerequisite chain，
-不是 Topic 5 membership。完成这些 Task 只满足 machine prerequisite；还必须先接受 Phase C Human/R2
-semantic closeout，才可以开始独立 Topic 5 R2 architecture review/task-definition。二者都不会自动授权
-Handoff、context、pause/resume、recovery 或 continuation implementation。
+## 4. Phase C / Topic 5 Gate
 
-Topic membership 按 Task objective 判断：只有改变 Handoff、context rollover、safe pause、recovery、
-salvage/clean recovery 或 continuation semantics 的 Task 才属于 Topic 5。M11-003/004 仅实现 Topic 4
-Thin Host、actual fact reporting 和通用 observability closure；使用 Trace/Receipt 不使其成为 Topic 5
-Task，也不绕过上述 freeze。
+Phase C 的 machine prerequisite chain 保留原 identity：
+`M10-001 → M10-002 → M3-009 → M10-003`。M4 是 provenance/promotion/reproduction support。
+State entries、Unknown/Assumption、Evidence–Claim contradiction/derived Frontier、Attempt lineage 和 Failure
+属于各自有界 candidate；Method Trace 以 ref-only 方式记录方法、Human Decision、State 与 path disposition。
+Snapshot 不能冒充 actual execution fact；缺 accepted fact producer 时显式记录 gap。
 
-## 5. Phase D：Evaluation Loop
+两份 bounded synthetic cases 的 fresh-process Gate 检查 exact closure、受控读面和 fixture predicates，
+不证明科学正确性、reviewer reconstruction、OS sandbox 或真实跨 Runtime 恢复。
+Human semantic review 与 R2/Phase C closeout 独立；详情见 [Phase C Gate](implementation/PHASE_C_BOUNDED_GATE.md)。
 
-正式比较至少包含：
+Topic 5 继续冻结。machine prerequisite 完成后仍须具名接受 Phase C Human/R2 closeout，才可进入独立
+Topic 5 R2 architecture review/task-definition；两者均不自动授权 Handoff、context rollover、pause/resume、
+recovery、salvage/clean recovery 或 continuation 实现。Topic membership 按是否改变这些 semantics 判断；
+仅消费 Trace/Receipt、人工批准的 MainState 或提供只读 Guide 不构成 membership，也不产生恢复权威。
 
-1. Plain Agent；
-2. Plain Agent + Tool；
-3. Mode + no-Skill/direct-tool；
-4. Mode + candidate Skill。
+## 5. Phase D Gate：工程闭包与净价值评价
 
-M5-003 已建立最小 Evaluation Manifest/baseline harness：以四个 canonical treatment 冻结共享条件、
-exact references、指标与 evidence classes，并编译 non-executing plan。它不执行 evaluation，不保存
-真实 trial/evaluation result，也不证明 Skill/Method 有净增量；实际 record 与分析属于后续
-Phase D 执行。Need 本体仍只声明 evaluation criteria 和 required evidence classes，M9-003
-lifecycle 只引用 record，不在 Phase B 重建完整 benchmark/experiment framework。
+[ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md)固定双传输：
+A1 plain Agent / A2 plain Agent + Tool 使用 M6 baseline；A3 Mode no-Skill/direct Tool 使用 M11 Core；
+A4 保持 candidate-origin treatment，Runtime 只消费 admitted Release 的合法 Skill 支线。
+A1/A2 provider-visible envelope 使用正向白名单，完整 Task、Profile、Method/Capability control 与 private oracle
+留在不可见 enforcement/provenance metadata；不能把 plain arms 强塞进 M11 或注入 dummy Method/Snapshot。
 
-Phase D 的 primary estimand 由 ADR-0020 固定为 `A4 − A2`：最终 RWB Mode/Method/admitted-Skill/M11
-execution package 相对 tool-enabled simpler Agent/M6 baseline 是否产生可复核的 system-level net benefit；
-该差异明确包含 transport package，不能拆读为 pure Mode 或 pure Skill effect。`A2 − A1` 是同 M6
-transport 下的 Tool 条件增量；`A4 − A3` 只有在 pairwise exact-equality closure 证明唯一 delta 为 admitted
-Skill extension 时才是 Skill conditional increment，否则只可称 Skill-bearing package / bundled effect 或
-unavailable。`A3 − A2` 只能称 Mode/Method + transport 组合差异，`A4 − A1` 只作完整栈支持性 contrast。M5-001/002 分别负责
-evidence-synthesis 与 theory/simulation Case Dossier；每个 dossier 都必须把所有 arm 可读的 Public Case
-Package 与不可读的 Private Adjudication Package 分开，并在观察 treatment output 前完成 exact hash freeze、
-Human approval 和 no-treatment-specific-tuning 记录。
+| Contrast | 解释上限 |
+|---|---|
+| `A4 − A2` | primary system-level package effect，明确包含 transport difference |
+| `A2 − A1` | 同 M6 transport 的 exact Tool 条件增量 |
+| `A4 − A3` | pairwise closure 证明唯一差异是 admitted Skill 才为 Skill conditional increment；否则 bundled/package effect 或 unavailable |
+| `A3 − A2` | Mode/Method 加 transport 的组合差异，不能作 pure Mode effect |
+| `A4 − A1` | 完整栈支持性 contrast |
 
-`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 已由
-`PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND@1.0.0` 闭合；exact path/hash 见
-[Gate record](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/BASELINE_TRANSPORT_GATE.md)。A1/A2
-固定使用 M6 isolated session，A3 使用 M11 Core，A4 使用 M11 projection-backed Skill extension。完整 Task
-继续作为 experiment identity 被 exact-pin，但 A1/A2 只消费独立版本、`additionalProperties=false` 的
-正向白名单 provider payload；完整 Task、actor/permission/budget/pins 留在不可见 enforcement metadata。
-`active_modes`、`agent_profile`、Task `required_capabilities`、Action/Method/Capability control、Skill、
-private-oracle 与未知 Task 字段不得进入 provider request。A1 Tool surface 为空，A2 唯一额外暴露为 qualified
-exact Tool interface，Snapshot/Method ref 只作 Harness provenance。该 Decision 不修改 M5-003、不产生
-Runtime/Method/Supply/Human authority，也不证明 transport implementation 已存在。
+M5-001/002 冻结 Public Case 和独立 Private Adjudication Package；在观察 output 前完成 Human approval、
+case/oracle hashes、选择理由与 no-treatment-specific-tuning。Protocol 冻结 comparisons、randomization、
+replicates、stopping/retry、drift、blind/reveal、metric status、analysis 与 disposition；Research Integrity
+退化不得被效率抵消，不建立单一 weighted aggregate score。跨 transport duration 由同一外层可信时钟观测，
+内部 token/cost/timing 无法同义化时显式 estimated/unavailable/N/A，不能填零。
 
-M5-006 以该 Gate 为基础冻结 System-Level Evaluation Protocol，设计不依赖真实案例先行完成：冻结
-primary/secondary questions、randomization、replicates、pilot/stopping/retry、model/provider drift、blind/reveal、
-metric operationalization、measurement status、analysis rule 与 decision hierarchy。`measured`、`estimated`、
-`unavailable`、`not-applicable` 互不等价；Research Integrity 的退化不能被成本收益抵消，也不得建立单一
-weighted aggregate score。跨 M6/M11 transport 的 completion time 只能由同一 Harness 外层可信时钟形成
-可比观测；内部 timing/cost/token 口径若不能同义化，必须显式 estimated/unavailable/N/A，而不是填零。
+qualification Gate 保持两端 Task/Requirement/Supply/component/implementation/interface（及 A3 Mode/Action/Method）
+不变、ceiling 不扩大。M6 baseline 产生 A2 record；Capability Resolver 产生 A3 runtime Resolution/Snapshot；
+Harness 在评价侧组装 A3 record并独立重算 A2/A3 record与 A3/A4 pairwise comparability，不取得 Supply selection。
+actual binding 在 use boundary 重验并由 typed Trace fact 与 replay Receipt 独立佐证，planned View 不能代替。
 
-Protocol 还拥有覆盖 A2/A3 的 `ArmExecutionQualificationRecord@1.0.0` contract、Schema、comparison rule 与
-fail-closed validator。record exact 连接 M5-003 frozen structural Snapshot 与正式 runtime-execution Snapshot，
-保持 Task/Requirement/Supply/component/implementation/interface 以及相关 A3 Mode/Action/Method 不变，所有
-ceiling 只能等价或收窄。M5-006 DONE 后才解锁 M6-008；M6-008 只产生 A2 record。Capability Resolver 是
-A3 runtime Resolution/Snapshot 的唯一 producer/selector；M11 只验证并消费 exact Snapshot，M5-007 引用两端
-对象组装 A3 record并独立重算两类 record。Protocol 另行冻结 `A3A4PairwiseComparabilityRecord`：比较
-Mode/Action/Method、non-Skill Requirement/Supply、Tool/procedure、provider-visible interface 与 relevant boundaries，
-只有 `exact-skill-only` 可支持 Skill conditional interpretation；`skill-bearing-package` 与 `not-comparable`
-分别触发 bundled/package 降级或 secondary contrast unavailable。
+A4 admission Gate exact-pin candidate/evaluation →具名 Human Admission Decision→immutable Release→Projection→
+Supply→Resolver→Snapshot→Bundle→View→Host；Runtime 不读取 candidate/evaluation/oracle。
+Overlap assessment 在 confirmatory freeze 前重载两侧闭包，验证时间顺序并重算 case/Task/input/private-oracle
+intersection；缺失/absent/unknown/unresolved 不视为 held-out。重叠案例只作 pilot/secondary，不能进入 primary
+net-benefit，也不能单独支持 pruning。完整规则见 [Protocol](implementation/SYSTEM_EVALUATION_PROTOCOL.md)
+与 [Harness](implementation/SYSTEM_EVALUATION_HARNESS.md)，exact Task 条款仍以 TASKS 为准。
 
-Protocol 同时冻结 A4 admission-evidence overlap / held-out policy，并定义独立、versioned、hash-pinned 的
-`AdmissionEvidenceOverlapAssessment`。该工件 exact-pin `skill_evaluation_ref`、admission case IDs、Task/input、
-typed private-oracle/checker/Human-adjudication identities/hashes、两侧 comparison input closure、`checked_at`、
-validator identity/version/hash 与计算结果；它不修改 Skill Evaluation v0.1，也不向 Runtime 暴露 private bytes。
-M5-007 必须在 confirmatory freeze 前重新加载两侧闭包，验证 `checked_at <= case_selection_frozen_at`，独立重算
-M5-001/002 的 case、Task、formal input、private-oracle intersection、status 与 eligibility；closure 缺失、typed
-`absent`/`unknown` 或 unresolved 时 fail closed，任一重叠记录为 `admission-overlap` 并令
-`primary_confirmatory_eligible=false`。重叠 case 只作 pilot/secondary evidence，不进入 primary net-benefit
-conclusion，也不能单独支撑 M5-005 pruning；公共 source set 不要求完全互斥。
+[M5-008 Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)
+验收独立获批 dossier 下的四臂真实工程闭包，要求适用 conformance、真实 A4 admission、专项 API/数据/Tool
+授权和预注册 run set。全部 failed/retry/unknown 留证，不自动改变 frozen treatment/binding。
+pilot observations 不产生 confirmatory net-benefit，不进入 primary run set；受其观察或调参影响的 case 不再
+是未观察 held-out。M5-004 还需两个获批真实案例及其 provenance、blind Review 和 analysis；
+M5-005 依据 exact evidence 作具名 disposition，单次成功、A4 较优或 sunk cost 均不自动 promotion/KEEP。
 
-ADR-0020 同时产生新的 Execution-owned `M6-008`：从 A1/A2 frozen arm 确定性编译 treatment-visible
-baseline envelope，并通过 M6 isolated session 形成 actual Provider/Adapter/Model/Runtime/Host/Tool facts、
-Trace、Artifact、Validation 与 no-Skill replay-valid closeout；正式 A2 必须拒绝 M5-003 的
-`structural-replay` / `execution_input=false` fixture，改用具有 typed conformance 的 runtime-execution Tool
-binding。该转换通过 M5-006 shared contract 的 A2 `ArmExecutionQualificationRecord@1.0.0` exact 连接 frozen
-binding 与 runtime binding；两端 Tool supply identity、implementation version/hash、component 与 provider-visible interface 必须相同，
-permission/data-egress/side-effect ceiling 只能等价或收窄。M6-008 还须在每次 provider request 与每次 Tool
-invocation 的实际 use boundary 立即重验对应 pins、使用 transport trusted clock，并由 Trace 记录重验后的
-bytes/hash、独立佐证 actual binding；它不复用 legacy mandatory Skill Assignment，所有状态固定
-`task_completion=false`。M5-006 已冻结 shared contract，M6-008 按该契约独立推进；Decision 本身不是其实现证据。
+通用入口桥接与四臂评价保持独立身份。M6-009 的十一厂商 offline profiles 不代表全厂商 live；
+[M6-010 受限收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md)
+仅接受 exact Flash Provider/session，后续 binding/purpose 需重验适用性，不替代 M6-004、M11 E2E、A4 或 pilot。
 
-M5-007 hard-depend M5-006、M6-008、M11-004、M11-006、M11-007 与 `M5-SKILL-CLOSEOUT-REPLAY-GATE`。M11-004 通过
-M11-003 提供 Core Host actual-fact 与 generic Trace/Receipt/Artifact closeout contract；M11-006 独立提供
-projection-backed Skill Supply mapping，但不传递前者。现有 Core Receipt 不支持 Skill-bearing actual binding，
-M11-007 的 `skill-execution@1.0.0` 已由 PR81 接受并合入，保留三种生命周期与独立文件 replay；
-[Gate B record](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) exact-pin 实现、四个 synthetic proof、
-CI 与具名双方接受，现为 SATISFIED。M6-008 的 baseline transport 已由 PR75 接受并收口为 DONE，M5-007 的实现前置已满足，进入 IN_PROGRESS。
-首个开发切片为[冻结 Harness plan 与评价侧 preflight](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)，随后接入实际 transport 与 replay，保持 M5-004 的外部执行 Gate。
-baseline transport architecture decision 已作为 M5-006 的 hard dependency 传递；Harness 必须实现其中冻结的
-arm→transport mapping 并消费 M6-008，不能通过 raw Task control、dummy Method/Snapshot 或 Skill Assignment
-强塞 plain arms 进入 M11；对 A2/A3 必须独立重算 `ArmExecutionQualificationRecord@1.0.0`，拒绝 binding
-substitution 或 boundary relaxation；A3 runtime Resolution/Snapshot 仍只由 Capability Resolver 产生/选择，
-M11 验证并消费，Harness 只引用两端对象组装 record。Harness 还须
-独立重算 `A3A4PairwiseComparabilityRecord`，不得把 known Method/Supply/interface difference 掩盖为 pure Skill
-increment。Harness 只在不改变 M5-003 arm treatment/read boundary 的 evaluation
-plan/run-record 层统一调度、匿名化、metric evidence、Human Review、reveal map 和 analysis input，不得为 A4
-建旁路、直接加载 candidate、在 confirmatory run 使用 synthetic projection 或自动作出
-promotion/pruning/Human judgement。
+## 6. Phase E/F 的停止边界
 
-M4-001～004 的 bounded provenance chain 已实现并合入，M5-003 计划契约与 M11-006 Skill mapping 也已具备。
-M5-008 [Live Evaluation Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)
-补足 synthetic Harness 与正式评价之间的 live 工程验收：在完整 M5-007、M6-010、真实 A4 admission 和
-pilot 专项授权闭合后，使用独立获批 pilot dossier 执行 A1/A2→M6、A3→M11 Core、A4→M11 Skill 的真实
-Provider/Tool 路径，并接受 actual facts、失败/retry、cold replay、盲审和分析输入闭包。当前 BLOCKED；
-pilot 不等待 M5-001/002，但不关闭其正式案例 Gate。pilot observations 不产生 confirmatory net-benefit
-conclusion，也不进入 primary confirmatory run set；被观察或调参影响的案例不再作为未观察 held-out。
+第一版 Strategy 保留 direct baseline，至多增加一个实验策略；外部发现、生成、repair/merge/prune 只作用于 candidate。
+Runtime 不创建 Need/Candidate、不执行 Trial/Evaluation/Promotion，不读取完整 Lifecycle；
+可选 diagnostic/feedback bridge 需已接受的 Failure/Trace/privacy 语义，不阻塞 Topic 4 Core。
+M6-003 作为显式历史 compatibility seam 解释；新 Runtime 消费按 M11 contracts，不恢复旧 umbrella。
+Provider cancellation/deadline、实际溯源和 ordinary-user 全桥各有独立验收，不能从单模块 PASS 推出。
 
-M5-004 的正式 system-level execution 仍须等待两个 Human-approved dossier 及其真实案例 provenance、
-M5-006 Protocol、M5-007 Harness（含 M6-008 baseline transport 与 Skill closeout Gate）、M5-008 的具名 live pilot 验收、
-M6-010 的 exact DeepSeek Flash live Provider/session conformance，以及 `A4-RUNTIME-ADMISSION-GATE`。A4 保持 M5-003 v0.1 的
-`mode-candidate-skill` identity，其正式含义是 candidate-origin treatment + admitted Runtime execution；M5-006
-定义独立、版本化的 execution-qualification overlay，不回写 frozen Manifest。该 Gate 必须 exact-pin
-candidate binding→`skill_evaluation_ref`→具名 Human Admission Decision→immutable accepted Release→
-SkillReleaseProjection→projection-backed Skill Supply→Capability Resolution→Snapshot→Runtime Bundle→
-Resolved Execution View→Thin Host 的 identity/path/hash lineage；任一缺失即 BLOCK。当前生产 projection index
-为空，故 Gate 尚未满足，M5-004 继续 BLOCKED。该链先形成 pre-run qualification；M5-007 还必须在执行后以
-Host report、typed execution Trace fact，并在 `M5-SKILL-CLOSEOUT-REPLAY-GATE` 接受 Skill-bearing closeout
-seam 后以 replay-valid Receipt 独立证明 actual Projection/Supply/binding 与 overlay 相同；M11-004 Core Receipt
-本身不构成该证明，planned View 也不构成 actual execution evidence。
-pilot/confirmatory 与 failed Attempts 分别保留，blind Human Review 完成；单次成功不构成 promotion。
-M5-005 最终必须基于 exact protocol/cases/runs/reviews/analysis 作出至少一个具名保留、修改、停放、弃用、
-删除或停止决定，且开发 sunk cost 不构成 KEEP 依据。精确状态与依赖只看 `TASKS.md`。
+## 7. Product / Release Gate
 
-## 6. Phase E/F 边界
+[ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)将 release source trust、curated main、
+portable package 与公开 surface 纳入 M14；它不修改 Phase/Topic authority，也不把未完成评价当产品价值。
 
-第一版 Strategy 只需 `direct` 加至多一个实验策略，且 direct 永远保留为基线。外部发现、自动
-生成、repair/merge/prune 只作用于 candidate。
+内容信任沿 `develop → frozen exact source → deterministic projection`；Git ancestry 沿
+`exact current main → generated release/v* → new curated main`。每次重新验证 source-CI、parent freshness、
+strict allowlist/manifest、closed output set 和 prospective merge-result tree = projection tree = manifest tree；
+main 前移时重新生成。active curated topology 拒绝 direct `develop → main`；release branch 不接收产品修复、不回并 develop。
 
-Execution reintegration 不授权 Runtime 定义 Mode、Claim、supply/Skill fallback、rebinding、silent
-replacement 或权限放宽。bounded contracts 已覆盖 State-at-attempt / predecessor 分离、slice-only
-completion、Source Admission、Supply side-effect ceilings、Host-observed duration 与临时 fixture 再生；
-Evidence→Claim localization 与 bounded Run reconstruction 已由 M4-003/004 实现；Provider
-cancellation/deadline、live actual-fact provenance 与 ordinary-user E2E 仍须各自 Task/Gate。
+portable package 分开 project/filesystem、immutable runtime resources 与 integration config，禁止隐式 cwd/checkout
+fallback。installed Runtime 只消费 published identity/hash 与 RuntimeResourceManifest，repository Maintainer
+另验 publication history；非空 Skill Projection 还要闭合 logical→installed exact assets并拒绝 orphan。
+no-Skill Core 不等待真实 Skill admission。
 
-Runtime 也不创建 Skill Need/Candidate、不执行 Trial/Evaluation/Promotion、不读取完整 Lifecycle。Skill
-供给通过已发布投影进入 Capability Supply Report；no-Skill/direct Tool 路径不依赖该投影。可选
-Capability Diagnostic/feedback bridge 等待 Phase C Failure/Trace 与 privacy 语义稳定，不阻塞 Topic 4。
+每次 release 独立满足硬门禁、R2 审核和具名 merge/tag/publish 决定；机制接受不继承上一版本授权。
+[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)保留历史 exact 证据，
+当前发行规则见 [发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)，逐 Task 状态只看 TASKS。
+M14 不激活 M12/M13，也不解除 Human/live/evaluation Gate。
 
-Phase F 的 M11-001～004 Core 与 M11-005/006 optional Skill supply publication/mapping 均已完成 bounded
-integration；生产 projection index 仍为空，真实 Skill new-binding 继续依独立 evidence/Human admission。
-M6-003 保留为历史 compatibility seam，不再充当执行
-umbrella。M6-004 只验证 Provider/isolated session 的 live conformance，在 M6-001/002 后由具名 live
-authorization 解阻；它不 hard-depend M11-004，也不替代已接受的 Task→View→Host→generic
-Receipt bounded Gate。
+## 8. 停止与长期检验
 
-通用 API Key 接入由 [M6-009/010 计划](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)定义：M6-009先完成真实vendor/profile与四类协议的离线合同；M6-010再对用户选定的DeepSeek Flash进行独立Windows部件验收。原M6-004 OpenAI live范围与BLOCKED事实保留；当前M5-008/M5-004显式消费M6-010的同一exact binding，换配置/模型/协议需重验。非DeepSeek仍pending-live，不能由资料兼容或一家的PASS推导全部账户可用。
+没有已证明需求时，不扩建通用 Supervisor、固定团队/DAG、Tool marketplace、长期 conversation database、
+自动 Core 修改或没有真实消费者的消息/数据库基础设施。新正式 Mode、accepted Skill 和 Provider 路线仍按独立 Task/Gate。
 
-## 7. Product / Release Closure
-
-[Issue #57](https://github.com/Chengyue-Lu/research-agent-workbench/issues/57) 与
-[ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md) 已证明 release source trust、curated main、
-portable package、公开文档与首次 tag/release 不能由 M1 scaffold 或 M11 Runtime contracts 自然承载，因此
-M14 从 reservation 转为正式 implementation family。它不改变既有 Phase/Topic authority，也不把尚未完成
-的 M5 真实评价当作产品价值证据。
-
-```text
-M14-001 release topology + source trust
-    ├── M14-002 deterministic surface / manifest / export-check
-    └── M14-003 portable package / Runtime resource boundary
-              M14-002 + M14-003
-                       ↓
-              M14-004 public documentation surface
-                       ↓
-              M14-005 first curated release
-```
-
-M14-001～004、M1-009 与 M0-007 已接受。M14-005 已闭合真实 protected source-CI、release-only
-checks、active topology/live governance、完整远端 context cutover、首发 exact source/parent freeze、
-deterministic projection/prospective-tree equality、R2 release review 与 merge/tag/artifact/hash。
-[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)固定 #116、`main@b5a9963`、annotated `v0.1.0` 和五个已下载核验的
-GitHub alpha 附件；M14 family 的已定义 implementation chain 为 DONE。
-
-后续方向是维护已接受的发行机制：产品修复在 develop 验收；有新的具名版本决定时，重新冻结
-source/current main parent，生成下一版本 projection，完成独立 source-CI、release/public/package checks、
-R2 审核及具体 merge/tag/publish 决定。每次发行沿用同一 trust boundary，不继承本次批准；版本或
-policy 的语义变化按现有 Task/ADR 治理。M14 完成不激活 M12/M13，也不解除 M5 的真实评价 Gate。
-
-发行分离两条受信关系：内容/provenance 从 `develop full engineering truth -> frozen exact commit ->
-deterministic projection`，Git ancestry 从 `exact current main -> generated release/v* -> new curated main`。
-导出只读取 frozen develop commit Git blobs，并完整替换父分支工作树；外部 expected develop source SHA、
-expected main parent SHA、versioned allowlist 和 strict manifest 共同形成 closed-set/byte-identity 证明。合并前
-机器证明 prospective merge-result tree、release projection tree 与 manifest closed output tree 完全相同；若
-current main 前进则从新 parent 重新生成。release branch 不接收语义修复，也不合并回 develop。
-
-portable package 区分两种验证：develop 的 repository/maintainer Gate 继续重验完整 publication provenance；
-installed Runtime 只消费独立 RuntimeResourceManifest 下的 published Schema/index/hash/identity，不为运行时
-验证重新打包 Need/Evaluation/Lifecycle 私有历史；最终 RELEASE_MANIFEST 再 pin wheel、resource manifest 与
-source-CI。默认资源不依赖 cwd；首版 no-Skill Core 不等待真实 Skill 准入。
-
-当前 active curated topology 只允许受信同仓库 `release/v* -> main`，拒绝 direct `develop -> main`。
-硬门禁无 bypass；每次发布重新核验完整保护、exact source/parent/manifest 和具名审核/发布决定。
-验收边界见 [`TASKS.md`](TASKS.md) 和 [M14 workstream](workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md)。
-
-## 8. 不在近期关键路径
-
-- 新增大量正式 Mode 或 accepted Skill；
-- 通用多 Agent Supervisor、团队拓扑或全局 DAG；
-- Tool marketplace 或内建大规模科学工具库；
-- 长期 conversation memory；
-- 更多 Provider 接线；
-- 自动修改 Core；
-- 没有真实消费者的数据库、消息总线或 distributed runtime。
-
-## 9. 长期成功判据
-
-- 更换 Model/Runtime/Tool/Skill 后，Research State 与 Method contract 仍可复用；
-- 旧对象跨版本迁移和历史 Attempt 解释可复现；
-- Method violation、Claim overreach、provenance error 和重复失败率下降；
-- Skill measured increment 能相对简单基线说明；
-- Trace 能让 reviewer 重建关键决定而无需加载完整历史；
-- 至少一项复杂控制因无增量而被删除或简化。
+长期以可复核替换性、migration/replay、Method violation/Claim overreach/provenance error/重复失败减少、
+Skill 相对简单 baseline 的 measured increment，以及 reviewer 用 compact refs 重建关键决定来检验系统；
+至少一个复杂控制因无增量而被简化、停放或删除，也是有效结果。

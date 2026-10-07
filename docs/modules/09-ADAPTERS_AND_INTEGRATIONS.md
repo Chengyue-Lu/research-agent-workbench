@@ -3,11 +3,16 @@
 ## 1. 目标
 
 把平台中立的 Task、Method Resolution 与 frozen Capability selection，经 Runtime Bundle、Resolved
-Execution View 和 Thin Execution Host 映射到模型 API、Agent Runtime 与科研工具。纯 API 隔离会话是
-可移植兜底；平台 Adapter 是可替换便利层。Adapter 只报告供给事实或执行 frozen binding，不能选择自身、
+Execution View 和 Thin Execution Host 映射到模型 API、Agent Runtime 与科研工具。便携基线是文件契约与
+Bundle→View→Thin Host；隔离 API session 与平台 Adapter 都是可替换实现。Adapter 只报告供给事实或执行 frozen binding，不能选择自身、
 改变研究状态、放宽权限或批准 Gate。
 
 Provider / Runtime 实现由黄毅维护；Method、Mode、Skill、受控读取、Handoff 与 Trace 语义由路诚钺维护。跨边界对象需要双方审查，执行层不能反向定义方法 fallback。
+
+接点：供给报告者提供 typed capability/conformance facts；Resolver 选择后，View producer 冻结具体
+binding，Host 调用一个 pre-bound Driver，Session/Tool dispatch 返回实际响应、用量、错误与工具事实。
+只在 Task 明确需要外部模型、Tool 或平台执行时启用该 Adapter；0..N 子 Task 是上游应用调度决定，
+每个独立会话仍分别绑定预算、允许集和结果接收者。
 
 ## 2. 三类适配器
 
@@ -22,7 +27,7 @@ flowchart LR
     H --> A["actual facts / Trace / Artifact / Receipt"]
 ```
 
-- Runtime Adapter 映射完整 Agent 平台的 Profile、权限、线程与取消语义；只有 future Skill-bearing
+- Runtime Adapter 映射完整 Agent 平台的 Profile、权限、线程与取消语义；只有 Skill-bearing
   extension 才额外映射 exact Skill binding；
 - Model Provider Adapter 映射程序化模型请求、响应、工具调用和用量；
 - Tool Adapter 映射一个可声明的读取、计算或副作用能力。
@@ -71,21 +76,23 @@ conformance、availability facts 与 limitations，但不能选择自身、声�
 Bundle、View 和 Host 三层，不能把 Snapshot 当成最终 executable authorization。
 
 ```text
-report_supply() -> CapabilitySupplyReport
+explicit supply reporter -> CapabilitySupplyReport
 load_runtime_bundle(manifest_ref) -> ValidatedRuntimeBundle
-produce_view(bundle, profile, data_policy, host_policy, binding) -> ResolvedExecutionView
-execute_once(view, prebound_driver, trusted_clock) -> ExecutionHostReport
-record_actual_facts(host_report) -> Trace / Artifact / Validation / GenericReceipt
+produce_resolved_execution_view(bundle, explicit pinned inputs) -> ResolvedExecutionView
+execute_frozen_view(view, prebound_driver, trusted_clock) -> ExecutionHostReport
+Host report -> Trace / Artifact / Validation / applicable Receipt
 ```
+
+这里表示接点，省略参数；完整库签名分别见 `execution/runtime_bundle.py`、`execution/execution_view.py`
+和 `execution/host.py`。事实记录与 closeout 是显式 producer，不由以上箭头自动完成。
 
 Adapter 必须暴露平台版本、Agent / Tool 以及可选 Skill 的发现方式、可强制与仅可提示的约束、权限、
 并发/递归限制、MCP 能力、会话到 Task/Attempt 的映射以及失败/取消语义。发现或报告能力不等于选择；
 Profile、Host policy 与 binding 的 final narrowing 由 View producer 重算。
 
 Codex、OpenCode、Claude Code 或其他平台各自实现这一接口；Canonical manifests 不因平台变化。应利用
-平台原生子 Agent 和可选 Skill 能力，并在原生能力覆盖项目代码时删除重复机制。当前 M11 Core 已闭合
-zero-Skill/no-Skill/direct Tool 的 bounded local contract；M11-005/006 SkillReleaseProjection/mapping 也已作为
-optional extension 完成，但生产 projection index 为空，且它们仍不是 Runtime Core prerequisite。
+平台原生子 Agent 和可选 Skill 能力，并在原生能力覆盖项目代码时删除重复机制。zero-Skill/no-Skill/direct
+Tool 是 Core 路径；SkillReleaseProjection/mapping 是按需扩展，不是 Core prerequisite。
 
 ## 6. Model Provider 契约
 
@@ -98,6 +105,10 @@ Provider 能力必须通过声明与 conformance 证明，不能从厂商品牌�
 每个工具提供稳定 capability ID、输入/输出 Schema、读取和写入副作用、数据去向、认证方式、预算、错误与取消语义。MCP 是工具传输方式之一，不成为核心对象。
 
 Tool 输出是不可信输入；进入 Agent 上下文的瞬时结果若没有稳定来源，必须脱敏后写入 Trace。外部写动作需要 Project Protocol 与 Task 双重授权。安装依赖、插件、MCP Server 或 Skill 属于供应链变化，需要独立任务或人工批准。
+
+Tool 接通必须观察定义、exact interface/allowlist、参数校验、受限 dispatch、实际结果和 Trace，不能由
+Supply metadata 推定已经调用。模型→Tool→模型的多轮循环由 session 与上游预算共同限定，不能借 Host
+的一次 Driver 调用隐藏多个付费请求或自动重试。
 
 ## 8. 有效权限
 

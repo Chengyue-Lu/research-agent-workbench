@@ -1,6 +1,6 @@
 # Artifact Promotion Contract（M4-002）
 
-状态：R1 shared contract candidate；合入 `develop` 后成为 M4-002 当前实现。
+状态：Active implementation contract；当前接受范围及来源见 [STATUS](../STATUS.md)，不产生科学或 Human 接受。
 
 ## 1. 目的与权威上限
 

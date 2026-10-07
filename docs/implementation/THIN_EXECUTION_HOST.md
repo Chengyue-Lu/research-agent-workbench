@@ -11,6 +11,8 @@ Execution Host Fact Report
 ```
 
 Host 不接收候选 Driver 列表，不访问模型池，不选择 Provider/Tool，也没有 retry/fallback/recovery loop。
+这里的一次 Host 调用是一个冻结执行 slice；Driver 内可按预算运行 Session/Tool 往返，上游 caller 可组织多个角色 slice，
+不把单 Host 边界解释为固定单 Agent 研究流程。
 
 ## View consumer
 

@@ -5,7 +5,7 @@
 
 ## 1. 安装
 
-需要 Python 3.11+，已验证的安装环境为 Python 3.11 和 3.13。取得本源码目录后，在根目录执行：
+需要 Python 3.11+；公开 alpha 包的安装证据覆盖 Python 3.11 和 3.13。可使用 [v0.1.0 alpha 发行附件](https://github.com/Chengyue-Lu/research-agent-workbench/releases/tag/v0.1.0)的 wheel 或取得源码后安装。发行包有固定来源身份；从源码安装得到所选源码版本，其后续修改不自动继承原包的验证证据。源码安装在根目录执行：
 
 ```shell
 python -m venv .venv
@@ -20,7 +20,7 @@ python -m pip install .
 
 命令从本地源码构建 wheel 并安装。使用已取得的 wheel 时，也可执行
 `python -m pip install /path/to/research_agent_workbench-0.1.0-py3-none-any.whl`，替换为实际文件路径。
-这里不假设已有 PyPI 发布或可下载的正式发行物。
+该版本为 alpha prerelease；没有 PyPI 发布。
 
 ## 2. 在源码目录外检查资源
 
@@ -48,13 +48,15 @@ rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root
 
 `init` 默认创建完整 no-Skill 模板：Project Protocol、Task、本地 Profile、工作目录、使用说明和资源 pin。
 `project check` 校验项目身份、模板版本和安装资源的 exact hash；项目可移到新目录后继续检查。
-Registry 和发布的 Skill 资源由安装包提供，无需从源码目录复制。初始化拒绝覆盖非空目录。
+Runtime catalog 由安装包提供，无需从源码目录复制；空 Projection index 表示没有随包发布的 Skill。初始化拒绝覆盖非空目录。
 模板另有 `--template offline-demo` 离线工程示例和 `--template minimal` 最小入口。
 `resources quickstart` 仍可单独复制安装包中的 [no-Skill Task](../examples/quickstart/task-no-skill.yaml)。
 
 Task 的 `required_skills` 为空，同时保留输入、输出、权限、预算、写入范围和停止条件。
 成功表示输入契约与引用可校验，尚未执行研究 Task，也未生成 Runtime Bundle、Execution View 或研究结论。
 再次体验时选用新的项目目录。
+
+接入人工既有材料时，先明确 root、exact refs、任务边界与人类约束，再使用现有契约校验；不要对非空材料目录运行初始化。缺少 MainState 表示连续性未知，不制造已接受历史或自动恢复旧会话。本指南演示新建文件模板，已有材料的后续 Runtime 接线由集成者显式完成。
 
 ## 4. 定位证据并重建离线示例
 

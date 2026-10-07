@@ -33,7 +33,7 @@ docs/workstreams/<owner>/<task-id-or-slug>/
 - 每个被触发的独立 workstream 使用一个以 `develop` 为集成基线的受控分支；
 - 普通修订在同一分支和 workstream 内留痕，不为每次微调新建分支；
 - 功能分支 squash merge 到 `develop`；一个完整 workstream 通过集成检查后，再由
-  `develop` 向 `main` 发布；
+  frozen `develop` source 经确定性 curated release branch 向 `main` 发布，见 [发布规则](../DEVELOP_TO_MAIN_RELEASE.md)；
 - Workstream 文档不能使未合并分支的状态、证据或接口变成项目真值；
 - 合并到 `main` 后目录可转为只读审计记录；只有重要里程碑、治理/架构决定、迁移、重大失败等
   满足 History 条件时才从 [`docs/history/`](../history/README.md) 建立入口。实时状态仍只写入

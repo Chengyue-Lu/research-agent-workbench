@@ -4,6 +4,11 @@
 
 把上下文当作受预算约束的决策空间，而不是被动依赖平台压缩的无限日志。主 Agent 优先保持连续判断能力；子 Agent 的局部历史可以被压缩或丢弃，但正式工件与交接不能受损。
 
+接点：主执行接收者消费结果与正式 refs 后写 Main State/checkpoint；resume checker 消费 checkpoint 和
+显式机器证据，输出可恢复或冲突；新主会话据此受控加载下一动作。上下文压力、阶段结束、等待或交接
+触发 checkpoint，恢复检查不自动执行任务。调用者必须划定 writer/write scope，原子写不等于并发
+协调、幂等业务接受或自动恢复策略。
+
 ## 2. 三类上下文
 
 ### Main Context
@@ -13,7 +18,8 @@
 ### Task Context
 
 用于一个窄任务。由 Task Packet、相关 frozen control inputs、选定 Agent Profile、声明输入，以及执行路径
-所需的 Runtime Bundle/View 组成；只有 Skill-bearing execution 才额外加载 exact Skill binding/Assignment。
+所需的 Runtime Bundle/View 组成；Skill-bearing extension 加入合法 Projection/Supply/View 锁和按需 Skill
+正文，只有历史 Skill-bound 兼容路径加入 Assignment。
 no-Skill、direct Tool、procedure 与 Adapter/Provider 路径不得为了构造上下文而伪造 Skill。任务结束后关闭。
 
 ### Artifact Context
@@ -75,6 +81,10 @@ rollover_reason: approaching soft context budget
 
 Main State 是恢复入口，不是第二套数据库。它只引用正式工件，不复制原始内容。`continuity_status` 区分 active、stage-completed、safe-paused、waiting 与 blocked；`machine_state_refs` 用哈希冻结恢复所需机器证据，可选 `git_head` 用于发现工作树基线冲突。
 
+Research State 表达研究对象和知识关系，Main State 表达主执行接续摘要；缺少旧 Main State 时记录新
+起点和未知，不假造过去 checkpoint。Guide 使用独立只读允许集查询 Main State 与显式工件 refs，
+不遍历全部历史、不自动回传主执行、不写状态；查询中提出的建议仍经正常接收或人类决定后才采用。
+
 Main State 可携带 `created_at`、`previous_checkpoint_ref`、`context_snapshot_ref` 和规范化
 `checkpoint_digest`。恢复检查验证协议 revision、引用、下一动作、活动 Task 的预期 Handoff，
 以及相邻 checkpoint 是否丢失已固定约束或决定。
@@ -109,8 +119,8 @@ rollover 步骤：
 - 已完成内容已写入正式或 attempt 工件；
 - 尚未完成项明确列出；
 - Facts、inferences、recommendations 已分离；
-- frozen capability/execution refs 仍可定位；若本路径实际使用 Skill，则 Assignment、Skill 版本和哈希也
-  必须可定位；
+- frozen capability/execution refs 仍可定位；若本路径实际使用 Skill，则合法 Projection/Supply/View 锁、
+  Skill版本/hash和实际加载记录也必须可定位；兼容路径额外核对 Assignment；
 - 关键中间参数、引用和负结果不只存在于对话；
 - Handoff 可通过结构验证。
 
@@ -135,11 +145,12 @@ rollover 步骤：
 按需拉取还必须满足任务级读取边界：
 
 1. 永久允许的控制输入只有当前 Task、`AGENTS.md`、选定 Profile 和本次相关的 exact frozen control
-   refs；执行路径按需加入 Runtime Bundle/View，只有 Skill-bearing path 才加入 Assignment 和 Skill 入口；
+   refs；执行路径按需加入 Runtime Bundle/View，Skill-bearing extension 按 selected refs加入 Skill 入口，
+   只有兼容路径加入 Assignment；
 2. `input_refs`、目标模块及获批扩展构成正文允许集；
 3. 允许先查看路径元数据，禁止默认递归读取全仓库文档、候选 Skills、历史 Handoffs 或其他 Agent 工作目录；
 4. 需要额外正文时先说明它将回答哪个未决问题，由实名 Task owner 扩展范围，并保存 scope-request/scope-decision 消息；
-5. Agent 间实际传递全部进入 Attempt Archive，但正文只有被 Assignment 或 scope-decision 引用后才可读取；
+5. Agent 间实际传递全部进入 Attempt Archive，但正文只有被 Task 分派或 scope-decision 引用后才可读取；
 6. 不记录无意义的逐文件打开流水，只记录范围扩展、实际成为正式输入的文件和关键验证。
 
 ## 8. 隐藏风险与预警
@@ -153,7 +164,7 @@ rollover 步骤：
 | CTX-STALE | 上下文引用旧 revision | BLOCK 合并，刷新输入 |
 | CTX-RECALL-LOOP | 主 Agent频繁回读原始材料 | 重建索引或改进 Handoff，而非扩大上下文 |
 | CTX-PINNED-GROWTH | Pinned 信息只增不减 | 人工/主 Agent清理已失效约束 |
-| CTX-SKILL-POLLUTION | 加载不相关 Skills | 卸载无关 Skill；仅在 capability resolution 选择合法 Skill supply 时保留最小 exact Assignment |
+| CTX-SKILL-POLLUTION | 加载不相关 Skills | 卸载无关 Skill；只保留 selected Supply/View所需的最小exact正文与refs |
 | CTX-HIDDEN-STATE | 决定只存在于对话 | 创建 Decision 工件 |
 | CTX-RECOVERY-DRIFT | 新会话恢复后目标改变 | 对比 checkpoint 与下一动作，Human Gate |
 | CTX-READ-SCOPE-DRIFT | Agent 阅读未声明正文或将临时材料当正式输入 | BLOCK 合并，补录范围或重做 |

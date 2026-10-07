@@ -30,6 +30,12 @@ Action 和历史 Method Resolution 保持可解释。实现和验证边界见
 
 文件权威 Trace Core 是执行事实的规范表示。Legacy execution adapter 可把既有 Skill-bound Attempt / Receipt 桥接到该表示；它不把旧 Skill 路由升级为 Method 决策，也不产生科学正确性结论。
 
+旧 [Execution Trace Adapter](../implementation/EXECUTION_TRACE_ADAPTER.md)与 `recovery-check` 描述已存在的
+显式兼容 preflight，不授权自动恢复、重启或解冻 Topic 5。当前普通执行消费 Bundle/View，并使用
+[generic Receipt](../implementation/GENERIC_EXECUTION_CLOSEOUT.md)；合格 Skill extension 使用
+[Projection](../implementation/SKILL_RELEASE_PROJECTION.md)及 [Skill closeout](../implementation/SKILL_EXECUTION_CLOSEOUT.md)，
+不能把 legacy Assignment/非空 Skill lock 当作所有新任务的前置。
+
 ## 迁移规则
 
 CLI、项目模板和 Schema 的版本/弃用规则见 [0.x 兼容政策](CLI_SCHEMA_POLICY.md)。

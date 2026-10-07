@@ -1,123 +1,45 @@
-# 测试与评估策略
+# 测试与证据策略
 
-## 1. 原则
+先验证契约、引用和边界，再验证实际集成消费；模型行为、Skill 评价与科研正确性分别取证。
+测试围绕能改变判断的具体风险，保留失败/unknown，不将测试框架扩展为第二套控制平面。
+日常组件/安装/多版本检查规则见 [Development](../DEVELOPMENT.md#6-变更检查清单)。
 
-- 先测试契约与引用，再测试模型行为；
-- deterministic tests 与 Agent evals 分开；
-- Skill 准入使用 paired same-input baseline/with-Skill，fixture-only 必须得到 not-eligible；
-- 结构 PASS 不代表科学正确；
-- 测试失败、负结果和平台漂移均保留；
-- 测试本身不能演化成庞大控制面。
+## 证据层级
 
-## 2. 测试层级
+| 层级 | 必须看到什么 | 能证明什么 |
+|---|---|---|
+| 结构与契约 | Schema、identity/revision/hash、引用闭包、权限/输出/预算正反例 | 文件与确定性不变量合格 |
+| 单模块行为 | 正常产物、真实故障反例、调用前/后停止行为 | 该模块的实现行为 |
+| 桥接集成 | producer 实际返回 refs → consumer 重载/使用 → 下游输出；fresh 角色及实际交接 | 声明模块之间接合可达 |
+| live API/Tool | exact source/config/Task/permission、实际请求/响应/Tool/usage/failed/unknown、独立冷回放 | 被测 binding 与场景的实际执行 |
+| Skill 增量 | 合格冻结同输入 baseline/with-Skill、独立评价与预先冻结判断规则 | 该范围的 Skill 评价结果 |
+| 系统科研评价 | 获批 case/provenance、完整 runset、盲审与人类判断 | 有边界的质量/效率或净增量结论 |
 
-### Unit
+fixture 只能证明相应结构/行为，不能产生 live/source/Skill admission。Slice Receipt `completed` 也不产生
+whole-Task completion、Claim accepted 或 Human approved。平台测试另核实际 permission/sandbox、launch/collect/cancel；
+提示词声明不能替代执行约束。
 
-- ID/revision/hash；
-- Schema 解析；
-- Claim ceiling；
-- Skill 过滤与冲突；
-- write scope；
-- stale propagation；
-- Main State 构造。
+## 最小桥接测试记录
 
-### Contract
+每例明确目的、启用模块、实际输入、producer 输出、contract、消费方与输出断言。人工合成材料足以测试接口，
+真实科研案例留给科研评价；不要求每例开启全部 Source/Evidence/Claim/Skill 分支，也不固定角色或研究 DAG。
 
-- Canonical Profile → Codex config；
-- Skill Manifest → `SKILL.md` metadata；
-- Task → Resolved Task；
-- Task + Mode Action → Method Resolution（已实现 provider-neutral 决定工件与正反 fixture）；
-- Decision operation + actor + asserted facts → Authority Rule Eligibility（已实现 Matrix hash 与结果重算，但不证明 facts 或产生授权）；
-- Capability Requirement → Supply Report(s) → Capability Resolution → frozen Snapshot（Phase B 已实现闭集、替换与负面契约测试；Snapshot 不产生最终执行授权）；
-- Snapshot → Runtime Bundle → Resolved Execution View → Thin Host → actual execution fact → generic Receipt（M11 Core 已有 bounded synthetic positive/negative/replay 验证；不等于 live Provider 或普通用户 E2E）；
-- Research State / Research Attempt / Research Failure → ref-only Method Trace → bounded Phase C machine Gate（candidate contract 已实现；Human/R2 语义 closeout 仍独立）；
-- raw source bytes + exact admission sidecar → Source Admission（M4-001 已实现 fail-closed path/hash gate；不判断科学质量或许可证合法性）；
-- exact four-arm Evaluation Manifest → non-executing evaluation plan（M5-003 已实现；不保存实际 trial result，也不证明净收益）；
-- legacy Handoff/Receipt → transfer 与结构资格（compatibility contract；不等于 M4 object/run promotion 或 Topic 5 activation）；
-- Runtime Bundle/View 的 exact read closure、freshness、permission/data-egress/side-effect narrowing 与 fail-closed drift；
-- 工具 Adapter 输入/输出。
+main 的 0..N child 决定、fresh child 请求、child 结果/工件 refs 与新 main 消费分别留证。
+测试中的 child 数、预算、事件和深度是配置实例；未开始、失败、取消和 unknown 不写成完成。
+每个 Task 和整 Run 统一累计实际 attempted calls/usage/预占/wall time，不因 fresh Session 或阶段切换重置。
 
-### Integration targets
+关键负例覆盖真正边界：未授权输入/读写、hash drift、未知 Method/Mode、Human Gate 未决、所需 Skill 未载入、
+Supply gap/ambiguous、actual binding drift、输出/Trace 缺口和预算不足。先核整 wave，再允许 child 出站。
+冷回放只重载文件与重做确定性检查，不调用 Provider/Tool。
 
-以下混合已有 legacy/bounded fixture 与未来真实案例目标；列入测试策略不表示相应 Runtime、promotion、
-recovery 或外部执行已经获得 implementation authority：
+## 模型与人类评价
 
-- 初始化示例项目；
-- evidence-scout 完成 Evidence Handoff；
-- simulation-auditor 完成 V&V Handoff；
-- 主 Agent读取两个 Handoff；
-- checkpoint → 新会话恢复；
-- input 修改 → stale 阻断。
+固定输入/来源、必须和禁止的事实关系、Claim ceiling、必要工件及人类决定点；避免把措辞快照当作正确答案。
+Skill paired 评价和 system-level 四臂评价按各自 [Skill protocol](SKILL_EVALUATION_PROTOCOL.md)、
+[系统 Protocol](SYSTEM_EVALUATION_PROTOCOL.md)/[Harness](SYSTEM_EVALUATION_HARNESS.md)执行，通用桥接测试不替代这些 Gate。
 
-### Skill Evals
+真实 kill/恢复、长期 Human waiting、跨项目检索与新平台行为只在有相应授权 Task 和场景时测试；
+历史注入样例从 [compatibility/history](../history/README.md)查找，不自动扩大本轮矩阵。
 
-每个 Skill 至少覆盖：正确触发、不应触发、缺工具、恶意来源、输出缺字段、版本回归、上下文过量、越权请求。
-
-正式增量评测必须冻结 Evaluation Manifest，并比较 Plain Agent、Plain+Tool、Mode+no-Skill/
-direct-tool、Mode+candidate Skill；单一 with/without fixture 只能提供局部证据。
-
-### Human Evaluation
-
-研究者评估：错误/遗漏、限制保留、引用可用性、决策负担、恢复信心和是否愿意继续使用。
-
-## 3. 故障注入
-
-首批必须注入：
-
-- 修改输入 hash；
-- 删除必需输出；
-- Skill version drift；
-- 两个 Task write scope 重叠；
-- Handoff 隐去反证；
-- Runtime capability 缺少工具；
-- 主会话在 checkpoint 前后终止；
-- 外部来源携带提示注入文字；
-- reviewer 给出与原 Agent 一致但无新证据的“共识”；
-- trace 中出现敏感字段。
-- Agent/Resolver 越权 commit permission/data relaxation 或 Claim promotion；
-- Authority Matrix hash、commit facts、Human Gate ref 或 recorded result 漂移。
-
-M3 首批已自动化的故障注入包括：主上下文原始材料、隐藏决定、子 Agent 压缩但未固化 Handoff/Audit、Manifest 条目遗漏、负面区段无映射、来源哈希/定位漂移、抽查发现 summary distortion、伪造 Context assessment、checkpoint digest 篡改、高 coordination ratio、超并发、重复 review、敏感/外部/full trace。fixture 只证明风险代码生效；真实摘要失真率、Manifest 源头遗漏和 secret redaction 仍需真实定向案例。
-
-CCRML 讨论吸收后新增：下一 AWU 超过剩余预算触发 rollover、收尾余量不足触发 block、`safe-paused` Attempt/Handoff/Receipt/Main State 可恢复、Git HEAD 不一致触发 `RESUME-CONFLICT-GIT`、checkpoint 发布故障不暴露半文件，以及机器报告 `fail` 覆盖显式 `completion_claim: contract-satisfied`。测试同时证明执行完成但验证失败的负对照仍可作为合法评估证据。尚待原生验证的场景包括进程级 kill 的多时间点矩阵、Human waiting 跨窗口保持、稳定失败不被无理由重复、无图数据库时跨项目检索退化。
-
-## 4. 黄金样例
-
-黄金样例不追求唯一语言输出，固定的是：
-
-- 输入与来源；
-- 必需/禁止的事实关系；
-- 可接受 Claim ceiling；
-- 应触发的风险；
-- 必需工件和引用；
-- 人类决定点。
-
-避免把模型措辞快照当作稳定测试。
-
-## 5. 平台测试
-
-Codex Adapter 每次目标版本变化后检查：
-
-- 项目 Agent 配置是否被发现；
-- Skill-bearing case 声明的 required Skill 是否可显式调用；no-Skill case 不伪造 Skill；
-- sandbox/permission 是否符合交集；
-- 子 Agent是否返回结果并可定位线程；
-- 写范围是否被遵守；
-- 大输出是否写文件而非污染主上下文。
-
-若平台行为无法可靠自动断言，保留最小手工检查清单，并记录日期和版本。
-
-## 6. 发布门槛
-
-M1/M2 期间发布只要求结构、契约和示例可重复。只有 Phase D 的真实案例评估、独立结果记录与具名
-Human acceptance 形成净增量证据后，才允许宣称对科研质量或效率有帮助；M5-003 的 non-executing
-Manifest/plan 本身不满足该门槛。在此之前文案使用“设计目标”“候选机制”“初步验证”。
-
-## 7. 测试删减
-
-每个里程碑删除：
-
-- 不再对应当前行为的实现快照；
-- 与上游平台重复且无额外保证的测试；
-- 无法改变决策的指标测试；
-- 只证明测试框架自身的多层自检。
+提交前复核适用测试、链接/公开发行闭包和未证明范围。删除已失效的实现快照测试、与平台重复且无新保证的检查，
+以及不会改变判断的指标或多层自检；保留有决策价值的失败反例和正常消费路径。

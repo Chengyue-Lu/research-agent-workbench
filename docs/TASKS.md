@@ -5,7 +5,7 @@
 当前责任人：路诚钺维护 Method/Core、Mode/Action、Capability/Skill Evolution、Evaluation、Research
 State/Claim/Method Trace，以及 Resolved Execution View/Skill supply mapping 的语义（M11-002/005/006）；
 黄毅维护 Provider Adapter、API session、Runtime Bundle、Thin Execution Host 与执行 Trace/Receipt 集成
-（M6、M11-001/003/004/007）。M11 的 Capability↔Runtime 交界是共享接口，按
+（M6、M11-001/003/004/007/008）。M11 的 Capability↔Runtime 交界是共享接口，按
 [开发协作指南](DEVELOPMENT.md)进行跨负责人独立架构审查；具名 Task owner 仍对各自行的完成判断负责。
 
 本文件是唯一 implementation-level source of truth。Phase 只表示宏观成熟度与解冻 Gate，Topic 只表示
@@ -58,6 +58,7 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M1-007 | DONE | 建立确定性风险检查 | M1-004..006 | Skill 缺失、越权、写冲突、Claim overreach、stale 注入均阻断 |
 | M1-008 | DONE | 冻结模型 API 中立端口与能力协商语义 | M1-001 | Capability/Data Policy gap 在调用前阻断，提供商基线可查询 |
 | M1-009 | DONE | 建立外部可复用项目 scaffold 与 `0.x` 兼容政策 | M1-006 | `rwb init` 可生成或选择完整模板；新项目不需手工复制 Registry/Profiles/Skills；Schema/CLI 迁移与废弃规则明确 |
+| M1-010 | READY | 通用研究入口的受控需求与材料接入、契约产物桥接 | M1-003, M1-004, M1-005, M1-007, M8-003, M8-005 | 声明自然语言需求/材料及独立人类权限和预算上限，实际 intake 请求与模型输出经现有契约验证形成 Protocol/Task/Method/Requirement 草稿；Capability 冻结与 Bundle/View 消费本次 producer 返回的 exact refs；拒绝无效 JSON、未知 Mode/Action、缺 Method 依据、范围/权限/预算扩大、未授权材料与 hash drift，Human Gate 未决保持阻断；材料接入及 Source/Evidence/Claim/Method Trace 按显式场景触发并检查直接消费者；交付可复用 caller、可读输入输出/消费表及正反证据，不替代科学方法判断，不改 Core 身份/Schema/Registry/Human authority，不自动恢复旧会话 |
 
 ## M2：Agent 与 Skills
 
@@ -71,6 +72,7 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M2-006 | PARKED | 扩展 Codex Runtime Adapter | M2-002, M2-005 | 已有 Agent/Skill 发现、验证和显式 dispatch 保留；平台 launch/collect 不在当前 Mode–Skill 关键路径 |
 | M2-007 | PARKED | 执行首个双 Skill 垂直切片 | M7-002..006, M7-008 | 历史离线切片可精确 replay，但两个 broad Skill 均已 legacy；真实执行改由 Need + M3-008 路径重新定义 |
 | M2-008 | PARKED | 建立外部 Skill 发现、隔离评估与准入 Registry | M1-005, M1-007 | 73 条候选和 11 个来源的可追溯库存已形成；停止来源驱动扩张，后续 dossier/trial 只由 Mode-derived Need 与 Trace Gate 激活 |
+| M2-009 | READY | 角色必载指令与有界 0..N 主子运行消费 | M2-002, M1-004, M2-005, M3-008, M6-002 | 每个启用角色实际载入 baseline/Profile/exact Task/input refs；main 实际决定 0 或多个 child，调用前验证整 wave 的权限/深度/预算/输出冲突；fresh child 输出及有权工件 refs 进入新的 main 消费请求；统一累计 intake/main/children 的实际调用、Task 跨会话预算、failed/unknown holds 和 wall time；子数量/事件/预算为可变配置；required Skill 未加载阻断，候选提示词不产生 admission；独立 Guide 仅消费 approved refs、无科研写入或自动回传；交付可读角色输入输出与关键失败证据，不固定角色编制、增加 Supervisor 或解冻 Topic 5 |
 
 ## M3：上下文与风险
 
@@ -167,9 +169,8 @@ process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。
 | M8-004 | DONE | 建立最小 migration seam 并迁移 Research Mode v0.1 → v0.2 | M8-002, M8-003 | v0.2 删除直接 Skill recommendation；v0.1 仍可验证/历史解释；迁移保留原/新 hash 与实现版本 |
 | M8-005 | DONE | 冻结 Decision Authority Matrix 并映射 validation/preflight | M8-002, M8-003 | Agent proposal、deterministic resolution、Human Gate、权限放宽和 Claim promotion 权限有正反 fixture |
 
-M8 / Phase A 已通过 PR #30 的 R2 跨负责人审查并于 `develop@ead1270` 收口。这里的完成含义是
-Method/Core 契约和下游消费边界稳定，不表示 Capability binding、Resolved Execution View、Method Trace、
-Human Decision 或端到端研究执行已经实现。
+M8 的验收只覆盖 Method/Core 契约和下游消费边界；Capability binding、Execution View、Method Trace 与
+端到端执行分别由对应 Task 验收，不能从 M8 的完成推出。后续供给消费边界见 [Phase B Gate](implementation/PHASE_B_EVOLUTION_GATE.md)。
 
 ## M9：Phase B Evolution Foundation
 
@@ -208,10 +209,13 @@ implementation slice、commit、evidence、owner review 或 hard dependency。
 | M11-005 | DONE | 发布不可变 SkillReleaseProjection | 路诚钺 | R2 | F / Capability/Skill Evolution + Topic 4 | M9-003 | 只发布 accepted immutable Skill Release 的 runtime-minimal identity/version/hash/capability/boundary facts；不暴露 Need/Evaluation/Lifecycle 历史，不授予选择或执行权限；缺失只阻断 Skill new-binding |
 | M11-006 | DONE | 将 eligible Skill supply 映射进统一 Resolved Execution View 语义 | 路诚钺 | R2 | F / Research Control + Capability/Skill Evolution + Topic 4 | M11-002, M11-005 | projection-derived Skill 与 Tool/procedure/Adapter 使用同一 Report→Resolution→Snapshot→View 语义；Capability Resolver 仍是唯一 selector，View/Host 保持 supply-kind neutral；不得形成 Skill-specific Runtime dispatcher/session/fallback seam，projection 缺失/stale/mismatch 时仅该候选 fail closed |
 | M11-007 | DONE | 建立 Skill-bearing generic closeout extension 与独立 replay | 黄毅 | R2 | F / Topic 4 + Artifact/Trace | M11-004, M11-006 | 以独立版本扩展 Core execution closeout，exact-pin SkillReleaseProjection identity/version/path/hash、Skill ID/version/hash、selected Supply/component、Resolution/Snapshot、Bundle/View、Task/Action/Capability slice/Attempt 与 Host actual facts；由 use-boundary actual consumption 和 typed hash-pinned Trace fact 独立佐证 actual Projection/Supply/binding，文件 replay 重载全部 refs 并重做跨对象/生命周期 invariant，不调用 Provider/Tool 或依赖原会话；completed actual 与 selected View 相同且输出/Validation subject closed set 完整，post-call-failed 保留可被 Trace 佐证的真实 drift/diagnostic 而不强改 equality，preflight-blocked 无 actual facts/调用，driver exception 或 capture 不完整时拒绝 receipt eligibility；completed 仅 action-capability-slice-only，其他状态 none，全部 task_completion=false；保持 Core/legacy 版本语义与回放、View/Host supply-neutral 和 Resolver 唯一选择权，不引入 Assignment、dispatcher、fallback/reselection、Task/Claim/Human/admission/promotion/recovery authority；Runtime 不加载 candidate/Evaluation/oracle，M5-007 在评价侧比较 replay result 与 M5-006 overlay；交付 synthetic vertical proof、独立正反验收与现行 coverage evidence，并由双方按 [Gate B record](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) 接受 exact implementation/validator/fixture/replay/CI pins；任务定义不等于 Gate SATISFIED |
+| M11-008 | READY | 普通研究入口的冻结执行、closeout 与全链桥接 Gate | 黄毅 | R2 | F / Topic 4 + Artifact/Trace | M9-005, M6-002, M11-004 | 每个实际角色 Task 经显式 Research Control factory 比较供给并冻结 exact Snapshot/Bundle/View，真实消费者验证并执行；分别证明 no-Skill、直接 Tool、合格 Skill 的适用路径与未满足资格时的 preflight block，Skill 支线复用 M11-006/007；actual binding/request/response/Tool/usage/failed/unknown 与 Trace/Host/Receipt/output pins 保留且独立冷回放不调用模型；主子结果实际消费至 Handoff/checkpoint/Human 待办，并证明 Guide 隔离；全链矩阵逐桥给出 producer、contract、consumer、结果和缺口，不能以 fixture、裸 callback 或单模块 PASS 替代实际链；不代签 live/Skill/source 资格、Human/科学接受、M5 四臂评价、Release 或 Topic 5 recovery |
 
-M11-007 是可选 Skill execution closeout 支线，依赖已完成的 Core 与 Skill mapping；它与 M6-008 baseline
-closeout 可独立推进。定义与验收细化见 [Gate B workstream](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/README.md)。
-M11-007 已按 PR81 实现与 exact-pin 证据收口为 DONE，[Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md) SATISFIED；M6-008 按 PR75 实现收口为 DONE，M5-007 H1–H5 synthetic Harness 收口为 DONE，见[整项验收与 Issue #55 关闭条件](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)。M5-008 仍为 BLOCKED，其余 live/admission/Human Gate 不变。
+M11-007 是可选 Skill execution closeout 支线；它与 M6-008 baseline closeout 保持独立 identity。
+Skill closeout 资格及接受证据见 [Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md)。
+M11-008 消费 M1-010/M2-009 对应的真实产物形成全桥证据；三条新增 Task 的入口依赖都是既有接口，
+无新 Task 间 hard dependency 不免除最终接合验收。定义分支的 READY 只有在 PR 接受后才成为共享任务状态；
+候选代码及隔离测试不等于 Task DONE，边界见 [任务定义记录](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)。
 
 ## M14：Product / Release Closure
 
@@ -247,39 +251,37 @@ Reservation 只有在对应 architecture activation Gate 已接受、已有 M-gr
 acceptance 与 negative boundaries。因此：M12 reservation 不等于 Topic 5 thaw 或 implementation approval；
 M13 不等于 strategy framework approval。
 
-## 未完成 Task 的责任与阶段索引
+## Task 责任与阶段索引
 
-详细 objective/scope/acceptance 以各 Task 行为准；本表补齐 owner、risk、Phase 与 Topic 导航，不生成
-第二套状态。具名 owner 对完成判断负责；共享接口仍按 `DEVELOPMENT.md` 触发 cross-owner review。
+本表补齐未在原 Task 行列明的具名 owner、risk 与 Phase/Topic 导航，不复制实时状态、完成日志或验收。
+原 DONE 行保持历史定义；scope/依赖/验收以 Task 行为准，共享接口按 [DEVELOPMENT](DEVELOPMENT.md) 触发跨 owner 审查。
 
-| Task | Owner | Risk | Phase | Topic / responsibility | 当前路径说明 |
-|---|---|---|---|---|---|
-| `M0-007` | 路诚钺 | R2 | Release Gate | Repository / Governance | 维护者已选择 MIT 并确认相关贡献发布授权；LICENSE、包元数据与原创 Skill 许可记录闭合，DONE |
-| `M1-009` | 路诚钺 | R1；安装 smoke R2 | F / release readiness | Repository / Product integration | 可复用 no-Skill/scaffold、离线 Run 检查/重建路径与 0.x 兼容规则已实现，DONE；M14-004 最终 Quickstart 验收仍独立 |
-| `M2-003, M2-004, M2-007, M2-008` | 路诚钺 | R1～R2 | E / optional evaluation | Capability / Skill Evolution | legacy 或来源驱动路线，保持 PARKED |
-| `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4 | 无真实平台需求，保持 PARKED |
-| `M3-001～007` | 路诚钺、黄毅按既有边界 | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace | 无 active implementation，future residual 等待 Phase C closeout 后重新 task-definition |
-| `M4-002` | 路诚钺 | R1 | C / D | Research State + Artifact/Trace | exact validation closure 与 fail-closed promotion 已实现，DONE；eligibility 只由 promotion 时重执行 accepted pinned runner/checker 确立；validation 三元组仅为 claimed provenance metadata，错误 PASS 阻断，byte-exact 自报历史可通过有效性检查但不产生历史 producer/operator/time 权威 |
-| `M4-003, M4-004` | 路诚钺 | R1；M4-003 R2 | C / D | Research State + Artifact/Trace | 已分别由 PR #61/#62 接受合入，均为 DONE；覆盖 Claim 支持/反证/限制定位与 bounded synthetic Run reconstruction，不代替真实案例或科学判断 |
-| `M4-005` | 路诚钺 | R1 | deferred | Artifact/Trace | 只在真实大文件需求出现时恢复 |
-| `M5-001, M5-002` | 路诚钺 | Human decisions R2 | D | Evaluation + Research State | 等待人类选定并批准两类真实案例边界，BLOCKED |
-| `M5-004, M5-005` | 路诚钺 | R1；Human decisions R2 | D | Evaluation + Research State | M4 bounded provenance 链已完成；真实执行仍等待 M5-001/002 的获批案例及其 provenance、Protocol/Harness、M5-008 live pilot 验收、live Provider 与 A4 external admission Gate；评价和后续 disposition 继续 BLOCKED |
-| `M5-006` | 路诚钺 | R2 | D | Evaluation protocol | ADR-0020 已选择并 exact-pin dual transport，`M5-BASELINE-TRANSPORT-ARCHITECTURE-GATE` 闭合；版本化 Protocol/qualification/overlap/overlay/pairwise contract 已实现，不能将其作为 M6-008 transport 或实际执行证据 |
-| `M5-007` | 路诚钺 | R2 | D | Evaluation harness + Runtime evidence linkage | H1–H5 bounded synthetic Harness 已完成，M5-007 DONE；M5-006/M6-008/M11-004/006/007 和 Gate A/B 均已满足；[整项收口](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_COMPLETION.md)映射 Task 与 Issue #55 全部条款；当前首轮真实运行要求 M5-008、M6-010、A4 admission 及具名 pilot/case 授权 |
-| `M5-008` | 路诚钺；黄毅复核 Execution 接口 | R2 | D | Evaluation + Topic 4 + Artifact/Trace | 四臂真实 API/Provider/Tool pilot 的工程验收，作为 M5-004 hard dependency；M5-007 synthetic Harness 已 DONE，M6-010、A4 admission 与 pilot 专项授权仍未闭合，BLOCKED；独立 pilot dossier 不等待 M5-001/002，pilot evidence 不产生 confirmatory net-benefit conclusion |
-| `M6-003` | 黄毅 | R2 | historical / F compatibility | Topic 4 + Topic 5 | legacy seam PARKED；mainline superseded by M11-001～004 |
-| `M6-004` | 黄毅 | R2 | F | Topic 4 | 只等具名 live authorization；与 M11-004 无 hard dependency，BLOCKED |
-| `M6-005` | 黄毅 | R1～R2 | deferred F | Topic 4 | 真实需求/平台选择前 PARKED |
-| `M6-008` | 黄毅 | R2 | D / F | Evaluation + Topic 4 + Artifact/Trace | PR75 实现已接受并合入；A1/A2 public projection、qualification、use-boundary facts、三态 closeout 与独立 replay 已收口；[接受证据](workstreams/huangyi/M6-BASELINE-EXECUTION/CLOSEOUT.md) 绑定当前源码/Schema/CI，不授予正式 live/case/admission 权威 |
-| `M6-009` | 黄毅；路诚钺复核共享语义 | R2 | F | Topic 4 + Credential/DataPolicy | 通用 API Key 离线合同 DONE；四协议/十一家 profile、晚解析凭据、官方矩阵及版本化 binding/Session/report 已接受；[整项收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-009_COMPLETION.md)，0真实API |
-| `M6-010` | 黄毅 | R2 | F / D prerequisite | Topic 4 | DeepSeek Flash独立真实验收；M6-009已DONE；[原三组失败与1205tokens](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_FLASH_COMPONENT_PROGRESS.md)保留，后继第四组Tool/text/Schema部件断言全通过，累计4组durable Attempt/7响应/1744tokens/held0；[最新证据](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/attempts/FOLLOWUP-023/CHECKS.md)绑定未合入PR131，正式BLOCKED/具名接受待收口；仅北京时间18:00后和官方闲时窗，不能替代原OpenAI M6-004 |
-| `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution | evidence-driven trials PARKED |
-| `M7-007` | 路诚钺 | R2 | E | Research Control / Mode | 真实案例证明 Mode gap 前 PARKED |
-| `M14-001` | 路诚钺 | R2 | Product / Release | Release Governance | dormant curated release topology/source trust seam 已实现并保持 fail closed，DONE |
-| `M14-002` | 路诚钺 | R2 | Product / Release | Projection | deterministic allowlist/manifest/export/check 与连续版本 closed-tree fixtures 已实现，DONE |
-| `M14-003` | 路诚钺 | R2 | Product / Release | Package/Runtime Resources | packaged RuntimeResourceManifest、三 root、双 Python 安装与 conditional Skill closure 已完成，DONE |
-| `M14-004` | 路诚钺 | R2 | Product / Release | Public Documentation | 公开导航、支持矩阵与仓库外 Quickstart 已由 PR #77 验收合入，DONE |
-| `M14-005` | 路诚钺 | R2 | Product / Release | First Curated Release | 全部依赖与外部门禁闭合；#118 接受 active topology/live governance，完整 ruleset cutover 与真实 direct-develop 反例已验收；#116 经最终 R2 APPROVED 正常 merge 为 `main@b5a9963`，annotated `v0.1.0` 与五个 GitHub alpha 附件发布并下载逐字节核验。source/parent/tree/manifest、八个 actual-main 安装探针及具名 merge/publish 决定见[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)；release branch 不回并 develop |
+| Task / family | Owner | Risk | Phase | Topic / responsibility |
+|---|---|---|---|---|
+| `M0-007` | 路诚钺 | R2 | Release Gate | Repository / Governance |
+| `M1-009` | 路诚钺 | R1；安装 smoke R2 | F / release readiness | Repository / Product integration |
+| `M1-010` | 路诚钺 | R2 | Foundation / F | Research Control + Contracts |
+| `M2-009` | 路诚钺；黄毅复核 Session 接点 | R2 | Foundation / F | Agent Runtime + Research Control |
+| `M11-008` | 黄毅；路诚钺复核控制/权限/Trace 语义 | R2 | F | Topic 4 + Artifact/Trace |
+| `M2-003, M2-004, M2-007, M2-008` | 路诚钺 | R1～R2 | E / optional evaluation | Capability / Skill Evolution；legacy/来源驱动路线的恢复须重新决定 |
+| `M2-006` | 黄毅 | R1 | F / optional platform | Topic 4；仅按实际平台需求启动 |
+| `M3-001～007` | 路诚钺、黄毅按既有边界 | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace；residual 仍需独立 task-definition |
+| `M4-002` | 路诚钺 | R1 | C / D | Research State + Artifact/Trace |
+| `M4-003, M4-004` | 路诚钺 | R1；M4-003 R2 | C / D | Research State + Artifact/Trace |
+| `M4-005` | 路诚钺 | R1 | deferred | Artifact/Trace；真实大文件需求是启动条件 |
+| `M5-001, M5-002` | 路诚钺 | Human decisions R2 | D | Evaluation + Research State；具名案例边界 |
+| `M5-004, M5-005` | 路诚钺 | R1；Human decisions R2 | D | Evaluation + Research State；真实评价与 disposition |
+| `M5-006, M5-007` | 路诚钺 | R2 | D | Evaluation protocol / harness；不产生 live/admission 权威 |
+| `M5-008` | 路诚钺；黄毅复核 Execution 接口 | R2 | D | Evaluation + Topic 4 + Artifact/Trace；独立四臂 live pilot |
+| `M6-003` | 黄毅 | R2 | historical / F compatibility | Topic 4 + Topic 5；legacy seam，主线按 M11 contracts |
+| `M6-004` | 黄毅 | R2 | F | Topic 4；OpenAI Provider/session 的独立 live 授权 |
+| `M6-005` | 黄毅 | R1～R2 | deferred F | Topic 4；真实需求/平台选择 |
+| `M6-008` | 黄毅 | R2 | D / F | Evaluation + Topic 4 + Artifact/Trace；A1/A2 baseline transport |
+| `M6-009` | 黄毅；路诚钺复核共享语义 | R2 | F | Topic 4 + Credential/DataPolicy；离线接入合同 |
+| `M6-010` | 黄毅 | R2 | F / D prerequisite | Topic 4；exact DeepSeek Flash Provider/session，适用性见[受限收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md) |
+| `M7-005, M7-006, M7-014` | 路诚钺 | R2 | D | Research Control + Evaluation + Skill Evolution |
+| `M7-007` | 路诚钺 | R2 | E | Research Control / Mode；真实 gap 与准入卡 |
+| `M14-001～005` | 路诚钺 | R2 | Product / Release | Release Governance / Projection / Package / Public Documentation；每次发布独立决定 |
 
 ## 历史 GitHub Issues
 
@@ -293,49 +295,33 @@ M13 不等于 strategy framework approval。
 - [#6 M1-008 Freeze provider-neutral model API port](https://github.com/Chengyue-Lu/research-agent-workbench/issues/6)
 - [#7 M2-008 Audit and admit external Skill candidates](https://github.com/Chengyue-Lu/research-agent-workbench/issues/7)（来源驱动扩张已被 Need-first 路线取代）
 
-## 当前施工读取规则
+## 施工与证据读取规则
 
-本文不再在 Task 表之外维护一份“当前下一任务”清单。合法施工入口始终由上方
-canonical `READY` 行直接给出；资源排序由具名 owner 决定，branch/PR 必须引用 exact
-Task。`BLOCKED` 行只能由其显式 hard/external condition 解除，`PARKED` 行则需要独立的恢复决定。
+合法入口由 canonical Task 行给出；资源排序由具名 owner 决定。`BLOCKED` 只按该行列出的
+hard/external conditions 解阻，`PARKED` 需要恢复决定。定义分支、代码候选和共享接受分别留证。
+PR 组织和 `PARKED → DONE` 的适用条件统一采用 [DEVELOPMENT 第 5.2 节](DEVELOPMENT.md#52-pr-类型与-tasks-授权)，不在本页另建例外。
 
-M10-001 → M10-002 → M3-009 → M10-003 的 bounded machine chain 与 M11-001 → M11-002 →
-M11-003 → M11-004 的 Core chain 均已按各自 Task 验收完成。前者不等于 Phase C Human/R2
-semantic closeout，后者不等于 live Provider 或 ordinary-user E2E。M11-005 → M11-006 的可选 Skill supply
-publication/mapping 也已按独立 Task identity 完成；它不阻塞零 Skill Core、不建立第二条 Runtime consumer
-path，也不等于任何真实 Skill 已获准入、证明研究增量或获得 Runtime new-binding 资格。
+完成含义须保持该 Task 的边界：结构/有界机器验收不推出 live、ordinary-user 全桥、Human/科学接受、
+Skill admission 或系统净价值。M4 promotion eligibility 由当次 pinned pipeline 重执行确立，
+claimed provenance metadata 不能认证历史 producer/operator/time；具体行为见[工件提升契约](implementation/ARTIFACT_PROMOTION_CONTRACT.md)。
+M6-009 的十一厂商离线合同不等于十一家 live 支持；M6-010 只接受其[受限收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md)中的 exact Flash 对象，
+后续 source/config/model/Host/Tool/purpose drift 必须重验适用性，不替代 M6-004、M5 pilot 或 A4 admission。
 
-M14-001～005 已按各自 Task 验收完成；[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)绑定 accepted frozen
-source、exact main parent、R2 release PR、实际 merge tree、annotated tag 与已下载核验的发行附件。
-当前执行 `feature -> develop -> generated release/v* -> main`：direct `develop -> main` 被拒绝，
-每次后续发行仍需独立 source-CI、parent freshness、projection/package/public checks、R2 审核与维护者发布决定。
-release branch 不接收产品修复，也不回并 develop。M14 DONE 不解除其他 Task 的 Human/live/evaluation Gate。
+M6-003 的旧 seam 与 M6-006 的 “Part C 等待 M8-003” 保留历史解释，不定义当前恢复 Gate；
+兼容入口见[兼容说明](compatibility/README.md)。M14 的历史验收见[首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)，
+后续发行仍按独立 frozen source/current main parent、验证及具名发布决定执行，不解除其他 Task Gate。
 
-Issue #41 新增或规范化的 M4、M5、M10、M11 dependency chains 保持逐 Task implementation /
-acceptance identity；PR 组织统一遵守 `DEVELOPMENT.md` 的 module-level DAG 规则。Governance v2 的
-`PARKED → DONE` R2 exception 只保留给
-已经被 task-definition 明确证明为不可独立验收的同一 Stage，不能从“风险同为 R2”自行推导适用。
+## Topic 4 / Topic 5 权限 Gate
 
-M6-003 只保留历史 compatibility identity，当前 Core 主链由已完成的 M11-001～004 承担；M6-004 只等待独立 live
-授权，可与 M11 Core 分开验证。M3-001～007 不再用 `IN_PROGRESS` 表示未排期债务。M6-006 行中的 “Part C 等待
-M8-003” 是不可改写的 DONE 历史快照，不再定义当前恢复 Gate。M7-005/006/014 的真实比较继续
-PARKED，直到相应 Trace/Evaluation Manifest 与真实需求稳定。
+Topic 4 使用 Runtime Bundle → Resolved Execution View → Thin Host → actual facts → Trace/Receipt。
+Capability Resolver 是唯一供给 selector；View producer 形成 external pins、exact binding 与最严 policy 交集；
+Host 消费冻结对象并报告 actual，不 reselect/rebind/fallback，也不修改 Method/Claim/Gate。
+Host/Runtime 自主路由、critic voting、隐藏编排与扩权仍禁止；M2-009 的 caller 在已授权上限内提出有界 child Task，
+每次经独立选择/冻结和权限预算预检后执行，不把编排权放入 Host，不扩大 Runtime ownership。
 
-## Topic 4 / Topic 5 解冻 Gate
-
-Topic 4 thin-layer Architecture Hold 的 architecture prerequisites 已由 M9-001/M9-005 与 ADR-0019 满足；
-M11-001～004 已在 bounded zero-Skill/direct-Tool fixtures 中实现 Runtime Bundle 明确读取面、View producer
-的 external pin/freshness/exact Provider/Adapter/Model/Runtime/Host 与最严 policy 交集、Host 对
-exact Bundle-bound View 的消费与 actual facts，以及 generic Trace/Receipt 闭合。该实现仍不代表
-live Provider readiness、ordinary-user E2E 或科学正确性。automatic fallback、model auto-routing、multi-Agent orchestration、critic
-voting、hidden routing，以及 Runtime 修改 Method/Claim/Gate 仍被禁止。
-
-Topic 5 的 minimal Research State、Failure/Attempt、Method Trace 和 bounded machine Gate prerequisites 已经完成；
-Human semantic review、R2/Phase C closeout 仍独立 pending，因此 Topic 5 继续冻结。即使该 closeout 未来被接受，
-也只允许 Topic 5 重新进入**独立架构设计审查**；Handoff、context rollover、safe pause、recovery、
-salvage/clean recovery 或 continuation 实现仍必须另有 task-definition 与 R2 acceptance。`M10-001 →
-M10-002 → M3-009 → M10-003` 是上述 activation Gate 的 machine prerequisite chain，不属于 Topic 5，
-也不因完成而自动获得 Topic 5 implementation authority。Topic 5 membership 只授予会改变 Handoff、context rollover、safe pause、recovery、
-salvage/clean recovery 或 continuation semantics 的 Task；仅消费 Trace/Receipt 或报告 execution facts
-不构成 membership。因此 M11-003/004 属于 Topic 4/Artifact-Trace integration，明确不属于 Topic 5，
-也不获得其恢复/编排 authority；M9-005 Snapshot Core 同样不解除 Topic 5。
+Topic 5 继续受 Phase C Human semantic review、R2 closeout 与独立架构审查约束。
+`M10-001 → M10-002 → M3-009 → M10-003` 只是 machine prerequisite，不自动解冻 Topic 5。
+即使 Phase C closeout 被接受，Handoff、context rollover、safe pause/recovery、salvage/clean recovery 或
+continuation semantics 仍须独立 Topic 5 review/task-definition 与 R2 acceptance。
+仅消费 Trace/Receipt、人工批准的 MainState 或执行事实不构成 Topic 5 membership；
+M11-003/004/008、独立只读 Guide 与人工材料接入不获得自动恢复权限。详见[路线图 Gate](ROADMAP.md#4-phase-c--topic-5-gate)。
