@@ -36,6 +36,12 @@ Root 已运行公开文档/发行闭包三项测试 PASS，模块05 Task 示意�
 三新 Task 的 hard dependencies 均 DONE。全文件路径/heading 扫描与最终治理/CI结果以 [检查记录](STATIC_CHECKS.md)和 PR 为准。
 独立窄审发现的 Harness 旧 IN_PROGRESS 已修复；没有用文档 PASS 宣称 API 或科学 PASS。
 
+[最终限定交叉审查](FINAL_NARROW_REVIEW.md)没有发现新的 P 级问题，其实际读取范围与输入路径更正在原记录中保留。
+各代理 handoff 的 SHA-256 指其交付时的工作文件；Git 的行尾规范化及 Root 后续修改可能改变最终文件字节，
+最终交付应按 PR 的具体 commit/blob 读取，不能把原 handoff pins 当作最终版本的重新接受。
+Draft [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 首版的 governance、plan、Component (3.11, shard 0) 与 CI result 全部通过；
+文档本地路径检查零新增缺失、active 锚点零问题。已保留三条 baseline 历史链接缺失。
+
 文档候选完成后由 Root 继续原全桥测试，实际代码保留独立 PR140。开发（4）仅补现有 driver/executor/workflow，
 无测试/API/Tool/Key/账操作。候选提示词及三个窄 Skill 已在实现 workstream 隔离准备，未安装或准入。
 测试先验证 producer→consumer refs 与明确拒绝结果，再核现有 grant/history/source/time 运行实际 API；不重复无关矩阵，不自动付费重试。

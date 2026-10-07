@@ -93,7 +93,7 @@ docs/implementation/TRACE_CORE.md,active,53,2668,False
 docs/modules/01-RESEARCH_KERNEL.md,active,123,5918,True
 docs/modules/02-PROTOCOL_AND_MODES.md,active,184,8215,True
 docs/modules/03-AGENT_RUNTIME.md,active,202,11016,True
-docs/modules/04-SKILL_SYSTEM.md,active,279,16035,True
+docs/modules/04-SKILL_SYSTEM.md,active,279,16209,True
 docs/modules/05-TASK_AND_HANDOFF.md,active,231,14738,True
 docs/modules/06-CONTEXT_GOVERNANCE.md,active,204,11257,True
 docs/modules/07-ARTIFACTS_AND_PROVENANCE.md,active,291,17284,True
@@ -326,11 +326,13 @@ docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/ARCHITECTURE_AUDIT.md,dec
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/ARCHITECTURE_COMMUNICATIONS.md,decision-or-history,32,4824,True
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/ARCHITECTURE_HANDOFF.md,decision-or-history,67,5514,True
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/DOCUMENTATION_TASK_PACKET.md,decision-or-history,31,4310,True
-docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md,decision-or-history,35,3495,True
-docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REVIEW_COMMUNICATIONS.md,decision-or-history,19,2451,True
+docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/FINAL_NARROW_REVIEW.md,decision-or-history,62,6122,True
+docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md,decision-or-history,35,3514,True
+docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REVIEW_COMMUNICATIONS.md,decision-or-history,49,6041,True
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/RISK_LEDGER.md,decision-or-history,12,1126,True
+docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/ROOT_AUDIT.md,decision-or-history,47,4865,True
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/ROOT_DOC_REVIEW.md,decision-or-history,51,5925,True
-docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/STATIC_CHECKS.md,decision-or-history,18,973,True
+docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/STATIC_CHECKS.md,decision-or-history,21,1098,True
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SURFACE_AUDIT.md,decision-or-history,34,5552,True
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SURFACE_COMMUNICATIONS.md,decision-or-history,40,8104,True
 docs/workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SURFACE_HANDOFF.md,decision-or-history,13,2866,True
