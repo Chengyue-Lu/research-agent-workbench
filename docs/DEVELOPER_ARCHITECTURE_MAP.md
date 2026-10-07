@@ -49,6 +49,28 @@ flowchart TB
 候选开发与离线结果不等于已进入共享 develop、live conformance 或正式研究接受；
 实际应用接合覆盖与相关候选证据统一查 STATUS。
 
+### 统一入口的设计接点
+
+[ADR-0024 设计候选](decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)提出在 Protocol 编译前分流；
+详细路由、输入变更和状态提案规则见[短程入口设计](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)。
+下表描述拟议责任接点，不表示 router、短程写入或状态影响评估已经实现。
+
+新增接点属于既有主线之外的前置入口/分支层，不改 Protocol→main→0..N child→Handoff→Main State→human。
+文档限定职责、权限与 I/O；经版本绑定和评审的职责 Prompt 或合法 Skill 承载意图、路由和语义影响判断。
+确定性规则核结构、权限和版本；低置信语义判断先澄清或提案，Guide/Short 不固定为独立 API 角色。
+
+| 入口职责 | 有界执行接点 | 结果消费边界 |
+|---|---|---|
+| Guide 查询 | 独立只读允许集与批准 refs | 向人类解释；默认不回传 main |
+| 独立短程 Task | 最小 Task/scope/pins/预算/输出/permission；既有 Method/Requirement、Bundle/View 与合法 binding | 局部工件和 change record；写后评估是否需状态提案 |
+| 完整研究 | Protocol 整理与现有主链 | main 消费结果、维护当前 Task 与人类待决项 |
+
+Guide 与短程调用在 main 旁，与研究 child 不同；同一对话框不共享其模型上下文或权限。
+路由依据语义影响，方法/Claim/数据/授权变化进入研究路径，混合或未知先澄清或拆分。共享写入须
+先查 main/child 占用并协调；普通入口不直接重绑或改 child 指令。写后 `none` 且 Main State refs 有效、无活动输入失效时只保留局部记录；
+`relevant/unknown` 或引用损坏则提交待采纳状态提案并暂停相关发布，人类采纳与 current state pins 校验后才可写新 Main State。
+影响进行中 main 输入或验证时传递最小失效通知；默认静默旁路不豁免该检查，也不启动自动恢复。
+
 ## 3. 主链逐跳接口
 
 | Producer | 产出契约 | Consumer | 启用条件与必须保留的失败 |

@@ -63,6 +63,16 @@ Guide 使用独立只读上下文，只读取 approved MainState/必要 refs；�
 当前接入人工状态/新 Task 与定向 partial 修复不引入自动上下文延续或会话恢复。
 API 成功、结构有效或 action-only Receipt 不产生 Skill 合格、Task 目标完成、科学正确性或 Human 接受。
 
+### 1.3 既有研究主线外的入口层与分支
+
+[ADR-0024](decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)与[短链设计](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)
+提出在研究 Protocol 之前分流，只读问题走 Guide、局部编辑走独立短程，研究需求进入既有主线，明确的主 Task 意见沿原接点处理。
+具体意图、路径与语义影响由角色 Skill/提示词的版本绑定、评审与实际使用承担；架构约束权限、上下文、输入输出和接受边界，程序做结构/版本检查。
+短程写前检查权限与活动输入冲突，写后按实际差异形成影响判断；无影响且引用有效时只留局部记录，有关/未知则提案、人类采纳与受控写入。
+统一 UI 汇聚显示，不默认把旁路交谈投递 main 或提供任意 child 操控；真实活动输入失效按目标 Task 最小通知。
+该方向增加应用层及旁路，不替换研究 Protocol→main/child→Handoff→MainState→人类决定，也不形成 Supervisor 或自动恢复。
+精确任务及接合 Gate 由 TASKS 承载，新增分支 Gate 位于既有研究工程 Gate 之后；各 Gate 不因同屏或换 API 而绕过。
+
 ## 2. Phase A Gate：方法与决策权
 
 Mode Action 固定 trigger/non-trigger、failure/artifact/Claim/Gate/stop；Method Resolution 正式表达

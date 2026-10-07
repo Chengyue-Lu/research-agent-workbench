@@ -1,10 +1,14 @@
 # 全文档校准：结果与覆盖
 
-2026-10-07 全文档校准及 2026-10-08 真实化任务扩展；AUDIT-RWB-DOCS-003/004；R2。旧校准证据保持下述阅读边界，最新任务与人员规则见 [下一阶段实施计划](REALIZATION_PLAN.md)与 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)。
+2026-10-07 全文档校准及 2026-10-08 真实化任务/入口扩展；AUDIT-RWB-DOCS-003/004/005；R2。旧校准证据保持下述阅读边界，最新任务与人员规则见 [下一阶段实施计划](REALIZATION_PLAN.md)与 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)。
 
 ## 本轮扩展
 
-人类基本同意真实环境盘点并要求并入 PR141。本轮增加 19 个 M Task（5 READY、14 PARKED），保留原 3 READY 桥接定义；逐项映射自然意图、初始化、决策事实、供给发现、角色/Skill/Tool 实际装配、动态子任务、工程环境、预算、大材料、质量/partial/修复、短状态、研究对象、Guide、安装入口与工程 Gate。
+AUDIT-RWB-DOCS-004 将已同意的真实环境盘点切成 19 个 M Task（5 READY、14 PARKED），保留原 3 READY 桥接定义；逐项映射自然意图、初始化、决策事实、供给发现、角色/Skill/Tool 实际装配、动态子任务、工程环境、预算、大材料、质量/partial/修复、短状态、研究对象、Guide、安装入口与工程 Gate。
+
+AUDIT-RWB-DOCS-005 追加 5 定义（1 READY、4 PARKED），累计 24 真实化项与原 3 桥接项。它在研究主线前增加入口层及 Guide/独立短程分支，不改变现有研究主线；具体意图/路由/影响由版本绑定且评审的角色 Skill/提示词判断，架构限定职责/权限/I/O，程序独立检查 diff/hash/ref/版本/冲突。ADR-0024 与短链设计集中维护候选边界，TASKS/唯一计划承载精确定义和排程；派生面只链接。
+
+本次契约窄审只读候选 Task、Bundle、intake、Guide 与授权唯一 factory 源码片段，未运行产品。证明 Runtime Core 不导入研究 ProjectProtocol，但仍须 Task/Method/Requirement/Supply/Resolution/Snapshot；Guide 是直接 Provider 消费者，当前 intake 要完整 ceilings，factory readonly，不等于已实现短程写回。实际读取、未知和定位见 [SHORT_LANE_CONTRACT_REVIEW](SHORT_LANE_CONTRACT_REVIEW.md)。最终一致性审查见 [SHORT_LANE_NARROW_REVIEW](SHORT_LANE_NARROW_REVIEW.md)。
 
 active 开发文档撤销固定人员分工和指定另一人签字前置，历史 DONE/ADR/验收事实保持。ADR-0023 记录本次直接人类指令，M0-008 承接机器配置和远端审核对齐；本 PR 不改机器政策、代码、Schema 或 Registry，也不把 API slice 完成认作 Task/科学接受。实施顺序只在计划中解释，exact deps/state/验收只在 TASKS。
 
@@ -43,7 +47,7 @@ Accepted ADR 正文、历史 Trial/Attempt、原验证报告、原 DONE Task 行
 ## 验证与下一步
 
 Root 已运行公开文档/发行闭包三项测试 PASS，模块05 Task 示意通过现有 Task Schema；旧 DONE 行内容变化为零，
-三新 Task 的 hard dependencies 均 DONE。全文件路径/heading 扫描与最终治理/CI结果以 [检查记录](STATIC_CHECKS.md)和 PR 为准。
+27候选定义的READY hard dependencies 均 DONE、24真实化/原3桥接DAG无环无缺失。全文件路径/heading 扫描与最终治理/CI结果以 [检查记录](STATIC_CHECKS.md)和 PR 为准。
 独立窄审发现的 Harness 旧 IN_PROGRESS 已修复；没有用文档 PASS 宣称 API 或科学 PASS。
 
 [最终限定交叉审查](FINAL_NARROW_REVIEW.md)没有发现新的 P 级问题，其实际读取范围与输入路径更正在原记录中保留。
@@ -51,5 +55,9 @@ Root 已运行公开文档/发行闭包三项测试 PASS，模块05 Task 示意�
 最终交付应按 PR 的具体 commit/blob 读取，不能把原 handoff pins 当作最终版本的重新接受。
 Draft [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 首版的 governance、plan、Component (3.11, shard 0) 与 CI result 全部通过；
 文档本地路径检查零新增缺失、active 锚点零问题。已保留三条 baseline 历史链接缺失。
+
+DOCS005 最终窄审发现 `none` 摘要漏写 refs 有效/无活动输入失效；Root补齐后限定复读关闭，未新发现P级问题。
+公开闭包首次测试发现 Architecture 详细候选链接泄漏到内部ADR/workstream/STATUS；Root把公开页收为概念边界，详细候选留开发面后3tests重跑PASS。
+未改测试或发行政策。收尾文件身份及真正当前 hosted CI 以本次 PR head 为准，前述首版CI是历史结果。
 
 当前下一步由人类审阅 PR141；合并后按新计划和 TASKS 激活实施，不从本次文档授权启动付费测试或真实研究。PR140 与其资产候选保持独立，提示词/Skill 未因文档更新获得资格；后续测试按适用 grant/source/config/history/time 重核。

@@ -151,6 +151,23 @@ Task / Method / frozen Capability selection
 Guide 使用独立只读输入与权限，仅解释已批准 Main State 和显式 refs；不自动将回答回传主执行，
 不写 checkpoint、Claim 或 Decision。结果进入研究流程必须另经正常接收或人类决定路径。
 
+### 统一入口的独立调用职责：设计候选
+
+拟议入口在研究 Protocol 编译前区分 Guide、独立短程 Task 与完整研究，见
+[ADR-0024](../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)和
+[短程入口设计](../workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)。
+这是主线外的前置入口与分支面，既有 Protocol→main→0..N child→Handoff→Main State→human 保持。
+职责 Prompt 或合法 Skill 经版本绑定与评审后承载意图/路由/语义影响判断；内核只限定职责、权限与 I/O，
+确定性校验不替代语义判断，低置信时澄清或提案。Guide/Short 不要求固定人数或独立固定 API 角色。
+Guide 与短程执行在 main 旁独立调用，不属于研究 child；职责或模型会话可以合并，但 Task 上下文、
+读取允许集、权限和接收者分别限定。同一 UI 的消息呈现不等于把主聊天加入每个模型请求。
+
+main 保持原 Task。短程调用以最小 Task、输入 pins、scope、预算和输出契约执行，默认不通知 main；
+若影响其读写、验证或活动 child，则传递最小失效/冲突事实，经所属 main 的 Task 治理处理，不能
+从普通入口任意改 child 指令、rebind 或恢复执行。目标占用及共享写冲突在写前协调，写后状态影响
+评估不替代这一准入检查。方法、Claim、数据或授权变化进入研究路径，混合或歧义先拆分或澄清，
+不凭任务长短判定隔离或低影响。上述是应用接合设计，实际支持范围见 STATUS。
+
 ### 可选 Codex 映射
 
 - `.codex/agents/*.toml` 保存项目级自定义 Agent Profile；

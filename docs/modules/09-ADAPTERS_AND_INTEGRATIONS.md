@@ -14,6 +14,24 @@ binding，Host 调用一个 pre-bound Driver，Session/Tool dispatch 返回实�
 只在 Task 明确需要外部模型、Tool 或平台执行时启用该 Adapter；0..N 子 Task 是上游应用调度决定，
 每个独立会话仍分别绑定预算、允许集和结果接收者。
 
+### 统一入口的短程执行映射：设计候选
+
+前置入口/新分支保留既有 Protocol→main→0..N child→Handoff→Main State→human 主线。Adapter 消费
+受控 I/O 和 binding；意图、路由及语义影响由经版本绑定与评审的职责 Prompt 或合法 Skill 判断，
+不硬编码为内核选择器。确定性校验只核结构、权限、版本；低置信澄清/提案。Guide/Short 不固定 API 角色。
+
+[ADR-0024](../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)拟在 Protocol 编译前路由 Guide、
+独立短程 Task 与完整研究；具体边界见
+[短程入口设计](../workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)。
+短程调用不必每次修订研究 Protocol，仍经最小 Task、Method/Requirement、合法 Supply selection 与
+Bundle/View 驱动 Adapter。它复用现有 no-Skill/direct Tool 边界，不增加 Runtime selector 或全局 Supervisor。
+
+上游控制侧只在合法 model binding、permission 和数据政策下选择、冻结平台原生调用或模型 API；独立
+session 的输入不包含主聊天，UI 共同展示也不合并 Guide、短程和 main 的模型上下文或权限。
+职责或会话可合并，分别受控的上下文与结果接收边界仍保留。写前目标占用与共享写冲突由上游
+协调，Adapter 不通过写后评估补造授权。actual diff 与 refs 交给状态影响评估/提案消费者；Adapter
+不静默改 Main State、不替人类采纳提案、不直接改 child 指令。支持与证据等级仍由 STATUS 维护。
+
 ## 2. 三类适配器
 
 ```mermaid

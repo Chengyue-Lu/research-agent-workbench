@@ -30,8 +30,13 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 本轮 Topic 映射使用 accepted architecture 中已有的责任名称。当前 `develop` 只正式使用了 Topic 4
 （Agent / Model / Provider / Runtime）与 Topic 5（Execution / Context / Handoff / Recovery）的数字标签；
 其他责任域使用名称而不擅自补编号。Topic mapping 是导航，不新增人员授权条件或改变 architecture authority。
-本轮追加的 19 项真实化定义与原 M1-010/M2-009/M11-008 共 22 项候选，定义接受与实现验收分别进行；
+本轮 19 项真实化定义再追加 5 项短链路定义，共 24 项（6 READY、18 PARKED），与原 M1-010/M2-009/M11-008
+共 27 项候选；定义接受与实现验收分别进行。统一对话入口先分流，只有 research 路由进入研究 Protocol 规划；
 精确状态和依赖仍只由下列 Task 行维护，风险/Phase 索引不复制状态。
+
+前置层/Guide/Short 扩展保持既有研究主链。通用职责规则见[短链设计](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)：
+具体意图、路由与语义影响由版本绑定、评审的角色 Prompt 或 Skill 承载；程序独立核契约/权限/预算/diff/hash/ref，
+不代替语义判断。Prompt/Skill 路线可选，选择 Skill 时满足其实际加载/资格；职责可合并，无固定角色/API 数量。
 
 ## M0：架构与仓库
 
@@ -63,9 +68,11 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M1-008 | DONE | 冻结模型 API 中立端口与能力协商语义 | M1-001 | Capability/Data Policy gap 在调用前阻断，提供商基线可查询 |
 | M1-009 | DONE | 建立外部可复用项目 scaffold 与 `0.x` 兼容政策 | M1-006 | `rwb init` 可生成或选择完整模板；新项目不需手工复制 Registry/Profiles/Skills；Schema/CLI 迁移与废弃规则明确 |
 | M1-010 | READY | 通用研究入口的受控需求与材料接入、契约产物桥接 | M1-003, M1-004, M1-005, M1-007, M8-003, M8-005 | 声明自然语言需求/材料及独立人类权限和预算上限，实际 intake 请求与模型输出经现有契约验证形成 Protocol/Task/Method/Requirement 草稿；Capability 冻结与 Bundle/View 消费本次 producer 返回的 exact refs；拒绝无效 JSON、未知 Mode/Action、缺 Method 依据、范围/权限/预算扩大、未授权材料与 hash drift，Human Gate 未决保持阻断；材料接入及 Source/Evidence/Claim/Method Trace 按显式场景触发并检查直接消费者；交付可复用 caller、可读输入输出/消费表及正反证据，不替代科学方法判断，不改 Core 身份/Schema/Registry/Human authority，不自动恢复旧会话 |
-| M1-011 | PARKED | 自然意图澄清与内部 Protocol/Task 编译 | M1-010, M8-006, M9-007 | 人类以自然需求和授权边界进入，缺信息先有界澄清；AI 可重写/选择草稿语义，权限、预算、范围上限独立保留；实际编译产物及 unknown 被下游消费，不要求人类手填完整 JSON，不将草稿冒充批准 |
+| M1-011 | PARKED | 自然意图澄清与内部 Protocol/Task 编译 | M1-010, M8-006, M9-007, M1-014 | 仅 research 请求生成或修订研究 Protocol/Task，其他路由使用独立局部契约；人类以自然需求和授权边界进入，缺信息先有界澄清；AI 可重写/选择草稿语义，权限、预算、范围上限独立保留；实际编译产物及 unknown 被下游消费，不要求人类手填完整 JSON，不将草稿冒充批准 |
 | M1-012 | PARKED | 从零与无 MainState 材料的研究基座初始化 | M1-011, M4-001 | 从零项目与杂乱文件夹两种入口共用方法流程；显式范围、文件版本、冲突、未知和获准 refs 进入研究基座；无 MainState 不补造历史状态/接受，给出两类实际输入输出及越界反例 |
-| M1-013 | PARKED | installed 通用入口、配置和人类交付 | M1-012, M2-010, M6-011, M11-009 | checkout 外安装入口以公开配置调用实际 producer/consumer 并交付可读结果、refs、限制和下一动作；不依赖 Root 私有 harness、checkout imports 或手拼运行产物；成功、缺配置和不支持路径证据完整 |
+| M1-013 | PARKED | installed 通用入口、配置和人类交付 | M1-012, M2-010, M6-011, M11-009 | checkout 外安装入口以公开配置调用实际 producer/consumer 并交付可读结果、refs、限制和下一动作；完整 research 与旁路消费由 M1-015 接合，单 CLI 不等于统一聊天全路由已通；不依赖 Root 私有 harness、checkout imports 或手拼运行产物；成功、缺配置和不支持路径证据完整 |
+| M1-014 | READY | 研究 Protocol 之前的请求分流 producer | M1-004, M8-005 | 最小用户输入、项目授权和当前 Task metadata 进入角色规则判断，记录实际 Profile/Prompt 或 Skill 版本/hash、理由、scope/目标/输入允许集及未知；区分 Guide、short-edit、research 与明确目标的 current-main-steering，混合/歧义先拆分或澄清；仅 research 进入 Protocol，Guide/短程不默认通知 main，不直接投递任意 child；路由建议不产生权限、供给选择或状态接受，不给所有请求主聊天 |
+| M1-015 | PARKED | 统一对话入口与隔离 caller 投递 | M1-014, M1-013, M2-013, M2-014 | 单 UI 可通过 native/web 等 Adapter 实现，不锁平台；按 route 核已批准对象、recipient、预算和供给绑定后创建隔离会话，共享显示不拼全聊天，不给 Guide/short 主任务原 history、不自动 main 回传；current-main-steering 只向明确 Task 的治理接点投递，children 仍由 main 控制；route/message/实际 API/产物可核，累计 usage/unknown，不扩权、不由 Host 重选，不造全局 Supervisor/message bus/continuity DB |
 
 ## M2：Agent 与 Skills
 
@@ -80,10 +87,11 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M2-007 | PARKED | 执行首个双 Skill 垂直切片 | M7-002..006, M7-008 | 历史离线切片可精确 replay，但两个 broad Skill 均已 legacy；真实执行改由 Need + M3-008 路径重新定义 |
 | M2-008 | PARKED | 建立外部 Skill 发现、隔离评估与准入 Registry | M1-005, M1-007 | 73 条候选和 11 个来源的可追溯库存已形成；停止来源驱动扩张，后续 dossier/trial 只由 Mode-derived Need 与 Trace Gate 激活 |
 | M2-009 | READY | 角色必载指令与有界 0..N 主子运行消费 | M2-002, M1-004, M2-005, M3-008, M6-002 | 每个启用角色实际载入 baseline/Profile/exact Task/input refs；main 实际决定 0 或多个 child，调用前验证整 wave 的权限/深度/预算/输出冲突；fresh child 输出及有权工件 refs 进入新的 main 消费请求；统一累计 intake/main/children 的实际调用、Task 跨会话预算、failed/unknown holds 和 wall time；子数量/事件/预算为可变配置；required Skill 未加载阻断，候选提示词不产生 admission；独立 Guide 仅消费 approved refs、无科研写入或自动回传；交付可读角色输入输出与关键失败证据，不固定角色编制、增加 Supervisor 或解冻 Topic 5 |
-| M2-010 | PARKED | 角色 baseline 与提示词实际装配审核 | M2-009 | intake/planning/main/specialist/reviewer/handoff/maintenance/Guide 职责按需合并；每次实际请求载入所需 baseline 与获准提示，记录位置/hash；审核优先级、注入、缺输入及输出质量，Skill 可选，不固定角色数量或把职责改作 Skill 准入 |
+| M2-010 | PARKED | 角色 baseline 与提示词实际装配审核 | M2-009 | intake/planning/main/specialist/reviewer/handoff/maintenance/Guide 及入口分流、短程编辑、后置影响职责按需组合，隔离与权限保持；每次实际请求载入所需 baseline 与获准规则，记录位置/版本/hash；评审优先级、注入、缺输入、语义判断与输出质量；必载角色职责与可选方法 Skill 分开，不把 baseline 版本当 Skill 准入，不新增固定 coreRole |
 | M2-011 | PARKED | main 自主委派与逐 child 方法、Profile 和能力选择 | M2-010, M8-006, M9-007 | main 自主决定 0..N，按实际子目标选择不同 specialist、Method/Profile/Capability 并逐 Task 冻结；继承授权、预算和读写边界，actual child 内容/refs/失败被 main 消费；不强制复制父 Method 或把选择权交给 Host |
 | M2-012 | PARKED | 合格 Skill 精确加载与实际使用消费 | M2-010, M11-007 | 合法选中 Skill 的 exact 正文及必要 resource 受控加载进入实际请求，use-boundary facts 被 Trace/closeout 消费；candidate/oracle 隔离、漂移/缺正文阻断；空 index 不假装真实 Skill 供给，真实路径的独立准入仍是前置，不伪造 Release |
-| M2-013 | PARKED | Guide 可见证据状态与解释验收 | M2-010, M11-008 | 独立只读 Guide 区分 ref 存在但未读、已检查、失败和缺失，依据实际可见证据解释状态/限制；核对回答完整性及不越过证据的解释质量，无项目写入或自动 main 回传；人类显式采纳后才作为新输入 |
+| M2-013 | PARKED | Guide 可见证据状态与解释验收 | M2-010, M11-008 | 独立只读 Guide 区分 ref 存在但未读、已检查、失败和缺失，依据实际可见证据解释状态/限制；核对回答完整性及不越过证据的解释质量，无项目写入或自动 main 回传；mutation 建议转请求 route 而不直接写，用户建议仅在人类明确采纳后才作为 main 新输入 |
+| M2-014 | PARKED | 与 Guide 同级的独立短程编辑职责 | M1-014, M2-010, M6-012, M3-013 | 最小有界 Task、适用 no-Skill/direct Tool 控制、输入 pins、预算和 write scope 驱动隔离 caller；普通局部修改不逐次造研究 Protocol/Mode，实际载入获准角色规则；真实编辑、检查与后置影响评估闭合，当前 main/child 写锁或冻结输入冲突先停写；保留产物、失败、usage 与副作用，无全局状态/发布/权限 authority 或任意 child 操控入口 |
 
 ## M3：上下文与风险
 
@@ -100,7 +108,8 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 | M3-009 | DONE | 在 Execution Trace 之上增加 Method-aware Trace | M3-008, M8-003, M8-005, M9-005, M10-001, M10-002 | 建立独立、ref-only 的 Method Trace v0.1，记录 applied Method/Human Decision/State/path disposition；没有 accepted execution fact producer 时显式记录 actual-binding gap，且不得把 selected Snapshot 当作 actual execution 或把 gap-valid 写成 coverage-complete |
 | M3-010 | PARKED | 多格式大输入、Tool 结果外置与按需证据回查 | M1-012, M2-009 | 多格式大输入和 Tool 结果有 exact 外置 refs，compact child 结果支持获准按需回查；新增获准 refs 经重冻结后消费，不扫全仓；选择性读取不自动触发 context rollover，给出超限/缺失/漂移与实际内容消费证据 |
 | M3-011 | PARKED | partial 结果、失败分类与预算内定向修复 | M6-011, M6-012, M11-009 | 区分可用 partial、不可用失败及 unknown，按当次授权/剩余预算发起定向修复与新尝试；保留失败、实际消耗、unknown 和副作用；不采用全局固定一次或无限 retry，不在 Host fallback，不实现 Topic 5 恢复 |
-| M3-012 | PARKED | 当前 Task 的精简 MainState、风险关闭与显式接续读取 | M1-012, M11-008 | 当前 Task State 保留必要目标/结果/限制/开放风险及历史索引，风险关闭有实际依据；人类显式新 Task 可按获准 refs 读取；不定义 automatic head/session/context 迁移恢复，不激活 M3-001/M12，触及 Topic 5 时停在独立 Gate |
+| M3-012 | PARKED | 当前 Task 的精简 MainState、风险关闭与显式接续读取 | M1-012, M11-008 | 当前 Task State 保留必要目标/结果/限制/开放风险及历史索引，风险关闭有实际依据；人类显式新 Task 可按获准 refs 读取；短程影响提案的采纳桥由 M3-013 实现，本项不增加反向依赖；不定义 automatic head/session/context 迁移恢复，不激活 M3-001/M12，触及 Topic 5 时停在独立 Gate |
+| M3-013 | PARKED | 短程 actual diff 的后置影响评估与状态采纳接点 | M3-012, M11-009 | 角色规则从 actual diff 判断 semantic none/relevant/unknown 并留理由/未知，独立 diff/hash/ref、MainState revision 与活动输入有效性检查分别留证；none 且 refs 有效、无活动输入冲突时只留局部记录，不改/不通知 main；有关/未知或坏 refs 则提案并 hold 相关发布，人类采纳及当前 pins 重查一致后受控 writer 写新 revision，漂移重评估，不暗改 Claim/权限；写前权限/冲突检查不能后置，实际活动输入失效最小通知，不解冻 Topic 5 |
 
 M3-001～007 的 `PARKED` 表示当前没有 active implementation，并非抹去已经进入仓库的 bounded v0.x
 能力。各行同时混有已实现 contract slice、真实运行校准和未来 Topic 5 扩展，不能继续用无限期
@@ -237,6 +246,7 @@ implementation slice、commit、evidence、必要审查或 hard dependency。
 |---|---|---|---|---|
 | M11-009 | PARKED | Task 实际交付检查与独立完成判定 | M2-009, M2-010, M11-008 | Task 选择真实交付/内容检查、确定性 completion checks 与必要语义 review，actual 产物被检查并记录可用 partial child 与 Parent Goal 判定；独立 Task assessment 不把 action-only Receipt.task_completion 改 true，不从结构通过自动接受科学结论 |
 | M11-010 | PARKED | 工程真实化整链 Gate | M1-013, M2-011, M2-012, M2-013, M3-010, M3-011, M3-012, M4-006, M4-007, M6-012, M8-006, M9-007 | 在可控工程材料上实测两种初始化，按需选择 Mode/合格 Skill/Tool/Profile/child，检查实际内容消费、失败保真、精简 State 和独立 Guide；qualified Skill 的真实外部前置不以假供给替代，零 Skill 路径独立验收；不是 M5 净价值评价，也不授予真实复杂科研或 Topic 5 实现权限 |
+| M11-011 | PARKED | 统一入口长短链隔离 Gate | M1-015, M11-010 | 实测 Guide、段落重排且 State 不变、初看小改却改变 Claim 的 post relevant/unknown 与采纳/hold、混合需求、明确 main steering、新研究 Protocol、活动 main/child 文件冲突及误投 child 拒绝；给出 actual diff、MainState before/after、recipient/context/notifications 真实证据，不以 bare callback 替代；保持现有 main 任务，旁路不默认污染，不自动状态回收恢复或科学准入 |
 
 M11-007 是可选 Skill execution closeout 支线；它与 M6-008 baseline closeout 保持独立 identity。
 Skill closeout 资格及接受证据见 [Gate B](workstreams/chengyue-lu/M11-SKILL-CLOSEOUT-GATE/GATE.md)。
@@ -291,16 +301,20 @@ scope/依赖/验收以 Task 行为准。固定人员限制按用户本轮决定�
 | `M1-009` | R1；安装 smoke R2 | F / release readiness | Repository / Product integration |
 | `M1-010` | R2 | Foundation / F | Research Control + Contracts |
 | `M1-011, M1-012, M1-013` | R2 | Foundation / F | Research Control + Contracts |
+| `M1-014, M1-015` | R2 | Foundation / F | Application entry + Research Control / Contracts |
 | `M2-009` | R2 | Foundation / F | Agent Runtime + Research Control |
 | `M2-010, M2-011` | R2 | Foundation / F | Agent Runtime + Research Control |
 | `M2-012` | R2 | Foundation / F | Capability / Skill + Topic 4 |
 | `M2-013` | R1；authority 敏感路径 R2 | Foundation / F | Read-only explanation |
+| `M2-014` | R2 | Foundation / F | Agent Runtime + Application short-edit |
 | `M11-008` | R2 | F | Topic 4 + Artifact/Trace |
 | `M11-009, M11-010` | R2 | F | Topic 4 + Artifact/Trace |
+| `M11-011` | R2 | F | Application entry + Topic 4 + Artifact/Trace |
 | `M2-003, M2-004, M2-007, M2-008` | R1～R2 | E / optional evaluation | Capability / Skill Evolution；legacy/来源驱动路线的恢复须重新决定 |
 | `M2-006` | R1 | F / optional platform | Topic 4；仅按实际平台需求启动 |
 | `M3-001～007` | R2 | pre-A bounded slice；post-C future | Topic 5 + Artifact/Trace；residual 仍需独立 task-definition |
 | `M3-010, M3-011, M3-012` | R2 | Foundation / F | Context / Trace；M3-012 不解冻 Topic 5 |
+| `M3-013` | R2 | Foundation / F | Context / Trace + MainState impact；不解冻 Topic 5 |
 | `M4-002` | R1 | C / D | Research State + Artifact/Trace |
 | `M4-003, M4-004` | R1；M4-003 R2 | C / D | Research State + Artifact/Trace |
 | `M4-005` | R1 | deferred | Artifact/Trace；真实大文件需求是启动条件 |

@@ -20,6 +20,7 @@
 | 运行或排错 | [上手指南](GETTING_STARTED.md) | [实现状态](STATUS.md) |
 | 参与开发 | [开发协作指南](DEVELOPMENT.md) | [M-series 施工图](M_SERIES_IMPLEMENTATION_MAP.md)、[任务清单](TASKS.md)、[路线图](ROADMAP.md)、[发布合并规范](DEVELOP_TO_MAIN_RELEASE.md) |
 | 规划真实环境接合 | [真实化下一阶段计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md) | [任务清单](TASKS.md)、[M-series 施工图](M_SERIES_IMPLEMENTATION_MAP.md)、[实现状态](STATUS.md) |
+| 了解统一入口与局部编辑候选 | [前置分流与短链设计](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md) | [ADR-0024](decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)、[任务清单](TASKS.md) |
 | 查看实现协议 | [实现文档索引](implementation/README.md) | 对应实现说明与测试 |
 | 理解架构决定 | [ADR 索引](decisions/README.md) | 对应 ADR |
 | 理解旧对象或回放 | [兼容性说明](compatibility/README.md) | [历史与审计](history/README.md) |

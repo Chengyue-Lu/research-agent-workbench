@@ -78,6 +78,25 @@ Thin Execution Host = consume exact Bundle-bound View and report actual executio
 
 这些层次共用引用和派生关系，不建立互相竞争的 execution truth。
 
+### 独立短程 Task：设计候选
+
+入口/分支层新增任务接点，保留既有 Protocol→main→0..N child→Handoff→Main State→human 主线。
+意图、路由和影响判断由经版本绑定与评审的职责 Prompt 或合法 Skill 承载；文档限定 I/O、权限和分支。
+确定性校验核结构、权限、版本，不判定语义影响；低置信先澄清或提案，Guide/Short 不绑定固定 API 角色。
+
+[统一入口设计候选](../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)中的短程 Task 是 main 旁
+的有界局部工作，不要求每次建立或修订完整研究 Protocol，仍声明目标、scope、exact input pins、
+预算、输出、权限与停止条件。执行复用合法 no-Skill/direct Tool 的最小 Method、Requirement、
+Capability selection、Bundle/View；Task 或“短程”标签不提供 permission grant。详细规则由
+[短程入口设计](../workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)维护，实际覆盖见 STATUS。
+
+写前核当前 main/child 的目标占用及共享写冲突，先协调再执行。普通入口对 child 的新指令经所属
+main 的 Task 治理，不能任意重绑子会话。写后交付 actual diff、refs、冻结 Main State 版本和
+`none/relevant/unknown` 影响依据：无语义影响且 Main State refs 有效、无活动输入失效时仅保留局部 change record；相关/未知影响或引用损坏形成待采纳
+状态提案并暂停相关发布。局部工作完成不自动完成 main Task，也不接受研究 Claim；目标 state pins
+仍一致且人类明确采纳后才由受控 writer 写新 revision。对活动 main/child 的输入影响须通知最小
+失效/冲突事实，不能被默认不回传规则隐藏；这不授权自动恢复。
+
 ## 3. Capability closure、Runtime Bundle 与 Resolved Execution View
 
 Capability Resolver 比较零个或多个显式 Supply Report。Report 不能选择自身；Resolution 只能在既有

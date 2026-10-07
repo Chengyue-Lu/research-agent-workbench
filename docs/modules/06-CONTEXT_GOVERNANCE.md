@@ -89,6 +89,28 @@ Main State 可携带 `created_at`、`previous_checkpoint_ref`、`context_snapsho
 `checkpoint_digest`。恢复检查验证协议 revision、引用、下一动作、活动 Task 的预期 Handoff，
 以及相邻 checkpoint 是否丢失已固定约束或决定。
 
+### 旁路局部结果与状态提案：设计候选
+
+前置入口/分支层不改变既有 Protocol→main→0..N child→Handoff→Main State→human 主线。意图、路由
+与语义影响判断由经版本绑定及评审的职责 Prompt 或合法 Skill 承载，不在内核硬编码；确定性校验
+核结构、权限与版本，低置信语义结果进入澄清或待采纳提案。Guide/Short 是职责，不固定 API 角色。
+
+统一入口拟将 Guide 与独立短程 Task 的上下文、权限和结果消费置于 main 旁，见
+[ADR-0024](../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)及
+[短程入口设计](../workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)。
+UI 共同显示不共享模型上下文；main 保持原 Task，旁路默认不回传或写 Main State。写前仍检查
+当前 main/child 的目标占用和共享写冲突；后置影响评估不替代权限准入或保护范围。
+
+拟议评估读取 actual diff、工件 refs、冻结 Main State 版本及敏感语义，区分 `none/relevant/unknown`。
+段落排序且主张、来源、方法、决定、目标、里程碑和依赖含义均未变可为语义 `none`；另须 Main State refs 有效、无活动输入失效，才只留局部 change record、不更新或通知
+main。主张、依据、方法、目标、里程碑或依赖变化为 `relevant`；信息不足为 `unknown`。后两者或引用损坏形成
+待采纳状态提案并暂停相关发布，不静默修改 Main State，不将局部结果提升为科学真值。
+
+实际文件写入、索引维护及局部缓存变化与 Main State 的语义修订分别记录。人类明确采纳且当前目标
+state pins 仍匹配后，由受控 writer 生成新 revision；pins 漂移先重新评估。若变化影响进行中 main
+的读写、验证或活动 child，最小失效/冲突通知是输入变更检查，不受默认不通知规则豁免，也不解冻
+自动 rollover/resume/recovery。此处描述设计责任，当前实现范围见 STATUS。
+
 ## 5. 主动 checkpoint 与 rollover
 
 在以下边界写 checkpoint：
