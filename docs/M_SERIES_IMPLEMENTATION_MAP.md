@@ -1,7 +1,7 @@
 # M-series Implementation / Construction Map
 
 本图只导航 implementation families 与原子 Task 路线，不维护独立状态、依赖或验收。
-exact Task、owner、risk、hard dependencies 与验收以 [TASKS](TASKS.md) 为准，成熟度见 [STATUS](STATUS.md)；
+exact Task、risk、hard dependencies 与验收以 [TASKS](TASKS.md) 为准，成熟度见 [STATUS](STATUS.md)；
 Phase/Topic 的方向与 Gate 见 [ROADMAP](ROADMAP.md)，权威关系见 [开发者架构地图](DEVELOPER_ARCHITECTURE_MAP.md)。
 
 ## 1. Family 施工方向
@@ -37,7 +37,7 @@ flowchart TB
 | M3 | Context / Trace / risk | [TASKS M3](TASKS.md#m3上下文与风险) |
 | M4 | Artifact / provenance / reproducibility | [TASKS M4](TASKS.md#m4工件与复现) |
 | M5 | Evaluation / pruning | [TASKS M5](TASKS.md#m5真实案例与删减) |
-| M6 | Provider / API execution seams | [TASKS M6](TASKS.md#m6api-execution黄毅维护) |
+| M6 | Provider / API execution seams | [TASKS M6](TASKS.md#m6api-execution) |
 | M7 | Mode–Skill selection / coordination evidence | [TASKS M7](TASKS.md#m7modeskill-选择与协调成本) |
 | M8 | Method Core formalization | [TASKS M8](TASKS.md#m8method-core-formalization) |
 | M9 | Evolution Foundation | [TASKS M9](TASKS.md#m9phase-b-evolution-foundation) |
@@ -62,7 +62,7 @@ flowchart TB
 | Baseline transport | M5-006 → M6-008 → M5-007 | [ADR-0020](decisions/0020-PHASE-D-DUAL-TRANSPORT-SYSTEM-ESTIMAND.md)、[Baseline seam](workstreams/huangyi/M6-BASELINE-EXECUTION/README.md)；plain arms 不注入 Method/Skill control |
 | Evaluation | M5-003 / M5-006 / M5-007 → M5-008 → M5-004 → M5-005 | [Protocol](implementation/SYSTEM_EVALUATION_PROTOCOL.md)、[Harness](implementation/SYSTEM_EVALUATION_HARNESS.md)、[Live pilot](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)；真实 cases、live/admission、blind review 等外部门禁不能省略 |
 | Provider | M6-001 → M6-002；M6-009 → M6-010 | [General profile plan](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)、[Flash exact 受限收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md)；offline 十一厂商不等于 live 十一厂商，原 M6-004 独立 |
-| Release | M14-001 → M14-002 / M14-003 → M14-004 → M14-005 | [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)、[发行规范](DEVELOP_TO_MAIN_RELEASE.md)、[首发历史证据](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)；每次发行重新具名授权 |
+| Release | M14-001 → M14-002 / M14-003 → M14-004 → M14-005 | [ADR-0021](decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md)、[发行规范](DEVELOP_TO_MAIN_RELEASE.md)、[首发历史证据](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)；每次发行重新取得 Human 授权 |
 
 供给唯一选择权属于 Capability Resolver；Runtime 只消费 exact frozen objects 与 actual facts。
 Core no-Skill/direct Tool 不等待 Skill Projection；closeout 只证明已声明的 execution slice，不代签 Task/Claim/Human 完成。
@@ -85,10 +85,31 @@ M11-008 的最终 Gate 必须消费前两切片对应的实际产物，逐桥记
 Guide 使用独立 approved-refs 只读上下文，没有主聊天/原 logs/全仓默认读取、科研写入或自动回传。
 定义分支与代码候选分别接受，详见 [任务定义记录](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)。
 
-## 4. Reservation 与日常使用
+## 4. 真实环境接合的实施 waves
+
+下一阶段的唯一工作计划是 [REALIZATION_PLAN](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)。
+本图只按消费方向聚合已定义 Task，不另建状态、hard dependencies 或验收表；具体启动条件以 TASKS 拓扑为准。
+
+```text
+基础：机器治理、工程环境事实、可配置预算/能力、actual 决策、逐候选供给发现
+  → 意图/人工材料、角色职责与 child 方法选择、真实 Skill 加载、Guide 证据可见性、真实 Tools
+  → Task 目标质量、大输入外置/回查、partial 修复、短 MainState、研究对象消费
+  → installed 通用入口、真实化工程整链 Gate
+```
+
+wave 表示实施聚合，不要求一 wave 的所有 Task 完成后才启动下一 wave，也不创造图中各项间的 harddep。
+基础入口定位为 M0-008 / M4-006 / M6-011 / M8-006 / M9-007；原 M1-010 / M2-009 / M11-008
+继续承担有界桥接候选的独立身份，既有 PR140 接合证据不使它们自动 DONE。
+
+必载角色职责与可选方法 Skill 分开；Skill 支线须 actual loader/use-boundary 与相应资格证据。
+write/execute/search Tool 须有实际工程环境、权限执行及失败/partial 工件闭合；action-only Receipt 不冒充 Task 目标完成。
+人工新 Task 读取短 MainState/材料是显式接入，不建立自动 context/recovery 或解冻 M12/Topic 5。
+Mode 候选、新 Skill 准入、M5 四臂评价/复杂场景和 M12 各保留独立 Gate，不成为普通 Core 接合的共同前置。
+
+## 5. Reservation 与日常使用
 
 M12/M13 激活须 accepted architecture Gate、已有 M-group 不足的证据及独立 docs-only task-definition；
-届时才定义原子 ID、具名 owner、risk、dependencies、scope、acceptance 与 negative boundaries。
+届时才定义原子 ID、risk、dependencies、scope、acceptance 与 negative boundaries。
 reservation 不解冻 Topic 5，不扩大 Runtime/Capability/Method/Claim/Human authority。
 
 查合法入口时读取 TASKS 的 exact 行；查成熟度时读取 STATUS；查为何受限时读取 ROADMAP/Architecture。

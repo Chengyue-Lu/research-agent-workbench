@@ -1,6 +1,6 @@
 # Provider Adapter、配置与隔离会话
 
-黄毅维护 Provider Adapter、API session、live conformance 与执行事实集成；共享控制/权限/Trace 语义按
+Provider Adapter、API session、live conformance 与执行事实集成的共享控制/权限/Trace 语义按
 [开发协作规则](../DEVELOPMENT.md)审查。当前成熟度与 exact live 来源见 [STATUS](../STATUS.md)；本页定义接口。
 
 ## 1. 可移植执行边界

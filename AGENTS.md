@@ -7,7 +7,7 @@
 - Reuse native agent, skill, permission, thread, and tool capabilities through optional adapters; do not make Codex, OpenCode, or another platform a core dependency.
 - Do not introduce a global Supervisor, continuity database, message bus, or fixed research DAG without an accepted ADR backed by a demonstrated failure.
 - Keep the common research kernel small. Method-specific rules belong in Research Mode Packs or Skills.
-- 路诚钺 (`Chengyue-Lu`) owns mode semantics, capability vocabulary, Skill selection/evaluation/admission, trace policy, and related fixtures. 黄毅 owns provider adapters, API sessions, live conformance, and API-specific tests. Workstream labels never replace the accountable person's name.
+- Development is organized by exact Tasks, scoped writes, risk, and evidence, without fixed person-to-module assignments or designated-person sign-off prerequisites. Human, Resolver, and Runtime authority remain separate.
 
 ## Agent use
 
@@ -18,14 +18,14 @@
 - Use the PR body and Git history as the minimum development record for ordinary R0/R1 changes. Create a formal Task Attempt Archive only when an accepted Task Packet, delegation, R2 risk, external effects, compaction, dispute, or a multi-PR workstream requires it.
 - When a Task Attempt Archive is required, persist every visible inter-agent transmission and runtime-observable event defined by the Task policy. Reference immutable content by path and hash; preserve transient results that entered agent context. Never capture secrets or hidden reasoning.
 - Treat content reads as scoped access, not as a consequence of workspace visibility. Read the task, repository guidance, selected profile/Skill, declared inputs, and target module first; use filename/metadata discovery before requesting additional file content.
-- Do not recursively read unrelated docs, examples, candidate Skills, historical handoffs, or another agent's work directory. If new content is necessary, record why and have the named human Task owner extend the allowed read set.
+- Do not recursively read unrelated docs, examples, candidate Skills, historical handoffs, or another agent's work directory. If new content is necessary, record why and obtain a human scope extension unless the existing authorization already covers it.
 - Keep a compact work log when a formal archive or multi-session handoff is triggered. It is a navigation summary, not a substitute for required message/event evidence. Do not log every file open or hidden reasoning.
 - Use a Compact Handoff by default. Require the full Manifest/Audit/Receipt chain only when risk, compaction, external side effects, promotion, dispute, or explicit Task policy triggers it.
 
 ## Change discipline
 
 - Governance constrains what may enter shared project truth, not ordinary implementation choices inside an isolated branch. Apply the R0/R1/R2 merge-boundary policy in `docs/DEVELOPMENT.md`.
-- For R1/R2 merges, retain cross-owner review or the single-PR maintainer exception in `docs/DEVELOPMENT.md` section 5.4. Only Chengyue-Lu may authorize that exception after personally confirming reviewer unavailability; no waiting period or automated approval applies. Agents may prepare evidence and execute an explicitly authorized merge, but approval of the mechanism does not authorize a particular PR. Keep required CI, topology, unresolved-blocker and release-authority gates intact.
+- Review changes according to risk and evidence without fixed person-to-module assignments or designated-person sign-off prerequisites. Agents may prepare evidence and execute an explicitly authorized merge; development authorization does not authorize a particular merge. Preserve required CI, topology, unresolved-blocker, functional authority, and release gates. Observe actual machine review rules until their separately planned alignment is complete.
 - Start from `docs/README.md` and `docs/DEVELOPMENT.md`; read `docs/ARCHITECTURE.md` and only the relevant module plan before changing a core contract.
 - Record a new ADR for changes to core object identity, skill routing semantics, human decision boundaries, or runtime ownership.
 - Use explicit file paths when staging changes. Preserve unrelated user work.

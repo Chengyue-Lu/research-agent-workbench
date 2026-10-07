@@ -6,7 +6,7 @@
 
 接点：producer 提交 exact 工件和声明规则；确定性 validator 产出 scope 明确的报告，执行/接收/promotion
 消费者据此继续或阻断。只有明确语义风险才启动定向 reviewer；方法适用性、主要 Claim、权限/数据放宽
-和发布等保留事项进入具名 Human Gate。Gate 产出 Decision refs，不把一个模糊 approved 字段传遍各层。
+和发布等保留事项进入 Human Gate，由人类明确决定。Gate 产出 Decision refs，不把一个模糊 approved 字段传遍各层。
 
 ## 2. 三层验证
 
@@ -134,7 +134,7 @@ Agent 和执行层不能批准权限或数据放宽，不能自定义 methodolog
 [Decision Authority Matrix](../implementation/DECISION_AUTHORITY.md) 冻结三类
 authority class 与七类决定。Agent 只产生 non-binding proposal；Resolver 只作结构 validation，或在
 矩阵要求的事实闭合且无歧义时 commit Mode/Action/Mechanism/Binding；权限放宽、数据边界放宽和
-Claim promotion 的 commit rule 只允许具名 Human Gate 角色进入下一决策层。Eligibility 结果可重算，
+Claim promotion 的 commit rule 只允许明确的 Human Gate 决定进入下一决策层。Eligibility 结果可重算，
 但不证明 asserted facts、不记录 Human approval，也不提升 Claim 或执行决定。
 
 ## 8. 防止控制面递归增长

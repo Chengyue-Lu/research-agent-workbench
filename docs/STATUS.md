@@ -1,8 +1,9 @@
 # 实现状态
 
-状态：Current implementation authority。文档校准：2026-10-07；接受实现基线为 develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`，本页不声称重新运行产品或核验远端最新状态。
+状态：Current implementation authority。文档校准：2026-10-08；继承已审实现范围的基线为 develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`。
+本轮协调者提供的 primary develop 来源元信息为 `11c3b57dfbf8af0dc2587fc421d097e2544941c3`；它不表示本轮重新完整审查或重测了该来源的所有新增实现，也不扩大旧接受范围。
 
-本页维护工程成熟度、实现覆盖、候选和缺口。exact Task 的定义、状态、owner、依赖与验收以 [TASKS](TASKS.md) 为准，方向与 Gate 见 [ROADMAP](ROADMAP.md)；公开入口的使用契约与证据等级见 [SUPPORTED_FEATURES](SUPPORTED_FEATURES.md)。历史收口记录绑定当时身份，不作为新的运行、权限或接受事件。
+本页维护工程成熟度、实现覆盖、候选和缺口。exact Task 的定义、状态、risk、依赖与验收以 [TASKS](TASKS.md) 为准，方向与 Gate 见 [ROADMAP](ROADMAP.md)；公开入口的使用契约与证据等级见 [SUPPORTED_FEATURES](SUPPORTED_FEATURES.md)。历史收口记录绑定当时身份，不作为新的运行、权限或接受事件。
 
 ## 成熟度与来源身份
 
@@ -12,8 +13,9 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | --- | --- | --- |
 | 接受的 develop 实现 | 文件 Core、方法/能力控制、受限 Runtime、provenance 与 synthetic Harness 已有实现 | 分类见下表；Task DONE 不超出原验收含义 |
 | 已发布 `v0.1.0` | curated alpha、wheel/sdist、Runtime resources 与 checkout 外 Python 3.11/3.13 安装及 offline-demo 重建证据 | [首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)固定 source/main/tag/附件身份；其后 develop 修复不自动成为该包内容 |
-| 独立代码候选 PR140 | 研究入口、角色请求、主子结果消费与 checkpoint 等分支实现候选 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；候选测试不能替代接受、live/Skill 资格或全链 Gate |
+| 独立代码候选 PR140 | 研究入口、角色请求、主子结果消费与 checkpoint 等分支实现；有界合成材料上的实际 API/只读 Tool 和桥接已有候选证据 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；本轮只继承已核范围，不新测试。候选通路证据不证明通用真实工程、Skill 资格或科研效果 |
 | 通用桥接定义候选 | 需求/材料接入、动态主子运行与冻结执行分别定义验收 | [定义与验证边界](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)；M1-010/M2-009/M11-008 的具体 READY 状态由 TASKS 维护，不代表实现完成 |
+| 真实环境接合定义候选 PR141 | 将工程环境、决策事实、供给发现、真实预算、入口/角色/材料、Tools/Skill 加载、质量与整链缺口纳入 exact Tasks | [下一阶段唯一计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)及 [TASKS](TASKS.md)维护定义与启动条件；[PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 候选定义不等于合并、实现或接受 |
 
 ## 已实现
 
@@ -28,7 +30,7 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | Requirement / Supply / Resolution / Snapshot | structural / bounded：不可变需求身份，typed 供给比较、唯一选择、两级 Snapshot 与 migration/replacement 边界 | [Requirement](implementation/CAPABILITY_REQUIREMENT_CONTRACT.md)、[Resolution](implementation/CAPABILITY_RESOLUTION_CONTRACT.md)、[Phase B Gate](implementation/PHASE_B_EVOLUTION_GATE.md)；Snapshot 冻结供给事实，不生成最终权限、Provider binding 或 Authority eligibility |
 | Runtime Bundle / View / Thin Host | bounded：exact Task→Method→Requirement→selected Supply→Resolution→Snapshot 闭包，最严边界交集、trusted clock 与调用前重载，no-Skill/direct-tool 本地正反路径 | [Bundle](implementation/RUNTIME_BUNDLE_PROFILE.md)、[View](implementation/RESOLVED_EXECUTION_VIEW.md)、[Host](implementation/THIN_EXECUTION_HOST.md)；未满足完整需求不能冒充 Task completion；无 retry/fallback/reselection 或 Topic 5 recovery |
 | Execution Trace 与 closeout | structural / bounded：文件权威 events/index，actual facts 与 planned facts 分离，completed/post-call-failed/preflight-blocked replay；Skill extension 固定 actual Projection/Supply/binding | [Trace Core](implementation/TRACE_CORE.md)、[generic closeout](implementation/GENERIC_EXECUTION_CLOSEOUT.md)、[Skill closeout](implementation/SKILL_EXECUTION_CLOSEOUT.md)；completed 仅 Action/Capability slice，task_completion=false，不接受 Claim/Human Gate |
-| 可选 Skill 生命周期与映射 | structural / bounded：Need/lifecycle 分离，new-binding eligibility、immutable ReleaseProjection 与统一 Supply→View 路径，真实 Evaluation/具名 Decision 引用检查 | [Need](implementation/SKILL_NEED_CONTRACT.md)、[lifecycle](implementation/SKILL_LIFECYCLE_V2.md)、[Projection](implementation/SKILL_RELEASE_PROJECTION.md)；生产 Projection index 为空，未重新准入 legacy Skill，Resolver 仍是唯一 selector |
+| 可选 Skill 生命周期与映射 | structural / bounded：Need/lifecycle 分离，new-binding eligibility、immutable ReleaseProjection 与统一 Supply→View 路径，真实 Evaluation/Human Decision 引用检查 | [Need](implementation/SKILL_NEED_CONTRACT.md)、[lifecycle](implementation/SKILL_LIFECYCLE_V2.md)、[Projection](implementation/SKILL_RELEASE_PROJECTION.md)；生产 Projection index 为空，未重新准入 legacy Skill，Resolver 仍是唯一 selector |
 | MainState 与文件连续性 | structural / bounded：checkpoint、resume-check、受控 Handoff 与归档，使用精确输入与文件权威记录 | [上下文实现](../src/research_workbench/context/)、[兼容边界](compatibility/README.md)；可读取状态不表示自动恢复会话或研究接受 |
 | Source / Artifact / Claim / Run | structural / bounded：source admission exact bytes，promotion 当场重执行 pinned policy、exclusive publication 与 Receipt，支持/反证/限制定位，固定程序/输入/环境重建 | [Source](implementation/SOURCE_ADMISSION_CONTRACT.md)、[Promotion](implementation/ARTIFACT_PROMOTION_CONTRACT.md)、[Claim trace](implementation/CLAIM_TRACE_CONTRACT.md)、[Run 验收](workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)；provenance metadata 不证明历史 producer/time、来源质量或科学结果，负结果保留 |
 | Provider / Session 离线接缝 | structural / bounded：十一家身份、四协议映射、闭集配置、晚解析凭据、固定 Session/Tool 政策、版本化源码绑定与脱敏报告 | [M6-009 离线收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-009_COMPLETION.md)；默认禁用配置与 unresolved 能力不产生 live 资格，历史安装证据仅适用于其源身份 |
@@ -43,8 +45,19 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | 普通研究入口与全链桥接 | 尚无面向普通用户的一键 Task-to-research 闭环；新建与人工材料接入需明确 refs/人类 ceilings，缺 MainState 保持 unknown；角色职责不等于已支持的请求 producer | [通用桥接定义候选](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)与 [TASKS](TASKS.md)；PR140 不计作 develop 完成或通用 live 通过 |
 | Runtime 与 Skill 资格 | checked-in structural-replay Snapshot 不能执行；runtime-execution 输入由显式集成构造；Skill publication/mapping 的 synthetic 闭包不产生真实 Skill admission 或新绑定权限 | [Bundle 契约](implementation/RUNTIME_BUNDLE_PROFILE.md)、[Projection 契约](implementation/SKILL_RELEASE_PROJECTION.md)；无 checked-in 通用 Runtime View/Receipt 或生产 Skill 保证 |
 | Live pilot 与正式评价 | 选定 Provider 部件 DONE 不等于四臂 pilot 已走通；真实 A4 admission、pilot 专项授权、case/Human/正式评价 Gate 分别保留，尚无 evaluated 科研效果或成本净收益结论 | [现行 Live Pilot Gate](workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-008_LIVE_PILOT_GATE.md)；当前前置按 M6-010 解释，旧收口文档的 M6-004 blocker 是历史观察，不改写原件 |
-| 科学与发布决定 | validator 不判断方法适用、许可法律效力、证据质量、来源科学性或 Claim 正确性；工具执行/重建不提供 OS sandbox；下一次发行仍有独立审查与具名决定 | [公开边界](SUPPORTED_FEATURES.md)、[发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)；不从既有 alpha 发布、绿色检查或 Task DONE 推出新授权 |
+| 科学与发布决定 | validator 不判断方法适用、许可法律效力、证据质量、来源科学性或 Claim 正确性；工具执行/重建不提供 OS sandbox；下一次发行仍有独立审查与 Human 决定 | [公开边界](SUPPORTED_FEATURES.md)、[发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)；不从既有 alpha 发布、绿色检查或 Task DONE 推出新授权 |
 | 兼容与产品体验 | legacy Task/Skill-bound Assignment/Receipt 仅按显式兼容 seam 解析或回放；旧 task resolve 的 no-Skill Assignment 缺口不阻碍统一 Runtime Core；可视化、协作 UI 和运维尚未形成完整用户产品 | [兼容性说明](compatibility/README.md)；新任务优先合法 no-Skill/direct-tool，不复制历史 Skill 绑定 |
+
+## 真实环境差距与下一阶段
+
+候选链路证明有界接口可接合，真实长任务仍需工程环境与 Tool 版本事实、actual 决策提交、逐候选供给发现、
+可配置能力/预算和权限执行，以及自然意图、人工材料、职责/prompt、不同 child 方法与 qualified Skill 的实际消费者。
+大材料/大 Tool 结果的外置回查、partial artifacts 与定向修复、人工新 Task 读取短 MainState、研究对象实际消费及 Task 目标质量
+分别取证；同步调用的协作式取消、未知用量和失败留存不能被通路成功掩盖。
+
+具体改造、证据与停止条件只在 [REALIZATION_PLAN](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)
+和 TASKS 维护，导航不复制另一套状态/依赖/验收。M5 的四臂 pilot/净价值评价、Mode 候选与 Skill 准入、M12/Topic 5
+保持独立 Gate；人工短状态输入不意味着自动恢复，action-only Receipt 不意味着 Task 目标完成。
 
 ## 使用与接续
 

@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立；黄毅维护 API session 及其测试，路诚钺维护进入任何执行路径之前的 Task、Mode、Skill、读取、Trace 和返回边界。
+定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立；Task、Mode、Skill、读取、Trace 和返回边界约束进入执行路径的输入，API session 及其测试验证具体执行实现。
 
 接点：启动调用者消费 Task、Profile 与 frozen Bundle/View，向主或子执行者提供有界职责指令；执行者
 产出工件、实际事实和 Handoff，由主执行接收者消费。协议整理、规划、主执行、收尾和只读查询是应用

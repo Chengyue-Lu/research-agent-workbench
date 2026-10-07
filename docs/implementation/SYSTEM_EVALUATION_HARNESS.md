@@ -1,6 +1,6 @@
 # System-Level Evaluation Harness — H1–H5
 
-Evaluation owner：路诚钺。Execution 接口 owner：黄毅。Record version：`1.0.0`。
+Record version：`1.0.0`。Evaluation 与 Execution 按接口和证据职责区分，不绑定固定开发人员。
 任务边界见 [M5-007](../TASKS.md)，完整施工顺序见 [进入计划](../workstreams/chengyue-lu/M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)。
 
 H1/H2 提供确定性计划及评价侧预检，其记录固定 `actual_execution=false`。

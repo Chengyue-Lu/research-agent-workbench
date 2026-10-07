@@ -1,6 +1,6 @@
 # Skill 双臂评估与准入证据协议
 
-维护说明：路诚钺负责评估设计、冻结条件、checker、人工盲评和准入决定；黄毅可以通过 API/模型执行提供脱敏输出、Receipt 与 Agent Trace。路诚钺不为评估修改 API 实现或测试。
+评估设计、冻结条件、checker、盲评与准入按各自证据和适用 Human Gate 处理；API/模型执行提供获准输出、Receipt 与 Agent Trace，不以固定开发人员分工限制接口修改。
 
 本页定义既有 `skill_evaluation` 双臂 assessor 的证据接口及其 legacy Skill-bound recording lane。
 系统级四臂 Protocol/Harness 从 [System Protocol](SYSTEM_EVALUATION_PROTOCOL.md)进入；双臂 assessor 不替代其 Gate。

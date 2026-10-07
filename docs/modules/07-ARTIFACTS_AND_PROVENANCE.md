@@ -28,7 +28,7 @@ projects/<project-id>/
 ├── work/<task>/<attempt>/
 │   ├── TASK.yaml             # 本 Attempt 使用的冻结 Task
 │   ├── INDEX.yaml            # 默认可读的元数据索引
-│   ├── ACTORS.yaml           # actor_id → 实名责任人/运行身份
+│   ├── ACTORS.yaml           # actor_id → 运行身份与授权关联
 │   ├── events.jsonl          # 顺序事件账本；读取/工具/文件/状态
 │   ├── messages/             # Agent 间实际传递的可见内容
 │   ├── tool-events/          # 瞬时或较长工具请求/结果正文
@@ -77,7 +77,7 @@ sequence: 4
 kind: handoff
 sender_actor_id: mode-reviewer
 receiver_actor_ids: [main-agent]
-accountable_owner: 路诚钺
+accountable_owner: human-example
 created_at: "2026-08-14T10:30:00+08:00"
 in_reply_to: MSG-0003
 content_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
@@ -90,7 +90,7 @@ capture_status: complete
 <实际传递的正文；若只发送引用，就保存引用而不复制附件正文>
 ```
 
-`ACTORS.yaml` 记录 `actor_id`、角色、模型/Runtime 快照和 `accountable_owner`。人类负责人必须使用姓名；临时窗口、模型版本和 Agent Profile 是运行身份，不是审批主体。
+`ACTORS.yaml` 记录 `actor_id`、角色、模型/Runtime 快照和现有消息契约要求的归因字段（如 `accountable_owner`）。这些字段用于追溯运行与授权，不规定开发人员分工。临时窗口、模型版本和 Agent Profile 是运行身份，不构成审批权；Human Gate 须保留明确的人类决定引用。
 
 发送方应先持久化消息再 dispatch；接收方应在基于消息继续行动前完成接收记录。平台不支持写前捕获时，Adapter 必须尽快导出并在 `capture_status` 标记 `delayed`。丢失、截断、政策性删减或平台不可导出时，写 `capture-gap` 事件，说明受影响的 message range、原因和可用定位信息，不能静默假装完整。
 
@@ -106,7 +106,7 @@ capture_status: complete
 - 外部动作：目标类别、授权依据、副作用状态和 Receipt；
 - Attempt 状态：开始、暂停、恢复、失败、完成与 capture gap。
 
-如果源文件已经不可变且有哈希，读取事件引用它即可，不复制正文；如果工具结果只存在于瞬时 stdout/API response 且进入过 Agent 上下文，应将脱敏后的实际结果保存在 `tool-events/`。过程产物不原地覆盖：新版本使用新路径/revision；确需删除时事件账本保存 tombstone、旧哈希、责任人和原因。
+如果源文件已经不可变且有哈希，读取事件引用它即可，不复制正文；如果工具结果只存在于瞬时 stdout/API response 且进入过 Agent 上下文，应将脱敏后的实际结果保存在 `tool-events/`。过程产物不原地覆盖：新版本使用新路径/revision；确需删除时事件账本保存 tombstone、旧哈希、执行身份、授权依据和原因。
 
 该账本用于确认 Agent 是否越界读取或执行，而不是要求主 Agent 浏览全部操作。validator 应能用 `read_allowlist` 检测越界；人工只在排障 Task 中按 event ID 调取请求/结果正文。
 

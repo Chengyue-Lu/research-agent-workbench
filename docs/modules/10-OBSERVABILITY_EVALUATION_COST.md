@@ -16,7 +16,7 @@ Skill准入或价值裁决；多Agent协作的作用要从实际子结果消费�
 - Task、Agent Profile、当前 Action/Capability execution slice，以及适用的 Runtime Bundle/View refs；
 - Skill路径的合法Projection/Supply/View锁与实际加载记录；Assignment仅在历史Skill-bound兼容路径记录；
 - requested binding/selected Supply 与 Host-observed actual binding/actual Supply；
-- actor_id 与实名 accountable owner；
+- actor_id 与现有消息契约要求的运行归因字段及授权关联；
 - 开始/结束时间、状态、重试原因；
 - Agent 间每条可见消息的 ID、类型、发送/接收者、时间、内容哈希和附件引用；
 - 可观察的正文读取、工具/命令、文件 revision、外部副作用和状态事件；
@@ -133,7 +133,7 @@ execution qualification、pairwise comparability、盲评、measurement status�
 policy 与分析规则。baseline envelope/closeout 和 System-Level Evaluation Harness 消费
 这些契约实现执行与证据重算。本模块不定义其 Schema；实现覆盖和后继 Gate 由 STATUS 与 TASKS 维护。
 
-A4 保留 `mode-candidate-skill` 的 frozen treatment identity，正式执行必须闭合具名准入决定与
+A4 保留 `mode-candidate-skill` 的 frozen treatment identity，正式执行必须闭合明确的人类准入决定与
 accepted Release→Projection→Supply→Resolution→Snapshot→Bundle→View→Host lineage；Runtime 只消费
 准入后的供给，不读取 candidate/evaluation/lifecycle history。
 真实 A4 执行须满足独立 admission 与 Skill closeout replay Gate。成熟度、任务状态及依赖分别见
@@ -198,7 +198,7 @@ Trace 完整度不是越高越好。禁止通过记录隐藏推理、密钥或�
 - 能比较单 Agent 与多 Agent 的净收益；
 - 能识别上下文污染和 review loop 的真实成本；
 - trace 不包含不必要的敏感数据；
-- 任一跨 Agent Attempt 能检测消息序列缺口并定位到实名责任人；
+- 任一跨 Agent Attempt 能检测消息序列缺口并定位到实际运行身份、授权与相关消息；
 - 主 Agent 可以只加载 Handoff/索引而不加载完整消息正文；
 - 至少一个低价值机制因指标被删除或降级；
 - plan 能保持四臂 exact closure 且不触发执行；真实评估结果才能支持继续、修改或停止项目，

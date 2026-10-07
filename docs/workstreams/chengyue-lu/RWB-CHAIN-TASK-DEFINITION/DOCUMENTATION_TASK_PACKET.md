@@ -1,5 +1,7 @@
 # AUDIT-RWB-DOCS-003：全文档校准与精简
 
+历史 Packet，记录 2026-10-07 文档校准范围。2026-10-08 扩展与现行人员规则见 [下一阶段计划](REALIZATION_PLAN.md)和 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)；此处旧人员规则不再作为开发限制。
+
 2026-10-07 路诚钺最新指令：
 
 > 这轮提升为全文档级别更新，处理目前M系列task以及architecture系列一些有缺口以及歧义问题，而且部分文档出现了较为臃肿的问题，也一并在本轮处理。

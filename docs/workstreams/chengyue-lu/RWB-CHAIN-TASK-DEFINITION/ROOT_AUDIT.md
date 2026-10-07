@@ -1,12 +1,22 @@
 # 全文档校准：结果与覆盖
 
-2026-10-07；AUDIT-RWB-DOCS-003；具名 owner 路诚钺；Runtime/共享接口接受保留黄毅审查；R2。
+2026-10-07 全文档校准及 2026-10-08 真实化任务扩展；AUDIT-RWB-DOCS-003/004；R2。旧校准证据保持下述阅读边界，最新任务与人员规则见 [下一阶段实施计划](REALIZATION_PLAN.md)与 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)。
+
+## 本轮扩展
+
+人类基本同意真实环境盘点并要求并入 PR141。本轮增加 19 个 M Task（5 READY、14 PARKED），保留原 3 READY 桥接定义；逐项映射自然意图、初始化、决策事实、供给发现、角色/Skill/Tool 实际装配、动态子任务、工程环境、预算、大材料、质量/partial/修复、短状态、研究对象、Guide、安装入口与工程 Gate。
+
+active 开发文档撤销固定人员分工和指定另一人签字前置，历史 DONE/ADR/验收事实保持。ADR-0023 记录本次直接人类指令，M0-008 承接机器配置和远端审核对齐；本 PR 不改机器政策、代码、Schema 或 Registry，也不把 API slice 完成认作 Task/科学接受。实施顺序只在计划中解释，exact deps/state/验收只在 TASKS。
+
+独立窄审发现 M11-008 若将未来合格 Skill 正路径作为 Core 后继前置，会与未来 loader 形成语义上的互等。Root 澄清尚未合并的 M11-008：no-Skill/direct Tool Core 全桥及缺资格阻断独立验收，Skill 真正加载另由 M2-012/M11-010 闭合，M11-010 缺真实合格供给仍不能 DONE。未改 DONE 行或核心执行契约。
+
+本轮委派限定为 TASKS、稳定架构、派生导航三个互斥文档面；实际读写范围、可见通信与未决点见本目录 REALIZATION_*_HANDOFF/COMMUNICATIONS。公开通信将 checkout 前缀映射为仓库相对路径，完整原文保留在本地 ignored 档案，不声称公开文件是 byte-exact 原件。Root 处理共同规则、接口 metadata、计划、风险、引用和验证。结构检查覆盖全部文档路径与新 DAG，不重新声称语义深读所有历史文档或运行产品/API。
 
 ## 修复的主要问题
 
 | 问题 | 处理与必要性 | 位置 |
 |---|---|---|
-| M 系列 Task 与派生状态矛盾 | M6-010/M5-007/M14 的旧状态/日志从派生面移除；TASKS 保留 exact 定义与接受状态 | TASKS、ROADMAP、施工图、STATUS、owner 索引 |
+| M 系列 Task 与派生状态矛盾 | M6-010/M5-007/M14 的旧状态/日志从派生面移除；TASKS 保留 exact 定义与接受状态 | TASKS、ROADMAP、施工图、STATUS、风险/阶段索引 |
 | 架构到应用入口职责不完整 | 明确需求/材料、协议/任务方法、冻结、主子运行、结果消费、Guide 的输入输出；职责可合并，不新增 core Role | Architecture、地图、10 模块 |
 | 模块实现与可接通混为一谈 | 每模块声明 producer/consumer/产物/触发；实现、候选、live、科研评价分别取证 | 地图、STATUS、implementation 导航 |
 | 单 Host 被误读成只能单 Agent | Host slice 固定一个 Driver；caller 可组织有界 0..N Tasks；Session 可多轮，权限与总预算不重置 | 模块03/05/09、Host、Provider 接口 |
@@ -42,6 +52,4 @@ Root 已运行公开文档/发行闭包三项测试 PASS，模块05 Task 示意�
 Draft [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 首版的 governance、plan、Component (3.11, shard 0) 与 CI result 全部通过；
 文档本地路径检查零新增缺失、active 锚点零问题。已保留三条 baseline 历史链接缺失。
 
-文档候选完成后由 Root 继续原全桥测试，实际代码保留独立 PR140。开发（4）仅补现有 driver/executor/workflow，
-无测试/API/Tool/Key/账操作。候选提示词及三个窄 Skill 已在实现 workstream 隔离准备，未安装或准入。
-测试先验证 producer→consumer refs 与明确拒绝结果，再核现有 grant/history/source/time 运行实际 API；不重复无关矩阵，不自动付费重试。
+当前下一步由人类审阅 PR141；合并后按新计划和 TASKS 激活实施，不从本次文档授权启动付费测试或真实研究。PR140 与其资产候选保持独立，提示词/Skill 未因文档更新获得资格；后续测试按适用 grant/source/config/history/time 重核。

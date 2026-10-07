@@ -118,6 +118,6 @@ Skill-bearing 路径额外携带其精确 Skill 绑定。该路径当前由集�
 
 若 `rwb` 命令不存在，确认虚拟环境已激活，并运行
 `python -c "import research_workbench; print(research_workbench.__file__)"` 检查安装位置。
-若资源检查失败，从可信源码或 wheel 重新安装；若任务能力或权限冲突，复核输入边界并由任务负责人决定后续。
+若资源检查失败，从可信源码或 wheel 重新安装；若任务能力或权限冲突，复核输入边界并由人类决定后续。
 
 下一步：[支持能力与证据边界](SUPPORTED_FEATURES.md) · [公开模块导航](PUBLIC_GUIDE.md) · [总体架构](ARCHITECTURE.md)。

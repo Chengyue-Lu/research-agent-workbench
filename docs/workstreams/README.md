@@ -6,23 +6,23 @@ Attempt Archive、ADR、`TASKS.md` 或 `STATUS.md`。普通 R0 和边界清晰�
 
 ## 触发条件与目录
 
-以下任一成立时建立 workstream：R2、跨多个 PR、跨 owner/shared subsystem、migration、依赖
+以下任一成立时建立 workstream：R2、跨多个 PR、跨 shared subsystem、migration、依赖
 private/external source evidence、存在 Architecture Hold/deferred risk，或需要长期保存实验/审计证据。
 
 新工作流使用：
 
 ```text
-docs/workstreams/<owner>/<task-id-or-slug>/
+docs/workstreams/<namespace>/<task-id-or-slug>/
 ```
 
 既有 `chengyue-lu-mode-skill/` 是历史目录，保持原路径，不为统一外观重写历史。
 当前具名入口见 [`chengyue-lu/README.md`](chengyue-lu/README.md) 与
 [`huangyi/README.md`](huangyi/README.md)；进行中材料放在具名子目录，
-不把多个独立优化作为散落文件混在 owner 根目录。
+不把多个独立优化作为散落文件混在 namespace 根目录。
 
 被触发后，目录 `README.md` 至少声明：
 
-- 具名 owner、对应 Task/Audit ID 与风险触发原因；
+- 对应 Task/Audit ID、允许范围与风险触发原因；
 - 基线 commit、目标 base branch、工作分支和状态；
 - 目标、非目标、读写范围与公共契约影响；
 - 输入来源、验证证据、未证明内容和停止条件；

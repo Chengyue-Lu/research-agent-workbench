@@ -40,5 +40,5 @@
 [bounded Run reconstruction](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)。这些入口分别说明
 准入、提升、支持/反证/限制定位与 synthetic 重建的有界契约，不替代 Claim 接受或 Human Decision。
 
-实名维护与贡献规则见[开发协作指南](../DEVELOPMENT.md)，跨模块关系见[总体架构](../ARCHITECTURE.md)，
+开发与贡献规则见[开发协作指南](../DEVELOPMENT.md)，跨模块关系见[总体架构](../ARCHITECTURE.md)，
 当前实现覆盖见[实现状态](../STATUS.md)。演进历史保留在[历史与审计](../history/README.md)，不承担稳定模块入口。

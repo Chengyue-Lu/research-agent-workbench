@@ -1,6 +1,5 @@
 # Need-first Skill 候选与准入接口
 
-路诚钺维护方法需求、候选评价与 Skill admission；API、认证及执行实现由黄毅维护。
 Skill Evolution 是可选 Maintainer 外环；普通 no-Skill/direct Tool/procedure 执行不等待外环。
 依据见 [ADR-0013](../decisions/0013-MODE-FIRST-SKILL-DERIVATION.md)与
 [ADR-0019](../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
@@ -9,7 +8,7 @@ Skill Evolution 是可选 Maintainer 外环；普通 no-Skill/direct Tool/proced
 
 ```text
 Task / Mode / Method 的能力需求或有界执行 Diagnostic
-  → 具名 Maintainer 独立 triage
+  → 独立 Maintainer triage
   → 可复用 Skill Need
   → scoped source snapshot / metadata discovery / quarantine
   → 最小 candidate / method-security-license triage

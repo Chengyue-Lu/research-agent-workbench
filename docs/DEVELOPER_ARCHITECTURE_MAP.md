@@ -14,10 +14,10 @@
 | Agent Profile | 执行者最多能读、写、调用和委派什么？ | 限定运行能力，不提供完整研究方法 |
 | 职责指令 / Task | 这次做什么、读什么、输出什么、何时停止？ | 每次 AI 调用均需明确，不能以 Skill 替代 |
 | Skill | 哪个可复用的方法程序补充明确语义缺口？ | 可选 Supply；需合法选择、exact pin 与实际加载事实 |
-| 模块 / 会话 | 代码由谁维护 / 工作在什么临时上下文发生？ | 模块不是 Agent；会话不是研究状态或审批主体 |
+| 模块 / 会话 | 代码与契约在哪里组织 / 工作在什么临时上下文发生？ | 模块不是 Agent；会话不是研究状态或审批主体 |
 
-路诚钺维护 Mode、Method、Capability vocabulary、Skill、读取/Handoff/Trace 与相关 fixtures；黄毅维护
-Provider adapters、API session、live conformance 和 API 测试。应用窗口名或 Agent 名不替代具名负责人。
+Mode、Method、Capability vocabulary、Skill、读取/Handoff/Trace 与 Provider adapters、API session、
+live conformance 通过模块和契约连接。应用窗口、Agent 和模块名称不授予审批权。
 
 ## 2. 应用流程与便携执行边界
 
@@ -31,7 +31,7 @@ flowchart TB
     V --> X["主执行：自行工作或委派 0..N 子 Task"]
     X --> O["工件 / Trace / 验证 / Receipt / Handoff"]
     O --> M["结果消费 / Main State / 下一动作"]
-    M --> D["具名人类决定"]
+    M --> D["明确的人类决定"]
     D --> P
     M -. "批准的只读输入" .-> G["独立 Guide 查询"]
     G --> H
@@ -148,7 +148,7 @@ Skill维护边界见[ADR-0019](decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTIO
 [Skill Need](implementation/SKILL_NEED_CONTRACT.md)、[Release Projection](implementation/SKILL_RELEASE_PROJECTION.md)。
 Runtime只消费不可变投影形成的候选 Supply，不读 Need/Candidate/Evaluation/Lifecycle。
 Projection缺失只阻塞该Skill路径；no-Skill/direct-Tool/procedure/Adapter/Provider Core照常按资格闭合。
-Runtime失败只形成有界 Diagnostic，正式Need来自具名Maintainer独立triage。
+Runtime失败只形成有界 Diagnostic，正式Need须经可选维护外环的独立triage。
 
 ## 7. 评价专属传输与解释规则
 
@@ -160,7 +160,7 @@ A3使用Core，A4使用projection-backed Skill extension。`A4−A2` 是含trans
 否则降为package/bundled effect或unavailable；`A3−A2`不称pure Mode effect。
 
 计划编译不执行。正式 arm qualification拒绝structural-replay；A4保留candidate-origin treatment identity，
-运行供给必须走具名Admission→Release→Projection→Supply→Resolution→Snapshot→Bundle→View→Host。
+运行供给必须走Human Admission→Release→Projection→Supply→Resolution→Snapshot→Bundle→View→Host。
 Runtime不读candidate或评分历史。case/oracle先于输出冻结，Human盲评先于条件揭示；overlap/held-out与
 pairwise comparability独立重算，Research Integrity退化不能由效率抵消，也不压成一个加权分数。
 Harness和baseline transport均不拥有Supply selection。

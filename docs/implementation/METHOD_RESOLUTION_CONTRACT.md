@@ -79,7 +79,7 @@ v0.1 Method Resolution 的 `skill_need_refs` 与现有 Repository validation clo
 - Runtime bundle 不解析 Skill Need Registry，也不因 Method 引用了 Need 而要求加载 Candidate、Evaluation
   或 Lifecycle；
 - capability gap 或 execution failure 不修改 Method Resolution，也不自动创建 Skill Need；
-- 需要新 Need 时，由具名 Maintainer 在 Runtime 之外完成 triage，并发布新的精确 Need identity；
+- 需要新 Need 时，在 Runtime 之外的 Maintainer 外环完成 triage，并发布新的精确 Need identity；
 - no-Skill/direct Tool 路径允许 Skill Need、Skill package 与 Lifecycle 完全缺席。
 
 这一区分只限定 consumer profile，不修改 v0.1 Schema、八份 fixture 或 exact replay。双环决定见

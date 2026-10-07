@@ -51,7 +51,7 @@ flowchart TB
 | Evidence / Claim | 来源事实、推断、限制与可主张上限 | Human Gate、后续 Task |
 | Handoff | 面向下一执行者的最小充分状态 | Agent / Human |
 | Trace / Receipt | 执行事件、引用、输出与闭集关系 | Validator、Audit、Recovery |
-| Decision | 具名选择、理由、替代项和约束 | Research State、后续控制面 |
+| Decision | 明确选择、理由、替代项和约束 | Research State、后续控制面 |
 
 ## 3. 从需求到人类决策
 
@@ -124,7 +124,7 @@ flowchart LR
         MT["Maintainer triage"] --> SN["Skill Need"]
         SN --> CA["Candidate"]
         CA --> TE["Trial / Evaluation"]
-        TE --> HA["Named Human Admission"]
+        TE --> HA["Explicit Human Admission"]
         HA --> LC["Lifecycle + immutable Release"]
         LC --> RP["SkillReleaseProjection"]
     end
@@ -133,7 +133,7 @@ flowchart LR
     TR -. "optional, local-by-default, redacted and consented" .-> MT
 ```
 
-Research Control / Capability Resolver 是唯一 Supply selection owner：它接收显式候选 Reports，在既有
+Research Control / Capability Resolver 是唯一 Supply 选择权威：它接收显式候选 Reports，在既有
 ceilings 内 compare、qualify、resolve、select，并生成新的 Resolution 与 Snapshot revision；上游 View
 producer 只能按该 frozen selection 生成 Resolved Execution View，不能再次选择。Execution Host / Runtime
 consumer 只消费 exact View 与该 View 绑定的 Runtime Bundle；上游 Snapshot 只通过这条 closure 被使用。
@@ -158,8 +158,8 @@ Maintainer 可以隔离地评测并发布 Release，但不能控制当前 Task�
 Release metadata 和 runtime eligibility 只声明供给事实与 ceiling，不能授予执行权限。
 
 no-Skill、direct Tool、procedure 与 Adapter/Provider 路径在 Evolution 对象完全缺席时仍必须闭合。
-Runtime 对 gap/failure 最多形成 `CapabilityDiagnostic`；只有具名 Maintainer 的独立 triage 才能提出
-Skill Need。
+Runtime 对 gap/failure 最多形成 `CapabilityDiagnostic`；正式 Skill Need 须经可选维护外环的独立
+triage，不从执行失败自动生成。
 
 ## 5. 上下文与连续性
 
@@ -174,7 +174,7 @@ Skill Need。
 
 ## 6. 验证与权威
 
-确定性验证检查 Schema、引用、哈希、权限交集、事件与索引闭集、输出存在性和状态转换。模型评审可检查语义完整性，但不能替代可判定规则。方法适用性、科学主张、权限或数据放宽、例外和发布由具名人类批准。
+确定性验证检查 Schema、引用、哈希、权限交集、事件与索引闭集、输出存在性和状态转换。模型评审可检查语义完整性，但不能替代可判定规则。方法适用性、科学主张、权限或数据放宽、例外和发布须由人类明确批准，并保留决定引用。
 
 ## 7. 可替换执行边界
 
@@ -188,9 +188,9 @@ Codex/OpenCode 等 Agent Runtime、MCP、CLI 或本地程序通过薄 Adapter �
 ## 8. 演进不变量
 
 1. Stable object identity 与版本必须显式；
-2. 新 Skill 只由 Maintainer 从正式 Need、净增量证据与具名 Human Admission 产生，不从 Runtime gap、来源清单或自动生成直接产生；
+2. 新 Skill 经可选维护外环从正式 Need、净增量证据与明确 Human Admission 产生，不从 Runtime gap、来源清单或自动生成直接产生；
 3. 兼容行为必须显式选择，禁止静默重解释旧工件；
-4. 高风险决定不能由执行者自批；
+4. 高风险决定须由人类明确批准，模型执行者不得自批；
 5. Trace 记录事实，不记录隐藏推理，不保存秘密；
 6. Runtime 不读取完整 Need/Candidate/Evaluation/Lifecycle；Skill 路径只消费不可变发布投影；
 7. Supply、Release 或 Registry 变化只能由上游 Resolver 产生新的 Resolution/Snapshot/View；Execution Host

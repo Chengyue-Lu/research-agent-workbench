@@ -1,7 +1,7 @@
 # M5-008 — Live Evaluation Pilot Gate
 
 Task definition proposal，2026-09-17。状态与依赖以 [TASKS](../../../TASKS.md) 为准。
-Evaluation / Task owner：路诚钺；Provider / Tool / M6 / M11 执行接口复核：黄毅。风险：R2。
+风险：R2。Evaluation 与 Provider/Tool/执行接口分别按事实与证据审查，不绑定固定开发人员；现行开发规则见 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)。
 
 ## 目的与进入顺序
 
@@ -29,7 +29,7 @@ M6-010 只证明选定 Provider/session 的 live conformance，也不能替代�
 | M5-007 DONE | 完整 H1–H5 已接受的 implementation、validator、Schema、四臂 synthetic/replay 与 CI pins；传递 M5-006、M6-008、M11-004/006/007 和 Skill replay Gate |
 | M6-010 DONE | 适用于本次 exact Provider/Adapter/model slot、Windows Host/session 与 Tool surface 的有效 live conformance；旧模型或不同配置证据不能直接沿用 |
 | `A4-RUNTIME-ADMISSION-GATE` | 按[既有 Gate](README.md#a4-runtime-admission-gate)核对 exact candidate/evaluation、具名 Human Admission Decision、accepted Release、Projection、Supply 以及唯一 Resolver 形成的 Snapshot→Bundle→View→Host 全链；live pilot 同样禁止 synthetic projection 和 candidate direct-load |
-| `M5-LIVE-PILOT-AUTHORIZATION-GATE` | 具名 Human 对 exact pilot dossier/Protocol、账户与模型、执行人、允许时间窗口、费用/token/turn/time/retry 上限、数据出站/读取范围、Tool 权限/副作用及停止条件的专项授权；只记录 credential reference，不归档密钥；执行负责人核对资源与配置有效性 |
+| `M5-LIVE-PILOT-AUTHORIZATION-GATE` | 具名 Human 对 exact pilot dossier/Protocol、账户与模型、执行人、允许时间窗口、费用/token/turn/time/retry 上限、数据出站/读取范围、Tool 权限/副作用及停止条件的专项授权；只记录 credential reference，不归档密钥；调用前核对资源与配置有效性 |
 
 后一个 Gate 是本 Task 的可审计外部条件，不能由 Agent、绿色 CI 或已保存的 preflight 自行授予。
 任一 hard/external condition 未满足都保持 BLOCKED；每次调用仍执行既有 use-boundary 重验。
@@ -66,7 +66,7 @@ Tool schema 已注册冒充 Tool 已调用，也不额外给 A1 注入 Tool 来�
 | 失败与停止账本 | 所有 completed、post-call-failed、preflight-blocked 和 retry 均保留；失败费用/time/token 进入账本，无法测量则显式标记；安全或预算停止保留未完成 slots，不能写成 Gate PASS，也不能因答案差而择优重跑 |
 | 独立 cold replay 与绑定复核 | 在新进程中只读归档文件重放 M6 baseline、M11 Core/Skill Receipt，再与 frozen plan/preflight/overlay 比较 actual facts；不调用 Provider/Tool，不信任自报 PASS、planned View 或旧 replay 结果；漂移与 capture gap 使相应成功资格失败 |
 | Live evidence 消费链 | 盲审包先隐藏 arm/Skill/RWB、执行 identity、cost/token；具名 Human 完成并冻结 review 后才 reveal；metric evidence、run IDs、reveal map 与 analysis inputs 全部 join 闭合。measured/estimated/unavailable/not-applicable 分开，缺值不填零 |
-| Gate record 与交接 | 路诚钺接受 Harness/Evaluation 工程闭包，黄毅复核 live transport/use-boundary/closeout；绑定 exact source/config、run set、检查与具名接受记录，列出限制和 M5-004 待满足条件；仅在全部验收满足后以 feature/R2 PR 提议 M5-008 DONE |
+| Gate record 与交接 | 审查 Harness/Evaluation 工程闭包及 live transport/use-boundary/closeout；绑定 exact source/config、run set、检查与实际人类接受记录，列出限制和 M5-004 待满足条件；仅在全部验收满足后以 feature/R2 PR 提议 M5-008 DONE，无指定二人签字前置 |
 
 至少一个完整 block 是链路覆盖的最低要求，不是统计样本量论证，也不能替代完成已冻结的更大 pilot
 run set。科研输出不佳本身不等于 Harness 故障；验收判断执行、测量与人工复核是否如实记录。
@@ -99,6 +99,6 @@ pilot 证据不再足够，须重新进行受影响验证并取得具名接受�
 ## 修复与停止边界
 
 发现 Harness 缺陷先保留 failure evidence，在 M5-007 所属实现边界内经合法 Task/PR 修复，再以新
-source/config pins 重验；Provider/Tool/Host 缺陷交给黄毅。已经 DONE 的 Task 定义保持 immutable，
+source/config pins 重验；Provider/Tool/Host 缺陷按相应模块 Task 修复。已经 DONE 的 Task 定义保持 immutable，
 若修复超出原验收或需要新能力，先提出后续 task-definition。不得在 pilot 脚本中另建 runner、Supply
 selector、admission shortcut、自动判断器，或借此解冻 Topic 5。正式研究评价仍由 M5-004 承担。

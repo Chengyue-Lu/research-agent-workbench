@@ -101,12 +101,12 @@ Maintainer: triage → Skill Need → Candidate → Evaluation → Human Admissi
             → immutable Release → SkillReleaseProjection → Skill Supply Report
 ```
 
-Capability Resolver 是唯一 Supply selection owner。Execution Host 不得在冻结
+Capability Resolver 是唯一 Supply 选择权威。Execution Host 不得在冻结
 Resolution/Snapshot/Bundle/View 链内重新选择、rebind、静默替换或 automatic fallback；供给失效只产生
 re-resolution request，由上游生成新的 Resolution/Snapshot/Bundle/View。
 
 `Capability Gap != Skill Need`。Runtime gap 或 execution failure 不创建 Skill Need，最多产生默认本地、
-脱敏且需同意才能外送的 bounded Diagnostic；Need 只能由具名 Maintainer 独立 triage 后正式发布。完整
+脱敏且需同意才能外送的 bounded Diagnostic；正式 Need 须经可选维护外环的独立 triage。完整
 边界见 [ADR-0019](../decisions/0019-OPTIONAL-MAINTAINER-SKILL-EVOLUTION-OUTER-LOOP.md)。
 
 Task 与 Method 的 Capability Requirement 引用必须精确相等；Requirement index 只负责需求完整性，

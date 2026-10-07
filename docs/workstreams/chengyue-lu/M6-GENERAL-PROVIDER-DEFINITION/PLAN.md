@@ -1,7 +1,7 @@
 # 通用 Model Provider 接入与 DeepSeek 首轮验收
 
 状态：task-definition 候选；2026-10-02。基线 develop `1c9cef27983e93362be33830f989e124ad3ccc41`。
-Task owner：黄毅；Capability/View/DataPolicy 与 M5 Evaluation 交界由路诚钺复核。风险 R2。
+风险 R2。后续开发无固定人员分工；Capability/View/DataPolicy 与 M5 Evaluation 交界按接口与风险审查，见 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)。
 任务状态与 hard dependencies 只由 [TASKS](../../../TASKS.md) 维护。
 
 ## 用户要求与现有基础
@@ -118,7 +118,7 @@ import metadata 定位，写明必要性后扩大读集。禁止读取用户凭�
 另显式包括 `execution/baseline.py`、`execution/baseline_envelope.py`、
 `execution/baseline_closeout.py` 及其直接 tests/Schema/fixtures，只用于版本化 Provider binding
 闭包的 producer/use-boundary/cold replay，不改 Core five-component shape、四臂或 Resolver。
-涉及公共 Port 的语义变化需原 owner 共同确认。M5/M11/Resolver/Skill/Research State 的实现不在
+涉及公共 Port 的语义变化需相应接口/R2 审查。M5/M11/Resolver/Skill/Research State 的实现不在
 M6-009 write scope。M6-010 输出仅为本地 exact-run packet 和脱敏审查证据；失败不得改写历史 PASS。
 
 Task definition PR 只写文档。正式委派、R2 或跨窗口触发时保存 bounded Task/消息/可观察 receipt，

@@ -191,7 +191,7 @@ actual binding。任何 Receipt status 都不构成 Claim promotion、Human acce
 - Task、仓库 guidance、选定 Profile、相关 frozen control refs、显式输入和目标模块构成初始内容允许集；
   Skill-bearing extension 按 selected Projection/Supply/View refs 加入合法 Skill 入口；兼容路径才加入 Assignment；
 - 允许用文件名、目录名、大小、版本和哈希定位依赖，但不默认读取其他正文；
-- 新正文必须由实名 Task owner 扩展允许集，并在 Task 工作目录记录 scope-decision 消息；
+- 新正文须先取得明确的 Task 读取范围扩展，并在 Task 工作目录记录 scope-decision 消息；
 - 每个 Agent 间实际可见的任务分派、澄清、范围变化、进度、Handoff、review、确认、失败与取消都进入 `work/<TASK>/<ATTEMPT>/messages/`；
 - 运行时可观察的正文读取、工具/命令与文件 revision 进入 `events.jsonl`；Worklog 不逐项复制，但 validator 可用账本核对越界读取；
 - `INDEX.yaml` 提供消息元数据发现，但另一个 Agent 的消息正文不在默认读取集，除非 Task 分派或后续 scope-decision 明确引用；
@@ -217,7 +217,7 @@ actual binding。任何 Receipt status 都不构成 Claim promotion、Human acce
 - `HANDOFF-OVERHEAD`：审计工件成本持续增加但不改变接受、返工或 Gate 决定。
 - `TASK-READ-OUTSIDE-SCOPE`：Agent 请求或读取未授权正文且没有 Task 扩展记录。
 - `TRACE-MESSAGE-MISSING`：已发生跨 Agent 传递但 Attempt Archive 找不到对应消息。
-- `TRACE-ACTOR-UNOWNED`：Agent actor 没有绑定实名责任人。
+- `TRACE-ACTOR-UNOWNED`：Agent actor 缺少现有消息契约要求的归因字段。
 
 ## 9. 验收条件
 

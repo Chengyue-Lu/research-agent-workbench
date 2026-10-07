@@ -20,7 +20,7 @@ workstream、major migration、架构/治理决定、release milestone 或关键
 
 被触发的 History 至少记录：
 
-- owner、cross-owner reviewer、feature PR、`develop` integration commit 与 release PR；
+- 实际作者/审阅记录、feature PR、`develop` integration commit 与 release PR；
 - 最终范围、clean-checkout 验证命令和已提交证据；
 - TASKS/STATUS/ADR 的真实变化，或明确说明没有变化；
 - 已知限制、延后项、后续 Task 和 workstream 原目录链接。

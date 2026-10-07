@@ -149,7 +149,7 @@ rollover 步骤：
    只有兼容路径加入 Assignment；
 2. `input_refs`、目标模块及获批扩展构成正文允许集；
 3. 允许先查看路径元数据，禁止默认递归读取全仓库文档、候选 Skills、历史 Handoffs 或其他 Agent 工作目录；
-4. 需要额外正文时先说明它将回答哪个未决问题，由实名 Task owner 扩展范围，并保存 scope-request/scope-decision 消息；
+4. 需要额外正文时先说明它将回答哪个未决问题，取得明确的 Task 读取范围扩展，并保存 scope-request/scope-decision 消息；
 5. Agent 间实际传递全部进入 Attempt Archive，但正文只有被 Task 分派或 scope-decision 引用后才可读取；
 6. 不记录无意义的逐文件打开流水，只记录范围扩展、实际成为正式输入的文件和关键验证。
 

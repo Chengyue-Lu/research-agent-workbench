@@ -7,7 +7,7 @@ Execution View 和 Thin Execution Host 映射到模型 API、Agent Runtime 与�
 Bundle→View→Thin Host；隔离 API session 与平台 Adapter 都是可替换实现。Adapter 只报告供给事实或执行 frozen binding，不能选择自身、
 改变研究状态、放宽权限或批准 Gate。
 
-Provider / Runtime 实现由黄毅维护；Method、Mode、Skill、受控读取、Handoff 与 Trace 语义由路诚钺维护。跨边界对象需要双方审查，执行层不能反向定义方法 fallback。
+Provider / Runtime 实现消费 Method、Mode、Skill、受控读取、Handoff 与 Trace 的既有契约。跨边界对象须保持生产者与消费者契约一致，执行层不能反向定义方法 fallback。
 
 接点：供给报告者提供 typed capability/conformance facts；Resolver 选择后，View producer 冻结具体
 binding，Host 调用一个 pre-bound Driver，Session/Tool dispatch 返回实际响应、用量、错误与工具事实。
@@ -149,6 +149,6 @@ Trace fact 独立佐证 actual Provider/Adapter/Model/Runtime/Host binding 和 a
 - capability gap 和数据边界冲突在外部调用前暴露；
 - 替换模型、Runtime 或 Tool 不修改科研内核；
 - no-Skill 与 direct-tool 路径无需伪造 Skill binding；
-- 所有外部副作用可追溯到具名授权和 Attempt；
+- 所有外部副作用可追溯到明确的人类授权依据和 Attempt；
 - 未知用量保持 `unavailable`，不伪装为零；
 - Adapter 不保存自己的权威项目状态，也不自动跨 Provider fallback。

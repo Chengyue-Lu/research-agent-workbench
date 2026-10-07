@@ -20,7 +20,7 @@
 
 | Phase / area | 目标与主要产物 | 依赖与 authority Gate | M-group 导航 |
 |---|---|---|---|
-| Foundation / pre-A | 文件契约、Profile、Trace、Provider 和 Mode–Skill baseline | 各层保持具名 owner 与权限边界 | M0/M1/M2/M3/M6/M7 |
+| Foundation / pre-A | 文件契约、Profile、Trace、Provider 和 Mode–Skill baseline | 各层保持模块责任与权限边界 | M0/M1/M2/M3/M6/M7 |
 | A — Core Formalization | Mode Action、Method Resolution、Mode migration、Decision Authority | ADR-0013/0016；方法需求先于供给绑定 | M8 |
 | B — Evolution Foundation | Requirement、Need、Lifecycle、Protocol、Report/Resolution/Snapshot | Phase A 接口；Maintainer 演化外环与 Runtime consumer 分离 | M9 |
 | C — Research State & Verification | State、Failure、Evidence–Claim、Method Trace | A；部分依赖 B；machine verification 与 Human/R2 closeout 分开 | M10，复用 M3-009；M4 supporting |
@@ -28,16 +28,16 @@
 | E — Strategy & Governed Evolution | bounded strategy/candidate experimentation | B/C/D evidence；不自动修改 Core | 既有 M2/M7；M13 reservation |
 | F / Topic 4 — Execution Reintegration | Bundle/View/Host、actual facts、Trace/Receipt | ADR-0019 与 Snapshot Core；Skill 只 Gate 其可选支线 | M11/M6 |
 | Topic 5 residual | Handoff/context rollover、recovery/continuation | Phase C Human/R2 closeout 后另做 R2 review/task-definition | M12 reservation |
-| Product / Release | source trust、projection、portable package、public surface | exact frozen source/current main parent 与每次具名 release decision | M14 |
+| Product / Release | source trust、projection、portable package、public surface | exact frozen source/current main parent 与每次 Human release decision | M14 |
 
-M12/M13 只保留 namespace，没有 Task state、owner、dependency、Schema 或 implementation authority。
+M12/M13 只保留 namespace，没有 Task state、dependency、Schema 或 implementation authority。
 激活需 accepted architecture Gate、既有 family 不足的证据和独立 task-definition；不创建预猜的原子 ID。
 
 ### 1.1 普通入口的桥接方向
 
 M1-010（需求/材料与契约产物）、M2-009（角色与有界主子消费）、M11-008（冻结执行/closeout 全桥 Gate）
 复用 Foundation、Research Control 与 Phase F 的文件接口。可用合成材料证明通路；它们不要求先启动真实科研案例，
-也不产生 Phase D 四臂净价值结论。exact scope、owner、risk、入口依赖与验收只看 [TASKS](TASKS.md)。
+也不产生 Phase D 四臂净价值结论。exact scope、risk、入口依赖与验收只看 [TASKS](TASKS.md)。
 
 新建输入和人工既有材料是入口策略，共用 Protocol/Task/Mode/Method 流程。材料必须显式声明、授权并冻结；
 缺 MainState 时保持 unknown，不补造历史接受或自动恢复。角色职责可合并，必载职责提示与可选方法 Skill 分开；
@@ -48,11 +48,26 @@ Guide 使用独立只读上下文，只读取 approved MainState/必要 refs；�
 不自动回传 main，不写科研 Trace/Handoff/state。人类明确采纳时，答案及 refs 作为新的 main 输入。
 定义及候选代码边界见 [任务定义记录](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)。
 
+### 1.2 真实环境接合的方向
+
+[下一阶段计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)把候选桥接与真实工程使用间的差距
+映射到 exact M Tasks。简要实施 waves 见[施工导航](M_SERIES_IMPLEMENTATION_MAP.md#4-真实环境接合的实施-waves)，详细排程由该计划说明；
+它们不新增 hard dependency，不覆盖 TASKS 的定义、状态或启动条件，也不表示 PR140/PR141 已合并。
+
+基础接口先落实机器治理与人员规则对齐、工程环境事实、可配置真实预算/能力、actual 决策事实生产/提交和逐候选供给发现。
+后续接合自然意图与人工材料、职责/prompt、不同 child Method/Profile、qualified Skill actual load、真实 Tools、
+大输入、partial 工件、短 MainState、研究对象及 Task 目标质量，再以 installed 通用入口和工程整链 Gate 取证。
+预算参数化不删除权限、数据外发、实际绑定、未知用量和失败留存约束；动态选择仍由 Capability Resolver 完成，Host 只执行 frozen View。
+
+这一路线不要求先完成 M5 四臂净价值研究；其现有评价 Gate、Mode 候选/新 Skill 准入以及 M12/Topic 5 仍独立。
+当前接入人工状态/新 Task 与定向 partial 修复不引入自动上下文延续或会话恢复。
+API 成功、结构有效或 action-only Receipt 不产生 Skill 合格、Task 目标完成、科学正确性或 Human 接受。
+
 ## 2. Phase A Gate：方法与决策权
 
 Mode Action 固定 trigger/non-trigger、failure/artifact/Claim/Gate/stop；Method Resolution 正式表达
 no-Skill、direct Tool、Skill Need、Human Gate、split、blocked 与 rejected alternatives。
-Mode 不隐式携带 Skill；Agent proposal、deterministic resolution 与具名 Human Decision 保持分离。
+Mode 不隐式携带 Skill；Agent proposal、deterministic resolution 与 Human Decision 保持分离。
 
 停止 Gate 是可引用的 `Task → Method Resolution → downstream demand` 接口及兼容 migration；
 它不证明 Supply binding、Runtime 执行或科学适用性。版本迁移显式调用，旧对象保留 identity/hash，
@@ -108,7 +123,7 @@ Snapshot 不能冒充 actual execution fact；缺 accepted fact producer 时显�
 不证明科学正确性、reviewer reconstruction、OS sandbox 或真实跨 Runtime 恢复。
 Human semantic review 与 R2/Phase C closeout 独立；详情见 [Phase C Gate](implementation/PHASE_C_BOUNDED_GATE.md)。
 
-Topic 5 继续冻结。machine prerequisite 完成后仍须具名接受 Phase C Human/R2 closeout，才可进入独立
+Topic 5 继续冻结。machine prerequisite 完成后仍须接受 Phase C Human/R2 closeout，才可进入独立
 Topic 5 R2 architecture review/task-definition；两者均不自动授权 Handoff、context rollover、pause/resume、
 recovery、salvage/clean recovery 或 continuation 实现。Topic membership 按是否改变这些 semantics 判断；
 仅消费 Trace/Receipt、人工批准的 MainState 或提供只读 Guide 不构成 membership，也不产生恢复权威。
@@ -140,7 +155,7 @@ qualification Gate 保持两端 Task/Requirement/Supply/component/implementation
 Harness 在评价侧组装 A3 record并独立重算 A2/A3 record与 A3/A4 pairwise comparability，不取得 Supply selection。
 actual binding 在 use boundary 重验并由 typed Trace fact 与 replay Receipt 独立佐证，planned View 不能代替。
 
-A4 admission Gate exact-pin candidate/evaluation →具名 Human Admission Decision→immutable Release→Projection→
+A4 admission Gate exact-pin candidate/evaluation →Human Admission Decision→immutable Release→Projection→
 Supply→Resolver→Snapshot→Bundle→View→Host；Runtime 不读取 candidate/evaluation/oracle。
 Overlap assessment 在 confirmatory freeze 前重载两侧闭包，验证时间顺序并重算 case/Task/input/private-oracle
 intersection；缺失/absent/unknown/unresolved 不视为 held-out。重叠案例只作 pilot/secondary，不能进入 primary
@@ -152,7 +167,7 @@ net-benefit，也不能单独支持 pruning。完整规则见 [Protocol](impleme
 授权和预注册 run set。全部 failed/retry/unknown 留证，不自动改变 frozen treatment/binding。
 pilot observations 不产生 confirmatory net-benefit，不进入 primary run set；受其观察或调参影响的 case 不再
 是未观察 held-out。M5-004 还需两个获批真实案例及其 provenance、blind Review 和 analysis；
-M5-005 依据 exact evidence 作具名 disposition，单次成功、A4 较优或 sunk cost 均不自动 promotion/KEEP。
+M5-005 依据 exact evidence 作 Human disposition，单次成功、A4 较优或 sunk cost 均不自动 promotion/KEEP。
 
 通用入口桥接与四臂评价保持独立身份。M6-009 的十一厂商 offline profiles 不代表全厂商 live；
 [M6-010 受限收口](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-IMPLEMENTATION/M6-010_COMPLETION.md)
@@ -181,7 +196,7 @@ fallback。installed Runtime 只消费 published identity/hash 与 RuntimeResour
 另验 publication history；非空 Skill Projection 还要闭合 logical→installed exact assets并拒绝 orphan。
 no-Skill Core 不等待真实 Skill admission。
 
-每次 release 独立满足硬门禁、R2 审核和具名 merge/tag/publish 决定；机制接受不继承上一版本授权。
+每次 release 独立满足硬门禁、R2 审核和 Human merge/tag/publish 决定；机制接受不继承上一版本授权。
 [首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)保留历史 exact 证据，
 当前发行规则见 [发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)，逐 Task 状态只看 TASKS。
 M14 不激活 M12/M13，也不解除 Human/live/evaluation Gate。
