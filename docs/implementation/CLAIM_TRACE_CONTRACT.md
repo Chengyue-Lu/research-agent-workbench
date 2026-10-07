@@ -1,8 +1,7 @@
 # Claim evidence localization
 
 M4-003 adds a read-only consumer of the existing Claim, Evidence, source
-admission and Promotion Receipt contracts. Contract owner: Chengyue Lu;
-implementation: Huang Yi. The `claim_evidence_map` v0.1.0 input is additive:
+admission and Promotion Receipt contracts. The `claim_evidence_map` v0.1.0 input is additive:
 it does not migrate Research Objects or alter Claim authority.
 
 ## Input and command

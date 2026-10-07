@@ -6,8 +6,9 @@
 
 ## 1. 单层范围
 
-本契约只实现 Phase C 依赖链入口 M10-001。Research Failure/Attempt（M10-002）、Method Trace
-（M3-009）与 continuity/fresh-actor Gate（M10-003）不在本 PR，状态保持 BLOCKED。
+本契约定义 State composition 接口；[Research Failure/Attempt](RESEARCH_ATTEMPT_FAILURE_CONTRACT.md)、
+[Method Trace](METHOD_TRACE_CANDIDATE_CONTRACT.md)与 [bounded fresh-actor Gate](PHASE_C_BOUNDED_GATE.md)
+分别定义其直接消费者。它们的实现状态见 [STATUS](../STATUS.md)，不从本页单层范围推导后继仍 BLOCKED。
 
 Research State 是 revisioned composition：`entries` 引用现有 Question/Hypothesis/Evidence/Claim/
 Decision/Run/Task，`open_items` 以轻量 `unknown / assumption` 表达尚未闭合项。Contradiction 继续

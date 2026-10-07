@@ -4,6 +4,11 @@
 
 Project Protocol 定义一个具体研究项目的边界；Research Mode Pack 表达当前研究活动的方法差异。二者允许组合和修订，但不把项目锁死在某学科模板或固定阶段图中。
 
+接点：人类或协议整理调用者将需求和显式材料形成 Protocol 草案；任务/方法 producer 消费 Protocol、
+Question、Mode/Action 产生 Task、Method Resolution 与 Capability Requirement。规划职责可以合并在同一
+会话，仍须保留各自输出及验证边界。新建项目与既有材料入口共用这些契约；未提供的约束、资格和状态
+保持未知，不从旧文档标题或目录推定批准。只有任务方法义务触发时才启用相应 Mode/Action。
+
 ## 2. Project Protocol
 
 建议最低结构：
@@ -59,10 +64,8 @@ Action 声明 trigger/non-trigger、failure、required artifact、claim effect�
 blocked condition。`Action → Method Resolution` 再选择 no-Skill/Task/Tool/Skill Need/Human/blocked；
 Mode 本身不推荐或绑定 Skill。旧字段及迁移约束见[兼容性说明](../compatibility/README.md)。
 
-v0.1 与 v0.2 是两个并存的显式版本，不存在读取时自动升级。迁移器只把已知 v0.1 Mode 转换为对应
-v0.2 Mode，并生成可复验的 source/target/Action 路径与原始文件 hash 记录；它不迁移历史 Method
-Resolution，也不产生执行绑定。具体契约见
-[Research Mode migration](../implementation/RESEARCH_MODE_MIGRATION.md)。
+历史版本必须显式选择，不在读取时自动升级。转换与回放只见
+[兼容面](../compatibility/README.md)及[Mode migration 契约](../implementation/RESEARCH_MODE_MIGRATION.md)。
 
 ## 4. Mode Action 契约
 
@@ -93,8 +96,8 @@ Task ref
 → rejected alternatives + status
 ```
 
-Resolution 不建立全局 catalog，也不绑定实现。它把诊断 fixture 中的选择理由变成可独立验证和归档的
-正式对象；只有后续 Capability/Execution 解析才能把需求映射到具体实现。`proceed` 只表示方法控制面
+Resolution 不建立全局 catalog，也不绑定实现。它保存可独立验证和归档的方法决定；
+只有后续 Capability/Execution 解析才能把需求映射到具体实现。`proceed` 只表示方法控制面
 允许进入下一层，不等于 Runtime 完成、Task contract 满足或 Claim 接受。
 
 ## 5. 正式 Mode 与候选分类
@@ -122,11 +125,7 @@ Resolution 不建立全局 catalog，也不绑定实现。它把诊断 fixture �
 一个项目可以同时激活多个 Mode：
 
 ```yaml
-active_modes: [theory, simulation]
-mode_relations:
-  - from: theory
-    relation: proposes_model
-    to: simulation
+active_modes: [evidence-synthesis, simulation]
 conflict_policy:
   claim_ceiling: take_stricter
   human_gates: union
@@ -158,7 +157,7 @@ conflict_policy:
 - 为覆盖少见方法提前建设大量空模式；
 - 使用者为绕过限制选择错误 Mode。
 
-应对：首版只实现 `evidence-synthesis` 与 `simulation`；新增 Mode 必须有真实案例，并证明无法由现有模式组合表达。
+正式 Mode 身份以 Registry 为准；新增 Mode 必须有真实案例，并证明无法由现有模式组合表达。
 
 ### Mode 准入卡
 
@@ -181,5 +180,5 @@ conflict_policy:
 - 新 Mode 可作为独立包加入，不修改内核代码。
 - 没有方法差异证据时，候选 Mode 不会因分类表已有名称而自动进入 Registry。
 - Action 的版本、路径和内容哈希漂移可以确定性阻断。
-- 八个 routing case 可以一一解析为 provider-neutral Method Resolution，并保留 no-Skill、Tool、
+- 方法决定可解析为 provider-neutral Method Resolution，并保留 no-Skill、Tool、
   Skill Need、Human Gate、blocked、split 与 rejected alternatives。

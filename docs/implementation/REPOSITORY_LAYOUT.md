@@ -39,13 +39,13 @@ research-agent-workbench/
 │   └── evals/
 └── docs/
     ├── README.md                   # 按目的选择最小阅读集
-    ├── DEVELOPMENT.md             # 实名责任、协作与当前入口
+    ├── DEVELOPMENT.md             # 任务、风险与协作规则
     ├── ARCHITECTURE.md
     ├── PROJECT_CHARTER.md
     ├── TASKS.md
     ├── modules/
     ├── implementation/
-    ├── workstreams/                 # 以实名责任人命名的当前分支计划
+    ├── workstreams/                 # 有界专项计划；既有目录名不授予人员独占权
     ├── decisions/
     └── references/
 ```

@@ -23,6 +23,8 @@ flowchart LR
 
 RWB 管理的是研究工作的**控制面与证据链**。模型负责有界生成和分析，工具负责可声明的能力，研究者保留范围、权限、方法适用性、科学主张和发布决定。
 
+模块组织能力与契约，角色组织职责，运行会话承载一次受限上下文。角色可按任务合并；main 在授权上限内决定是否委派以及子任务数量。职责 baseline 必载，方法 Skill 按任务需要选用。Guide 面向人类独立只读解释状态，答案经人类明确采纳后才进入研究链。
+
 ## 离线体验
 
 按[上手指南](docs/GETTING_STARTED.md)安装到独立环境，切换到源码目录外后执行：
@@ -35,7 +37,7 @@ rwb project check project
 rwb validate project/tasks/task.yaml project/profiles/local-no-skill.yaml --root project
 ```
 
-这些命令创建可复用 no-Skill 项目，并校验随包资源、Task 与本地 Profile。安装后的步骤不调用模型或外部服务；
+这些命令创建 no-Skill 文件模板，并校验随包资源、Task 与本地 Profile。安装后的步骤不调用模型或外部服务；
 随后可按[离线示例步骤](docs/GETTING_STARTED.md#4-定位证据并重建离线示例)定位输入和输出证据，显式执行重建并核验报告。
 验收含义和使用限制统一见[支持能力与证据边界](docs/SUPPORTED_FEATURES.md)。
 

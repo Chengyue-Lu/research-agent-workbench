@@ -53,5 +53,5 @@ Trace。Research Mode 的 Action append-stability 与 lifecycle migration 的 ac
 false：Runtime 获得 Method authority、automatic fallback、Claim/Gate effect、真实执行已经发生、live
 Provider conformance 已证明、Skill 科研净收益已证明。
 
-因此 M9-006 可以作为 Phase B 的结构性 Stop Gate，但不能替代 CI、跨负责人 R2 审查、Human Decision、
+因此 M9-006 可以作为 Phase B 的结构性 Stop Gate，但不能替代 CI、按风险组织的 R2 审查、Human Decision、
 Phase D evaluation 或真实 Runtime integration。

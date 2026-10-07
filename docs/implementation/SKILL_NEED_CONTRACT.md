@@ -31,7 +31,7 @@ Skill Need 属于 Method/Maintainer evolution，不属于 Research Runtime。Run
 或 execution failure 最多产生 bounded `CapabilityDiagnostic`；Diagnostic 默认本地、不是 Need，也不能
 触发 Candidate、Trial、Promotion 或 Release。
 
-创建或修订 Need 必须由具名 Maintainer 完成独立 triage，证明缺口跨任务复用、需要非平凡语义判断，且
+创建或修订 Need 必须在 Maintainer 外环完成独立 triage，证明缺口跨任务复用、需要非平凡语义判断，且
 no-Skill/direct Tool/Task template/checker 基线不足。没有该判断时保持 capability gap，不为填充 Registry
 自动生成 Need。Runtime bundle 不读取 Need 正文或 Registry；v0.1 Method→Need closure 只属于
 `maintainer-full` 和历史重放。参见

@@ -1,6 +1,11 @@
 # Skill 双臂评估与准入证据协议
 
-维护说明：路诚钺负责评估设计、冻结条件、checker、人工盲评和准入决定；黄毅可以通过 API/模型执行提供脱敏输出、Receipt 与 Agent Trace。路诚钺不为评估修改 API 实现或测试。
+评估设计、冻结条件、checker、盲评与准入按各自证据和适用 Human Gate 处理；API/模型执行提供获准输出、Receipt 与 Agent Trace，不以固定开发人员分工限制接口修改。
+
+本页定义既有 `skill_evaluation` 双臂 assessor 的证据接口及其 legacy Skill-bound recording lane。
+系统级四臂 Protocol/Harness 从 [System Protocol](SYSTEM_EVALUATION_PROTOCOL.md)进入；双臂 assessor 不替代其 Gate。
+当前 Runtime 的合格 Skill 路径使用 Projection/Supply/View/[Skill closeout](SKILL_EXECUTION_CLOSEOUT.md)，
+不能为适配本页旧记录格式给 no-Skill baseline 伪造 Assignment。
 
 ## 1. 目的
 
@@ -30,12 +35,12 @@ outputs -> deterministic reports -> blind human review -> reveal -> human Decisi
 - `regression`：历史失败案例；
 - `routing`：与相近 Skill 的区分。
 
-当前 `claim-preserving-rewrite` 至少需要 trigger、non-trigger、boundary 和 adversarial 四类；推导、实验设计、仿真 V&V 等 Skill 应使用各自方法相关的判据，而不是复用写作质量分数。
+既有 `claim-preserving-rewrite` fixture 声明 trigger、non-trigger、boundary 和 adversarial 四类；推导、实验设计、仿真 V&V 等 Skill 应使用各自方法相关的判据，而不是复用写作质量分数。
 
 简单、单约束案例只能校准执行与 checker，不能单独证明 Skill 增量价值。历史困难任务设计、
 compact-contract 诊断臂和停止规则见[原 K-MS-1 诊断计划](../workstreams/chengyue-lu-mode-skill/DIAGNOSTIC_FORWARD_TESTING.md)。
-新的正式评测必须等待 Method Resolution/Skill Need，并采用 Plain、Plain+Tool、Mode+no-Skill 和
-Mode+candidate Skill 四臂基线。
+新试验由 Method/Skill Need 和其冻结 Protocol 定义；系统级评价使用 Plain、Plain+Tool、Mode+no-Skill 和
+Mode+candidate Skill 四臂，不能把单个 paired assess 的资格外推为系统评价或 Runtime admission。
 
 ## 3. 配对控制
 
@@ -60,14 +65,15 @@ Mode+candidate Skill 四臂基线。
 - 输出文件与哈希；
 - 确定性检查报告及 checker/source/output 哈希；
 - `Execution Receipt`；
-- Receipt 引用的 Attempt、Agent Profile 与 Skill Assignment；baseline Assignment 不得包含候选，with-Skill Assignment 必须锁定候选 source/content/package hash，除此之外两份 Assignment 保持一致；
+- 此 legacy assessor recording lane 所需的 Attempt、Agent Profile 与 Skill Assignment；baseline Assignment 不含候选，with-Skill Assignment 锁定候选 source/content/package hash，除此之外保持一致；新的 Core/Skill closeout 另按对应契约，不套用此项；
 - runtime 或 mixed 来源的 `Context Snapshot`；
 - 当前 `Project Protocol` 及其哈希，用于复核并发、协调成本、数据边界与 trace 约束；
 - provider、model 与不含 prompt/密钥的脱敏配置工件及其哈希；两臂的 `model_config_hash` 必须回指该工件；
 - token/请求/成本（若平台提供）与 wall time；
 - 限制和失败状态。
 
-报告不保存 Chain-of-Thought、凭据、完整 provider response、沙箱外令牌位置或非必要原文副本。
+assessment 报告不保存隐藏推理、凭据、完整 provider response、沙箱外令牌位置或非必要原文副本。
+正式 Attempt/Trace 的获准 request/response 原件按 Task policy 单独留存；报告脱敏不免除其事实捕获要求。
 
 ## 5. 盲评
 

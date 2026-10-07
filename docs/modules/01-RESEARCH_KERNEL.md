@@ -4,6 +4,10 @@
 
 为不同研究模式提供极小、稳定且可追溯的公共对象模型。它约束证据与结论的关系，但不规定研究必须线性推进。
 
+接点：研究任务的执行者或人类产出版本化 Question、Method、Run、Evidence、Claim、Decision；后续
+Task、定位器、Method Trace 和 Human Gate 消费其 exact refs。只在任务实际需要时创建对应对象，
+不为通过流程而制造空 Run、Evidence 或 Claim。结构验证不批准科学主张。
+
 ## 2. 核心对象
 
 ### Question
@@ -36,19 +40,19 @@
 
 ### Research State candidate 与扩展边界
 
-M10 已实现 bounded Research State composition candidate、Research Attempt lineage / Research Failure
-candidate、ref-only Method Trace v0.1 和 fresh-process machine Gate。当前 Research State 可以用带 revision
+Research State composition、Research Attempt lineage / Research Failure 和 ref-only Method Trace 是有界
+候选表示。Research State 可以用带 revision
 的 composition 表达轻量 `Unknown` / `Assumption` item、`Contradiction` relation、derived `Frontier`，以及
 对现有 Evidence、Claim 和 kernel Decision 的 exact 引用；引用、身份、哈希与 supersession closure 可由
 机器重算。
 
-这些表示仍是 bounded implementation candidate，不是最终通用 kernel Schema。machine Gate 证明的是
-两份 synthetic case 的确定性 closure 和已声明 fixture behavior，不证明科学正确性，也不完成 Human/R2
-semantic closeout，更不自动授予 Topic 5 implementation authority。当前覆盖与限制见
+这些表示不是最终通用 kernel Schema。machine Gate 只证明指定案例的确定性 closure 和已声明行为，
+不证明科学正确性，不完成 Human/R2 semantic closeout，也不自动授予 Topic 5 implementation authority。
+契约见[Research State candidate](../implementation/RESEARCH_STATE_CANDIDATE_CONTRACT.md)，覆盖与限制见
 [实现状态](../STATUS.md)。
 
 legacy execution `Attempt` 仍专指一次 Task 的一次执行，并关联 `work/<task>/<attempt>/`、Attempt Archive
-与执行记录。M10 的 `research_attempt_lineage` 是独立、版本化的 sidecar：它 exact-pin 既有 execution
+与执行记录。`research_attempt_lineage` 是独立、版本化的 sidecar：它 exact-pin 既有 execution
 Attempt，并把 from-State、可选 predecessor Attempt 与 reopen justification 分开；它不改写 legacy
 Attempt，也不从 Attempt 自动推导新的 State。
 

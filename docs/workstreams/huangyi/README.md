@@ -1,47 +1,19 @@
-# 黄毅 Workstream 入口
+# 黄毅工作流索引
 
-owner：黄毅（GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`，二者为同一账户）
+具名 owner：黄毅（GitHub `let778750-cpu`）。本页只导航审计材料；Task 实时状态、依赖和验收见
+[TASKS](../../TASKS.md)，当前工程成熟度见 [STATUS](../../STATUS.md)。原件按当时来源与范围解释，
+未合并候选不从索引变成 accepted 实现。
 
-本目录是黄毅负责的 Provider/API/Execution 相关优化与跨边界审计的过程入口。每个独立修改使用
-`docs/workstreams/huangyi/<task-id-or-slug>/`，在同一 workstream 中持续更新范围、证据、风险和
-审查，不为每次微调新建分支或散落一个新的顶层 Markdown。
+- [M6-BASELINE-EXECUTION/](M6-BASELINE-EXECUTION/README.md)
+- [execution-runtime-recovery-audit/](execution-runtime-recovery-audit/README.md)
+- [open-source-agent-harness-research/](open-source-agent-harness-research/README.md)
+- [M4-RUN-RECONSTRUCTION/](M4-RUN-RECONSTRUCTION/README.md)
+- [M4-CLAIM-TRACE/](M4-CLAIM-TRACE/README.md)
+- [M4-ARTIFACT-PROMOTION/](M4-ARTIFACT-PROMOTION/README.md)
+- [M10-RESEARCH-STATE/](M10-RESEARCH-STATE/README.md)
+- [M4-ARTIFACTS-PROVENANCE/](M4-ARTIFACTS-PROVENANCE/README.md)
+- [M5-EVALUATION-BASELINE/](M5-EVALUATION-BASELINE/README.md)
 
-当前研究/审计 workstream：
-
-- [`M6-BASELINE-EXECUTION/`](M6-BASELINE-EXECUTION/README.md)：
-  M6-008 A1/A2 公开输入、隔离执行与文件重放已由 PR75 接受；
-  [收口与交接](M6-BASELINE-EXECUTION/CLOSEOUT.md) 绑定实现证据并准备 M5-007。
-- [`execution-runtime-recovery-audit/`](execution-runtime-recovery-audit/README.md)：
-  Execution/Runtime 可恢复审计、PR #23 hard-block 证据及治理 rollout。
-- [`open-source-agent-harness-research/`](open-source-agent-harness-research/README.md)：
-  开源 Agent Harness 调研、Codex 只读协议验证与候选研究方向（`RESEARCH-HARNESS-001`）。
-
-已集成、保留审计记录的 implementation workstream：
-
-- [`M4-RUN-RECONSTRUCTION/`](M4-RUN-RECONSTRUCTION/README.md)：
-  PR #62 已接受合入；M4-004 exact file/Run bindings 与 fresh-process bounded synthetic reconstruction，
-  不构成 M5 真实研究结果或科学正确性证据。
-- [`M4-CLAIM-TRACE/`](M4-CLAIM-TRACE/README.md)：
-  PR #61 已接受合入；M4-003 支持/反证/限制的 exact evidence-map 定位。
-- [`M4-ARTIFACT-PROMOTION/`](M4-ARTIFACT-PROMOTION/README.md)：
-  PR #54 已合入；M4-002 work-to-formal-zone promotion 与 durable receipt。
-- [`M10-RESEARCH-STATE/`](M10-RESEARCH-STATE/README.md)：
-  PR #44 的 Phase C State、Attempt/Failure、Method Trace 与 bounded machine Gate；Human/R2 semantic
-  closeout 仍独立 pending。
-- [`M4-ARTIFACTS-PROVENANCE/`](M4-ARTIFACTS-PROVENANCE/README.md)：
-  PR #39 的 M4-001 source admission；后继 promotion 已由 PR #54 合入。
-- [`M5-EVALUATION-BASELINE/`](M5-EVALUATION-BASELINE/README.md)：
-  PR #43 的 M5-003 canonical four-arm Evaluation Manifest 与 non-executing baseline plan。
-
-## 文件生命周期
-
-1. 进行中的优化说明、来源 manifest、claim/risk ledger 和验证计划保存在对应 workstream；
-2. 私有会议、完整聊天、个人原稿和机器绝对路径不直接提交，只在 workstream 保存最小脱敏摘要、
-   哈希和来源限制；
-3. feature 先经 `develop` 集成；未合并材料不能改变 Stable docs、STATUS 或 TASKS；
-4. 发布到 `main` 后，详细结果、验证、限制和遗留项写入 [`docs/history/`](../../history/README.md)
-   的具名 closeout Markdown，并反向链接原 workstream；
-5. 原 workstream 路径冻结保留，避免移动造成证据断链。
-
-`docs/history/` 是完成记录，`work/` 是被 Git 忽略的 Attempt Archive；二者都不能替代本目录的
-审查上下文或 Git branch 的代码隔离。
+每个 workstream 保留范围、来源、必要通信、验证及限制；路径不因状态变化搬迁。
+记录约定见 [workstreams](../README.md)，重大迁移/发布的完成入口见 [history](../../history/README.md)。
+Git PR/commit 是普通开发记录；仅在明确触发时增加正式 Archive/History，不复制实时进度到本页。

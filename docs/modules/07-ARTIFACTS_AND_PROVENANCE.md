@@ -4,6 +4,11 @@
 
 以文件优先、稳定 ID、内容哈希和显式引用保存科研事实。工件层承担长期记忆；Agent 会话只承担临时工作。
 
+接点：执行者在 work 区产出有界工件，Trace recorder 保存实际传递与可观察事件；来源接纳、验证和
+promotion producer 各自产出 sidecar/report/receipt，由 Evidence/Claim 定位器、Handoff、审计与 Human
+消费。研究任务需要来源、正式工件复制、主张回查或 Run 重建时才启用对应外环；普通入口接通不强制
+创建全部科研对象。既有材料仍按相同来源、版本和资格规则接入。
+
 ## 2. 工作区分区
 
 ```text
@@ -23,7 +28,7 @@ projects/<project-id>/
 ├── work/<task>/<attempt>/
 │   ├── TASK.yaml             # 本 Attempt 使用的冻结 Task
 │   ├── INDEX.yaml            # 默认可读的元数据索引
-│   ├── ACTORS.yaml           # actor_id → 实名责任人/运行身份
+│   ├── ACTORS.yaml           # actor_id → 运行身份与授权关联
 │   ├── events.jsonl          # 顺序事件账本；读取/工具/文件/状态
 │   ├── messages/             # Agent 间实际传递的可见内容
 │   ├── tool-events/          # 瞬时或较长工具请求/结果正文
@@ -72,7 +77,7 @@ sequence: 4
 kind: handoff
 sender_actor_id: mode-reviewer
 receiver_actor_ids: [main-agent]
-accountable_owner: 路诚钺
+accountable_owner: human-example
 created_at: "2026-08-14T10:30:00+08:00"
 in_reply_to: MSG-0003
 content_sha256: "0000000000000000000000000000000000000000000000000000000000000000"
@@ -85,7 +90,7 @@ capture_status: complete
 <实际传递的正文；若只发送引用，就保存引用而不复制附件正文>
 ```
 
-`ACTORS.yaml` 记录 `actor_id`、角色、模型/Runtime 快照和 `accountable_owner`。人类负责人必须使用姓名；临时窗口、模型版本和 Agent Profile 是运行身份，不是审批主体。
+`ACTORS.yaml` 记录 `actor_id`、角色、模型/Runtime 快照和现有消息契约要求的归因字段（如 `accountable_owner`）。这些字段用于追溯运行与授权，不规定开发人员分工。临时窗口、模型版本和 Agent Profile 是运行身份，不构成审批权；Human Gate 须保留明确的人类决定引用。
 
 发送方应先持久化消息再 dispatch；接收方应在基于消息继续行动前完成接收记录。平台不支持写前捕获时，Adapter 必须尽快导出并在 `capture_status` 标记 `delayed`。丢失、截断、政策性删减或平台不可导出时，写 `capture-gap` 事件，说明受影响的 message range、原因和可用定位信息，不能静默假装完整。
 
@@ -101,26 +106,26 @@ capture_status: complete
 - 外部动作：目标类别、授权依据、副作用状态和 Receipt；
 - Attempt 状态：开始、暂停、恢复、失败、完成与 capture gap。
 
-如果源文件已经不可变且有哈希，读取事件引用它即可，不复制正文；如果工具结果只存在于瞬时 stdout/API response 且进入过 Agent 上下文，应将脱敏后的实际结果保存在 `tool-events/`。过程产物不原地覆盖：新版本使用新路径/revision；确需删除时事件账本保存 tombstone、旧哈希、责任人和原因。
+如果源文件已经不可变且有哈希，读取事件引用它即可，不复制正文；如果工具结果只存在于瞬时 stdout/API response 且进入过 Agent 上下文，应将脱敏后的实际结果保存在 `tool-events/`。过程产物不原地覆盖：新版本使用新路径/revision；确需删除时事件账本保存 tombstone、旧哈希、执行身份、授权依据和原因。
 
 该账本用于确认 Agent 是否越界读取或执行，而不是要求主 Agent 浏览全部操作。validator 应能用 `read_allowlist` 检测越界；人工只在排障 Task 中按 event ID 调取请求/结果正文。
 
 ### Execution Trace 与 Method Trace
 
-Execution Trace 负责上述可观察执行/Archive 事实。M3-009 已实现独立的 ref-only Method Trace v0.1
+Execution Trace 负责上述可观察执行/Archive 事实。独立的 ref-only Method Trace
 candidate，用 exact refs 记录 applied Method Resolution、Mode、Action disposition、Research Attempt、
 from-State、kernel Decision 和 typed path basis。两层通过稳定 ID 关联，不把方法解释塞进 Tool debug
 字段，也不复制消息正文。
 
 Method Trace 必须区分计划中的 selected Snapshot/View 与实际执行事实：Snapshot 不能冒充 actual
-binding；若本 Attempt 没有 authoritative M11 `execution_trace_fact`，Trace 必须显式记录 per-Attempt
+binding；若本 Attempt 没有 authoritative `execution_trace_fact`，Trace 必须显式记录 per-Attempt
 gap，不能声称 coverage complete。若存在 captured fact，它必须 exact-pin 同一 Attempt 的 actual
 binding/Supply，并至少绑定一个 applied path 和 State effect。该 candidate 的确定性 closure 仍不证明
 reviewer reconstruction 或科学正确性，最终语义保持 Human/R2 closeout 独立。
 
-## 4. 原始来源接纳（M4-001 已实现）
+## 4. 原始来源接纳
 
-`sources/inbox` 中的内容默认不可信、可变且不可引用。M4-001 的 `source_admission` sidecar 在接纳到
+`sources/inbox` 中的内容默认不可信、可变且不可引用。`source_admission` sidecar 在接纳到
 `sources/raw` 时记录：
 
 - 原始文件名与接纳路径；
@@ -149,7 +154,7 @@ admission sidecar，晋升或保留的产物消费 Promotion Receipt 与原 reco
 JSON pointer。读取复用同次调用捕获的字节，不启动 checker、promotion 或科学计算，也不决定 Claim
 是否成立。详见 [Claim localization 契约](../implementation/CLAIM_TRACE_CONTRACT.md)。
 
-## 5. Run reconstruction（M4-004）
+## 5. Run reconstruction
 
 `run_reconstruction_manifest` exact-pin 一个 Run 文档、单文件 Python 程序、输入、参数、环境定义及
 预期输出。`run_ref` 关闭现有 Run 的对象身份与 revision；`input_bindings`、`environment_binding` 和
@@ -160,7 +165,7 @@ revision 和已声明的对象哈希。对象哈希仍表达原有 `content_hash
 `input_ref` 和 `parameters_ref`；仅交换绑定顺序不影响配对，交换文件则拒绝。
 
 `rwb run check MANIFEST --root ROOT` 只验证 Schema、文件哈希和来源边界，不执行代码。
-`rwb run reproduce MANIFEST --root ROOT --attempt-dir work/M4-004/A-NEW` 将锁定字节复制到新目录，
+`rwb run reproduce MANIFEST --root ROOT --attempt-dir work/RUN-DEMO/A-NEW` 将锁定字节复制到新目录，
 用当前且符合环境定义的 Python 执行固定文件入口：
 
 ```text
@@ -169,51 +174,36 @@ python -I -S program.py inputs.json parameters.json outputs
 
 生成报告区分 pin drift、前置缺失、运行失败、输出差异与字节一致；保留 stdout/stderr、staged bytes、
 实际输出和负结果标记。通用 `rwb validate` 能只读校验 manifest/environment/report 及报告直接引用的
-字节，不会重跑科研程序或 M4-002 checker。`matched` 只表达这次重建的完整输出集合及字节一致，
+字节，不会重跑科研程序或 promotion checker。`matched` 只表达这次重建的完整输出集合及字节一致，
 不证明过去发生过某次运行，不授予科学正确性、Claim、Human Decision 或 promotion 权限。
 `code_ref` 只锁定程序字节，未绑定 `Run.method_ref`，因此不证明程序实现了该 Run 声明的方法。
 
 可选 `promotion_receipt_ref` 验证 receipt 位于其无别名的原始
 `runs/promotions/<promotion_id>/receipt.json`，并检查结构及预期输出是其 exact target FileRef；历史
-promotion eligibility 仍属于 M4-002，读操作不重执行。最小合成案例、环境锁定的具体边界和验收矩阵见
-[M4 Run reconstruction](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)。该有界合成案例不是 M5
-正式研究案例，也不增加先行病例冻结或盲测审批门槛。
+promotion eligibility 属于独立 promotion 验证，读操作不重执行。最小合成案例、环境锁定边界和验收
+矩阵见[Run reconstruction 实施记录](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)。
+合成重建证据不构成正式研究价值评估结果。
 
-## 6. 提升与冻结（M4-002 已实现）
+## 6. 提升与冻结
 
-`promotion_record` 将 exact `work/<TASK>/<ATTEMPT>` 中 validation report 的全部 subjects 映射为
-`promote` 或 `retain-in-work`。pre-Attempt canonical Task Packet 先 exact-pin 唯一 accepted-policy registry
-与 policy，并把 actor write scope 收窄到该 workspace；registry 再按 Task revision 固定 checker、runner 与
-validation host。validation host（`rwb validation run`）在 scrubbed subprocess（OS 必需变量白名单、丢弃
-会话注入变量与凭据、固定 `PYTHONHASHSEED` 等确定性 pin）中实际执行 pinned
-runner/checker，产出 `deterministic_check_report`、`promotion_validation_execution` 与
-`promotion_validation_host_receipt`（execution 以必需 `host_receipt_ref` exact-pin receipt；receipt 固定
-run-inputs closure hash 与 run transcript）。这份三元组是 provenance metadata：它记录一次声称运行的
-Task/Attempt、Task/registry/policy、report、subjects、自声明执行者/时间和 outcome，但自身不构成
-execution fact（`validation_execution_fact=false`）。Task → registry/policy → validation run 记录 →
-receipt → execution → PASS report → entries/live bytes 任一关系或
-hash 漂移均阻断；调用方即使在允许稳定目录内构造一套自洽 checker/runner/policy/execution，也不能绕过
-预先冻结的 Task inputs。eligibility 是 validity fact，只在 promotion 验证时确立：其余检查干净后
-确定性重执行 pinned runner/checker，要求 byte-exact 复现 PASS report 与记录 transcript，否则以
-`VALIDATION-EXECUTION-UNPROVEN` 阻断。手写但 byte-exact 的伪造"历史"不携带历史权威——它能通过验证
-只因为重执行当场独立确认了 pinned pipeline 在 exact pinned bytes 上通过；任何假 PASS 都被同一重执行
-证伪。
+`promotion_record` 将 exact `work/<TASK>/<ATTEMPT>` 中受检 subjects 完整分配为 `promote` 或
+`retain-in-work`。pre-Attempt Task exact-pin accepted policy registry/policy，后者固定 checker、runner
+和 validation host；producer 在受控环境实际执行 pinned pipeline 并保存候选 report、execution 和 host
+receipt。它们是 claimed provenance metadata，`validation_execution_fact=false`，不自证历史执行。
 
-`rwb validation run` 产出候选 validation 三元组（provenance metadata）；`rwb promotion validate`
-的宿主逻辑不写仓库，但会在临时工作目录实际重执行 pinned pipeline 完成 rebuild-and-compare；组件必须
-受信且无副作用，环境清理与临时目录不构成 OS 沙箱。`rwb promotion execute`
-只接受 workspace 内的 file-bound record，
-先在目标目录 staging 完整字节并复算 hash，再做完整复验，并生成 exact-pin
-record/Task/registry/policy/execution/report/checker/runner/host/source/actual-target/operator/time/outcome 的
-Promotion Receipt。目标与 receipt 在 commit-time 再复验后
-一起 exclusive-create。目标只允许位于 `objects/`、`runs/` 或
-`deliverables/candidates/`；existing target、相似前缀、root/symlink escape 和
-`deliverables/accepted/` 直达均 fail closed。中途冲突会回滚本次仍可确认的已创建目标，不覆盖正式
-工件或 receipt，也不删除 work/archive。
+promotion validator 重载 Task→policy→validation records→report→subjects/live bytes 的 exact closure，
+再独立重执行并 byte-exact 比较 PASS report 和 transcript；只有当场重执行才能确立复制资格。
+自签 PASS 或自洽的手写历史不能绕过这一步。checker/runner 必须受信且无副作用；环境清理不等于 OS 沙箱。
+
+execute consumer 只接受 workspace 内的 file-bound record，staging exact bytes 后完整复验，在 commit-time
+再核对并 exclusive-create 目标与 durable Promotion Receipt。目标限于 `objects/`、`runs/` 或
+`deliverables/candidates/`；既有目标、路径逃逸、hash 漂移或 accepted 直达均阻断。中途冲突只回滚本次
+仍可确认的创建，不覆盖正式工件，不删除 work/archive。
 
 Agent Trace 随 Attempt 冻结。promotion 只复制记录中明确选择的 exact bytes，不把整个 Archive 复制到
 正式对象。结构 PASS 不产生 Claim acceptance、Human Decision、accepted publication 或科研质量判断；
-详见 [M4-002 契约](../implementation/ARTIFACT_PROMOTION_CONTRACT.md)。
+checker/runner/host 的完整 pin、环境清理与失败边界见
+[Artifact Promotion 契约](../implementation/ARTIFACT_PROMOTION_CONTRACT.md)。
 
 ## 7. 大文件与保留策略
 
@@ -223,7 +213,7 @@ Agent Trace 随 Attempt 冻结。promotion 只复制记录中明确选择的 exa
 - MLflow：确有服务器型实验追踪和模型管理需求时；
 - 外部对象存储：配合不可变 manifest 与访问策略。
 
-不得为兼容未来可能的大数据，在 M1 自建 CAS、远程对象存储或复杂引用计数。
+大数据存储仅在出现真实使用需求时选型，不提前自建 CAS、远程对象存储或复杂引用计数。
 
 Trace 默认保存在项目工作区，但不等于默认提交 Git：
 
@@ -270,14 +260,14 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 
 ## 10. 验收条件
 
-当前已实现的 M4-001 验收边界：
+来源接纳验收边界：
 
 - `sources/inbox` 的完整路径段引用被阻断；
 - 每个普通 `sources/raw` 引用可定位到 Schema-valid sidecar、exact admitted path 与当前 live-byte hash；
 - FileReference/admission SHA 漂移、缺失或错误 sidecar 均 fail closed；
 - admission PASS 不被解释为来源可信、许可合法或科学正确。
 
-当前已实现的 M4-002 验收边界：
+promotion 验收边界：
 
 - pre-Attempt Task、accepted registry/policy、validation execution 与 host receipt（claimed provenance metadata，
   `validation_execution_fact=false`）、PASS report、subjects、entries 与 live bytes exact
@@ -288,7 +278,7 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
   accepted 直达、路径逃逸及 record/source/target/receipt 竞态；
 - promotion PASS 不被解释为 Claim、Human Decision、publication 或 scientific correctness。
 
-当前 Agent/Method Trace 可追溯边界：
+Agent/Method Trace 可追溯边界：
 
 - 任一跨 Agent Handoff 能定位到发送前后的消息、actor、附件和接收决定；
 - 能从 event ledger 核对每个 Agent 实际读取的正文与执行的工具是否在 Task 边界内；
@@ -296,6 +286,6 @@ Trace 默认保存在项目工作区，但不等于默认提交 Git：
 - Worklog 缺失不导致 Trace 消失，Trace 很长也不要求主 Agent 默认加载；
 - capture gap、删减和延迟会显式暴露，不能被误报为完整记录。
 
-M4-003 的 Claim trace 通过显式引用一次定位支持、反证和限制；M4-004 的有界 Run reconstruction 在没有
+Claim trace 通过显式引用一次定位支持、反证和限制；有界 Run reconstruction 在没有
 原 Agent 会话时按 exact inputs/artifacts/environment refs 重建合成案例。两者分别验证引用定位与完整输出
-集合的字节一致，不授予科学正确性、Claim acceptance 或 M5 正式研究案例资格。
+集合的字节一致，不授予科学正确性、Claim acceptance 或正式研究评价资格。

@@ -1,212 +1,98 @@
 # 开发协作指南
 
 状态：Stable contributor rules
-更新：2026-08-27
 
-## 1. 实名维护边界
+## 1. 按任务与证据组织开发
 
-工作流名称描述技术范围，不能代替责任人的姓名。Task、ADR、PR、Handoff 和阻塞项必须写明实际负责人。
+开发不按固定人员分配模块，也不以指定另一人的审核或签字为启动前提。Task、风险、允许范围与验收证据决定实施边界；并行工作声明互斥写入路径，共享修改无法隔离时串行。
 
-| 责任人 | 稳定身份 | 负责维护 | 不负责维护 |
-|---|---|---|---|
-| 路诚钺 | GitHub `Chengyue-Lu` | Method/Core 语义；Mode/Action/Method Resolution；能力词汇；Skill Need、评估、准入和退役；Research State/Claim/Method Trace；Resolved Execution View 与 Skill supply mapping 语义；受控读取及相关 fixtures/docs | Provider SDK、认证、HTTP transport、模型槽实现、API session loop、Thin Host、live API conformance 与 API 专用测试 |
-| 黄毅 | GitHub 主名 `let778750-cpu`；昵称/界面名 `huangyi855`（同一账户） | Provider Adapter、模型能力协商、隔离 API session、Runtime Bundle、Thin Execution Host、执行 Trace/Receipt 集成、真实账户/模型 conformance 与 API 测试 | 代替研究者批准 Claim、单方面改变 Mode/Skill/View/Capability 语义、擅自准入 Skill 或降低 Human Gate |
+Human、Research Control/Resolver、Runtime 与 Tool 的功能权限保持契约边界。开发授权不代替人类接受、权限放宽或发布决定。`actor_id`、授权身份与 `accountable_owner` 是运行追溯字段，不是开发人员分工，本规则不改对应 Schema。
 
-Agent 不是责任主体。每个 Agent 使用稳定 `actor_id`，并在 Attempt Archive 中绑定具名 `accountable_owner`；模型名、窗口名和临时昵称不能替代人类负责人。
+依据见 [ADR-0023](decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)。机器政策、模板及远端审核同步由 M0-008 单独实施，本文件不自报配置或 ruleset 已修改；历史 ADR、DONE Task 和接受记录保留原事实。
 
 ## 2. 开始一个开发 Task
 
-1. 读取根目录 `AGENTS.md`、本文件和 [`TASKS.md`](TASKS.md)；
-2. 选择 exact M Task，并确认其状态为 `READY`、
-   hard dependencies、负责人、风险、Phase/Topic 导航、原子边界、允许读取集、写入范围、输出和停止条件；
-3. 只读取 Task 指向的模块、计划、Profile、Skill 与输入，不从全仓扫描恢复上下文；
-4. R0/R1 普通单 PR 默认以 PR body 与 Git 记录留痕；只有 Task policy、委派、R2、跨 PR、外部副作用、
-   压缩或争议触发时，才在 `work/<task-id>/<attempt-id>/` 建立 Task Archive；
-5. 完成时提交必要的验证证据；跨窗口、跨 Agent 或跨 PR 时再写 Compact Handoff 和 `WORKLOG.md`。
+1. 读取根目录 `AGENTS.md`、本文件和 [TASKS](TASKS.md)。
+2. 选择 exact M Task，核状态、hard dependencies、风险、Phase/Topic、允许读取集、写入范围、输出和停止条件。
+3. 读取 Task 指向的模块、计划、Profile、Skill 与输入；新内容按现有授权判断，不从全仓递归恢复上下文。
+4. 普通单 PR R0/R1 默认 PR body 与 Git 留痕；Task policy、委派、R2、跨 PR、外部副作用、压缩或争议触发 Task Attempt Archive。
+5. 提交适用验证证据；跨窗口、Agent 或 PR 时提供 Compact Handoff 与必要 Worklog。
 
-Task status、hard dependency 与 implementation scheduling 只在 [`TASKS.md`](TASKS.md) 更新；M-group
-施工导航由 [`M_SERIES_IMPLEMENTATION_MAP.md`](M_SERIES_IMPLEMENTATION_MAP.md) 从 TASKS 派生；Phase/Topic
-聚合、macro dependency 与 architecture Gate 只在 [`ROADMAP.md`](ROADMAP.md) 维护；实现覆盖只在
-[`STATUS.md`](STATUS.md) 汇总。Phase/Topic/M-group reservation 不是 branch 或 PR 的 scope identity。若 accepted architecture
-出现近期工作但 `TASKS.md` 没有对应 M Task，立即停止实现并先提交 docs-only `task-definition`。
+TASKS 唯一维护定义、状态与依赖；[施工图](M_SERIES_IMPLEMENTATION_MAP.md)导航，[ROADMAP](ROADMAP.md)维护方向/Gate，[STATUS](STATUS.md)维护成熟度。Phase/Topic/family 不是施工身份；近期工作没有 exact Task 时先走 docs-only task-definition。
 
-## 3. 留存与克制读取
+## 3. 留存、读取与 Handoff
 
-- 受控研究执行、正式委派或显式 Task policy 触发 Archive 时，Agent 间可见传递与可观察事件按
-  Attempt policy 归档；普通开发分支不为了过程形式生成低信息密度记录；
-- 不保存隐藏推理、密钥和认证头；受政策限制的删减必须留下 omission 记录；
-- 主 Agent 默认只读取 Task、当前索引、风险和 Handoff，排查时再按 ID 拉取原文；
-- 不可变大工件使用路径和哈希引用；进入上下文但没有稳定来源的瞬时结果必须脱敏持久化；
-- Worklog 是被触发后的导航摘要，不替代消息与事件档案。
+- 正式 Archive 被触发后，按 Task policy 保存可见传递、可观察事件与获准输入；不保存隐藏推理、密钥或认证头，必要删减保留 omission/capture gap。
+- main 先消费 Task、索引、风险与 Compact Handoff，再按 ID 读必要原件；大工件用 path/hash 引用，瞬时结果脱敏持久化。
+- Worklog 是导航，不替代消息与事件；普通开发不机械制造低信息密度档案。
+- H0 无跨 Agent 传递；H1 普通委派使用 Compact Handoff；H2 在压缩、提升、外部副作用、长等待、争议或 Task policy 触发时补 Manifest/Audit，按需 Snapshot/Receipt。分级不降低已触发的留存要求。
 
-## 4. Handoff 分级
+## 4. 共享接口与分支
 
-- `H0`：无跨 Agent 传递；普通开发只需保存必要输出与检查，正式 Task 可按 policy 增加 Worklog。
-- `H1`：普通委派；主 Agent 接收 Compact Handoff，完整消息流留在 Archive。
-- `H2`：压缩、Evidence/Claim/Decision 提升、外部副作用、长等待、争议或显式策略触发时，增加 Manifest/Audit，并按需增加 Snapshot 与 Receipt。
+共享接口包括 Task、Method、Snapshot、兼容期 Assignment、Handoff、Receipt、Trace、Capability、Data Policy 和停止状态。
 
-分级改变回传主上下文和审查强度；一旦正式 Archive 被触发，其留存要求不因执行便利而降低。
+- 核心对象身份、路由语义、人类决定边界或 Runtime 权威变化先有 ADR；Schema 变化说明版本、迁移、消费者和合并顺序。
+- 同一共享 Schema/CLI/Registry 区域互斥写入；保留其他窗口编辑。
+- 功能/task-definition PR 进入 develop 并 squash merge；开发期 stale base 为 warning，实际冲突或共享契约不兼容仍阻断。
+- main/develop 保持必需 PR、CI、conversation resolution 和合法合并方式，禁止 direct push、force push 与删除。
+- 内容从 frozen develop source 完整生成同仓库 release/vX.Y.Z → main，以 exact current main 为父提交并 merge commit；active curated topology 拒绝 direct develop → main，release 不回并 develop。
+- 每次发布按 [发行规范](DEVELOP_TO_MAIN_RELEASE.md)核来源、工件、远端门禁与人类发布决定；紧急变更仍保持拓扑和硬门禁。
 
-## 5. 共享接口与分支
+M Task 是 implementation/acceptance identity，PR 是 integration/review unit，无需1:1。强耦合预定义 DAG 可原子集成；PR 列 exact IDs、每项变化、独立 slice/commit/evidence 与拓扑顺序，不能用 Phase/Topic/family/工作包代替验收身份。
 
-共享接口包括 Task、Method Resolution、Resolved Capability Snapshot、兼容期 Assignment、Handoff、Receipt、Trace、Capability / Data Policy 和错误/停止状态。
+## 5. 风险与共享真值
 
-- 核心对象身份、路由语义、人类权威或运行时所有权变化必须先有 ADR；
-- 共享 Schema 变更必须说明 owner、语义版本、迁移影响、消费方和合并顺序；
-- 同一时间只有明确 owner 修改同一共享 Schema、CLI 区域或 Registry 索引；
-- 并行 Task 声明互斥写入路径，无法隔离时串行；
-- `main` 和 `develop` 禁止直接 push、force push 与删除；所有改动经过 PR 与必需 CI，跨 owner
-  审查由风险等级和敏感路径触发；
-- 功能/文档分支以 `develop` 为集成基线，PR 目标为 `develop` 并 squash merge；开发期间 stale base
-  只产生 warning，实际冲突或共享契约不兼容仍阻断合并；
-- 产品内容在 `develop` 完成集成验证后，从 frozen source 确定性生成同仓库 `release/vX.Y.Z → main`
-  PR；release branch 以 exact current main 为父提交，发布使用 merge commit；active curated topology 拒绝 direct `develop → main`；
-- 创建、审查与合并 release PR 时必须遵守独立的 [curated main 发布合并规范](DEVELOP_TO_MAIN_RELEASE.md)；
-- 紧急变更仍走 `feature → develop → generated release → main`，不得绕过 CI 或 authority gate；可以压缩普通过程文档，
-  并在安全恢复后补齐被明确推迟的记录；
-- [`docs/workstreams/`](workstreams/README.md) 按风险和复杂度触发，不再是每个 PR 的必需附件；
-- Handoff 给出基线提交、修改路径、验证证据、未证明内容和下一动作。
-
-M Task 是 implementation / acceptance identity；PR 是 integration / review unit，二者不要求 1:1。
-单 Task 分支仍推荐 `agent/m10-002-research-failure`。同一强耦合 module/workstream 的预定义 dependency
-DAG 可以使用 module-level 分支和 PR 原子集成，但 PR 必须列出 exact `M*` IDs、每项 transition、独立
-implementation slice/commit/evidence 与拓扑顺序，不能只写“Phase C implementation”“Topic 4 work”或
-“Runtime improvements”。Phase、Topic、M-group 或 PR 都不能替代 M Task 的验收 identity。
-
-执行便利性与方法、权限或数据边界冲突时，采用更严格边界并请求人类决定；任何一侧不得替另一侧静默定义 fallback。
-
-### 5.1 Hard authority, adaptive workflow
-
-治理约束的是“什么可以成为共享项目真值”，而不是隔离分支内必须采用哪种普通开发过程。
-`declared_risk` 与 changed paths 推导出的 `minimum_risk` 共同决定：
+治理约束进入共享项目真值的条件，授权范围内的普通实现过程可自主安排。
 
 ```text
-effective_risk = max(declared_risk, minimum_risk)
+effective_risk = max(declared_risk, minimum_risk_from_changed_paths)
 ```
 
-低报会自动升级；只有绕过升级后要求、越权修改 Task 或破坏硬不变量时才失败。
-
-| 风险 | 典型表面 | 最低治理 |
+| 风险 | 典型表面 | 最低证据 |
 |---|---|---|
-| `R0` Routine | owner 内实现、bugfix、测试、refactor、非规范文档 | PR + CI；跨 owner review 可选 |
-| `R1` Shared Contract | Schema、Registry、公共模型/CLI、兼容迁移 | PR + CI；审核为 cross-owner review 或第 5.4 节的单次维护者例外；workstream 可选 |
-| `R2` Authority / Safety | Method/Claim/Gate、权限、数据边界、Runtime authority、架构、治理、安全 | PR + CI；审核为 cross-owner review 或第 5.4 节的单次维护者例外；另须 authority basis、adversarial evidence、workstream/Risk Ledger |
+| R0 Routine | bugfix、测试、refactor、非规范文档 | PR + CI |
+| R1 Shared Contract | Schema、Registry、公共模型/CLI、兼容迁移 | PR + CI + 契约/消费者与迁移审查；workstream 可选 |
+| R2 Authority / Safety | Method/Claim/Gate、权限、数据、Runtime 权威、架构、治理、安全 | PR + CI + 风险审查、authority basis、adversarial evidence、workstream/Risk Ledger |
 
-`.github/governance-policy.json` 保存 owner、状态机与最低风险路径。治理器输出 `INFO / WARNING /
-ERROR`；只有 `ERROR` 使 CI 失败，并必须解释推导风险、原因和补救要求。
+审查按风险组织，不要求固定两个人或特定账户组合。治理器从 policy 推导最低风险并报告 INFO/WARNING/ERROR；机器人员政策同步前按实际检查结果处理，不能用 PR 自述字段消除失败。
 
-### 5.2 PR 类型与 TASKS 授权
+### 5.1 PR 类型与任务状态
 
-| PR class | base | 允许的任务治理变化 | 合并方式 |
-|---|---|---|---|
-| `feature` | `develop` | implementation/bugfix/refactor/test/docs/status/completion；可合法置 `DONE`，不能改 Task 定义/依赖/验收 | squash |
-| `task-definition` | `develop` | 仅文档；可新增或调整声明的未完成 Task，不能同时置 `DONE` | squash |
-| `release` | `main` | 来自同仓库生成式 `release/vX.Y.Z`，绑定 frozen develop source 与 exact current main parent；不重新授权 Task 定义 | merge commit |
+| PR class | base / merge | 允许的任务变化 |
+|---|---|---|
+| feature | develop / squash | 实现、修复、测试、文档、合法状态/完成；不能改定义/依赖/验收 |
+| task-definition | develop / squash | 仅文档；新增或调整声明的未完成 Task，不能同时置 DONE |
+| release | main / merge commit | 同仓库生成式 release branch，绑定 frozen develop/current main，不重新授权 Task |
 
-Task 状态机允许 `PARKED → READY → IN_PROGRESS → DONE`、`READY/IN_PROGRESS → BLOCKED`、
-`BLOCKED → READY/IN_PROGRESS/DONE`，以及小任务 `READY → DONE`。进入 `READY` 或 `IN_PROGRESS`
-时，head snapshot 中列明的 Task 依赖必须全部 `DONE`。同一 feature PR 可以完成当前 Task 并激活
-依赖已满足的后继 Task；所有变化 ID 都必须在 PR 中声明。`DONE` 行是终态且定义不可变。
+状态机：PARKED→READY→IN_PROGRESS→DONE，READY/IN_PROGRESS→BLOCKED，BLOCKED→READY/IN_PROGRESS/DONE，小任务 READY→DONE。READY/IN_PROGRESS 的 head Task deps 全部 DONE；原 DONE 行终态且定义不可变。所有变化 ID 在 PR 声明，完成判断依据实际证据，CI 资格不等于科学正确性。
 
-同一强耦合 module/workstream 的 feature PR 可以原子完成一条预定义依赖 DAG，包括在满足附加条件时
-把后继 Task 从 `PARKED` 直接置为 `DONE`。该规则是稳定的 module-level PR 治理，不是针对某个 PR 的
-人类豁免。必须同时满足：
+强耦合 feature PR 可原子完成预定义 DAG，包括符合条件的 PARKED→DONE：定义在 base、至少一个 base READY 入口、外部 deps 在 base DONE、内部无环且入口可达、成员全部声明且各有独立 slice/commit/evidence、依赖拓扑先闭合、风险取最大。此 completion 必须 R2；断连、缺证据、外部 deps 未满足或定义改写均阻断，不合并 Task identity。
 
-1. Task、dependency 和 acceptance 已在 base 中定义，feature PR 不得改写；
-2. 至少一个入口 Task 在 base 中已为 `READY`；
-3. 所有外部 hard dependency 已在 base 中 `DONE`；内部 dependency DAG 无环，并从入口 Task 可达；
-4. 所有成员 Task 均在 PR 中声明，且各有独立 implementation slice、可定位 commit 和 task-specific
-   Verification evidence；
-5. 每个依赖要么在 base 中已 `DONE`，要么在同一 PR 的拓扑序中先行闭合；
-6. PR risk 取所有成员及 changed paths 推导风险的最高值；合并 PR 不减少相关 owner 的责任，审核仍按第 5.1、5.4 节执行。
+R0 maintenance 可填 Task IDs none，前提 TASKS 不变；R1/R2 有正式 Task 或 Audit ID，不机械另建 task-closeout PR。普通 PR 不手填 Git 已知 base SHA，不以 reviewer 字段分配人员。M0-008 同步前的模板身份字段仅用于当前机器元数据，不赋予模块独占权。
 
-治理器验证声明闭包、定义不可改写、外部依赖、入口可达性、DAG 顺序和逐 Task 证据；reviewer 复核
-implementation slice/commit 是否确实可独立审查。断连 Task、未声明中间层、缺少证据或外部依赖未满足
-均阻断。`PARKED → DONE` 仍只允许 R2 module-level completion；R0/R1 必须先正常激活。该机制只改变
-集成与审查粒度，不合并 Task identity、不放松 `DONE` 不可变性，也不要求所有依赖链必须放在一个 PR。
+已进入 develop 的 Action、Mode、Authority Matrix 和 Migration identity append-only：不得同版本改写、删除或换路径；语义变化发新版本并保留旧版验证/迁移。
 
-R0 maintenance 可以填写 `Task ID(s): none`，前提是 `TASKS.md` 不变；R1/R2 必须有正式 Task 或
-Audit ID。feature 置 `DONE` 只代表机器确认结构资格、证据字段和 CI，完成判断仍由具名 owner 承担。
-不再创建独立 `task-closeout` PR。
+### 5.2 Workstream、History 与远端规则
 
-普通 PR 模板不再人工复制 Git 已知的 base SHA，也不要求填写 reviewer。Cross-owner review 由有效风险、
-CODEOWNERS 和 ruleset 决定；第 5.4 节的例外决定须另行绑定 exact base/head。
+- R0 不要求 workstream；单 PR R1 可省略并产生 warning；R2、跨 PR/subsystem、migration、private/external evidence、Architecture Hold 或长期实验建立 workstream，R2 带 Risk Ledger。
+- History 留存重要变化、接受和失败，不按每个 Task 自动造 closeout。
+- 硬门禁层保持 PR、合并方式、规定 checks、latest-base、conversation 与 force/delete 保护；审核设置与硬门禁分别处理。
+- 远端审核调整在线核对实际 rulesets，M0-008 保存修改前后证据；本文件不声称原 Code Owner/approval 已取消。审核便利不能绕过 CI、来源、权限或发布 Gate。
 
-已经进入 `develop` 的版本化 Registry 文档按 identity append-only：Mode Action
-`action_id + version`、Research Mode `mode_id + version`、Decision Authority Matrix
-`matrix_id + version`、Research Mode Migration `migration_id + migration_version` 均不得同版本改写、
-移除或换路径。语义变化发布新版本，旧 identity 必须继续保留并可验证。
+### 5.3 人类审阅与合并
 
-### 5.3 Workstream、History 与远端门禁
+人类据当前 diff、验证证据和剩余风险决定是否合并，无指定另一人参与、暂无空闲确认或补签前置。Agent 整理审阅包并执行明确授权的操作，开发指令本身不授权 merge/release。
 
-- R0 不要求 workstream；单 PR R1 可以省略并产生 warning；
-- R2、跨多个 PR/owner/subsystem、migration、private/external evidence、Architecture Hold 或长期实验
-  必须建立 workstream；
-- R2 workstream 必须包含 Risk Ledger；普通 PR 的 residual risk section 足够；
-- History 只为重要 workstream、迁移、治理/架构决定、release milestone 或关键失败建立，不按每个
-  Task 自动制造 closeout 文档；
-- CODEOWNERS 不使用全局 `*`，只覆盖共享契约与 authority-sensitive 路径；
-- `develop` 审核层的全局 approval count 为 0，但敏感路径要求 Code Owner review；`main` 审核层
-  要求至少 1 approval 和 last-push approval。两者都保留 stale review dismissal；只有第 5.4 节可使用审核层例外。
-- 每个分支另设无 bypass 的硬门禁层：必须 PR、规定的 merge method、治理与该分支规定的 CI checks、
-  latest-base 检查、conversation resolution，以及禁止 force/delete。审核层的 bypass 不覆盖硬门禁层。
+合并前核 exact base/head、冲突、required checks、conversation 与实际 ruleset。失败/缺失检查、实质性 changes-requested、阻断或冲突不能忽略；base/head 或证据变化后重核，最终保存 merge 身份。每次 main 发布另需 source/parent、manifest/projection/tree、安装工件和人类发布决定。
 
-仓库内的治理检查负责验证来源拓扑、PR 元数据和 TASKS diff；GitHub ruleset 负责阻止直推、要求
-Code Owner 审查和必需 checks。两者都配置完成才构成有效保护。
+旧 [ADR-0022](decisions/0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md)与例外记录解释历史操作；现行人员规则以 ADR-0023 为准，不通过改写旧接受事实同步机器政策。
 
-### 5.4 Reviewer 不可用时的单次维护者例外
+## 6. 验证与提交
 
-正常路径为 cross-owner review。路诚钺（`Chengyue-Lu`）可在亲自确认另一 reviewer 当前暂无空闲后，
-针对单个 PR 作出 `maintainer exception` 决定；可以由 PR 作者本人承担这项维护者责任。
-**无需默认等待时间**，也没有超时自动批准。该例外只替代第二人审核，不代表取得 cross-owner approval。
-治理决定见 [ADR-0022](decisions/0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md)。
+develop 日常 PR 按稳定组件和直接消费者执行检查，业务测试用 Python3.11。文档运行文档检查；安装/构建/依赖变化附实际安装检查，依赖变化加另一支持版本 smoke。新增行为保留公共入口，修复保留故障反例与正常路径；新增/删除/重命名/未知路径进入检查计划，不自动扩大全仓。
 
-每次使用须满足：
+风险等级不等价测试或 coverage 范围；组件 coverage 用于诊断，不以统一百分比阻断。错误行为、结果身份和缺适用检查仍阻断；全仓、多版本 checkpoint 按明确范围执行。CI 兼容与回退见 [组件 CI 迁移](workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md)。
 
-1. PR 已请求审核，路诚钺明确确认 reviewer 不可用，并审阅当前 diff、验证证据和剩余风险。
-2. 在 PR 保存具名决定：PR URL、base/head 完整 SHA、审核请求与不可用确认、CI/evidence 链接、
-   未解决问题、风险承接、回退办法、决定时间及明确的单次合并授权。可以转录其明确指令并标明来源。
-3. 合并前回读 exact base/head、必需 checks、conflicts、review/conversation 状态和有效 rulesets。
-   失败或缺失检查、未解决阻断问题、实质性 changes-requested 或冲突均不得按 reviewer 不可用处理。
-4. 决定有效期最多 24 小时，且只使用一次。base/head 改变、授权撤回或出现新阻断发现时立即失效；
-   更新后的候选重新核对并取得单次决定。
-5. 合并后记录执行人、时间、merge SHA 和例外依据；另一 owner 恢复后补审，发现问题通过修复或 revert PR 收口。
-6. `main` 还须有针对本次发布的具名 Human release decision，并满足相应 readiness、source/parent、
-   manifest/projection/tree 与工件门禁。例外不改变 Task 状态、dormant topology 或发行权限。
+提交前核文档归属、契约/版本/迁移影响、Task/Archive 与风险证据、推荐示例、适用正反检查和内部链接。结构/工程通过不证明科学正确性、其他 Provider 兼容或净价值。
 
-GitHub 审核层仅允许 `Chengyue-Lu`（user ID `140945476`）使用 `pull_request` bypass；硬门禁层的
-bypass actors 必须为空。不得向合并了 CI 等硬门禁的 ruleset 直接添加 bypass，不得使用 `always` 或
-`exempt` 模式。变更授权对象或范围须另行作出治理决定。
-
-单次确认、exact-head 有效期、风险承接与补审属于人类操作规范；GitHub 原生 bypass 不会自动校验
-这些记录。仓库治理器只报告审核要求，不通过 PR 自报字段授予例外。Agent 可整理证据并执行已经明确
-授权的操作，不得自行作出例外决定；接受本机制不等于批准某个具体 PR。
-
-可复制的决定与回读步骤见 [操作记录模板](workstreams/chengyue-lu/GOV-REVIEW-EXCEPTION-001/EXCEPTION_RECORD.md)。
-
-## 6. 变更检查清单
-
-### 日常检查与完整验收
-
-面向 `develop` 的日常 PR 按稳定组件与直接测试关系执行，业务测试使用 Python3.11。
-普通文档运行文档检查；安装说明、构建或依赖变更附相应真实安装检查，依赖变更增加另一支持版本的安装 smoke。
-新增功能保留公共入口验证，修复保留具体故障反例和正常路径；共享 fixture 登记直接消费者。
-新增、删除、重命名和未知路径均在计划中显示，未知路径选最近组件、自身现存测试及短 smoke，不自动扩大为全仓。
-
-R0/R1/R2 规定审查强度，不等价于测试或 coverage 范围。coverage 在组件路线中用于诊断，不以统一百分比阻断；
-实际行为失败、错误结果身份及缺失的适用检查仍阻断。全仓及完整多版本验证使用明确 checkpoint，
-接受未登记跨组件问题可能延后发现的取舍；运行时权限、隔离和发布批准仍由实际入口约束。
-当前迁移阶段的 required-check 对应、旧 source-CI 兼容与回退见
-[组件 CI 迁移说明](workstreams/chengyue-lu/TEST-PERF-002/COMPONENT_CI_MIGRATION.md)。
-
-### 提交前确认
-
-- 变更属于 stable、status、planning、compatibility 还是 history 表面？
-- 是否改了对象含义、版本、消费者或迁移要求？
-- 责任人、必要 Task/Archive 与风险触发的证据是否充分，而非机械齐全？
-- 示例是否代表当前推荐路径，而不是旧工件回放？
-- 确定性测试是否覆盖新增不变量与错误路径？
-- 文档链接、示例、Schema/Registry 验证和完整测试是否通过？
-- 是否明确未证明科学正确性、真实 Provider 兼容性或机制净收益？
-
-实现协议见[implementation 索引](implementation/README.md)，架构决定见[ADR 索引](decisions/README.md)，历史材料见[历史与审计](history/README.md)。
+接口见 [implementation](implementation/README.md)，决定见 [ADR](decisions/README.md)，历史见 [history](history/README.md)。

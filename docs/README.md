@@ -10,7 +10,7 @@
 4. [支持能力与证据边界](SUPPORTED_FEATURES.md)：公开支持矩阵与证据等级；
 5. [公开模块导航](PUBLIC_GUIDE.md)：随发行源码提供的稳定模块入口。
 
-本页是开发侧文档索引。工程实现进度见[实现状态](STATUS.md)，贡献、兼容与历史入口见下表。
+本页是开发侧文档索引。当前工程成熟度由[实现状态](STATUS.md)维护，exact Task 的定义、验收与状态由[任务清单](TASKS.md)维护；两者不从模块名、候选分支或历史收口标题推定。公开安装包的支持承诺与源码后续变化按各自来源身份解释。
 
 ## 按任务查找
 
@@ -19,6 +19,8 @@
 | 理解核心概念 | [总体架构](ARCHITECTURE.md) | [开发者架构地图](DEVELOPER_ARCHITECTURE_MAP.md)、[模块设计](modules/) |
 | 运行或排错 | [上手指南](GETTING_STARTED.md) | [实现状态](STATUS.md) |
 | 参与开发 | [开发协作指南](DEVELOPMENT.md) | [M-series 施工图](M_SERIES_IMPLEMENTATION_MAP.md)、[任务清单](TASKS.md)、[路线图](ROADMAP.md)、[发布合并规范](DEVELOP_TO_MAIN_RELEASE.md) |
+| 规划真实环境接合 | [真实化下一阶段计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md) | [任务清单](TASKS.md)、[M-series 施工图](M_SERIES_IMPLEMENTATION_MAP.md)、[实现状态](STATUS.md) |
+| 了解统一入口与局部编辑候选 | [前置分流与短链设计](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md) | [ADR-0024](decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)、[任务清单](TASKS.md) |
 | 查看实现协议 | [实现文档索引](implementation/README.md) | 对应实现说明与测试 |
 | 理解架构决定 | [ADR 索引](decisions/README.md) | 对应 ADR |
 | 理解旧对象或回放 | [兼容性说明](compatibility/README.md) | [历史与审计](history/README.md) |
@@ -28,9 +30,9 @@
 | 表面 | 只回答什么 | 权威文件 |
 |---|---|---|
 | Stable | 系统是什么、概念如何协作、长期规则是什么 | `README`、Charter、Architecture、Modules、Development |
-| Public support | 用户可用入口、证据等级与限制的单一来源 | [SUPPORTED_FEATURES.md](SUPPORTED_FEATURES.md) |
-| Status | 当前工程实现和成熟度如何，补充公开支持矩阵 | [STATUS.md](STATUS.md) |
-| Task planning | exact M Task、owner、hard dependency、scope、验收和实时状态 | [TASKS.md](TASKS.md) |
+| Public support | 公开入口的使用契约、证据等级与支持限制 | [SUPPORTED_FEATURES.md](SUPPORTED_FEATURES.md) |
+| Status | 当前工程实现成熟度、来源身份、候选与缺口 | [STATUS.md](STATUS.md) |
+| Task planning | exact M Task、risk、hard dependency、scope、验收和实时状态 | [TASKS.md](TASKS.md) |
 | Construction navigation | M-group 施工路线、已定义原子链与 future reservation | [M_SERIES_IMPLEMENTATION_MAP.md](M_SERIES_IMPLEMENTATION_MAP.md)；状态/依赖仍以 TASKS 为准 |
 | Architecture planning | Phase/Topic、macro dependency 与 architecture Gate | [ROADMAP.md](ROADMAP.md) |
 | Compatibility | 旧契约如何显式读取、迁移或回放 | [compatibility/](compatibility/README.md) |

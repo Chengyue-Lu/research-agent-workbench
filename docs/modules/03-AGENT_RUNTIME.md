@@ -2,7 +2,12 @@
 
 ## 1. 目标
 
-定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立；黄毅维护 API session 及其测试，路诚钺维护进入任何执行路径之前的 Task、Mode、Skill、读取、Trace 和返回边界。
+定义主 Agent 与子 Agent 的职责、Agent Profile、委派条件和执行映射。项目保持 API 与平台中立；Task、Mode、Skill、读取、Trace 和返回边界约束进入执行路径的输入，API session 及其测试验证具体执行实现。
+
+接点：启动调用者消费 Task、Profile 与 frozen Bundle/View，向主或子执行者提供有界职责指令；执行者
+产出工件、实际事实和 Handoff，由主执行接收者消费。协议整理、规划、主执行、收尾和只读查询是应用
+职责，允许合并或拆分会话。模块是代码责任边界，会话是临时上下文，Profile 是能力配置，Skill 是可选
+方法程序。每次 AI 调用都有职责指令、允许集与停止条件；不要求每次调用配置 Skill。
 
 ## 2. 主 Agent Charter
 
@@ -10,8 +15,10 @@
 
 - 维护当前问题、约束、决定、风险和任务索引；
 - 判断任务是否值得委派；
+- 在 Protocol/Task 的并发、深度、权限和预算内动态决定 0..N 个子任务；零子任务是正常执行路径；
 - 创建 Task Packet 并请求能力解析；
 - 比较 Handoff、处理冲突和识别 Human Gate；
+- 明确消费子结果的工件引用、失败、限制和未决项；摘要不足时按授权范围回查，不能只收成功标记；
 - 维护并执行当前 Claim ceiling，提出 Claim 升级/降级候选，并识别 promotion 所需的 Evidence、
   Method rule 与 Human Gate；不得自行批准高风险或主要 Claim promotion；
 - 控制执行成本和停止时机；
@@ -105,9 +112,9 @@ Host 触发自动评分、静默 fallback 或 local rebind。
 
 任何递归委派都必须返回一份合并后的 Handoff，而不是把完整子树抛给主 Agent。
 
-## 7. 当前 Core 执行映射
+## 7. Core 执行映射
 
-当前 M11 Core 的启动边界不是 `Task + Skill Assignment`，而是：
+Core 的启动边界是：
 
 ```text
 Task / Method / frozen Capability selection
@@ -125,22 +132,41 @@ Task / Method / frozen Capability selection
 - Thin Host 只消费与同一 Bundle 绑定的 frozen View，在调用前重验 freshness 与 Bundle bytes，并通过一个
   pre-bound Driver 最多执行一次；它不选择 Supply、不 rebind、不 fallback；
 - no-Skill、direct Tool、procedure 与 Adapter/Provider supply 路径在零 Skill、零 Evolution Registry、
-  零 Skill Assignment 下合法；M11-005/006 optional Skill extension 已 bounded 实现，但生产 projection
-  index 仍为空，不表示真实 Skill 已获 admission、new-binding 或 Runtime authority；
-- 当前实现证明 bounded local Core contract，不等于真实 Provider、凭据、配额或 ordinary-user E2E 已就绪；
-  当前成熟度见[实现状态](../STATUS.md)。
+  零 Skill Assignment 下合法；可选 Skill extension 需独立闭合 admission、Projection 和运行资格；
+- 离线 contract 验证、真实 Provider conformance 与应用接合分别取证，当前成熟度见[实现状态](../STATUS.md)。
 
 ### API 与平台映射
 
 - coordinator 默认使用 `primary` 槽；其他首批 Profile 默认使用 `worker` 槽；
 - 每个子任务建立 fresh context，不继承主 Agent 的完整消息历史；
-- Task、frozen control refs、Runtime Bundle/View、声明输入、输出契约和预算组成启动材料；只有
-  Skill-bearing execution 才额外携带 exact Skill binding/Assignment；
+- Task、frozen control refs、Runtime Bundle/View、声明输入、输出契约和预算组成启动材料；
+  Skill-bearing extension 额外闭合合法 Projection/Supply/View 锁与实际加载记录；只有历史 Skill-bound
+  兼容路径携带 Skill Assignment；
 - API session 或平台 Adapter 只能充当 frozen View 后面的 pre-bound Driver，不得在调用时自行选择模型、
   Provider、Tool 或 Skill；
 - 工具循环在本地受轮次、调用数、结果大小、token/成本和 Host-observed wall time 限制；
 - provider/model 不满足能力、freshness 或数据政策时阻断并请求上游 re-resolution，不换槽、不换 Provider；
 - 临时 API transcript 不是权威状态，退出前必须固化 actual facts、工件与适用的 Trace/Receipt/Handoff。
+
+Guide 使用独立只读输入与权限，仅解释已批准 Main State 和显式 refs；不自动将回答回传主执行，
+不写 checkpoint、Claim 或 Decision。结果进入研究流程必须另经正常接收或人类决定路径。
+
+### 统一入口的独立调用职责：设计候选
+
+拟议入口在研究 Protocol 编译前区分 Guide、独立短程 Task 与完整研究，见
+[ADR-0024](../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)和
+[短程入口设计](../workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)。
+这是主线外的前置入口与分支面，既有 Protocol→main→0..N child→Handoff→Main State→human 保持。
+职责 Prompt 或合法 Skill 经版本绑定与评审后承载意图/路由/语义影响判断；内核只限定职责、权限与 I/O，
+确定性校验不替代语义判断，低置信时澄清或提案。Guide/Short 不要求固定人数或独立固定 API 角色。
+Guide 与短程执行在 main 旁独立调用，不属于研究 child；职责或模型会话可以合并，但 Task 上下文、
+读取允许集、权限和接收者分别限定。同一 UI 的消息呈现不等于把主聊天加入每个模型请求。
+
+main 保持原 Task。短程调用以最小 Task、输入 pins、scope、预算和输出契约执行，默认不通知 main；
+若影响其读写、验证或活动 child，则传递最小失效/冲突事实，经所属 main 的 Task 治理处理，不能
+从普通入口任意改 child 指令、rebind 或恢复执行。目标占用及共享写冲突在写前协调，写后状态影响
+评估不替代这一准入检查。方法、Claim、数据或授权变化进入研究路径，混合或歧义先拆分或澄清，
+不凭任务长短判定隔离或低影响。上述是应用接合设计，实际支持范围见 STATUS。
 
 ### 可选 Codex 映射
 

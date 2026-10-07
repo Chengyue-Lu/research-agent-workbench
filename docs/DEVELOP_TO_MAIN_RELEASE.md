@@ -14,7 +14,7 @@ feature / task-definition → develop → frozen source Git blobs
 exact current main ── Git parent ──→ release/vX.Y.Z → main merge commit
 ```
 
-- 普通实现与语义修复通过 PR、CI 和相应 owner 审查进入 `develop`；
+- 普通实现与语义修复通过 PR、CI 和按风险审查进入 `develop`；
 - active curated topology 只接受同仓库 canonical `release/vMAJOR.MINOR.PATCH → main`，拒绝 direct
   `develop → main`、fork、feature head、非 canonical version 和 release branch 回并 develop；
 - release branch 由 exporter 完整生成；产品字节只来自 frozen source 或 policy 声明的 deterministic
@@ -28,7 +28,7 @@ exact current main ── Git parent ──→ release/vX.Y.Z → main merge com
 
 ## 2. 来源、候选与在线治理
 
-发布负责人先确认 M14-005 的 hard dependencies、license、scaffold、package/public closure、远端保护与
+发布前先确认 M14-005 的 hard dependencies、license、scaffold、package/public closure、远端保护与
 具名准备决定。随后从接受的 source 执行以下检查：
 
 1. 冻结 exact source SHA、current main parent、policy/release version、source CI run 和独立 manifest
@@ -57,14 +57,12 @@ source-owned receipts 都保留 `merge_eligible=false`：机器有效性不替�
 
 ## 3. PR 元数据与审查
 
-release PR 使用 `PR 类型: release`、正式 `M14-005`、`Risk tier: R2`、具名责任人及 source-owned
+release PR 使用 `PR 类型: release`、正式 `M14-005`、`Risk tier: R2`、当前机器要求的来源身份元数据及 source-owned
 workstream，说明内容范围、验证、authority basis、adversarial evidence、残余限制与后续动作。release PR
 不重定义 Task，不借裁剪删除改变 Runtime/Claim/Human authority，也不将 READY 擅自写为 DONE。
 
-至少一名 cross-owner reviewer 按 exact candidate/base 审查。main review rules 要求 Code Owner、stale
-review dismissal 与 last-push approval。新 head、失效证据、冲突、未解决 conversation 和失败或缺失的
-required check 均阻断合并。单次维护者审核例外仅按[开发指南第 5.4 节](DEVELOPMENT.md#54-reviewer-不可用时的单次维护者例外)
-另行具名授权；它不豁免来源、CI、topology、artifact 或最终发布决定。
+按 exact candidate/base、证据和风险组织人类审阅，无固定人员组合要求。远端审核设置的人员政策同步由 M0-008 实施；未同步时核对实际 review rules，不宣称 Code Owner/approval 门禁已取消。新 head、失效证据、冲突、未解决 conversation 和失败或缺失的
+required check 均阻断合并。人类合并决定按[开发指南](DEVELOPMENT.md#53-人类审阅与合并)核验；人员分工撤销不豁免来源、CI、topology、artifact 或最终发布决定。
 
 ## 4. 合并、tag 与后续
 
@@ -74,5 +72,5 @@ required check 均阻断合并。单次维护者审核例外仅按[开发指南�
 3. 在批准的 merge commit 上完成 tag、artifact/hash closure；候选检查通过不自动授权 tag 或制品发布。
 4. release branch 不合并回 develop；后续修复先进入 develop，再从新 source/current main 重新生成。
 
-远端分支清理保留活动 owner 与审计恢复用途。发布记录留在对应 workstream，实时成熟度、Task 状态和
+远端分支清理保留活动工作与审计恢复用途。发布记录留在对应 workstream，实时成熟度、Task 状态和
 依赖分别由 `STATUS.md`、`TASKS.md`、`ROADMAP.md` 维护。

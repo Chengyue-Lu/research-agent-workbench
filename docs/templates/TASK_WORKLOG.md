@@ -1,6 +1,8 @@
 # Attempt Archive 与 Worklog 模板
 
-复制到 `work/<TASK>/<ATTEMPT>/`。Worklog 只是导航摘要；Assignment、Agent 间消息、Handoff、检查和输出必须保存为独立文件。
+在 Task policy、正式委派、R2 或其他 [Archive 触发条件](../DEVELOPMENT.md#3-留存读取与-handoff)成立时，复制到
+`work/<TASK>/<ATTEMPT>/`；普通开发不因存在模板就新增 Archive。Worklog 是导航摘要，可见消息、适用 Handoff、
+检查与输出分别留存。Assignment 仅在声明的 legacy Skill-bound 兼容路径需要；当前 no-Skill/direct Tool 不生成占位 Assignment。
 
 ## 目录
 
@@ -27,11 +29,11 @@ actors:
   - actor_id: main-agent
     role: coordinator
     runtime_identity: <profile/model/window ref>
-    accountable_owner: 路诚钺
+    accountable_owner: <human authorization identity>
   - actor_id: mode-reviewer
     role: reviewer
     runtime_identity: <profile/model/window ref>
-    accountable_owner: 路诚钺
+    accountable_owner: <human authorization identity>
 ```
 
 消息使用 `NNNN-<sender>-to-<receiver>-<kind>.md`，正文格式见[工件与溯源](../modules/07-ARTIFACTS_AND_PROVENANCE.md)。所有实际可见传递均保存；不保存隐藏 Chain-of-Thought、密钥或政策禁止留存的原文。
@@ -42,7 +44,7 @@ actors:
 task_id: <TASK_ID>
 attempt_id: <ATTEMPT_ID>
 baseline: <git commit or artifact revision>
-owner: 路诚钺 | 黄毅 | <其他实名>
+owner: <archive authorization identity>
 status: active | completed | failed | safe-paused | cancelled
 read_allowlist:
   - AGENTS.md
@@ -73,7 +75,7 @@ Agent 默认可以读取 `INDEX.yaml` 元数据，但不能因此读取所有 `m
 # <TASK_ID> / <ATTEMPT_ID>
 
 - baseline: <git commit or artifact revision>
-- owner: <human name>
+- authorization: <human decision or authorization ref>
 - actors: <actor IDs; details in ACTORS.yaml>
 - goal: <one bounded atomic unit>
 - target paths: <paths>
@@ -90,7 +92,7 @@ Agent 默认可以读取 `INDEX.yaml` 元数据，但不能因此读取所有 `m
 | 2 | read-scope | <why new content was needed and who approved> | <scope messages> |
 | 3 | change | <material change, not every edit> | <paths> |
 | 4 | check | <command/check and outcome> | <report/receipt> |
-| 5 | blocker | <unresolved dependency or risk> | <owner/next action> |
+| 5 | blocker | <unresolved dependency or risk> | <required input/next action> |
 
 ## Closeout
 
