@@ -1,7 +1,7 @@
 # 实现状态
 
 状态：Current implementation authority
-更新：2026-10-03
+更新：2026-10-07
 
 本页只回答“仓库现在实现到哪里”。实时任务状态由 [`TASKS.md`](TASKS.md) 维护，依赖方向由 [`ROADMAP.md`](ROADMAP.md) 维护。
 
@@ -53,6 +53,12 @@ native005 的 exact Flash Provider/session 部件证据；受限完成判断、�
 历史报告的 `live_qualified=false` 与当时接受字段保持原样，外部完成判断不改写报告；M5 消费新的
 source/config 时仍须复核同一 binding 的适用性，A4 admission 和四臂 Pilot 仍有独立 Gate。
 原 M6-004 OpenAI 验收仍 BLOCKED；保存本地 Key 和晚间时间安排不证明 Provider 或 Pilot 已可用。
+
+## 本分支的应用接合候选
+
+`codex/research-entry-integration` 增加可选 research entry 应用层：角色最低指令和获准快照、受人类 ceilings 限制的控制草稿、显式供给冻结与 Bundle/View 接合、procedure/no-Skill/零 Tool 的 Session Driver、main 动态0..N及跨请求预算、固定报告的 checkpoint 发布、独立只读 Guide。实际支持和测试范围见[完成矩阵](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/COMPLETION.md)，参数和接点见[使用说明](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/USAGE.md)。这是待 PR 审查的隔离实现，不表示已合并、live 资格、整 Task/科研接受、M12 解冻或新的发行。
+
+M12 与前端独立窗口已交付[连续性规划](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/m12/PLAN.md)和[前端规划](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/frontend/PLAN.md)。它们是后续候选与接合约束，未实施恢复或图形 UI，canonical Task 状态不变。
 
 ## 已实现
 
