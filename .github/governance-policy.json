@@ -40,10 +40,6 @@
       "expected_manifest_sha256"
     ]
   },
-  "owners": {
-    "Chengyue-Lu": "chengyue-lu",
-    "let778750-cpu": "huangyi"
-  },
   "minimum_risk_paths": {
     "R1": [
       "schemas/**",

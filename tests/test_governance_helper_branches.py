@@ -88,7 +88,11 @@ class GovernanceHelperBranchTests(unittest.TestCase):
         invalid = invalid.replace("- **责任人**: @Chengyue-Lu", "")
         bad_report = governance.GovernanceReport()
         governance.validate_body(invalid, bad_report)
-        self.assertLessEqual({"META-MISSING", "PR-CLASS", "RISK-DECLARATION"}, _codes(bad_report))
+        self.assertLessEqual({"PR-CLASS", "RISK-DECLARATION"}, _codes(bad_report))
+        self.assertNotIn("META-MISSING", _codes(bad_report))
+        missing_risk = governance.GovernanceReport()
+        governance.validate_body(valid_body().replace("- **风险等级**: R0", ""), missing_risk)
+        self.assertIn("META-MISSING", _codes(missing_risk))
 
         risk, reasons = governance.infer_minimum_risk(
             [r"docs\guide.md"], shared_contract=True, authority_impact=True
@@ -208,13 +212,24 @@ class GovernanceHelperBranchTests(unittest.TestCase):
                 head_sha="head", report=report,
             )
             self.assertIn(code, _codes(report))
-        for path, code in (("../bad", "WORKSTREAM-PATH"), ("docs/workstreams/unknown/TASK", "WORKSTREAM-OWNER-PATH")):
+        for path, code in (("../bad", "WORKSTREAM-PATH"), ("docs/workstreams", "WORKSTREAM-PATH")):
             report = governance.GovernanceReport()
             governance.validate_workstream(
                 raw_workstream=path, owner="Chengyue-Lu", effective_risk="R0",
                 head_sha="head", report=report,
             )
             self.assertIn(code, _codes(report))
+        report = governance.GovernanceReport()
+        with mock.patch.object(governance, "_read_blob", return_value="evidence") as reader:
+            governance.validate_workstream(
+                raw_workstream="docs/workstreams/engineering/TASK", owner="another-contributor",
+                effective_risk="R2", head_sha="head", report=report,
+            )
+        self.assertFalse(report.has_errors, report.findings)
+        self.assertEqual([
+            mock.call("head", "docs/workstreams/engineering/TASK/README.md"),
+            mock.call("head", "docs/workstreams/engineering/TASK/RISK_LEDGER.md"),
+        ], reader.call_args_list)
         report = governance.GovernanceReport()
         with mock.patch.object(governance, "_read_blob", side_effect=governance.GovernanceError("missing")):
             governance.validate_workstream(

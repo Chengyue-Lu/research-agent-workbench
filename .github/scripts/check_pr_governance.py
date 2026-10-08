@@ -26,8 +26,6 @@ VALID_STATUSES = set(POLICY["task_statuses"])
 TASK_TRANSITIONS = {
     before: set(after) for before, after in POLICY["task_transitions"].items()
 }
-OWNER_SLUGS = dict(POLICY["owners"])
-WORKSTREAM_OWNERS = {slug: owner for owner, slug in OWNER_SLUGS.items()}
 MINIMUM_RISK_PATHS = {
     risk: tuple(patterns) for risk, patterns in POLICY["minimum_risk_paths"].items()
 }
@@ -78,7 +76,7 @@ YES_VALUES = {"yes", "true", "是"}
 NO_VALUES = {"no", "false", "否"}
 NONE_VALUES = {"", "none", "n/a", "not applicable", "无"}
 
-REQUIRED_FIELDS = ("PR class", "Risk tier", "Accountable owner")
+REQUIRED_FIELDS = ("PR class", "Risk tier")
 REQUIRED_SECTIONS = (
     "Scope and non-goals",
     "Contract and authority impact",
@@ -259,10 +257,9 @@ def validate_body(
     if declared_risk and declared_risk not in RISK_RANK:
         report.add("ERROR", "RISK-DECLARATION", f"invalid Risk tier: {declared_risk!r}")
 
-    owner = normalize_handle(metadata.get("Accountable owner", ""))
-    if owner and owner not in OWNER_SLUGS:
-        report.add("ERROR", "OWNER-UNKNOWN", f"unknown accountable owner: {owner!r}")
-    metadata["Accountable owner"] = owner
+    # Old PR bodies remain readable; this field does not grant or gate authority.
+    if "Accountable owner" in metadata:
+        metadata["Accountable owner"] = normalize_handle(metadata["Accountable owner"])
     shared_contract = _parse_yes_no(metadata, "Shared contract", report)
     authority_impact = _parse_yes_no(metadata, "Authority impact", report)
     return metadata, sections, shared_contract, authority_impact
@@ -309,13 +306,13 @@ def resolve_effective_risk(
     report.effective_risk = effective
     report.requirements = {
         "R0": ["pull request and required CI"],
-        "R1": ["pull request and required CI", "cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)"],
+        "R1": ["pull request and required CI", "applicable contract and compatibility review"],
         "R2": [
             "pull request and required CI",
-            "cross-owner review or explicit single-PR maintainer exception before merge (DEVELOPMENT 5.4)",
+            "applicable risk and authority review",
             "explicit authority basis",
             "adversarial or negative evidence",
-            "owner-matched workstream and Risk Ledger",
+            "workstream and Risk Ledger",
         ],
     }[effective]
     return effective
@@ -1021,11 +1018,12 @@ def validate_task_changes(
 def validate_workstream(
     *,
     raw_workstream: str,
-    owner: str,
+    owner: str = "",
     effective_risk: str,
     head_sha: str,
     report: GovernanceReport,
 ) -> None:
+    """Check evidence paths; the legacy owner keyword has no admission role."""
     normalized = raw_workstream.replace("\\", "/").rstrip("/").strip()
     if normalized.lower() in NONE_VALUES:
         if effective_risk == "R2":
@@ -1039,19 +1037,12 @@ def validate_workstream(
         workstream.is_absolute()
         or ".." in workstream.parts
         or workstream.parts[:2] != ("docs", "workstreams")
-        or len(workstream.parts) < 4
+        or len(workstream.parts) < 3
     ):
         report.add(
-            "ERROR", "WORKSTREAM-PATH", "Workstream must be docs/workstreams/<owner>/<task-id-or-slug>/ or none"
+            "ERROR", "WORKSTREAM-PATH", "Workstream must be a task directory under docs/workstreams/ or none"
         )
         return
-    expected_owner = WORKSTREAM_OWNERS.get(workstream.parts[2])
-    if expected_owner is None:
-        report.add("ERROR", "WORKSTREAM-OWNER-PATH", f"unknown owner path: {workstream.parts[2]}")
-    elif owner != expected_owner:
-        report.add(
-            "ERROR", "WORKSTREAM-OWNER-MISMATCH", f"{workstream.parts[2]} requires @{expected_owner}, not @{owner}"
-        )
     try:
         _read_blob(head_sha, f"{workstream.as_posix()}/README.md")
         if effective_risk == "R2":
@@ -1304,7 +1295,6 @@ def check_pull_request(
     if not topology.curated_release_attempt or release_evidence_sha is not None:
         validate_workstream(
             raw_workstream=metadata.get("Workstream", "none"),
-            owner=metadata.get("Accountable owner", ""),
             effective_risk=effective,
             head_sha=release_evidence_sha or head_sha,
             report=report,
