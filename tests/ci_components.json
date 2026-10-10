@@ -28,7 +28,9 @@
         "test_entry_state",
         "test_entry_wave",
         "test_entry_wave_bridge",
+        "test_entry_working_guide",
         "test_entry_working_inputs",
+        "test_entry_working_material_inputs",
         "test_entry_workflow"
       ],
       "flags": [
@@ -386,6 +388,9 @@
     }
   },
   "direct_tests": {
+    "tests/test_entry_roles.py": [
+      "test_entry_working_guide"
+    ],
     "tests/entry_chain_support.py": [
       "test_entry_bridge_flow",
       "test_entry_caller",

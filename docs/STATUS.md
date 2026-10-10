@@ -1,13 +1,13 @@
 # 实现状态
 
-状态：Current implementation authority。文档校准：2026-10-10；本轮固定 develop 为 `67a7c5f6a0c3495f1ad583864d87b25f5bf892e2`，仅核验规划、预算相关契约及 PR142 合并状态。其他实现覆盖继承原已审范围（基线 `d3c4d23206339ebc7f18b5621f3aa5453f96335e`），不声称重新完整审查或重测当前来源的所有实现。
+状态：Current implementation authority。文档校准：2026-10-11；本轮固定 develop 为 `2009bd6a2368785062fe7cd5f014a5e43cc8e20b`，核验 PR144 合并、PR145 基线同步与治理，以及下述工作 Guide 候选的有限工程消费。其他实现覆盖继承原已审范围（基线 `d3c4d23206339ebc7f18b5621f3aa5453f96335e`），不声称重新完整审查或重测所有实现。
 
 本页维护工程成熟度、实现覆盖、候选和缺口。exact Task 的定义、状态、risk、依赖与验收以 [TASKS](TASKS.md) 为准，方向与 Gate 见 [ROADMAP](ROADMAP.md)；公开入口的使用契约与证据等级见 [SUPPORTED_FEATURES](SUPPORTED_FEATURES.md)。历史收口记录绑定当时身份，不作为新的运行、权限或接受事件。
 
 
-2026-10-10 文档规划：关联意图、范围化记忆/角色工作集、单层活跃方向、事件/只读前端和程序记账方向已获人类授权纳入本轮 task-definition PR；本分支尚未合并，不新增实现覆盖。M1-016/017、M2-015、M3-014/015、M6-013 的具体状态以 TASKS 为准。
+2026-10-10 文档规划：关联意图、范围化记忆/角色工作集、单层活跃方向、事件/只读前端和程序记账方向已由 PR144 接受；定义合并不新增实现覆盖。M1-016/017、M2-015、M3-014/015、M6-013 的具体状态以 TASKS 为准。
 
-现行 develop 的 Task/Policy/View/Host/Session 仍有必需预算与硬限制；PR140 固定候选还把预算相关职责/完整 Task 送入模型。新方向要求无通用经济配额、模型默认无预算上下文、记账与完成分别判定，迁移尚未实现；见[ADR-0027](decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)与[版本边界](compatibility/BUDGET_CONTRACT_MIGRATION.md)。现有 stage sidecar 是事后产物，不是实时运行视图；完整记忆维护、方向合流和只读前端不因定义而宣称已支持。
+现行 develop 的 Task/Policy/View/Host/Session 仍有必需预算与硬限制；PR140 固定候选还把预算相关职责/完整 Task 送入模型。新方向要求无通用经济配额、模型默认无预算上下文、记账与完成分别判定，完整迁移尚未完成；见[ADR-0027](decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)与[版本边界](compatibility/BUDGET_CONTRACT_MIGRATION.md)。现有 stage sidecar 是事后产物，不是实时运行视图；完整记忆维护、方向合流和只读前端不因定义而宣称已支持。
 
 ## 成熟度与来源身份
 
@@ -21,6 +21,7 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | 已合并的通用桥接定义 | 需求/材料接入、动态主子运行与冻结执行分别定义验收 | [定义与验证边界](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)；M1-010/M2-009/M11-008 的状态由 TASKS 维护，定义接受不代表实现完成 |
 | PR140 基础上的后继候选 | 对已提出的整组委派预留 child 首会话与 parent 消费容量，嵌套保留祖先/同级 pending 预算；actual/known/unknown 与未开始事实分开 | 新分支 `codex/research-entry-continuation` 基于 PR140 `766bf45`，未合并；范围与来源见[委派预算验收](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/delegation-wave-008/VERIFICATION.md)。原三项 Task 保持 IN_PROGRESS，不继承旧 API 来源资格 |
 | 获准材料与工作输入后继候选 | `codex/material-input-closure` 接 intake / 工厂 / Driver 的 raw、admission sidecar 与选中派生闭包；来源区别名与最终派发漂移验证，并接入并行纯工作输入投影候选 | [模块输入输出及验证边界](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/material-input-011/README.md)；未合并。M1-010/M2-009/M11-008/M6-013 均未 DONE；M6-013 角色请求/新 Runtime 消费者仍未切换，真实 API 与科研资格不沿用离线证据 |
+| 工作材料/结果与独立 Guide 候选 | `codex/working-input-material-slots` 从 PR145 `7341f968` 继续；0.3.0 typed 材料/结果由 opt-in Guide 实际请求、Provider 和独立安装包消费 | [模块与验证](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/working-guide-012/README.md)；未合并。完整 Task/旧控制留在调用者，默认角色请求、新 Runtime 与正式 Handoff 接受不由此切片迁移；原四项 Task 保持 IN_PROGRESS |
 | 已合并的真实环境接合定义 PR141 | 27 项桥接与真实化 Task 已进入 develop；实现、质量与整链验收分别按各项定义推进 | [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 于北京时间 2026-10-08 03:03 合并为 `e49386140c18cdfb9e6065b7c59e2545f863e386`；[下一阶段唯一计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)与 [TASKS](TASKS.md)维护实施顺序和状态，不把文档合并计为实现通过 |
 | M0-008 已合并 PR142 | 治理/模板及远端 review 层同步按原验收范围完成，hard 层保持；见 [验证](workstreams/M0-GOVERNANCE-ALIGNMENT/VERIFICATION.md)与 [线上记录](workstreams/M0-GOVERNANCE-ALIGNMENT/REMOTE_SYNC_RECORD.md) | [PR142](https://github.com/Chengyue-Lu/research-agent-workbench/pull/142) 于 2026-10-10T12:41:13Z 合入 develop `67a7c5f6a0c3495f1ad583864d87b25f5bf892e2`；M0-008 DONE 保持，本轮不重复同步或扩大其验收 |
 | 已合并的任务/用量规划 PR144 | 六项新增与既有未完成定义调整已接受；程序记账与模型工作输入分离按 ADR-0027 显式迁移 | [PR144](https://github.com/Chengyue-Lu/research-agent-workbench/pull/144) 于北京时间 2026-10-11 01:21 squash 合入 develop `2009bd6a2368785062fe7cd5f014a5e43cc8e20b`；定义接受不证明新 Runtime 已实现，状态见 [TASKS](TASKS.md) |

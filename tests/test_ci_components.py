@@ -71,10 +71,12 @@ class ComponentPlanTests(unittest.TestCase):
             'test_entry_intake_call', 'test_entry_intake_constraints',
             'test_entry_material_bridge', 'test_entry_materials',
             'test_entry_roles', 'test_entry_stage', 'test_entry_state',
-            'test_entry_wave', 'test_entry_wave_bridge', 'test_entry_working_inputs', 'test_entry_workflow',
+            'test_entry_wave', 'test_entry_wave_bridge', 'test_entry_working_guide',
+            'test_entry_working_inputs', 'test_entry_working_material_inputs', 'test_entry_workflow',
         }
         for module in ('intake', 'caller', 'executor', 'driver', 'workflow', '__init__',
-                       'materials', 'roles', 'factory', 'intake_call'):
+                       'materials', 'roles', 'factory', 'intake_call',
+                       'working_guide', 'working_material_inputs'):
             path = 'src/research_workbench/entry/' + module + '.py'
             with self.subTest(path=path):
                 self.assertIn(path, self.inventory)
@@ -197,6 +199,7 @@ class ComponentPlanTests(unittest.TestCase):
 
     def test_existing_test_module_maps_select_self_and_declared_consumers(self):
         consumers = {
+            'test_entry_roles': {'test_entry_working_guide'},
             'test_profile_conformance_binding': {
                 'test_profile_conformance_usage_consistency',
                 'test_profile_conformance_extended_binding',
