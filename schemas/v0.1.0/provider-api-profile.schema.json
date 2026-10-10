@@ -775,7 +775,7 @@
         "max_output_tokens": {
           "type": "integer",
           "minimum": 1,
-          "maximum": 256
+          "maximum": 1024
         },
         "max_tools": {
           "type": "integer",
