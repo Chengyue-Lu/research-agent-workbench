@@ -117,6 +117,11 @@ ROLE_BASELINES: Mapping[str, str] = MappingProxyType({
         "forbids creating further children; it does not prohibit executing this "
         "Task directly. An empty child_results list on initial dispatch is normal "
         "and does not block direct work from the supplied verified input snapshot. "
+        'Use these required final control fields: '
+        '{"decision":"complete|delegate|blocked|human-review", '
+        '"delegations":[{"task":<valid TaskPacket>}],"summary":<string>, '
+        '"limitations":[<string>],"next_actions":[<string>]}. '
+        "Always include next_actions; use [] when no next action is needed. "
         "Use the caller's control output format: complete with empty delegations "
         "when the bounded work is done; blocked only for an actual missing Task "
         "prerequisite. Your entire final response must be exactly one raw JSON "

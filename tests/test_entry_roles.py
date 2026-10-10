@@ -150,6 +150,8 @@ class EntryRoleTests(unittest.TestCase):
         self.assertEqual((self.root / "source.txt").read_bytes().decode("utf-8"),
                          payload["inputs"][0]["text"])
         self.assertIn("does not prohibit executing this Task directly", request.messages[0].content[0].text)
+        for field in ("decision", "delegations", "summary", "limitations", "next_actions"):
+            self.assertIn('"' + field + '"', request.messages[0].content[0].text)
         self.assertEqual("child", request.metadata["entry_role"])
 
     def test_existing_dataclass_inputs_are_consumed(self):
