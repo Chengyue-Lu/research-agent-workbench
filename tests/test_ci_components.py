@@ -124,11 +124,15 @@ class ComponentPlanTests(unittest.TestCase):
         consumers = {
             'test_api_session_runner': {'test_entry_deadline'},
             'test_conformance_session_policy': {'test_entry_deadline'},
-            'test_entry_bridge_flow': {'test_entry_deadline'},
-            'test_entry_caller': {'test_entry_deadline', 'test_entry_intake_constraints'},
-            'test_entry_driver': {'test_entry_intake_constraints'},
-            'test_entry_intake': {'test_entry_intake_constraints'},
-            'test_entry_intake_call': {'test_entry_deadline'},
+            'test_entry_bridge_flow': {'test_entry_deadline', 'test_entry_intake_call'},
+            'test_entry_caller': {'test_entry_deadline', 'test_entry_handoff',
+                                  'test_entry_intake_constraints'},
+            'test_entry_driver': {'test_entry_bridge_flow', 'test_entry_caller',
+                                  'test_entry_control_chain', 'test_entry_executor',
+                                  'test_entry_factory', 'test_entry_intake_call',
+                                  'test_entry_intake_constraints'},
+            'test_entry_intake': {'test_entry_cli', 'test_entry_intake_constraints'},
+            'test_entry_intake_call': {'test_entry_caller', 'test_entry_deadline'},
         }
         for module, expected in consumers.items():
             path = 'tests/' + module + '.py'
@@ -184,13 +188,41 @@ class ComponentPlanTests(unittest.TestCase):
         path = 'tests/test_entry_caller.py'
         missing = 'tests/test_entry_intake_constraints.py'
         report = self.plan([path], inventory=self.inventory - {missing})
-        self.assertEqual({'test_entry_caller', 'test_entry_deadline'},
+        self.assertEqual({'test_entry_caller', 'test_entry_deadline', 'test_entry_handoff'},
                          set(report['selected_tests']))
         self.assertEqual([], report['components'])
         self.assertEqual([missing], report['unknown_paths'])
         self.assertTrue(any(row['kind'] == 'mapped-test-absent' and row['path'] == missing
                             for row in report['reasons']))
         self.assertFalse(report['smoke'])
+
+    def test_missing_existing_entry_helper_consumer_stays_visible(self):
+        path = 'tests/test_entry_driver.py'
+        missing = 'tests/test_entry_control_chain.py'
+        report = self.plan([path], inventory=self.inventory - {missing})
+        self.assertEqual({'test_entry_driver', 'test_entry_bridge_flow', 'test_entry_caller',
+                          'test_entry_executor', 'test_entry_factory', 'test_entry_intake_call',
+                          'test_entry_intake_constraints'}, set(report['selected_tests']))
+        self.assertEqual([], report['components'])
+        self.assertEqual([missing], report['unknown_paths'])
+        self.assertTrue(any(row['kind'] == 'mapped-test-absent' and row['path'] == missing
+                            for row in report['reasons']))
+        self.assertFalse(report['smoke'])
+
+    def test_deleted_entry_helper_keeps_owner_and_existing_direct_consumers(self):
+        path = 'tests/test_entry_driver.py'
+        report = self.plan([{'status': 'D', 'path': path}], inventory=self.inventory - {path})
+        self.assertEqual(['entry'], report['components'])
+        self.assertEqual(set(self.policy['components']['entry']['tests']) - {'test_entry_driver'},
+                         set(report['selected_tests']))
+        self.assertNotIn('test_entry_driver', report['selected_tests'])
+        self.assertTrue({'test_entry_bridge_flow', 'test_entry_caller', 'test_entry_control_chain',
+                         'test_entry_executor', 'test_entry_factory', 'test_entry_intake_call',
+                         'test_entry_deadline', 'test_entry_intake_constraints'}.issubset(report['selected_tests']))
+        self.assertEqual([path], report['unknown_paths'])
+        self.assertTrue(any(row['kind'] == 'removed-test-owner' for row in report['reasons']))
+        self.assertTrue(any(row['kind'] == 'direct-map' for row in report['reasons']))
+        self.assertTrue(report['smoke'])
 
     def test_new_and_deleted_source_stay_with_their_components(self):
         added = 'src/research_workbench/evaluation/new_worker.py'
