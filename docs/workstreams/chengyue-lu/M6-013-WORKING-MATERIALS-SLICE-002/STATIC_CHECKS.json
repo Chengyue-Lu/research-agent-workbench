@@ -1,0 +1,39 @@
+{
+  "source_base": "7341f968a561e9be4c28bf2899a8d81ccb24c346",
+  "checked_at": "2026-10-11T01:35:59.014701+08:00",
+  "scope": "static only",
+  "tests_executed": false,
+  "project_imported": false,
+  "new_files": {
+    "src/research_workbench/entry/working_material_inputs.py": {
+      "sha256": "f2f2d5304aa0ddeef59d022a78ff36cae365c90db9a4df1e1fde3246a23cffbe",
+      "ast_compile": "pass",
+      "test_methods": 0
+    },
+    "tests/test_entry_working_material_inputs.py": {
+      "sha256": "cff4e31c4d22af3991ac5d6fd3845cc61ffc60dd5751072c735fd76edc8c1e25",
+      "ast_compile": "pass",
+      "test_methods": 14
+    },
+    "schemas/v0.3.0/model-working-input.schema.json": {
+      "sha256": "abd3f3cd8346933cc4c225a2927c0fb0805b913e7029f7b1a382a9e43705f100",
+      "json_syntax": "pass"
+    }
+  },
+  "frozen_files": {
+    "src/research_workbench/entry/working_inputs.py": {
+      "same_bytes_as_base": true,
+      "sha256": "cfc4ede84553fbfd19bfee3e8424f2456b28fa5c79fd7504bc148db0d3e7ca21"
+    },
+    "tests/test_entry_working_inputs.py": {
+      "same_bytes_as_base": true,
+      "sha256": "f26498dee241ae747856312f99b5a133734e6ee2bacb79f67b85edf88f72f28f"
+    },
+    "schemas/v0.2.0/model-working-input.schema.json": {
+      "same_bytes_as_base": true,
+      "sha256": "5f08be38bda25d8f67155208201032ae8d06af0b7a694cc9b6a73064d9f5bd5a"
+    }
+  },
+  "markdown_file_targets": 21,
+  "schema_internal_refs": 64
+}

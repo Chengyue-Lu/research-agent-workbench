@@ -216,7 +216,7 @@ def _profile_mapping(value: object) -> dict[str, object]:
     _choice(implementation["binding_policy_version"], {"provider-binding-v2"}, "binding policy")
     _capabilities(implementation["capabilities"], "implementation capabilities")
     limits = _object(implementation["limits"], {"max_output_tokens", "max_tools"}, "implementation limits")
-    _positive_number(limits["max_output_tokens"], "output token limit", integer=True, maximum=256)
+    _positive_number(limits["max_output_tokens"], "output token limit", integer=True, maximum=1024)
     _positive_number(limits["max_tools"], "tool limit", integer=True, maximum=8)
     _strings(implementation["known_gaps"], "known gaps", nonempty=False)
     evidence = _object(doc["data_policy_evidence"], {"regions_ref", "controls_ref"}, "data evidence")

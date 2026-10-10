@@ -113,6 +113,10 @@ M5 四臂/盲评/Pilot 与 net benefit，Mode/Skill 准入，后续复杂研究�
 
 每项精确 hard dependencies 只在 TASKS；新依赖必须指出缺哪个产物及何以不可安全正确消费，同主题或上一批次不是理由。
 
+当前工作输入接合采用独立小切片：[材料与结果 → 只读 Guide](../RWB-RESEARCH-ENTRY/working-guide-012/README.md)先证明新工作槽有实际请求消费者。后续在独立范围准备 main/child 的必要结果与决定投影、intake 的控制输出编译分离，以及新 Task/Policy/View/Host/Session 的完整版本迁移；共享请求或 Schema 接点串行接入和验证。正式 Handoff 的既有检查必须保留，结果标签不能代替它。
+
+研究对象接合另设显式场景入口：获准原件与 sidecar → 候选 Evidence/Claim → 精确 map → 来源定位消费者。它先补 Task 读取闭包和实际定位检查，再按真实研究 lineage 接 Method Trace；普通 Guide 或编辑无需生成该链。无预算 Runtime 与研究对象编译可以并行准备各自接口，不互作启动前置，最终产品 Gate 仍按 TASKS 验收。
+
 ## 共用验收素材
 
 - **复合请求**：查询、局部编辑、A/B 研究比较附共同限制。保留对应/依赖，查询可先交付，研究失败不抹去正确结果；冲突和依赖失败分别处理。

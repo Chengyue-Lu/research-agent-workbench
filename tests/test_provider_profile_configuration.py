@@ -352,9 +352,45 @@ class ProviderProfileConfigurationTests(unittest.TestCase):
                 adapter["transport"][key] = value
                 with self.assertRaises(ProfileConfigurationError):
                     ProviderAdapterConfigV2.from_mapping(adapter)
-        for key, value in (("max_tools",9),("max_output_tokens",257),("max_tools",True)):
+        for key, value in (("max_tools",9),("max_output_tokens",1025),("max_tools",True)):
             with self.subTest(key=key), self.assertRaises(ProfileConfigurationError):
                 ProviderApiProfile.from_mapping(apply_patches(profile_document(), [{"path":["implementation","limits",key],"value":value}]))
+
+    def test_output_token_profile_schema_and_parser_boundaries(self):
+        for value in (1, 256, 257, 1024):
+            with self.subTest(value=value):
+                doc = profile_document()
+                doc["implementation"]["limits"]["max_output_tokens"] = value
+                self.profile_schema.validate(doc)
+                profile = ProviderApiProfile.from_mapping(doc)
+                self.assertEqual(profile.document["implementation"]["limits"]["max_output_tokens"], value)
+        for value in (True, False, 0, -1, 1.5, 1024.0, float("nan"), float("inf"), float("-inf"), 1025):
+            with self.subTest(value=value):
+                doc = profile_document()
+                doc["implementation"]["limits"]["max_output_tokens"] = value
+                with self.assertRaises(ProfileConfigurationError):
+                    ProviderApiProfile.from_mapping(doc)
+        for value in (True, False, 0, -1, 1.5, 1025):
+            with self.subTest(schema_value=value):
+                doc = profile_document()
+                doc["implementation"]["limits"]["max_output_tokens"] = value
+                self.assertFalse(self.profile_schema.is_valid(doc))
+
+    def test_profile_wire_admission_256_rejects_request_257(self):
+        from research_workbench.adapters.models.wire_codecs import encode_profile_request
+        from research_workbench.adapters.models.port import ProviderError, ProviderErrorCategory
+
+        doc = profile_document()
+        doc["implementation"]["limits"]["max_output_tokens"] = 256
+        profile = ProviderApiProfile.from_mapping(doc)
+        request = ModelRequest(model=doc["model"]["requested_id"],
+            messages=(Message("user", (ContentBlock("text", text="synthetic output boundary"),)),),
+            max_output_tokens=257)
+        with self.assertRaises(ProviderError) as captured:
+            encode_profile_request(request, profile.document)
+        self.assertEqual(captured.exception.category, ProviderErrorCategory.INVALID_REQUEST)
+        self.resolve_mock.assert_not_called()
+        self.available_mock.assert_not_called()
 
     def test_duplicate_json_and_yaml_keys_reject_without_echoing_input(self):
         for suffix, content in (("json", '{"SYNTHETIC_ONLY":"first","SYNTHETIC_ONLY":"second"}'), ("yaml", 'SYNTHETIC_ONLY: first\nSYNTHETIC_ONLY: second\n')):

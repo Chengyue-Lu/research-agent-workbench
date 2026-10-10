@@ -1,6 +1,42 @@
 {
   "version": 1,
   "components": {
+    "entry": {
+      "prefixes": [
+        "src/research_workbench/entry/"
+      ],
+      "paths": [],
+      "tests": [
+        "test_entry_binding",
+        "test_entry_bridge_flow",
+        "test_entry_caller",
+        "test_entry_cli",
+        "test_entry_control_chain",
+        "test_entry_deadline",
+        "test_entry_driver",
+        "test_entry_executor",
+        "test_entry_factory",
+        "test_entry_guide",
+        "test_entry_handoff",
+        "test_entry_intake",
+        "test_entry_intake_call",
+        "test_entry_intake_constraints",
+        "test_entry_material_bridge",
+        "test_entry_materials",
+        "test_entry_roles",
+        "test_entry_stage",
+        "test_entry_state",
+        "test_entry_wave",
+        "test_entry_wave_bridge",
+        "test_entry_working_guide",
+        "test_entry_working_inputs",
+        "test_entry_working_material_inputs",
+        "test_entry_workflow"
+      ],
+      "flags": [
+        "smoke"
+      ]
+    },
     "capability": {
       "prefixes": [
         "src/research_workbench/capability/",
@@ -352,6 +388,64 @@
     }
   },
   "direct_tests": {
+    "tests/test_entry_roles.py": [
+      "test_entry_working_guide"
+    ],
+    "tests/entry_chain_support.py": [
+      "test_entry_bridge_flow",
+      "test_entry_caller",
+      "test_entry_deadline",
+      "test_entry_factory",
+      "test_entry_intake_call",
+      "test_entry_intake_constraints",
+      "test_entry_material_bridge",
+      "test_entry_wave_bridge"
+    ],
+    "tests/entry_factory_support.py": [
+      "test_entry_caller",
+      "test_entry_deadline",
+      "test_entry_factory",
+      "test_entry_intake_constraints",
+      "test_entry_material_bridge",
+      "test_entry_wave_bridge"
+    ],
+    "tests/test_api_session_runner.py": [
+      "test_entry_deadline"
+    ],
+    "tests/test_conformance_session_policy.py": [
+      "test_entry_deadline"
+    ],
+    "tests/test_entry_bridge_flow.py": [
+      "test_entry_deadline",
+      "test_entry_intake_call"
+    ],
+    "tests/test_entry_caller.py": [
+      "test_entry_deadline",
+      "test_entry_handoff",
+      "test_entry_intake_constraints",
+      "test_entry_material_bridge",
+      "test_entry_wave_bridge"
+    ],
+    "tests/test_entry_driver.py": [
+      "test_entry_bridge_flow",
+      "test_entry_caller",
+      "test_entry_control_chain",
+      "test_entry_executor",
+      "test_entry_factory",
+      "test_entry_intake_call",
+      "test_entry_intake_constraints",
+      "test_entry_wave_bridge"
+    ],
+    "tests/test_entry_intake.py": [
+      "test_entry_cli",
+      "test_entry_intake_constraints"
+    ],
+    "tests/test_entry_intake_call.py": [
+      "test_entry_caller",
+      "test_entry_deadline",
+      "test_entry_material_bridge",
+      "test_entry_wave_bridge"
+    ],
     "tests/coverage_policy.yaml": [
       "test_coverage_policy"
     ],

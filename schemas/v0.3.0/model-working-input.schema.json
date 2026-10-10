@@ -1,0 +1,717 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.3.0/model-working-input.schema.json",
+  "title": "Candidate Model Working Input with Typed Materials and Results",
+  "$comment": "M6-013 slice 001 candidate. This data projection does not migrate Task/Policy/View/Host/Session or grant admission. Catalog/installed-resource wiring remains pending.",
+  "x-rwb-document-kind": "model_working_input",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "role",
+    "responsibilities",
+    "source_task",
+    "objective",
+    "materials",
+    "necessary_decisions",
+    "counterevidence",
+    "authority",
+    "delivery",
+    "stop_conditions",
+    "boundaries",
+    "results"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.3.0"
+    },
+    "role": {
+      "$ref": "#/$defs/text"
+    },
+    "responsibilities": {
+      "allOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        {
+          "minItems": 1
+        }
+      ]
+    },
+    "source_task": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "task_id",
+        "revision"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "task_id": {
+          "$ref": "#/$defs/text"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "objective": {
+      "type": "object",
+      "required": [
+        "goal",
+        "atomic_boundary",
+        "question_refs",
+        "active_modes"
+      ],
+      "properties": {
+        "goal": {
+          "$ref": "#/$defs/text"
+        },
+        "atomic_boundary": {
+          "$ref": "#/$defs/text"
+        },
+        "question_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "active_modes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "text",
+          "material_provenance"
+        ],
+        "properties": {
+          "path": {
+            "$ref": "#/$defs/path"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "text": {
+            "type": "string"
+          },
+          "material_provenance": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/ordinaryProvenance"
+              },
+              {
+                "$ref": "#/$defs/rawProvenance"
+              },
+              {
+                "$ref": "#/$defs/admissionProvenance"
+              },
+              {
+                "$ref": "#/$defs/derivativeProvenance"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "necessary_decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "counterevidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "permissions",
+        "delegation",
+        "agent_profile",
+        "required_capabilities",
+        "required_skills",
+        "forbidden_skills"
+      ],
+      "properties": {
+        "permissions": {
+          "type": "object",
+          "required": [
+            "filesystem",
+            "network",
+            "external_write",
+            "allowed_roots"
+          ],
+          "properties": {
+            "filesystem": {
+              "$ref": "#/$defs/text"
+            },
+            "network": {
+              "$ref": "#/$defs/text"
+            },
+            "external_write": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "enum": [
+                    "allowed",
+                    "forbidden"
+                  ]
+                }
+              ]
+            },
+            "allowed_roots": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/path"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "delegation": {
+          "type": "object",
+          "required": [
+            "allowed"
+          ],
+          "properties": {
+            "allowed": {
+              "type": "boolean"
+            },
+            "max_depth": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_parallel": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "agent_profile": {
+          "$ref": "#/$defs/text"
+        },
+        "required_capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "required_skills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "forbidden_skills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "delivery": {
+      "type": "object",
+      "required": [
+        "write_scope",
+        "required_outputs",
+        "completion_checks"
+      ],
+      "properties": {
+        "write_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/path"
+          }
+        },
+        "required_outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/text"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "contract"
+                ],
+                "properties": {
+                  "contract": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "min_count": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "completion_checks": {
+          "allOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              }
+            },
+            {
+              "minItems": 1
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "stop_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "condition"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "completed",
+              "cancelled",
+              "execution-failed",
+              "permission-denied",
+              "data-boundary",
+              "input-missing-or-stale",
+              "supply-unavailable",
+              "human-gate",
+              "technical-capacity",
+              "transport-timeout"
+            ]
+          },
+          "condition": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "permission_grant",
+        "input_admission",
+        "supply_selection",
+        "runtime_authority",
+        "task_completion"
+      ],
+      "properties": {
+        "permission_grant": {
+          "const": false
+        },
+        "input_admission": {
+          "const": false
+        },
+        "supply_selection": {
+          "const": false
+        },
+        "runtime_authority": {
+          "const": false
+        },
+        "task_completion": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/resultSlot"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$))(?!.*\\u0000)[^:]+$"
+    },
+    "fileRef": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "statement",
+        "source_ref"
+      ],
+      "properties": {
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/fileRef"
+        }
+      },
+      "additionalProperties": false
+    },
+    "acquisition": {
+      "type": "object",
+      "required": [
+        "origin",
+        "acquired_at",
+        "operator"
+      ],
+      "properties": {
+        "origin": {
+          "type": "object",
+          "properties": {
+            "uri": {
+              "$ref": "#/$defs/text"
+            },
+            "doi": {
+              "$ref": "#/$defs/text"
+            },
+            "device": {
+              "$ref": "#/$defs/text"
+            }
+          },
+          "additionalProperties": false,
+          "minProperties": 1
+        },
+        "acquired_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "operator": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "parser": {
+      "type": "object",
+      "required": [
+        "name",
+        "version"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "version": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ordinaryProvenance": {
+      "type": "object",
+      "required": [
+        "kind",
+        "source_relation",
+        "scientific_qualification",
+        "gap"
+      ],
+      "properties": {
+        "kind": {
+          "const": "ordinary-input"
+        },
+        "source_relation": {
+          "const": "not-declared"
+        },
+        "scientific_qualification": {
+          "const": "not-established"
+        },
+        "gap": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rawProvenance": {
+      "type": "object",
+      "required": [
+        "kind",
+        "schema_version",
+        "admission_id",
+        "admission_ref",
+        "raw_ref",
+        "acquisition",
+        "parser",
+        "license_or_data_use",
+        "sensitivity",
+        "egress_restriction",
+        "verification_scope",
+        "scientific_qualification",
+        "permission_grant"
+      ],
+      "properties": {
+        "kind": {
+          "const": "raw-source"
+        },
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "admission_id": {
+          "$ref": "#/$defs/text"
+        },
+        "admission_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "raw_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "acquisition": {
+          "$ref": "#/$defs/acquisition"
+        },
+        "parser": {
+          "$ref": "#/$defs/parser"
+        },
+        "license_or_data_use": {
+          "$ref": "#/$defs/text"
+        },
+        "sensitivity": {
+          "$ref": "#/$defs/text"
+        },
+        "egress_restriction": {
+          "$ref": "#/$defs/text"
+        },
+        "verification_scope": {
+          "const": "selected-input-bytes-and-declared-source-relation"
+        },
+        "scientific_qualification": {
+          "const": "not-established"
+        },
+        "permission_grant": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "admissionProvenance": {
+      "type": "object",
+      "required": [
+        "kind",
+        "schema_version",
+        "admission_id",
+        "admission_ref",
+        "raw_ref",
+        "acquisition",
+        "parser",
+        "license_or_data_use",
+        "sensitivity",
+        "egress_restriction",
+        "verification_scope",
+        "scientific_qualification",
+        "permission_grant"
+      ],
+      "properties": {
+        "kind": {
+          "const": "source-admission"
+        },
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "admission_id": {
+          "$ref": "#/$defs/text"
+        },
+        "admission_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "raw_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "acquisition": {
+          "$ref": "#/$defs/acquisition"
+        },
+        "parser": {
+          "$ref": "#/$defs/parser"
+        },
+        "license_or_data_use": {
+          "$ref": "#/$defs/text"
+        },
+        "sensitivity": {
+          "$ref": "#/$defs/text"
+        },
+        "egress_restriction": {
+          "$ref": "#/$defs/text"
+        },
+        "verification_scope": {
+          "const": "selected-input-bytes-and-declared-source-relation"
+        },
+        "scientific_qualification": {
+          "const": "not-established"
+        },
+        "permission_grant": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "derivativeProvenance": {
+      "type": "object",
+      "required": [
+        "kind",
+        "schema_version",
+        "admission_id",
+        "admission_ref",
+        "raw_ref",
+        "acquisition",
+        "parser",
+        "license_or_data_use",
+        "sensitivity",
+        "egress_restriction",
+        "verification_scope",
+        "scientific_qualification",
+        "permission_grant",
+        "derivative_ref",
+        "relation"
+      ],
+      "properties": {
+        "kind": {
+          "const": "source-derivative"
+        },
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "admission_id": {
+          "$ref": "#/$defs/text"
+        },
+        "admission_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "raw_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "acquisition": {
+          "$ref": "#/$defs/acquisition"
+        },
+        "parser": {
+          "$ref": "#/$defs/parser"
+        },
+        "license_or_data_use": {
+          "$ref": "#/$defs/text"
+        },
+        "sensitivity": {
+          "$ref": "#/$defs/text"
+        },
+        "egress_restriction": {
+          "$ref": "#/$defs/text"
+        },
+        "verification_scope": {
+          "const": "selected-input-bytes-and-declared-source-relation"
+        },
+        "scientific_qualification": {
+          "const": "not-established"
+        },
+        "permission_grant": {
+          "const": false
+        },
+        "derivative_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "relation": {
+          "$ref": "#/$defs/text"
+        }
+      },
+      "additionalProperties": false
+    },
+    "resultSlot": {
+      "type": "object",
+      "required": [
+        "kind",
+        "source_ref",
+        "text",
+        "verification_scope",
+        "scientific_qualification",
+        "contract_validation",
+        "task_completion"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "formal-handoff",
+            "result-artifact"
+          ]
+        },
+        "source_ref": {
+          "$ref": "#/$defs/fileRef"
+        },
+        "text": {
+          "type": "string"
+        },
+        "verification_scope": {
+          "const": "captured-utf8-bytes-and-task-pin"
+        },
+        "scientific_qualification": {
+          "const": "not-established"
+        },
+        "contract_validation": {
+          "const": "not-established"
+        },
+        "task_completion": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

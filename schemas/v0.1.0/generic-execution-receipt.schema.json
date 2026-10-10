@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://research-agent-workbench.local/schemas/v0.1.0/generic-execution-receipt.schema.json",
   "title": "Generic Execution Receipt",
-  "$comment": "A file-replayable Action/Capability-slice closeout for no-Skill/direct Tool M11 Core. It never claims whole-Task completion and has no Claim or Human Decision effect.",
+  "$comment": "A file-replayable exact Action or Method-local planning Capability slice closeout. It never claims whole-Task completion and has no Claim or Human Decision effect.",
   "x-rwb-document-kind": "generic_execution_receipt",
   "type": "object",
   "required": [
@@ -16,7 +16,7 @@
     "attempt_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
     "execution_kind": { "enum": ["no-skill", "direct-tool", "adapter-provider"] },
     "status": { "enum": ["completed", "failed", "blocked"] },
-    "completion_claim": { "enum": ["action-capability-slice-only", "none"] },
+    "completion_claim": { "enum": ["action-capability-slice-only", "planning-capability-slice-only", "none"] },
     "task_ref": { "$ref": "#/$defs/revisionedFileRef" },
     "execution_scope": { "$ref": "runtime-bundle-manifest.schema.json#/properties/execution_scope" },
     "view_ref": { "$ref": "#/$defs/revisionedFileRef" },
@@ -64,9 +64,11 @@
       },
       "then": {
         "properties": {
-          "completion_claim": { "const": "action-capability-slice-only" },
           "artifact_refs": { "minItems": 1 }
-        }
+        },
+        "if": { "properties": { "execution_scope": { "properties": { "kind": { "const": "planning-capability-slice" } } } } },
+        "then": { "properties": { "completion_claim": { "const": "planning-capability-slice-only" } } },
+        "else": { "properties": { "completion_claim": { "const": "action-capability-slice-only" } } }
       },
       "else": {
         "properties": { "completion_claim": { "const": "none" } }

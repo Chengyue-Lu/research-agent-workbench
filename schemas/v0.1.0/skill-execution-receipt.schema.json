@@ -53,6 +53,7 @@
     "completion_claim": {
       "enum": [
         "action-capability-slice-only",
+        "planning-capability-slice-only",
         "none"
       ]
     },
@@ -211,13 +212,13 @@
       },
       "then": {
         "properties": {
-          "completion_claim": {
-            "const": "action-capability-slice-only"
-          },
           "artifact_refs": {
             "minItems": 1
           }
-        }
+        },
+        "if": { "properties": { "execution_scope": { "properties": { "kind": { "const": "planning-capability-slice" } } } } },
+        "then": { "properties": { "completion_claim": { "const": "planning-capability-slice-only" } } },
+        "else": { "properties": { "completion_claim": { "const": "action-capability-slice-only" } } }
       },
       "else": {
         "properties": {

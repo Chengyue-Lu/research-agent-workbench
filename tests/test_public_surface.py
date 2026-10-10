@@ -64,7 +64,18 @@ class PublicSurfaceTests(unittest.TestCase):
         self.assertEqual([], json.loads(self.files["registry/skills/release-projections.json"])["entries"])
         self.assertIn("生产 Projection index 为空", matrix)
         self.assertIn("真实对照实验尚未完成", matrix)
-        self.assertIn("不承诺任何 live Provider binding", matrix)
+        provider_rows = [line.strip().strip("|").split("|") for line in matrix.splitlines()
+                         if line.strip().startswith("| Provider Adapter 接缝 |")]
+        self.assertEqual(1, len(provider_rows))
+        provider = [cell.strip() for cell in provider_rows[0]]
+        self.assertEqual(4, len(provider))
+        evidence, boundary = provider[2], provider[3]
+        self.assertEqual({"structural", "bounded"},
+                         {grade.strip() for grade in evidence.split("；", 1)[0].split("/")})
+        self.assertIn("离线 probe", evidence)
+        self.assertIn("合成 conformance", evidence)
+        self.assertRegex(boundary, r"公开包不承诺\s*(?:任意|任何)\s+live Provider binding(?:[；。]|$)")
+        self.assertRegex(boundary, r"验收不自动授予[^；。]*新账号[^；。]*配置[^；。]*工具[^；。]*用途资格")
 
     def test_missing_target_and_anchor_are_rejected(self):
         for link in ("[missing](missing.md)", "[bad](docs/PUBLIC_GUIDE.md#absent)",
