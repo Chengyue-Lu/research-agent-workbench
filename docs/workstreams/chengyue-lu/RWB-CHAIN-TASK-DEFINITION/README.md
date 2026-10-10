@@ -12,7 +12,7 @@
 
 2026-10-07 路诚钺要求先校准 Task 与文档，随后直接测试每个桥接，并同步准备角色提示词与 Skill。采用有界合成材料；真实科研案例和系统净价值评价保持后续任务。Root 是唯一整链/API/Tool 测试执行者，开发与资产准备可有界协作。
 
-此 PR 仅做文档校准与 Task 定义；分支 READY 表示 hard dependencies 均 DONE，不表示定义已经合并或产物已经完成。代码候选 [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 的实际桥接证据保持独立身份；Task 完成仍须对应完整验收证据。旧 Packet 和审计记录解释当时范围，现行人员规则以 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md) 为准。
+PR141 仅做文档校准与 Task 定义，已于北京时间 2026-10-08 03:03 合并为 develop `e49386140c18cdfb9e6065b7c59e2545f863e386`。READY 表示定义已接受且 hard dependencies 均 DONE，不表示产物已经完成。代码候选 [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 的实际桥接证据保持独立身份；Task 完成仍须对应完整验收证据。旧 Packet 和审计记录解释当时范围，现行人员规则以 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md) 为准。
 
 ## 定义与执行顺序
 
