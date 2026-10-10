@@ -32,3 +32,8 @@ Root 转达：人类允许与本窗口并行推进 PR144 新规划；从本地�
 
 有一次必要契约 filename 推测为 conformance-budget-grant.schema.json，发现该路径不存在；只保留旧 live grant 原 version/pins 语义，未打开实际 grant/账本。源模块无外部 $refs，未改 Core/default catalog。提交前复核 source pins、相对 Markdown 文件目标和 diff。Git commit/ref、最后回传追加于本节后的记录；不将 push/结构检查描述为 merge/测试/资格。
 
+## 首次提交与格式修正
+
+初次产品提交 `a32869870d6b94f70252342965364f6aee5c98ea` 的 parent 为固定起点 `76fd3d892eb1f1a15799c9f24a255ef2dcf0190e`，10 个有界文件。cached diff 检查报告新 Markdown/Schema 的额外 EOF 空行，但串联命令仍创建提交；该失败原样记录，不称首次 diff check 通过。随后只规范化新文件 EOF 并更新 Schema pin，产品 Python bytes 与旧 Schema 未动，00:44:27+08:00 working diff check 通过；后续格式提交保留该历史。
+
+> 提交检查发现新文档和候选 Schema 尾部多了空行，首次提交仍被创建了。我会用后续格式提交修正、更新 Schema hash，并保留这条检查记录；产品代码与旧版本文件不受影响。

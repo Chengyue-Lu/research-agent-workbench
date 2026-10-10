@@ -38,4 +38,3 @@ main 的 actual child/Handoff、profile choices、intake draft schema 和 Guide 
 2. 冻结 Task/Protocol/Policy/View/Host/Session/version dispatch 的新闭包与显式迁移记录；保留旧 bytes/pins，旧→新不得自动产生新的 permission/grant/execution facts。
 3. 串行接模型输入和职责/输出契约，给实际 outbound request 差异与全消费者测试；M6-011 记录增强独立接合，不能把记账缺口升级成通用停止门槛。
 4. 最后 opt-in installed resources/CI 和真实适用 Gate。此切片不推断 M6-013 DONE、M11-010 通过或 Source/Human/Skill/live 资格。
-

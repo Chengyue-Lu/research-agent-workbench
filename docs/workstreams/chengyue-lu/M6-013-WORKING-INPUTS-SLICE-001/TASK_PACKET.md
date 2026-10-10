@@ -17,4 +17,3 @@
 20 分钟工作段；仅静态 AST/内存 compile、JSON syntax、hash、Markdown 目标、diff 检查。禁止运行测试、API/付费模型、生产 Tools/Attempt、Key/认证/生产账本；Root 统一测试。可提交并推独立候选 ref，不 merge、不等 review；如创建 PR 则 attach。遇共享接口必需变更，停该部分并报告精确缺口，继续独立模块。无全局记忆更新或后台调度。
 
 输出：[迁移表](MIGRATION.md)、[风险](RISK_LEDGER.md)、[通信](COMMUNICATIONS.md)、[交接](HANDOFF.md)。本片段运行开始 00:29:52+08:00，工作段上限 00:49:52+08:00；停止于首切片完成或工作段耗尽。
-
