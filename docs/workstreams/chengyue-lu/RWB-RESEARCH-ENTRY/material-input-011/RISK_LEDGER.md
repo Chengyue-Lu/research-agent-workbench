@@ -9,6 +9,6 @@
 | 候选来源与接受混淆 | Source、Skill、科研和 Human 资格保持独立；使用离线注入 Provider 验证程序消费者 | 没有新增真实 API、生产 Attempt、科研验收或 net-value 评价 |
 | M6 新旧版本及材料槽 | 纯投影独立验证，旧控制版本与角色请求保留原身份 | provenance 槽、角色请求、Task/Policy/View/Host/Session 迁移尚未接入，M6-013 不计 DONE |
 | 持久归档路径与异常详情 | 保存安装正例的 FileNotFoundError、safe-paused、unknown hold；用同包同测试的短归档根作对照 | 原 wrapper 未持久化 errno/filename/stack，无法凭恢复证明具体系统根因；归档环境适用性与异常保真仍有缺口 |
-| PR144 定义与实现的合并顺序 | 本地组合只作为开发候选，PR144 仍是 task-definition 的来源 | feature 不能直接重写或新增 Task 定义；PR144 接受并进入 develop 后须同步基线、重核治理与实际合并差异 |
+| PR144 定义与实现的合并顺序 | PR144 已按人类授权接受并 squash 入 develop，PR145 已同步；原发布的定义治理失败保留 | feature 不重写或新增已接受定义；新 base/head 的治理独立复验，候选实现与完整 Task 接受仍分开 |
 
 具体测试及历史失败见 [验证记录](VERIFICATION.md)，执行边界见 [Task Packet](TASK_PACKET.md)。

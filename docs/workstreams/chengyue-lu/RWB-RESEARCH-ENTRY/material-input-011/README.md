@@ -24,3 +24,5 @@
 M6-013 首切片来自独立并行候选，迁移范围及未接消费者见 [Migration](../../M6-013-WORKING-INPUTS-SLICE-001/MIGRATION.md)。现行材料快照新增 provenance，而纯投影尚不接此扩展字段；后续需明确版本化材料槽，随后串行迁移角色请求与 Runtime。它不构成无预算执行证据。
 
 执行范围见 [Task Packet](TASK_PACKET.md)，结果和原件定位见 [验证记录](VERIFICATION.md)。实现、定义和实际运行各自保留来源身份，候选分支不计作 develop 已合并支持。
+
+PR144 接受后的 develop [基线同步及治理记录](BASELINE_SYNC.md)单独维护；原工程源码与安装证据保持各自身份。

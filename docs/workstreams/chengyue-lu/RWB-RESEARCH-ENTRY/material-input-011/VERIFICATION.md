@@ -46,6 +46,6 @@ M6-013 新增纯工作输入投影与候选 0.2.0 Schema；角色请求、Task/P
 
 材料快照的 provenance 槽尚未接入 M6 纯投影白名单，须先明确版本化材料/结果槽，再迁移角色请求和旧 Runtime；Source/Evidence/Claim/MethodTrace、qualified Skill 装配、大材料消费、真实工程质量等仍按原 Task 推进。
 
-本分支继承尚未合并 PR144 的 Task 定义。仓库治理明确禁止 feature PR 新增或重写 Task 定义，因此合并须先消费 PR144 的已接受 develop 基线，再检查实际差异与治理；不能以本轮工程检查替代该分界。候选保持 Draft，不改治理规则或旧 DONE 行。
+原发布 head `ddada2af` 继承当时未合并 PR144 的 Task 定义，本地与 hosted 治理按规则拒绝 feature 新增/重写定义。2026-10-11 用户授权后 PR144 正常 squash 合并，PR145 已消费其 develop 基线，原工程源码字节不变；[同步及新治理复验](BASELINE_SYNC.md)保留独立记录。候选仍保持 Draft，Task 未 DONE；不改治理规则、旧 DONE 或原失败原件。
 
 本轮新增付费 API、生产 Tool、生产 Attempt、凭据和账本操作均为 0；旧 live grant、Source/Skill/Human 资格保持各自原身份。详细风险见 [Risk Ledger](RISK_LEDGER.md)，模块输入输出见 [README](README.md)。
