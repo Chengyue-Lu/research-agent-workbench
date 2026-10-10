@@ -1,0 +1,393 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://research-agent-workbench.local/schemas/v0.2.0/model-working-input.schema.json",
+  "title": "Candidate Model Working Input",
+  "$comment": "M6-013 slice 001 candidate. This data projection does not migrate Task/Policy/View/Host/Session or grant admission. Catalog/installed-resource wiring remains pending.",
+  "x-rwb-document-kind": "model_working_input",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "role",
+    "responsibilities",
+    "source_task",
+    "objective",
+    "materials",
+    "necessary_decisions",
+    "counterevidence",
+    "authority",
+    "delivery",
+    "stop_conditions",
+    "boundaries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.2.0"
+    },
+    "role": {
+      "$ref": "#/$defs/text"
+    },
+    "responsibilities": {
+      "allOf": [
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        {
+          "minItems": 1
+        }
+      ]
+    },
+    "source_task": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "task_id",
+        "revision"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "0.1.0"
+        },
+        "task_id": {
+          "$ref": "#/$defs/text"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "objective": {
+      "type": "object",
+      "required": [
+        "goal",
+        "atomic_boundary",
+        "question_refs",
+        "active_modes"
+      ],
+      "properties": {
+        "goal": {
+          "$ref": "#/$defs/text"
+        },
+        "atomic_boundary": {
+          "$ref": "#/$defs/text"
+        },
+        "question_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "active_modes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "sha256",
+          "text"
+        ],
+        "properties": {
+          "path": {
+            "$ref": "#/$defs/path"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "necessary_decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "counterevidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "authority": {
+      "type": "object",
+      "required": [
+        "permissions",
+        "delegation",
+        "agent_profile",
+        "required_capabilities",
+        "required_skills",
+        "forbidden_skills"
+      ],
+      "properties": {
+        "permissions": {
+          "type": "object",
+          "required": [
+            "filesystem",
+            "network",
+            "external_write",
+            "allowed_roots"
+          ],
+          "properties": {
+            "filesystem": {
+              "$ref": "#/$defs/text"
+            },
+            "network": {
+              "$ref": "#/$defs/text"
+            },
+            "external_write": {
+              "oneOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "enum": [
+                    "allowed",
+                    "forbidden"
+                  ]
+                }
+              ]
+            },
+            "allowed_roots": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/path"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "delegation": {
+          "type": "object",
+          "required": [
+            "allowed"
+          ],
+          "properties": {
+            "allowed": {
+              "type": "boolean"
+            },
+            "max_depth": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "max_parallel": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "agent_profile": {
+          "$ref": "#/$defs/text"
+        },
+        "required_capabilities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "required_skills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "forbidden_skills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/text"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "delivery": {
+      "type": "object",
+      "required": [
+        "write_scope",
+        "required_outputs",
+        "completion_checks"
+      ],
+      "properties": {
+        "write_scope": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/path"
+          }
+        },
+        "required_outputs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/text"
+              },
+              {
+                "type": "object",
+                "required": [
+                  "contract"
+                ],
+                "properties": {
+                  "contract": {
+                    "$ref": "#/$defs/text"
+                  },
+                  "min_count": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "completion_checks": {
+          "allOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/text"
+              }
+            },
+            {
+              "minItems": 1
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "stop_conditions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "kind",
+          "condition"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "completed",
+              "cancelled",
+              "execution-failed",
+              "permission-denied",
+              "data-boundary",
+              "input-missing-or-stale",
+              "supply-unavailable",
+            "human-gate",
+            "technical-capacity",
+            "transport-timeout"
+            ]
+          },
+          "condition": {
+            "$ref": "#/$defs/text"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "permission_grant",
+        "input_admission",
+        "supply_selection",
+        "runtime_authority",
+        "task_completion"
+      ],
+      "properties": {
+        "permission_grant": {
+          "const": false
+        },
+        "input_admission": {
+          "const": false
+        },
+        "supply_selection": {
+          "const": false
+        },
+        "runtime_authority": {
+          "const": false
+        },
+        "task_completion": {
+          "const": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:)(?![/\\\\])(?!.*(?:^|[/\\\\])\\.\\.(?:[/\\\\]|$))(?!.*\\u0000)[^:]+$"
+    },
+    "fileRef": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "record": {
+      "type": "object",
+      "required": [
+        "statement",
+        "source_ref"
+      ],
+      "properties": {
+        "statement": {
+          "$ref": "#/$defs/text"
+        },
+        "source_ref": {
+          "$ref": "#/$defs/fileRef"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
+
