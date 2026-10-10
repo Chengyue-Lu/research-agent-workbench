@@ -4,14 +4,19 @@
 
 用结构化、窄范围的 Task Packet 取代“把整个项目背景发给子 Agent”，用可验证的 Handoff Packet 取代自由聊天总结。
 
+接点：任务 producer 从 Protocol/方法义务形成 Task；执行者消费 exact Task 和冻结执行输入，产出
+约定工件、验证与 Handoff；主执行接收者记录接受、回查、返工或 Human disposition。委派、重试或
+跨会话接续才启用相应交接工件；同会话任务可用 H0。Handoff 是结果入口，不是隐式消息总线。
+
 ## 2. Task Packet
 
-建议结构：
+下例用于说明 Task 字段职责；它是示意，不是完整可执行输入。实际 Task 须通过所用 Schema 与引用
+闭包校验，执行还须提供合法冻结输入、资格证据、Profile/policies/binding 和允许集。
 
 ```yaml
 schema_version: 0.1.0
 task_id: QUICKSTART-001
-goal: Prepare a bounded handoff packet for one local task.
+goal: Check explicit local artifact references and produce a bounded check report.
 question_refs: []
 active_modes: []
 required_capabilities: []
@@ -22,7 +27,7 @@ input_refs: []
 write_scope:
   - work/QUICKSTART-001/**
 required_outputs:
-  - handoff-packet
+  - deterministic-check-report
 permissions:
   external_write: false
 delegation:
@@ -30,9 +35,9 @@ delegation:
 budget:
   max_turns: 4
   max_output_tokens: 800
-atomic_boundary: One bounded handoff packet.
+atomic_boundary: One bounded reference check and persisted report.
 completion_checks:
-  - evidence and handoff contracts pass deterministic checks
+  - declared artifact references and report pass deterministic checks
 safe_pause_conditions:
   - next atomic unit would consume the closeout reserve
   - required source, permission, or human decision is unavailable
@@ -46,8 +51,9 @@ stale_if:
 Task 必须可在有限时间内完成。`goal` 不能写成“完成整个研究”或“确保论文正确”。
 
 `required_skills` 可以为空，也可以写唯一 active Skill ID 或精确 `skill-id@semver`。为空时 no-Skill、
-direct Tool、procedure 或 Adapter/Provider supply 路径不得为了满足旧字段而伪造 Assignment；只有
-Skill-bearing execution 才由 Resolver 在 Assignment 中固定实际版本和哈希。旧版本和 legacy surface 的
+direct Tool、procedure 或 Adapter/Provider supply 路径不得为了满足旧字段而伪造 Assignment。
+当前 Skill-bearing extension 通过合法 Projection/Supply/Snapshot/View 锁定身份、版本和哈希，不要求
+Skill Assignment；Assignment 只服务历史 Skill-bound 兼容路径。旧版本和 legacy surface 的
 回放边界见[兼容性说明](../compatibility/README.md)。
 
 Task Packet 表达 research intent、Atomic Work Unit、输入/输出约束、权限和预算；它不是最终冻结的
@@ -72,6 +78,25 @@ Thin Execution Host = consume exact Bundle-bound View and report actual executio
 
 这些层次共用引用和派生关系，不建立互相竞争的 execution truth。
 
+### 独立短程 Task：设计候选
+
+入口/分支层新增任务接点，保留既有 Protocol→main→0..N child→Handoff→Main State→human 主线。
+意图、路由和影响判断由经版本绑定与评审的职责 Prompt 或合法 Skill 承载；文档限定 I/O、权限和分支。
+确定性校验核结构、权限、版本，不判定语义影响；低置信先澄清或提案，Guide/Short 不绑定固定 API 角色。
+
+[统一入口设计候选](../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)中的短程 Task 是 main 旁
+的有界局部工作，不要求每次建立或修订完整研究 Protocol，仍声明目标、scope、exact input pins、
+预算、输出、权限与停止条件。执行复用合法 no-Skill/direct Tool 的最小 Method、Requirement、
+Capability selection、Bundle/View；Task 或“短程”标签不提供 permission grant。详细规则由
+[短程入口设计](../workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)维护，实际覆盖见 STATUS。
+
+写前核当前 main/child 的目标占用及共享写冲突，先协调再执行。普通入口对 child 的新指令经所属
+main 的 Task 治理，不能任意重绑子会话。写后交付 actual diff、refs、冻结 Main State 版本和
+`none/relevant/unknown` 影响依据：无语义影响且 Main State refs 有效、无活动输入失效时仅保留局部 change record；相关/未知影响或引用损坏形成待采纳
+状态提案并暂停相关发布。局部工作完成不自动完成 main Task，也不接受研究 Claim；目标 state pins
+仍一致且人类明确采纳后才由受控 writer 写新 revision。对活动 main/child 的输入影响须通知最小
+失效/冲突事实，不能被默认不回传规则隐藏；这不授权自动恢复。
+
 ## 3. Capability closure、Runtime Bundle 与 Resolved Execution View
 
 Capability Resolver 比较零个或多个显式 Supply Report。Report 不能选择自身；Resolution 只能在既有
@@ -87,7 +112,7 @@ Snapshot 不冻结最终 Agent Profile、Provider/Adapter/Model/Runtime/Host bin
 最终 effective permissions。它不是 permission grant、Human Decision、Method decision、Claim effect 或
 fallback authority，也不能作为 actual execution fact。
 
-M11 Runtime Bundle 在 Snapshot 之后建立本次 Runtime 可以读取的 exact document closure，并把范围固定为
+Runtime Bundle 在 Snapshot 之后建立本次 Runtime 可以读取的 exact document closure，并把范围固定为
 一个 Action/Capability slice。它验证 Method 必须 `proceed`、完整 Task capability demand 与 Method Action
 requirements 一致，但 `task_completion` 固定为 `false`；一个 slice 闭合不能冒充整项 Task 完成。
 
@@ -100,51 +125,21 @@ Task completion。
 
 Thin Execution Host 只消费与同一 Bundle 绑定的 View，使用 trusted clock 和调用前 Bundle reload 重验
 freshness/TOCTOU，并通过一个 pre-bound Driver 最多执行一次。它只能报告 actual facts、bounded diagnostic
-或 re-resolution request，不能 select、rebind 或 fallback。Skill Assignment 只在 Skill-bearing extension
-或 legacy compatibility 中出现；当前 M11 Core 的 no-Skill/direct Tool 路径不创建 Assignment。M11-005/006
-optional extension 已 bounded 实现，但生产 projection index 为空，不表示真实 Skill 已获 admission 或
-new-binding。兼容期字段映射见[兼容性说明](../compatibility/README.md)。
+或 re-resolution request，不能 select、rebind 或 fallback。Skill Assignment 只在 legacy Skill-bound
+compatibility 中出现；当前 Core 与 projection-backed Skill extension 均不要求它。
+可选 Skill 路径需独立满足 admission、Projection 与运行资格。兼容字段映射见
+[兼容性说明](../compatibility/README.md)。
 
 ## 4. Handoff Packet
 
-以下是现行 legacy Handoff Schema 的 Skill-bearing 字段形状示例。`example-legacy-skill@0.0.0` 是不对应
-accepted Registry、不得用于新 Assignment 的纯占位符。该 Schema 仍要求非空 `skill_lock`；它不能被
-用来证明 generic no-Skill Handoff migration 已完成。M11 no-Skill Core 使用独立 generic execution
-closeout，并不伪造 Skill Assignment。
+Handoff 应让接收者只凭摘要和 exact refs 知道：完成了什么、实际产出了哪些工件、哪些检查通过、哪些
+失败或尚未完成、限制和冲突是什么、需要谁决定下一步。Task 声明实际支持的交接格式和验证器；
+接收者先核对输入锁、输出与负面区段，再记录 disposition。
 
-```yaml
-schema_version: 0.1.0
-task_id: EVID-001
-attempt_id: A-001
-status: completed
-input_lock:
-  - path: sources/raw/paper-001.pdf
-    sha256: "0000000000000000000000000000000000000000000000000000000000000000"
-skill_lock: [example-legacy-skill@0.0.0]
-skill_assignment_ref: assignments/SA-EVID-001.yaml
-result:
-  summary: Extracted four evidence records; one source conflicts with the proposed mechanism.
-  facts:
-    - four records passed locator checks
-  inferences:
-    - evidence is insufficient for a causal claim
-  recommendations:
-    - search for preregistered replication data
-artifact_refs:
-  - objects/evidence/EVID-001-01.yaml
-validation_refs:
-  - checks/EVID-001-handoff.json
-limitations:
-  - only English-language sources were in scope
-conflicts:
-  - evidence_ref: EVID-001-04
-    with: HYP-001
-unresolved:
-  - no source directly measures the proposed mediator
-human_decision_required: []
-recommended_next_actions:
-  - create a bounded replication-search task
-```
+generic execution closeout 和研究 Handoff 承担不同职责：前者证明执行 slice 的事实闭包，后者传递结果
+及决策所需上下文。不得为了满足不适用格式而创造 Skill lock。带 mandatory Skill 字段的历史
+Handoff/Attempt/Receipt 格式与回放示例集中在[兼容面](../compatibility/README.md)；通用无 Skill
+交接格式是否已适配，应查[实现覆盖](../STATUS.md)，不能由 generic Receipt 推定。
 
 ## 5. 交接原则
 
@@ -181,22 +176,18 @@ Manifest/Audit 是 H2 工件，不再对所有普通 Handoff 默认要求。Task
 一次 Task 可以有多个 Attempt。重试必须使用新 `attempt_id`，记录触发原因、输入是否变化，以及
 Skill（若有）、模型、工具或其他 execution binding 是否变化。禁止覆盖失败 Attempt。
 
-这里存在两类需要明确区分的 Receipt surface：
-
-- legacy `execution_receipt` 仍要求 `skill_assignment_ref`，并保留显式
-  `completion_claim: contract-satisfied` 的兼容语义；它只能按现有 Schema 回放，不能代表 generic
-  no-Skill migration 已完成；
-- M11 `generic_execution_receipt` exact-pin action/capability slice、View、Host report、Trace、Artifact 和
-  Validation closed set，固定 `skill_assignment: absent`、`task_completion: false`，completed 时也只声明
-  `action-capability-slice-only`。
+`generic_execution_receipt` exact-pin action/capability slice、View、Host report、Trace、Artifact 和
+Validation closed set，固定 `skill_assignment: absent`、`task_completion: false`，completed 时也只声明
+`action-capability-slice-only`。Skill-bearing extension 使用适用的
+[Skill closeout 契约](../implementation/SKILL_EXECUTION_CLOSEOUT.md)；历史 Receipt 的字段与语义见兼容面。
 
 generic closeout 对 completed、post-call failed 与 preflight-blocked 分开验证。completed 的 actual
 binding/Supply 必须等于 View；post-call failure 只有在 typed、hash-pinned Trace execution fact 能独立佐证
 Provider/Adapter/Model/Runtime/Host 和 actual Supply 时才具有 replay eligibility；preflight block 不得伪造
 actual binding。任何 Receipt status 都不构成 Claim promotion、Human acceptance 或科学正确性证明。
 
-legacy Attempt/Handoff/Receipt 仍带 mandatory Skill 字段，这是当前诚实保留的 compatibility gap；在另有
-implementation task 前，文档不得把它们描述为已经完成通用 no-Skill migration。
+执行 closeout 不替代完整 Task/Handoff 的格式适配；应用 producer 必须明确接收者支持的输出，缺少
+必需接口时停止相应交接并保留已产生工件。
 
 重试政策：
 
@@ -217,12 +208,12 @@ implementation task 前，文档不得把它们描述为已经完成通用 no-Sk
 ### Read Set 与工作留痕
 
 - Task、仓库 guidance、选定 Profile、相关 frozen control refs、显式输入和目标模块构成初始内容允许集；
-  只有 Skill-bearing path 才加入 exact Assignment/Skill 入口；
+  Skill-bearing extension 按 selected Projection/Supply/View refs 加入合法 Skill 入口；兼容路径才加入 Assignment；
 - 允许用文件名、目录名、大小、版本和哈希定位依赖，但不默认读取其他正文；
-- 新正文必须由实名 Task owner 扩展允许集，并在 Task 工作目录记录 scope-decision 消息；
-- 每个 Agent 间实际可见的 Assignment、澄清、范围变化、进度、Handoff、review、确认、失败与取消都进入 `work/<TASK>/<ATTEMPT>/messages/`；
+- 新正文须先取得明确的 Task 读取范围扩展，并在 Task 工作目录记录 scope-decision 消息；
+- 每个 Agent 间实际可见的任务分派、澄清、范围变化、进度、Handoff、review、确认、失败与取消都进入 `work/<TASK>/<ATTEMPT>/messages/`；
 - 运行时可观察的正文读取、工具/命令与文件 revision 进入 `events.jsonl`；Worklog 不逐项复制，但 validator 可用账本核对越界读取；
-- `INDEX.yaml` 提供消息元数据发现，但另一个 Agent 的消息正文不在默认读取集，除非 Assignment 或后续 scope-decision 明确引用；
+- `INDEX.yaml` 提供消息元数据发现，但另一个 Agent 的消息正文不在默认读取集，除非 Task 分派或后续 scope-decision 明确引用；
 - worklog 记录基线、关键决定、范围变化、修改路径、重要验证和未完成项，不记录每次普通读取或完整推理；它是 Trace 的可读索引，不是 Trace 本身；
 - 另一个 Agent 的 `work/<TASK>/<ATTEMPT>` 不在默认读取集，除非作为正式输入交接。
 
@@ -245,7 +236,7 @@ implementation task 前，文档不得把它们描述为已经完成通用 no-Sk
 - `HANDOFF-OVERHEAD`：审计工件成本持续增加但不改变接受、返工或 Gate 决定。
 - `TASK-READ-OUTSIDE-SCOPE`：Agent 请求或读取未授权正文且没有 Task 扩展记录。
 - `TRACE-MESSAGE-MISSING`：已发生跨 Agent 传递但 Attempt Archive 找不到对应消息。
-- `TRACE-ACTOR-UNOWNED`：Agent actor 没有绑定实名责任人。
+- `TRACE-ACTOR-UNOWNED`：Agent actor 缺少现有消息契约要求的归因字段。
 
 ## 9. 验收条件
 

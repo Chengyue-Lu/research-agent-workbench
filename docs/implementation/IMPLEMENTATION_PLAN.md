@@ -15,7 +15,7 @@
 - 稳定跨模块关系：[`ARCHITECTURE.md`](../ARCHITECTURE.md)；
 - 架构阶段与依赖：[`ROADMAP.md`](../ROADMAP.md)；
 - 实时任务状态和唯一下一动作：[`TASKS.md`](../TASKS.md)；
-- 实名维护与协作纪律：[`DEVELOPMENT.md`](../DEVELOPMENT.md)；
+- 开发协作纪律：[`DEVELOPMENT.md`](../DEVELOPMENT.md)；
 - 专项测试、迁移、Provider 或 Skill 协议：本目录其余文件。
 
 ## 历史里程碑映射
@@ -28,7 +28,7 @@
 | M3 上下文与风险 | continuity/Handoff/Trace | M3、模块 05–07/10 |
 | M4 工件与复现 | 未完成的 provenance/promotion | M4、Roadmap Phase C |
 | M5 真实案例 | baseline 和删减目标 | M5、Roadmap Phase D |
-| M6 API Execution | 黄毅维护的执行层 | M6、Provider plan、模块 09 |
+| M6 API Execution | Provider/Session 执行层 | M6、Provider plan、模块 09 |
 | M7 Mode–Skill | K-MS-1 离线历史基线 | M7、ADR-0013、历史 workstream |
 
 第二轮审计后的新增工作从 M8 开始，不重写 M0–M7 历史状态。任何新计划不得在本文件恢复

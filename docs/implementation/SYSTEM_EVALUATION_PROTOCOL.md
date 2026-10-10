@@ -1,7 +1,6 @@
 # System-Level Evaluation Protocol — M5-006
 
-Contract version: `1.0.0`. Evaluation owner: 路诚钺 (`Chengyue-Lu`).
-Baseline transport consumer/producer owner: 黄毅 (`let778750-cpu`).
+Contract version: `1.0.0`. Evaluation 与 baseline transport 的 producer/consumer 各按契约提供证据。
 
 This contract preregisters the system comparison and verifies evaluation inputs. It does not run an arm,
 select a Supply, approve a Skill, produce actual execution evidence, or score research for a Human.

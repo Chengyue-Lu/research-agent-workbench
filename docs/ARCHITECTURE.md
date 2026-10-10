@@ -2,7 +2,7 @@
 
 版本：0.7.1
 状态：Accepted system model
-更新：2026-08-31
+文档校准：2026-10-07
 
 ## 1. 核心模型
 
@@ -36,7 +36,7 @@ flowchart TB
 | Mode Action | 在某 Mode 中可审计的研究动作 | Method、Capability、Gate 解析 |
 | Method Resolution | 为什么选择某机制、能力和控制条件 | Capability Requirement、Method Trace |
 | Task | 单次原子目标、输入、权限、预算、输出和停止条件 | Runtime Bundle、Resolved Execution View、Validator |
-| Agent Profile | 角色能力上限、默认权限和上下文策略 | Resolved Execution View producer；Skill-bearing 兼容路径中的 Assignment Resolver |
+| Agent Profile | 执行能力上限、默认权限和上下文策略 | Resolved Execution View producer；Skill-bearing 兼容路径中的 Assignment Resolver |
 | Skill | 经证明有净增量的窄方法程序 | Agent 执行；不拥有任务或科学决定 |
 | Tool | 具有权限与副作用元数据的可调用能力 | Agent / Adapter |
 | Capability Requirement | 与具体 Skill、Tool、Adapter 或 Provider 无关的需求与 ceiling | Supply Report、Capability Resolution |
@@ -46,14 +46,39 @@ flowchart TB
 | SkillReleaseProjection | 已准入不可变 Skill Release 的窄、只读发布视图 | Skill Supply Report；不暴露演化历史 |
 | Runtime Bundle / Consumer Profile | exact allowed-read closure 与 Action→Capability slice；不选择 Supply、不授予执行权 | Resolved Execution View producer、Execution Host |
 | Resolved Execution View | Snapshot 与 exact Host/Provider/Adapter/Model、freshness、DataPolicy 和权限交集 | Execution Host |
-| Assignment | 仅 Skill-bearing 路径所需的 Task、Profile、Skill 精确锁定；no-Skill/direct Tool 不创建 | Resolved Execution View |
+| Skill Assignment（兼容） | 历史 Skill-bound Task/Profile/Skill 锁；当前 Projection/Supply/View 路径不要求此工件 | 旧 Resolver、Attempt/Handoff/Receipt 回放消费者 |
 | Capability Diagnostic | Runtime 产生的有界失败事实，不是 Skill Need | 本地审计；可选 Maintainer triage |
 | Evidence / Claim | 来源事实、推断、限制与可主张上限 | Human Gate、后续 Task |
 | Handoff | 面向下一执行者的最小充分状态 | Agent / Human |
 | Trace / Receipt | 执行事件、引用、输出与闭集关系 | Validator、Audit、Recovery |
-| Decision | 具名选择、理由、替代项和约束 | Research State、后续控制面 |
+| Decision | 明确选择、理由、替代项和约束 | Research State、后续控制面 |
 
-## 3. 任务解析与执行
+## 3. 从需求到人类决策
+
+完整研究路径中，人类可以提出一个新需求，也可以带着既有协议、代码、数据、论文和研究工件进入系统。两种入口共用
+Task、Mode、Method、Capability 和执行契约：先列出实际材料及其版本，明确目标、允许集、预算与未知，
+再形成或修订 Project Protocol 和有界 Task。既有材料不因导入而取得来源资格、Claim 接受或历史执行证明；
+缺少 Main State 时建立明确标注未知的起点，不补造历史 checkpoint 或自动恢复决定。
+
+应用层按以下职责组织工作。职责可以由同一 Agent、不同 Agent 或人类承担，不要求一项职责对应一个
+独立模型会话，也不新增公共内核 Role identity。
+
+| 职责 | 消费 | 产出与接点 |
+|---|---|---|
+| 协议整理 | 人类需求、显式既有材料与边界 | Project Protocol 草案、输入清单、未知与待决事项 |
+| 任务与方法规划 | Protocol、Question、Mode/Action 与人类约束 | Task、Method Resolution、Capability Requirement；歧义进入 Human/blocked/split |
+| 能力解析与冻结 | 需求、显式 Supply Reports、资格证据与 policies | Resolution/Snapshot、Runtime Bundle、Resolved Execution View |
+| 主执行 | 有界 Task 与已冻结输入 | 执行本项工作，按需要分配 0..N 个有界子 Task，消费结果并保留冲突 |
+| 收尾与接续 | 实际工件、Trace、验证、Receipt 与 Handoff | 可读结果、Main State checkpoint、下一动作和 Human Gate |
+| Guide 查询 | 已批准读取的 Main State 和显式工件引用 | 面向人类的解释与定位；独立只读，不自动回传主 Agent 或写研究状态 |
+
+每次 AI 调用都需要任务相关的职责指令、读取边界、输出契约和停止条件；Agent Profile 再限定执行能力。
+Skill 仅在方法路径明确需要且合法选中时加载。没有 Skill 不等于没有职责指令、Method 或能力约束。
+会话是临时执行载体，模块是代码与契约责任边界，二者均不决定科研可信度。
+
+以下图表示契约传递，不是一条必须逐节点执行的科研 DAG。主 Agent 可以自行完成任务；只有独立工作
+值得委派且 Protocol/Task 允许时才启动子 Agent。每个子 Task 独立冻结输入、预算与 write scope，结果必须
+通过工件引用和 Handoff 被明确消费，不能以“已启动多个会话”代替结果接合。
 
 ```mermaid
 sequenceDiagram
@@ -63,7 +88,7 @@ sequenceDiagram
     participant T as Tool / Model
     participant V as Validator
 
-    H->>R: Question + Mode + bounded Task
+    H->>R: bounded intent / explicit materials + Protocol + Task
     R->>R: resolve Action, Method, capability supply and ceilings
     R-->>H: unresolved conflict or Human Gate
     R->>A: exact Runtime Bundle + Bundle-bound Resolved Execution View
@@ -76,6 +101,12 @@ sequenceDiagram
 ```
 
 解析允许 no-Skill、tool-only、Human Gate、拆分和阻塞结果。Resolver 不为了“必须继续”而静默扩大权限、替换数据边界或选择不适用的方法。
+
+上述关系描述完整研究路径，不要求所有人类请求都生成研究 Protocol。应用入口可以在主线外扩展
+独立查询、局部工作和请求分流职责；同一界面显示不合并任务、权限或模型上下文。
+架构约束职责、输入输出与接受边界；经版本绑定和评审的角色提示词或合法选中的 Skill 承载具体意图、
+路径与语义影响判断。程序独立核权限、预算、版本和引用，不以结构校验替代语义判断或人类采纳。
+应用分支不改变既有 Protocol/Task/Method→main/child→Handoff→Main State→人类决定，也不要求固定角色/API 数量。
 
 ## 4. Runtime 内环与 Maintainer 外环
 
@@ -99,7 +130,7 @@ flowchart LR
         MT["Maintainer triage"] --> SN["Skill Need"]
         SN --> CA["Candidate"]
         CA --> TE["Trial / Evaluation"]
-        TE --> HA["Named Human Admission"]
+        TE --> HA["Explicit Human Admission"]
         HA --> LC["Lifecycle + immutable Release"]
         LC --> RP["SkillReleaseProjection"]
     end
@@ -108,7 +139,7 @@ flowchart LR
     TR -. "optional, local-by-default, redacted and consented" .-> MT
 ```
 
-Research Control / Capability Resolver 是唯一 Supply selection owner：它接收显式候选 Reports，在既有
+Research Control / Capability Resolver 是唯一 Supply 选择权威：它接收显式候选 Reports，在既有
 ceilings 内 compare、qualify、resolve、select，并生成新的 Resolution 与 Snapshot revision；上游 View
 producer 只能按该 frozen selection 生成 Resolved Execution View，不能再次选择。Execution Host / Runtime
 consumer 只消费 exact View 与该 View 绑定的 Runtime Bundle；上游 Snapshot 只通过这条 closure 被使用。
@@ -133,8 +164,8 @@ Maintainer 可以隔离地评测并发布 Release，但不能控制当前 Task�
 Release metadata 和 runtime eligibility 只声明供给事实与 ceiling，不能授予执行权限。
 
 no-Skill、direct Tool、procedure 与 Adapter/Provider 路径在 Evolution 对象完全缺席时仍必须闭合。
-Runtime 对 gap/failure 最多形成 `CapabilityDiagnostic`；只有具名 Maintainer 的独立 triage 才能提出
-Skill Need。
+Runtime 对 gap/failure 最多形成 `CapabilityDiagnostic`；正式 Skill Need 须经可选维护外环的独立
+triage，不从执行失败自动生成。
 
 ## 5. 上下文与连续性
 
@@ -143,25 +174,29 @@ Skill Need。
 - 所有可见的 Agent 间传递、工具事实和正式输出进入 Attempt Archive。
 - Compact Handoff 是默认路径；压缩、外部副作用、提升、争议或高风险触发完整审计链。
 - 文件路径、版本和内容哈希构成恢复锚点；聊天摘要不是权威状态。
+- Main State 是主执行接续摘要，Research State 是研究对象及知识关系；两者不相互替代。checkpoint
+  验证允许恢复所需引用，不自动执行 next action，也不因原子写入获得并发协调或权限。
+- Guide 消费批准的状态与引用；其回答只有经正常 Task/Handoff 或人类决定路径明确采用后才进入研究流程。
 
 ## 6. 验证与权威
 
-确定性验证检查 Schema、引用、哈希、权限交集、事件与索引闭集、输出存在性和状态转换。模型评审可检查语义完整性，但不能替代可判定规则。方法适用性、科学主张、权限或数据放宽、例外和发布由具名人类批准。
+确定性验证检查 Schema、引用、哈希、权限交集、事件与索引闭集、输出存在性和状态转换。模型评审可检查语义完整性，但不能替代可判定规则。方法适用性、科学主张、权限或数据放宽、例外和发布须由人类明确批准，并保留决定引用。
 
 ## 7. 可替换执行边界
 
 Topic 4 Core 只依赖 provider-neutral 的 Task、Capability Requirement/Snapshot、Runtime Bundle/Profile、
 Resolved Execution View、事件和工件接口。no-Skill、direct Tool、procedure 与 Adapter/Provider 不依赖
-SkillReleaseProjection；可选 Assignment 与发布投影只属于 Skill-bearing extension。模型 API、
+SkillReleaseProjection；发布投影属于 Skill-bearing extension，Skill Assignment 只属于 legacy Skill-bound
+兼容路径。模型 API、
 Codex/OpenCode 等 Agent Runtime、MCP、CLI 或本地程序通过薄 Adapter 接入。Adapter 映射能力和执行事实，
 不重新定义研究语义，也不把平台会话 ID 变成长期权威。
 
 ## 8. 演进不变量
 
 1. Stable object identity 与版本必须显式；
-2. 新 Skill 只由 Maintainer 从正式 Need、净增量证据与具名 Human Admission 产生，不从 Runtime gap、来源清单或自动生成直接产生；
+2. 新 Skill 经可选维护外环从正式 Need、净增量证据与明确 Human Admission 产生，不从 Runtime gap、来源清单或自动生成直接产生；
 3. 兼容行为必须显式选择，禁止静默重解释旧工件；
-4. 高风险决定不能由执行者自批；
+4. 高风险决定须由人类明确批准，模型执行者不得自批；
 5. Trace 记录事实，不记录隐藏推理，不保存秘密；
 6. Runtime 不读取完整 Need/Candidate/Evaluation/Lifecycle；Skill 路径只消费不可变发布投影；
 7. Supply、Release 或 Registry 变化只能由上游 Resolver 产生新的 Resolution/Snapshot/View；Execution Host

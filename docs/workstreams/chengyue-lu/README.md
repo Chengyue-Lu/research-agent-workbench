@@ -1,53 +1,33 @@
-# 路诚钺维护工作流
+# 路诚钺工作流索引
 
-责任人：路诚钺（GitHub `Chengyue-Lu`）。工作流目录只描述技术范围，不能替代具名责任。
+具名 owner：路诚钺（GitHub `Chengyue-Lu`）。本页只导航审计材料；Task 实时状态、依赖和验收见
+[TASKS](../../TASKS.md)，当前工程成熟度见 [STATUS](../../STATUS.md)。原件按当时来源与范围解释，
+未合并候选不从索引变成 accepted 实现。
 
-当前进行中或仍待具名语义决定的工作流：
+- [全文档校准与通用桥接 Task 定义](RWB-CHAIN-TASK-DEFINITION/README.md)
+- [通用 Provider/API 接口与 exact Flash conformance](M6-GENERAL-PROVIDER-IMPLEMENTATION/README.md)
+- [GOV-REVIEW-EXCEPTION-001/](GOV-REVIEW-EXCEPTION-001/README.md)
+- [M1-PROJECT-SCAFFOLD/](M1-PROJECT-SCAFFOLD/README.md)
+- [M11-SKILL-CLOSEOUT-GATE/](M11-SKILL-CLOSEOUT-GATE/README.md)
+- [DOC-ALIGN-002/](DOC-ALIGN-002/README.md)
+- [M14-CURATED-RELEASE/](M14-CURATED-RELEASE/README.md)
+- [M5-SYSTEM-EVALUATION-DESIGN/](M5-SYSTEM-EVALUATION-DESIGN/README.md)
+- [PHASE-C-RESEARCH-STATE/](PHASE-C-RESEARCH-STATE/README.md)
+- [POST-INTEGRATION-DOCS-ALIGNMENT/](POST-INTEGRATION-DOCS-ALIGNMENT/README.md)
+- [M11-SKILL-RUNTIME-EXTENSION/](M11-SKILL-RUNTIME-EXTENSION/README.md)
+- [M11-SKILL-RUNTIME-ACTIVATION/](M11-SKILL-RUNTIME-ACTIVATION/README.md)
+- [CI-PERFORMANCE-MAINTENANCE/](CI-PERFORMANCE-MAINTENANCE/README.md)
+- [TEST-QUALITY-001/](TEST-QUALITY-001/README.md)
+- [M11-EXECUTION-REINTEGRATION/](M11-EXECUTION-REINTEGRATION/README.md)
+- [ISSUE-41-M-SERIES-NORMALIZATION/](ISSUE-41-M-SERIES-NORMALIZATION/README.md)
+- [ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/](ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/README.md)
+- [PHASE-B-EVOLUTION/](PHASE-B-EVOLUTION/README.md)
+- [M8-002/](M8-002/README.md)
+- [M8-003/](M8-003/README.md)
+- [M8-004/](M8-004/README.md)
+- [M8-005/](M8-005/README.md)
+- [组件测试与 CI 接点](TEST-PERF-002/README.md)
 
-- [`GOV-REVIEW-EXCEPTION-001/`](GOV-REVIEW-EXCEPTION-001/README.md)：reviewer 不可用时由路诚钺批准单次审核例外，独立保留 CI/PR/发布硬门禁。
-- [`M1-PROJECT-SCAFFOLD/`](M1-PROJECT-SCAFFOLD/README.md)：可复用项目模板、安装后离线 Run 路径与 0.x 兼容政策；[PR #74](https://github.com/Chengyue-Lu/research-agent-workbench/pull/74) 已获 R2 review 并合入，M14-004 消费该实际入口。
-- [`M11-SKILL-CLOSEOUT-GATE/`](M11-SKILL-CLOSEOUT-GATE/README.md)：M11-007 Skill-bearing generic
-  closeout / replay 的 R2 任务定义与 Gate B evidence 接口；黄毅负责实施，路诚钺负责 M5 consumer 审查，
-  M11-007 / Gate B 已按 PR81/82 收口，M6-008 已按 PR75 实现收口，M5-007 进入 synthetic Harness 准备。
-
-- [`DOC-ALIGN-002/`](DOC-ALIGN-002/README.md)：PR #68 已合入，完成 accepted M4/M14 成熟度、Phase D
-  入口与 ADR-0020 Gate 对齐；后续 [navigation maintenance](DOC-ALIGN-002/FOLLOWUP-20260912.md) 收口
-  TASKS 辅助说明与工作流索引，M14 activation/public docs 继续由独立工作流承担。
-- [`M14-CURATED-RELEASE/`](M14-CURATED-RELEASE/README.md)：M14-001～003 已由 PR #60 合入；
-  [PR #69](https://github.com/Chengyue-Lu/research-agent-workbench/pull/69) 承载 M14-004 public surface
-  preparation 已在 PR #73 文档维护之后接受合入。最终 Quickstart 已消费获接受的 M1-009
-  实际 scaffold 流程，本轮提交 M14-004 完成提案；M14-005 仍受 license、远端保护与具名发布决定约束。
-- [`M5-SYSTEM-EVALUATION-DESIGN/`](M5-SYSTEM-EVALUATION-DESIGN/README.md)：冻结 system-level
-  primary estimand、case dossier public/private boundary、Protocol/Harness Tasks 与真实执行/pruning Gate；
-  ADR-0020 已选择 dual transport，M5-006 Protocol / shared qualification contract 已由 PR71 接受；
-  M11-007 / Gate B 与 M6-008 baseline closeout 已闭合，下一节点为
-  [M5-007 冻结 plan 与评价侧 preflight](M5-SYSTEM-EVALUATION-DESIGN/M5-007_ENTRY_PLAN.md)；
-  任务状态以 TASKS 为准；本工作流不运行真实 Evaluation，也不宣称净收益。
-- [`PHASE-C-RESEARCH-STATE/`](PHASE-C-RESEARCH-STATE/README.md)：M10 bounded machine implementation
-  已集成；Human semantic review 与 R2/Phase C closeout 仍 pending，Topic 5 未获实现权限。
-已集成、保留审计记录的工作流：
-
-- [`POST-INTEGRATION-DOCS-ALIGNMENT/`](POST-INTEGRATION-DOCS-ALIGNMENT/README.md)：首轮
-  M10/M11 Core/M4-001/M5-003 集成后的文档对齐记录；当前维护由 DOC-ALIGN-002 承接。
-- [`M11-SKILL-RUNTIME-EXTENSION/`](M11-SKILL-RUNTIME-EXTENSION/README.md)：PR #51 已将 M11-005/006
-  runtime-minimal projection publication 与统一 Skill Supply mapping 合入 `develop`，两项 Task 均为 DONE；
-  生产 index 仍为空，且 optional extension 不改变 zero-Skill Core。
-- [`M11-SKILL-RUNTIME-ACTIVATION/`](M11-SKILL-RUNTIME-ACTIVATION/README.md)：PR #52 独立恢复
-  M11-005 为 READY 的历史 activation 记录；后续完成状态以 TASKS 与 extension workstream 为准。
-- [`CI-PERFORMANCE-MAINTENANCE/`](CI-PERFORMANCE-MAINTENANCE/README.md)：PR #47 的 CI 去重与
-  hosted-runner wall-time 基线；当前质量 topology 由 TEST-QUALITY-001 扩展。
-- [`TEST-QUALITY-001/`](TEST-QUALITY-001/README.md)：PR #49 的分层测试、Coverage Policy v2、critical
-  branch 与 duration evidence。
-- [`M11-EXECUTION-REINTEGRATION/`](M11-EXECUTION-REINTEGRATION/README.md)：M11-001～004 的
-  module-level Execution Reintegration 实施与 R2 验证；可选 M11-005/006 由独立 extension workstream 维护。
-- [`ISSUE-41-M-SERIES-NORMALIZATION/`](ISSUE-41-M-SERIES-NORMALIZATION/README.md)：PR #42 的
-  M-series Task 规范化审计；内部状态矩阵是历史快照，当前真值只在 TASKS。
-- [`ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/`](ISSUE-35-RUNTIME-EVOLUTION-BOUNDARY/README.md)：R2 Skill Evolution 可选 Maintainer 外环与 Runtime 消费边界。
-- [`PHASE-B-EVOLUTION/`](PHASE-B-EVOLUTION/README.md)：Phase B 的 Capability Requirement、Skill Need、lifecycle、Protocol 与共享 Snapshot 演化基础。
-- [`GOV-V2-001/`](GOV-V2-001/)：R2 风险比例化开发治理与共享真值边界；外部 Admin rollout 状态仍由其 rollout 记录单独说明。
-- [`GOV-V2-STAGE-CLOSURE/`](GOV-V2-STAGE-CLOSURE/)：R2 路径补全、通用 published identity 与 Stage 原子依赖闭合。
-
-- [`M8-002/`](M8-002/README.md)：将两个正式 Research Mode 的 Mode Action 正式化为一等契约。
-- [`M8-003/`](M8-003/README.md)：将 Action-to-mechanism 决定正式化为版本化 Method Resolution。
-- [`M8-004/`](M8-004/README.md)：在不覆盖 v0.1 的前提下建立 Research Mode v0.2 最小迁移 seam。
-- [`M8-005/`](M8-005/README.md)：冻结 Decision Authority Matrix 与非授权性的 Authority Rule Eligibility。
+每个 workstream 保留范围、来源、必要通信、验证及限制；路径不因状态变化搬迁。
+记录约定见 [workstreams](../README.md)，重大迁移/发布的完成入口见 [history](../../history/README.md)。
+Git PR/commit 是普通开发记录；仅在明确触发时增加正式 Archive/History，不复制实时进度到本页。

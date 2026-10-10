@@ -27,7 +27,7 @@ Attempt file pin、Task pin 和 Method Trace closure 继续按实际文件字节
 路径逃逸、错误 pin/kind/identity 以及把 private oracle 列入 closure 都在 actor 启动前阻断。
 
 每案 report 固定 source-manifest SHA、private-oracle SHA 与按 alias 排序的 exact input-closure digest；
-顶层 `gate_input_sha256` 再绑定两案 pins。相同 Gate ID 下的替换 manifest/oracle 因而不会与 owner 审过的
+顶层 `gate_input_sha256` 再绑定两案 pins。相同 Gate ID 下的替换 manifest/oracle 因而不会与 已审查的
 输入不可区分。oracle SHA 仍只在 actor 退出后首次读取并计算。
 
 ## 3. Fresh actor 与读取隔离

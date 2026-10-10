@@ -8,7 +8,8 @@
 
 本契约只实现 M4 依赖链的第一层 `M4-001`：`sources/inbox/` 是不可引用的可变隔离区；
 数据进入 `sources/raw/` 前必须形成可验证的 admission sidecar。Promotion、Claim trace 与 Run
-manifest 分别属于 M4-002、M4-003、M4-004，不在本 PR 中实现或宣称完成。
+manifest 分别由 [promotion](ARTIFACT_PROMOTION_CONTRACT.md)、[Claim trace](CLAIM_TRACE_CONTRACT.md)和
+[Run reconstruction](../workstreams/huangyi/M4-RUN-RECONSTRUCTION/README.md)消费；其当前成熟度见 [STATUS](../STATUS.md)。
 
 ## 可执行契约
 

@@ -1,6 +1,6 @@
 # M5 System-Level Evaluation Design
 
-责任人：路诚钺（GitHub `Chengyue-Lu`）
+现行开发按 Task/风险/证据组织，不分配固定人员；历史具名接受记录保留原事实，人员规则见 [ADR-0023](../../../decisions/0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md)。
 
 风险：R2
 

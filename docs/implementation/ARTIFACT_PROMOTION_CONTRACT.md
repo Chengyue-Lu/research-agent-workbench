@@ -1,6 +1,6 @@
 # Artifact Promotion Contract（M4-002）
 
-状态：R1 shared contract candidate；合入 `develop` 后成为 M4-002 当前实现。
+状态：Active implementation contract；当前接受范围及来源见 [STATUS](../STATUS.md)，不产生科学或 Human 接受。
 
 ## 1. 目的与权威上限
 
@@ -190,4 +190,4 @@ validation host 闭合新增覆盖：无 host 记录的手写 execution、伪造
 pinned runner/checker 输出逐字节一致、operator/时间纯属伪造的三元组可以通过验证但不携带任何历史
 权威（三元组自身声明 `validation_execution_fact=false`，eligibility 完全由 promotion-time 重执行
 当场确立）。
-该证据只支持 M4-002；M4-003 Claim Trace 与 M4-004 Run reproduction 仍需各自独立实现、PR 和 owner 验收。
+该证据只支持 M4-002；M4-003 Claim Trace 与 M4-004 Run reproduction 仍需各自独立实现、PR 和验收。

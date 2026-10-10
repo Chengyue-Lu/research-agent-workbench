@@ -1,6 +1,6 @@
 # Deterministic release surface
 
-Owner: 路诚钺 (`Chengyue-Lu`). Contract: [ADR-0021](../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md).
+Contract: [ADR-0021](../decisions/0021-CURATED-DEVELOP-TO-MAIN-RELEASE.md).
 Task: [M14-002](../TASKS.md). Risk and review: [M14 workstream](../workstreams/chengyue-lu/M14-CURATED-RELEASE/README.md).
 
 ## Inputs and trust

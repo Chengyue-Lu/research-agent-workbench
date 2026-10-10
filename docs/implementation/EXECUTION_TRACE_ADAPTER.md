@@ -2,6 +2,12 @@
 
 ## Contract boundary
 
+This page describes the legacy Skill-bound compatibility lane. Current no-Skill/direct-Tool execution uses
+[Runtime Bundle](RUNTIME_BUNDLE_PROFILE.md), [View](RESOLVED_EXECUTION_VIEW.md) and
+[generic closeout](GENERIC_EXECUTION_CLOSEOUT.md); it does not create an Assignment to enter this lane.
+The recovery-check below is an explicit historical preflight, not authorization to launch automatic
+continuation or unfreeze [Topic 5](../ROADMAP.md#4-phase-c--topic-5-gate).
+
 This adapter is Part B of the Issue #13 integration split. It connects the
 legacy v0.1 Skill-bound Attempt and Execution Receipt to the M3-008
 file-authoritative Trace Core. It does not resolve or reinterpret Method,

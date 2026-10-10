@@ -4,6 +4,10 @@
 
 把机器可确定的问题、需要语义复核的问题和必须由人负责的问题分开。避免默认多 Agent 全量互审，也避免用结构 PASS 冒充科学正确。
 
+接点：producer 提交 exact 工件和声明规则；确定性 validator 产出 scope 明确的报告，执行/接收/promotion
+消费者据此继续或阻断。只有明确语义风险才启动定向 reviewer；方法适用性、主要 Claim、权限/数据放宽
+和发布等保留事项进入 Human Gate，由人类明确决定。Gate 产出 Decision refs，不把一个模糊 approved 字段传遍各层。
+
 ## 2. 三层验证
 
 ### 第一层：Deterministic Validator
@@ -61,7 +65,7 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 | SKILL-CONTEXT-FLOOD | Skill 过多/过长 | 拆 Task |
 | SKILL-NAMESPACE-COLLISION | 不同来源使用相同 Skill name，平台不会自动合并 | 以 accepted Registry + 来源哈希解析，等价项交人工选择 |
 | REGISTRY-SPLIT-BRAIN | Task、运行时和 Handoff 使用了不同 Registry 快照 | 冻结 registry digest，阻断合并 |
-| ASSIGNMENT-HANDOFF-DRIFT | Handoff 只写 Skill ID/version，遗漏实际内容哈希 | 对照 Attempt/Assignment lock；未补齐前不得 promotion |
+| ASSIGNMENT-HANDOFF-DRIFT（兼容） | 旧Skill-bound Handoff遗漏实际内容哈希 | 对照旧Attempt/Assignment lock；当前extension核Projection/Supply/View和actual consumption |
 | CONSENSUS-CORRELATED | 多 Agent 同源错误被当共识 | 改用异质证据/工具或人类复核 |
 | COORD-INTERFACE | 协调接口多于有效工作 | 简化流程 |
 | TASK-READ-OUTSIDE-SCOPE | Agent 读取未声明正文或未记录范围扩展 | BLOCK 合并，补录/重做 |
@@ -127,10 +131,10 @@ Gate。Mode suggestion、Action selection、Mechanism、Skill/Tool binding、Cla
 Agent 和执行层不能批准权限或数据放宽，不能自定义 methodology fallback，也不能把结构 PASS
 提升为科学 Claim；歧义返回 Human Gate、split 或 blocked。
 
-当前实现以版本化 [Decision Authority Matrix](../implementation/DECISION_AUTHORITY.md) 冻结三类
+[Decision Authority Matrix](../implementation/DECISION_AUTHORITY.md) 冻结三类
 authority class 与七类决定。Agent 只产生 non-binding proposal；Resolver 只作结构 validation，或在
 矩阵要求的事实闭合且无歧义时 commit Mode/Action/Mechanism/Binding；权限放宽、数据边界放宽和
-Claim promotion 的 commit rule 只允许具名 Human Gate 角色进入下一决策层。Eligibility 结果可重算，
+Claim promotion 的 commit rule 只允许明确的 Human Gate 决定进入下一决策层。Eligibility 结果可重算，
 但不证明 asserted facts、不记录 Human approval，也不提升 Claim 或执行决定。
 
 ## 8. 防止控制面递归增长
