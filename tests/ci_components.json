@@ -406,21 +406,31 @@
       "test_entry_deadline"
     ],
     "tests/test_entry_bridge_flow.py": [
-      "test_entry_deadline"
+      "test_entry_deadline",
+      "test_entry_intake_call"
     ],
     "tests/test_entry_caller.py": [
       "test_entry_deadline",
+      "test_entry_handoff",
       "test_entry_intake_constraints",
       "test_entry_wave_bridge"
     ],
     "tests/test_entry_driver.py": [
+      "test_entry_bridge_flow",
+      "test_entry_caller",
+      "test_entry_control_chain",
+      "test_entry_executor",
+      "test_entry_factory",
+      "test_entry_intake_call",
       "test_entry_intake_constraints",
       "test_entry_wave_bridge"
     ],
     "tests/test_entry_intake.py": [
+      "test_entry_cli",
       "test_entry_intake_constraints"
     ],
     "tests/test_entry_intake_call.py": [
+      "test_entry_caller",
       "test_entry_deadline",
       "test_entry_wave_bridge"
     ],

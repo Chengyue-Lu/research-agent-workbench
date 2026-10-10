@@ -1,5 +1,7 @@
 # RWB通用研究执行入口
 
+2026-10-11 已同步 PR140 的[共享 helper 消费者修复](review-fix-012/VERIFICATION.md)；原版本与后继范围分别留证。
+
 2026-10-10 当前阅读入口：[整组委派与父结果消费预算](delegation-wave-008/README.md)为基于 PR140 `766bf45` 的后继候选；PR140 自身仍未合并，其[审查修复](review-fixes-007/README.md)、[执行阶段与 Guide 证据](stage-evidence-006/VERIFICATION.md)、[planning 与正式 Handoff](planning-handoff-004/VERIFICATION.md)按原来源保留。包内 caller/factory 的前一 Action 切片见[原记录](package-caller-003/VERIFICATION.md)。更早结果保留在[桥接报告](chain-proof-002/ROOT_REPORT.md)、[覆盖与缺口](chain-proof-002/COVERAGE.md)、[接口使用说明](chain-proof-002/USAGE.md)。真实 API 的结果与停点以对应版本报告为准；Source/Human/正式 Skill 资格、真实科研验收及 M12 未完成。
 
 以下为初始实施任务快照；其中 READY 和初始验收范围不代表当前成熟度。原 65 项离线交付保留在历史 COMPLETION/manifest，后续桥接与修复证据在上方入口更新。
