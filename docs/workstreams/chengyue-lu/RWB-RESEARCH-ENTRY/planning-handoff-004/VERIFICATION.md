@@ -22,3 +22,5 @@ M1-010/M2-009/M11-008 保持 IN_PROGRESS。该 Core 支持扩展归 M11-008，M1
 首个实际 API 来源为 `b696272feb062573aef1ccebfda9c7281cb88877`，Attempt `chain-5fe36117-5047-4ae5-8a4e-fbd4cb1c58bb`。3次 HTTP/1次 readonly Tool、31.765秒；actual intake、planning main 两轮及1份 planning Receipt 已完成，正式 final Handoff保留 safe-paused。主 Agent 自选0个 child，其返回含正文和 fenced JSON，严格控制解析拒收；checkpoint/Guide未开始。实际新增 known15,408/held0，累计287,277/held0；完整账与原件闭合，模型零调用冷回放验证了真实停点。该 Attempt 不记为整链通过。
 
 主/子 baseline 和 workflow 控制指令随后明确 entire final response 是一个 raw JSON，判断依据放既有字段。Guide、主Agent决定0..N、严格解析及 Schema 未改；12项实际角色请求检查通过。首次178项和新增12项共190个不同最终用例。新源码及新 Attempt 将独立记录，不覆盖首轮。
+
+第二个 Attempt `chain-058aa883-7ee5-4877-b96b-31b3c0a90e2f` 使用 `8f4743e3cdca8fd51cc59bc6ed766738f32b7aa9`。2次HTTP、27.578秒；raw JSON与workflow收尾通过，但主 Agent 将已读inputs快照误述为Tool调用，实际Tool次数0，Root事实gate停止checkpoint/Guide。新增known11,483/held0，累计298,760/held0；这个Attempt同样不记整链通过。baseline随后明确：已读快照不充作Task显式要求的named Tool调用；raw JSON仅约束final text，获准native Tool仍用原provider接口，得到真实结果才可声明调用。普通无需Tool的任务继续直接使用快照，既有事实gate保持。
