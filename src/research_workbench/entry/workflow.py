@@ -22,7 +22,10 @@ from research_workbench.tasks import TaskPacket
 from research_workbench.validation.schemas import SchemaCatalog
 
 
-CONTROL_INSTRUCTIONS = """Return one JSON object with these required fields:
+CONTROL_INSTRUCTIONS = """Your entire final response must be exactly one raw JSON
+object, beginning with { and ending with }. Include no prose before or after it
+and no Markdown or code fences. Put brief supporting reasons and limitations in
+the existing control fields. Use these required fields:
 decision: complete, delegate, blocked, or human-review;
 delegations: a list of objects containing one complete Task Packet under task;
 summary: a nonempty string; limitations: a list of strings; next_actions: a list

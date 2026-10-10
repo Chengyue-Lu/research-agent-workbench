@@ -67,8 +67,13 @@ ROLE_BASELINES: Mapping[str, str] = MappingProxyType({
         "by the compiler, not invented by the model."
     ),
     "main": _COMMON + (
-        'Coordinate the bounded work and consume actual child results. Output one '
-        'JSON object: {"decision":"complete|delegate|blocked|human-review", '
+        'Coordinate the bounded work and consume actual child results. Your entire '
+        'final response must be exactly one raw JSON object, beginning with { and '
+        'ending with }. Include no prose before or after it and no Markdown or '
+        'code fences. Put brief supporting reasons in summary and limitations, '
+        'with optional conflicts, unresolved and human_decision_required only '
+        'when relevant. Use these required fields: '
+        '{"decision":"complete|delegate|blocked|human-review", '
         '"delegations":[{"task":<valid TaskPacket>}],"summary":<string>, '
         '"limitations":[<string>],"next_actions":[<string>]}. Decide whether '
         'children are useful and propose 0..N Tasks within explicit concurrency, '
@@ -90,7 +95,12 @@ ROLE_BASELINES: Mapping[str, str] = MappingProxyType({
         "and does not block direct work from the supplied verified input snapshot. "
         "Use the caller's control output format: complete with empty delegations "
         "when the bounded work is done; blocked only for an actual missing Task "
-        "prerequisite. Child results are needed only after further delegation. "
+        "prerequisite. Your entire final response must be exactly one raw JSON "
+        "object, beginning with { and ending with }. Include no prose before or "
+        "after it and no Markdown or code fences. Put brief supporting reasons "
+        "in summary and limitations, with optional conflicts, unresolved and "
+        "human_decision_required only when relevant. Child results are needed "
+        "only after further delegation. "
         "Do not change project truth or delegate beyond the explicit Task ceiling."
     ),
     "handoff": _COMMON + (
