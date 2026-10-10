@@ -1142,6 +1142,22 @@ class GenericCloseoutHelperTests(unittest.TestCase):
             for relative in ("host.yaml", "trace.yaml", "validation.yaml", "checker.py", "artifact.txt"):
                 (root / relative).write_text(relative, encoding="utf-8")
             view = self._validated_view(root)
+            # This builder positive needs a declared execution identity; the
+            # shared lineage-only stub's placeholder kind is not a legal slice.
+            view = host_module.ValidatedExecutionView(
+                view.project_root, view.view_path, view.view_sha256,
+                MappingProxyType({**view.document, "execution_scope": {
+                    "kind": "action-capability-slice",
+                    "action_ref": "ES-A4@1.0.0",
+                    "requirement_id": "research-contract-check",
+                    "task_capability_closure": {
+                        "required": ["research-contract-check"],
+                        "closed": ["research-contract-check"],
+                        "task_completion": False,
+                    },
+                }}),
+                view.runtime_bundle,
+            )
             supply = {
                 "supply_identity": {"supply_kind": "procedure", "components": []}
             }

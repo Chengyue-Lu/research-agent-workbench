@@ -11,15 +11,17 @@
 | M2-009 主子执行 | 父 Task、实际权限/预算、主 Agent 提出的子 Task | 主会话选择实际 child，child 返回独立结果/usage/Receipt；新主会话收到真实结果 | 离线0/1/3子任务与失败/unknown通过；本轮实际 planning 场景主 Agent 选择1个 child，未固定产品子任务数 |
 | M11-008 正式子 Handoff | actual child Task、结果、输入锁、产物/Receipt、限制和未解项 | source record、Task 与 HandoffPacket 分别固定；consumer 按自己保留的 expected Task/attempt/observation检查，再将完整 packet及pin送入 fresh main | 实际 API child → 正式 Handoff → 新主请求及具体处置已发生；独立冷回放和 Handoff integrity Skill checker通过 |
 | M2-009 收尾与状态 | hash-pinned workflow report、正式 final Handoff | caller返回handoff_ref；checkpoint消费child/final packets及独立事实，发布MainState、保留Human待办、accepted_decisions为空 | 正反确定性检查、实际API和新进程冷回放通过；Task/Human接受保持false |
-| M2-009 只读 Guide | 显式获准的MainState快照 | 独立API回答，无Tool、主会话消息或状态写入；调用前后项目bytes保持 | API调用与隔离通过；首个回答误把早期pending限制当当前事实，内容质量不计通过，详见下文 |
+| M2-009 只读 Guide | MainState与按Attempt显式获准的approved_refs；第8轮另含final Handoff、最终Receipt | 独立API回答，无Tool、主会话消息或状态写入；调用前后项目bytes保持 | API调用与隔离通过；首个回答误把早期pending限制当当前事实，内容质量不计通过，详见下文 |
 
 执行材料只含alpha/beta两个公开合成记录。实际子评审识别beta缺locator，区分记录不完整与来源无效；新主明确引用真实child Task和结果，保留来源接受unknown。这是工程交接证据，不是科学正确性、独立同行评审或Skill净价值证据。
 
 ## 确定性和安装消费
 
-192个不同最终用例通过：101个planning/执行回归、74个Handoff/入口、3个文档检查和14个实际Role request装配检查。增量复测计入原用例，不重复累计。正反例覆盖错误/mixed planning selector、歧义或非proceed Method、Task/输入/packet/产物漂移、重复Receipt与实际产物计数、写域逃逸、binary输出、missing-output、required Skill/H2缺证据、负面事项/Human传播，以及0/1/3子任务和failed/unknown预算。
+218个不同最终用例通过：101个planning/执行回归、74个Handoff/入口、3个文档检查、14个实际Role request装配检查和26个执行合同helper检查。增量复测计入原用例，不重复累计。正反例覆盖错误/mixed planning selector、歧义或非proceed Method、Task/输入/packet/产物漂移、重复Receipt与实际产物计数、写域逃逸、binary输出、missing-output、required Skill/H2缺证据、负面事项/Human传播，以及0/1/3子任务和failed/unknown预算。
 
 首轮planning有1个正例输入错误；仅补既有规则所需的明确暂停条件后通过。Handoff首轮有1 error及同一caller用例两个子场景失败：inherited/generated未解说明重复违反既有uniqueItems，保序去重后通过。重复测试收集的受控中断、路径/计数反例、失败日志和修复后复测均保留；未改Schema规则或原断言来放行。
+
+40f8a1f0的hosted CI分片1有253个用例、1 error：旧Receipt builder正例使用共享桩的占位kind="slice"，新身份检查拒绝了这个既有Manifest合同也不允许的输入。只在该正例显式提供合法Action scope，保留共享桩、产品校验与原正反断言；完整执行合同helper模块26/26复测通过。原hosted失败及本地修后结果均保留，最终远端结果须读取修后最新HEAD。
 
 独立CPython3.11.16在checkout外用新wheel和默认包内schemas完成intake→factory/caller→no-Mode planning两次离线port调用（known76/held0）。fixture Task要求method-resolution，但执行Receipt交付deterministic-check-report，正式Handoff如实safe-paused并保留缺交付；独立冷回放与Skill checker通过。Root探针曾误用完成预期、packet字段与输出contract，三份失败保留，纠正探针未改产品/Task/Schema。后续提示词wheel的7模块源码与资源pins均独立核对一致。
 
