@@ -55,8 +55,8 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 | CTX-AUTO-COMPACTION | 主上下文发生非计划压缩 | 写 Main State 并 rollover |
 | CTX-HIDDEN-STATE | 决定只存在于聊天/隐式状态 | BLOCK，创建 Decision 工件 |
 | CTX-METRICS-UNKNOWN | 压力指标不可获得 | 显式保留 unknown，禁止成本结论 |
-| CTX-NEXT-AWU-UNSAFE | 剩余预算不足以覆盖下一原子单元和收尾余量 | 不开启新 AWU，进入 safe pause/rollover |
-| CTX-CLOSEOUT-RESERVE-INSUFFICIENT | 连最小收尾余量都无法覆盖 | BLOCK 扩展，立即持久化最小恢复状态 |
+| CTX-NEXT-AWU-UNSAFE | 实际输入容量或必要资料完整性存在缺口 | 明示缺口并保存当前工件；接续按适用 Gate，不用估算余额默认停机 |
+| CTX-CLOSEOUT-RESERVE-INSUFFICIENT | 旧版收尾余额诊断 | 只按旧版本回放；新路径记录实际容量缺口，不要求模型预留或自管额度 |
 | CTX-STALE | 使用旧 revision | BLOCK |
 | RESUME-CONFLICT-GIT | Main State 的 Git 基线与当前 HEAD 不同 | BLOCK，先解释或重建恢复状态 |
 | RECEIPT-VALIDATION-FAILED | 完成宣称引用的机器验证为失败 | BLOCK；机器证据覆盖自然语言状态 |
@@ -90,7 +90,7 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 | HANDOFF-SUMMARY-DISTORTION | 抽样发现 Handoff 歪曲或无法验证来源语义 | BLOCK，修订 Handoff 并重新审计 |
 | HANDOFF-OVERHEAD | H2 工件持续增加但不改变决策 | 降为 H1 或缩小触发器 |
 | DELEGATION-FANOUT | 递归/并发膨胀 | 停止新委派，合并任务树 |
-| COORDINATION-COST-HIGH | 协调/汇总/校核占比超过预算 | WARN，优先删 Agent、review 或字段 |
+| COORDINATION-COST-HIGH | 协调/汇总/校核产生过高实际成本 | WARN，优先删 Agent、review 或字段 |
 | COST-USAGE-UNKNOWN | 真实模型运行没有可用量数据 | 不得宣称 token/成本收益 |
 | TOOL-OUTPUT-POISONING | 工具输出被当作高优先级指令 | 按不可信数据处理 |
 | TRACE-SENSITIVE | trace 检测到敏感数据 | BLOCK，脱敏或删除 |
@@ -104,7 +104,7 @@ Handoff 传递审计也遵循这一边界：确定性验证器先核对 Transfer
 2. 为什么确定性检查不能解决？
 3. reviewer 需要哪些最小输入？
 4. 输出将改变什么决定？
-5. 停止条件和 token 预算是什么？
+5. 完成/停止条件、真实技术能力和实际用量记录接点是什么？
 6. reviewer 是否与原 Agent 共享同样的模型、Skill 和来源，从而缺乏真正独立性？
 
 若第 4 项没有明确答案，不创建 reviewer。

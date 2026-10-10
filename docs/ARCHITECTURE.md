@@ -1,8 +1,8 @@
 # 总体架构
 
-版本：0.7.1
+版本：0.7.2
 状态：Accepted system model
-文档校准：2026-10-07
+文档校准：2026-10-10
 
 ## 1. 核心模型
 
@@ -35,7 +35,7 @@ flowchart TB
 | Research Mode | 学科/方法语境与 Action catalog | Method Resolution |
 | Mode Action | 在某 Mode 中可审计的研究动作 | Method、Capability、Gate 解析 |
 | Method Resolution | 为什么选择某机制、能力和控制条件 | Capability Requirement、Method Trace |
-| Task | 单次原子目标、输入、权限、预算、输出和停止条件 | Runtime Bundle、Resolved Execution View、Validator |
+| Task | 单次原子目标、输入、权限、输出和停止条件 | Runtime Bundle、Resolved Execution View、Validator |
 | Agent Profile | 执行能力上限、默认权限和上下文策略 | Resolved Execution View producer；Skill-bearing 兼容路径中的 Assignment Resolver |
 | Skill | 经证明有净增量的窄方法程序 | Agent 执行；不拥有任务或科学决定 |
 | Tool | 具有权限与副作用元数据的可调用能力 | Agent / Adapter |
@@ -56,7 +56,7 @@ flowchart TB
 ## 3. 从需求到人类决策
 
 完整研究路径中，人类可以提出一个新需求，也可以带着既有协议、代码、数据、论文和研究工件进入系统。两种入口共用
-Task、Mode、Method、Capability 和执行契约：先列出实际材料及其版本，明确目标、允许集、预算与未知，
+Task、Mode、Method、Capability 和执行契约：先列出实际材料及其版本，明确目标、允许集、交付与未知，
 再形成或修订 Project Protocol 和有界 Task。既有材料不因导入而取得来源资格、Claim 接受或历史执行证明；
 缺少 Main State 时建立明确标注未知的起点，不补造历史 checkpoint 或自动恢复决定。
 
@@ -77,7 +77,7 @@ Skill 仅在方法路径明确需要且合法选中时加载。没有 Skill 不�
 会话是临时执行载体，模块是代码与契约责任边界，二者均不决定科研可信度。
 
 以下图表示契约传递，不是一条必须逐节点执行的科研 DAG。主 Agent 可以自行完成任务；只有独立工作
-值得委派且 Protocol/Task 允许时才启动子 Agent。每个子 Task 独立冻结输入、预算与 write scope，结果必须
+值得委派且 Protocol/Task 允许时才启动子 Agent。每个子 Task 独立冻结输入与 write scope，实际消耗由程序关联记录，结果必须
 通过工件引用和 Handoff 被明确消费，不能以“已启动多个会话”代替结果接合。
 
 ```mermaid
@@ -105,7 +105,7 @@ sequenceDiagram
 上述关系描述完整研究路径，不要求所有人类请求都生成研究 Protocol。应用入口可以在主线外扩展
 独立查询、局部工作和请求分流职责；同一界面显示不合并任务、权限或模型上下文。
 架构约束职责、输入输出与接受边界；经版本绑定和评审的角色提示词或合法选中的 Skill 承载具体意图、
-路径与语义影响判断。程序独立核权限、预算、版本和引用，不以结构校验替代语义判断或人类采纳。
+路径与语义影响判断。程序独立核权限、版本和引用，观测实际用量，不以结构校验替代语义判断或人类采纳。
 应用分支不改变既有 Protocol/Task/Method→main/child→Handoff→Main State→人类决定，也不要求固定角色/API 数量。
 
 ## 4. Runtime 内环与 Maintainer 外环
@@ -177,6 +177,8 @@ triage，不从执行失败自动生成。
 - Main State 是主执行接续摘要，Research State 是研究对象及知识关系；两者不相互替代。checkpoint
   验证允许恢复所需引用，不自动执行 next action，也不因原子写入获得并发协调或权限。
 - Guide 消费批准的状态与引用；其回答只有经正常 Task/Handoff 或人类决定路径明确采用后才进入研究流程。
+
+模型消费显式的工作输入投影，而不是完整内部 Task/Policy/账本。工作输入包括职责、目标、获准材料、必要决定/反证、权限、输出/检查与真实停止条件；不默认提供经济额度、余额、预占或预算管理职责。程序记录 actual/failed/unknown，通用产品不以预算额度或记账缺失阻断工作。技术窗口、接口参数和传输超时独立适配；记账完整性与执行/交付判定分开。当前可用路径见[支持范围](SUPPORTED_FEATURES.md)。
 
 ## 6. 验证与权威
 

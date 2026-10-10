@@ -52,7 +52,7 @@ Runtime catalog 由安装包提供，无需从源码目录复制；空 Projectio
 模板另有 `--template offline-demo` 离线工程示例和 `--template minimal` 最小入口。
 `resources quickstart` 仍可单独复制安装包中的 [no-Skill Task](../examples/quickstart/task-no-skill.yaml)。
 
-Task 的 `required_skills` 为空，同时保留输入、输出、权限、预算、写入范围和停止条件。
+Task 的 `required_skills` 为空，同时保留输入、输出、权限、写入范围和停止条件。示例须按当前支持的文件版本消费；当前版本仍要求预算字段，模型工作输入的投影与运行契约迁移分别验收。当前可用能力见[支持范围](SUPPORTED_FEATURES.md)。
 成功表示输入契约与引用可校验，尚未执行研究 Task，也未生成 Runtime Bundle、Execution View 或研究结论。
 再次体验时选用新的项目目录。
 

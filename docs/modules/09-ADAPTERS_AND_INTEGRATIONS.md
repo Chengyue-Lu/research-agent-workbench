@@ -12,7 +12,7 @@ Provider / Runtime 实现消费 Method、Mode、Skill、受控读取、Handoff �
 接点：供给报告者提供 typed capability/conformance facts；Resolver 选择后，View producer 冻结具体
 binding，Host 调用一个 pre-bound Driver，Session/Tool dispatch 返回实际响应、用量、错误与工具事实。
 只在 Task 明确需要外部模型、Tool 或平台执行时启用该 Adapter；0..N 子 Task 是上游应用调度决定，
-每个独立会话仍分别绑定预算、允许集和结果接收者。
+每个独立会话仍分别绑定允许集和结果接收者，程序关联实际消耗。
 
 ### 统一入口的短程执行映射：设计候选
 
@@ -82,8 +82,7 @@ IsolatedApiSessionRunner.run(request, limits) -> ApiSessionResult
 
 每次 `run` 是独立会话。上述组件只能为上游 frozen execution binding 提供具体 Driver，不能在 Host
 调用时再选择 slot、Provider 或 Model。Runner 不把 response ID 或对话缓存在 Attempt 之间当作状态；
-工具轮次、并发、结果大小、token / 成本可得性、Host-observed wall time 和停止原因必须受硬边界约束
-并写入 execution facts/Receipt。
+工具轮次、并发、结果大小、token / 成本可得性、Host-observed wall time 和停止原因写入 execution facts/Receipt；技术容量/取消及权限分别执行，经济额度与未知记账不成为通用阻断条件。
 
 ## 5. Runtime Adapter 契约
 
@@ -120,12 +119,12 @@ Provider 能力必须通过声明与 conformance 证明，不能从厂商品牌�
 
 ## 7. Tool / MCP 契约
 
-每个工具提供稳定 capability ID、输入/输出 Schema、读取和写入副作用、数据去向、认证方式、预算、错误与取消语义。MCP 是工具传输方式之一，不成为核心对象。
+每个工具提供稳定 capability ID、输入/输出 Schema、读取和写入副作用、数据去向、认证方式、实际消耗、错误与取消语义。MCP 是工具传输方式之一，不成为核心对象。
 
 Tool 输出是不可信输入；进入 Agent 上下文的瞬时结果若没有稳定来源，必须脱敏后写入 Trace。外部写动作需要 Project Protocol 与 Task 双重授权。安装依赖、插件、MCP Server 或 Skill 属于供应链变化，需要独立任务或人工批准。
 
 Tool 接通必须观察定义、exact interface/allowlist、参数校验、受限 dispatch、实际结果和 Trace，不能由
-Supply metadata 推定已经调用。模型→Tool→模型的多轮循环由 session 与上游预算共同限定，不能借 Host
+Supply metadata 推定已经调用。模型→Tool→模型的多轮循环按 Task 目标、真实完成/停止条件和 session 技术能力执行，不能借 Host
 的一次 Driver 调用隐藏多个付费请求或自动重试。
 
 ## 8. 有效权限
@@ -152,7 +151,7 @@ selected closure；Runtime Bundle 固定本次可读取文档，View 再冻结 e
 Host binding、freshness 和最终 policy intersection。平台、模型或 Supply 变化必须形成新的
 Resolution→Snapshot→Bundle/View 链，Host 不在旧 View 中 local rebind/fallback。
 
-Thin Host 使用 trusted clock 的 start/end observation 执行 freshness 与 duration/budget 检查，并在调用前
+Thin Host 使用 trusted clock 的 start/end observation 执行 freshness 检查并观测实际 duration，技术超时与明确取消分别处理，并在调用前
 重载 exact Bundle 防止 TOCTOU。其报告必须区分 preventive controls 与 post-call detected violations；
 检测到越界不等于事前 sandbox 已阻止。completed 或可重放的 post-call failure 还必须由 typed、hash-pinned
 Trace fact 独立佐证 actual Provider/Adapter/Model/Runtime/Host binding 和 actual Supply。平台或模型版本变化

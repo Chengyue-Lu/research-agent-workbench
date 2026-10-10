@@ -2,7 +2,7 @@
 
 ## 1. 目标
 
-把上下文当作受预算约束的决策空间，而不是被动依赖平台压缩的无限日志。主 Agent 优先保持连续判断能力；子 Agent 的局部历史可以被压缩或丢弃，但正式工件与交接不能受损。
+把上下文当作按任务、来源和真实模型容量组织的工作集，而不是被动依赖平台压缩的无限日志。主 Agent 优先保持连续判断能力；子 Agent 的局部历史可以被压缩或丢弃，但正式工件与交接不能受损。
 
 接点：主执行接收者消费结果与正式 refs 后写 Main State/checkpoint；resume checker 消费 checkpoint 和
 显式机器证据，输出可恢复或冲突；新主会话据此受控加载下一动作。上下文压力、阶段结束、等待或交接
@@ -17,9 +17,9 @@
 
 ### Task Context
 
-用于一个窄任务。由 Task Packet、相关 frozen control inputs、选定 Agent Profile、声明输入，以及执行路径
-所需的 Runtime Bundle/View 组成；Skill-bearing extension 加入合法 Projection/Supply/View 锁和按需 Skill
-正文，只有历史 Skill-bound 兼容路径加入 Assignment。
+用于一个窄任务。程序持有 Task Packet、相关 frozen control inputs、选定 Agent Profile、声明输入与执行路径
+所需的 Runtime Bundle/View；模型按显式职责/目标/权限/材料/输出/停止条件投影读取。Skill-bearing extension
+由程序核合法 Projection/Supply/View 锁，模型按需消费正文；只有历史 Skill-bound 兼容路径加入 Assignment。
 no-Skill、direct Tool、procedure 与 Adapter/Provider 路径不得为了构造上下文而伪造 Skill。任务结束后关闭。
 
 ### Artifact Context
@@ -33,19 +33,13 @@ no-Skill、direct Tool、procedure 与 Adapter/Provider 路径不得为了构造
 | Pinned | 问题、不可破坏约束、Claim ceiling、关键决定 | 始终可见，尽量短 |
 | Active | 当前一步所需输入与推理 | 完成后卸载 |
 | Recent Handoffs | 待合并结果、冲突、Human Gate | 只保留短摘要与 refs |
-| Reserve | 用户新指令、异常、复杂判断余量 | 必须主动留白 |
+| 输入余量 | 用户新指令、异常与必要判断的输入空间 | 程序按实际模型容量适配 |
 
 不将具体百分比写死为平台真值。首版用代理指标估计压力：累计读取字符、最近 Handoff 数、未关闭问题数、长工具输出次数、线程持续回合、平台压缩预警以及主 Agent 自检。
 
-`Context Snapshot` 把每个指标标记为“已测量”或“未知”。缺失数据不能自动填零；字符数只用于本地压力比较，不换算成假精确的 token 余量。默认阈值可由 Project Protocol 覆盖，并随 Snapshot 一起冻结，避免事后改变解释。
+`Context Snapshot` 把每个指标标记为“已测量”或“未知”。缺失数据不能自动填零；字符数只用于本地压力比较，不换算成假精确的 token 余量。观测参数及原始测量随 Snapshot 留存，不产生通用额度或停机条件；旧阈值行为按原版本兼容记录。
 
-在已知同单位预算时，是否开启下一个 Atomic Work Unit 使用更严格的条件：
-
-```text
-remaining_context >= next_atomic_cost + closeout_cost + safety_margin
-```
-
-不满足时进入 rollover；连 closeout reserve 都不足时 block 并立即持久化最小安全暂停状态。成本不可获得时显式记录 `unavailable`，不得把百分比观测伪装成可完成保证。
+工作集按任务相关性、必须保留的决定/反证和精确来源装配，程序记录实际注入内容、范围、版本及技术容量缺口。不要求模型计算余额或预留经济收尾额度，代理字符/token 估计不构成自动停机依据。需要换会话或恢复时仍按已接受连续性边界处理，不能由工作集整理隐式启动。
 
 ## 4. Main State Packet
 
@@ -76,7 +70,7 @@ artifact_index_refs:
 machine_state_refs:
   - path: tasks/SIM-007.yaml
     sha256: "0000000000000000000000000000000000000000000000000000000000000000"
-rollover_reason: approaching soft context budget
+rollover_reason: explicit session handoff
 ```
 
 Main State 是恢复入口，不是第二套数据库。它只引用正式工件，不复制原始内容。`continuity_status` 区分 active、stage-completed、safe-paused、waiting 与 blocked；`machine_state_refs` 用哈希冻结恢复所需机器证据，可选 `git_head` 用于发现工作树基线冲突。
@@ -202,7 +196,7 @@ rwb context resume-check ...
 rwb handoff audit-transfer ...
 ```
 
-`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；若提供动态预算，remaining、next AWU、closeout 和 safety margin 必须同单位。压缩后的 Task 若声明 handoff-ready，还要提供 Handoff audit 引用。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；`resume-check` 检查引用哈希、Git HEAD、协议和 digest，但不启动或管理新会话。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
+`assess` 不读取聊天隐式状态，调用方必须传入可测代理指标；旧版同单位预算 assess 行为按[显式版本迁移](../compatibility/BUDGET_CONTRACT_MIGRATION.md)解释，不作为模型默认余额管理职责。压缩后的 Task 若声明 handoff-ready，还要提供 Handoff audit 引用。`checkpoint` 可以从上一 Main State 继承状态并冻结机器证据；`resume-check` 检查引用哈希、Git HEAD、协议和 digest，但不启动或管理新会话。Git HEAD 不覆盖未提交工作树，因此应在提交边界创建带 Git 基线的 checkpoint。
 
 ## 10. 不保存的内容
 

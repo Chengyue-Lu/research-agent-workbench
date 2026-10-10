@@ -1,9 +1,13 @@
 # 实现状态
 
-状态：Current implementation authority。文档校准：2026-10-10；继承已审实现范围的基线为 develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`。
-本轮协调者提供的 primary develop 来源元信息为 `11c3b57dfbf8af0dc2587fc421d097e2544941c3`；它不表示本轮重新完整审查或重测了该来源的所有新增实现，也不扩大旧接受范围。
+状态：Current implementation authority。文档校准：2026-10-10；本轮固定 develop 为 `67a7c5f6a0c3495f1ad583864d87b25f5bf892e2`，仅核验规划、预算相关契约及 PR142 合并状态。其他实现覆盖继承原已审范围（基线 `d3c4d23206339ebc7f18b5621f3aa5453f96335e`），不声称重新完整审查或重测当前来源的所有实现。
 
 本页维护工程成熟度、实现覆盖、候选和缺口。exact Task 的定义、状态、risk、依赖与验收以 [TASKS](TASKS.md) 为准，方向与 Gate 见 [ROADMAP](ROADMAP.md)；公开入口的使用契约与证据等级见 [SUPPORTED_FEATURES](SUPPORTED_FEATURES.md)。历史收口记录绑定当时身份，不作为新的运行、权限或接受事件。
+
+
+2026-10-10 文档规划：关联意图、范围化记忆/角色工作集、单层活跃方向、事件/只读前端和程序记账方向已获人类授权纳入本轮 task-definition PR；本分支尚未合并，不新增实现覆盖。M1-016/017、M2-015、M3-014/015、M6-013 的具体状态以 TASKS 为准。
+
+现行 develop 的 Task/Policy/View/Host/Session 仍有必需预算与硬限制；PR140 固定候选还把预算相关职责/完整 Task 送入模型。新方向要求无通用经济配额、模型默认无预算上下文、记账与完成分别判定，迁移尚未实现；见[ADR-0027](decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)与[版本边界](compatibility/BUDGET_CONTRACT_MIGRATION.md)。现有 stage sidecar 是事后产物，不是实时运行视图；完整记忆维护、方向合流和只读前端不因定义而宣称已支持。
 
 ## 成熟度与来源身份
 

@@ -62,7 +62,7 @@ Trace/Receipt closure、输出存在性、Handoff 回指、时间与状态、协
 
 - 主 Agent发生非计划压缩的次数；
 - checkpoint/rollover 后恢复成功率；
-- 下一 AWU 成本估计误差、closeout reserve 命中率与 false-completion rate；
+- 实际工作输入量、模型容量缺口/未知与 false-completion rate；
 - 新会话 Time-to-First-Correct-Action 与重复工作率；
 - Handoff 缺失限制或未完成项比例；
 - Transfer Manifest 条目数、必传条目覆盖率和未映射负面区段数；
@@ -87,7 +87,7 @@ Trace/Receipt closure、输出存在性、Handoff 回指、时间与状态、协
 - Handoff 抽样与失真修复的人工分钟数；
 - Human Gate 阅读与等待时间。
 
-协调成本持续超过三分之一时进入 WARN，并优先减少 Agent、Handoff 字段、review 或规则，而不是提高预算。
+协调成本和用量用于比较及工程改进，不设置统一比例停机阈值，不要求模型持续查看账本；只有实际证据表明某机制增加负担时再调整角色、交接、review 或规则。
 
 协调比例优先使用 `coordination_tokens / (coordination_tokens + execution_tokens)`；token 不可得时才使用对应时间比例。两个基准都不可得时产生 unknown 警告，不合成跨单位总分。
 
