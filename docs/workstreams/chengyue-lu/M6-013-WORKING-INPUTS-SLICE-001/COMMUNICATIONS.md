@@ -37,3 +37,9 @@ Root 转达：人类允许与本窗口并行推进 PR144 新规划；从本地�
 初次产品提交 `a32869870d6b94f70252342965364f6aee5c98ea` 的 parent 为固定起点 `76fd3d892eb1f1a15799c9f24a255ef2dcf0190e`，10 个有界文件。cached diff 检查报告新 Markdown/Schema 的额外 EOF 空行，但串联命令仍创建提交；该失败原样记录，不称首次 diff check 通过。随后只规范化新文件 EOF 并更新 Schema pin，产品 Python bytes 与旧 Schema 未动，00:44:27+08:00 working diff check 通过；后续格式提交保留该历史。
 
 > 提交检查发现新文档和候选 Schema 尾部多了空行，首次提交仍被创建了。我会用后续格式提交修正、更新 Schema hash，并保留这条检查记录；产品代码与旧版本文件不受影响。
+
+## Root 接入与验证回执
+
+2026-10-11：收到主窗口接入回执，完整可见正文保存在 [ROOT_INTEGRATION_RECEIPT](ROOT_INTEGRATION_RECEIPT.md)。Root 报告按 a328→9a93→ad7 三提交接入 `codex/material-input-closure`，接入提交为 `3df14906`→`6a8c374c`→`05533b9c`，保留 PR140 P2 同步 `9f2`。Root 报告独立投影及旧 Schema 正反共 9 项无失败；同组 CI 首次因新 material source 未入 Git inventory 失败，原件保留并显式 stage，后继组验证另行归档。本窗口没有执行测试或复核其原始日志。
+
+新材料快照包含 `material_provenance`，当前投影白名单会拒绝该字段，尚未组合消费。该差异交由 Root 后续接合；本片段产品/Schema/tests 原 hash、首次失败历史和 source ref 保持冻结，M6-013 继续 IN_PROGRESS。本次仅归档可见回执并更新 primary 项目记忆 own-row，无共享代码修改、测试执行或重复 PR。
