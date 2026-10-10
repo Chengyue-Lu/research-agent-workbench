@@ -15,7 +15,7 @@
 
 - 维护当前问题、约束、决定、风险和任务索引；
 - 判断任务是否值得委派；
-- 在 Protocol/Task 的并发、深度、权限和预算内动态决定 0..N 个子任务；零子任务是正常执行路径；
+- 在 Protocol/Task 的实际并发能力、深度、权限及读写范围内动态决定 0..N 个子任务；零子任务是正常执行路径；
 - 创建 Task Packet 并请求能力解析；
 - 比较 Handoff、处理冲突和识别 Human Gate；
 - 明确消费子结果的工件引用、失败、限制和未决项；摘要不足时按授权范围回查，不能只收成功标记；
@@ -106,7 +106,7 @@ Host 触发自动评分、静默 fallback 或 local rebind。
 默认 `max_delegation_depth: 1`。子 Agent 不得再创建子 Agent，除非 Task Packet 同时声明：
 
 - `delegation.allowed: true`；
-- 最大深度、最大并发和子预算；
+- 委派深度、实际并发能力和父子消耗关联；
 - 可委派的子问题类型；
 - 汇总责任与失败处理。
 
@@ -128,7 +128,7 @@ Task / Method / frozen Capability selection
   conformance evidence exact closure，并把当前范围固定为一个 Action/Capability slice；它不能声明 Task
   completion；
 - View producer 在该 closure 上绑定 exact Profile、DataPolicy、Host policy 与
-  Provider/Adapter/Model/Runtime/Host，并计算最严 permission、data-egress、side-effect 和 budget 交集；
+  Provider/Adapter/Model/Runtime/Host，并计算最严 permission、data-egress 和 side-effect 交集；实际用量单独观测；
 - Thin Host 只消费与同一 Bundle 绑定的 frozen View，在调用前重验 freshness 与 Bundle bytes，并通过一个
   pre-bound Driver 最多执行一次；它不选择 Supply、不 rebind、不 fallback；
 - no-Skill、direct Tool、procedure 与 Adapter/Provider supply 路径在零 Skill、零 Evolution Registry、
@@ -139,7 +139,7 @@ Task / Method / frozen Capability selection
 
 - coordinator 默认使用 `primary` 槽；其他首批 Profile 默认使用 `worker` 槽；
 - 每个子任务建立 fresh context，不继承主 Agent 的完整消息历史；
-- Task、frozen control refs、Runtime Bundle/View、声明输入、输出契约和预算组成启动材料；
+- 程序持有完整 Task、frozen control refs 与 Runtime Bundle/View；模型工作输入仅投影职责、目标、获准材料/必要依据、权限、交付/检查及真实停止条件；
   Skill-bearing extension 额外闭合合法 Projection/Supply/View 锁与实际加载记录；只有历史 Skill-bound
   兼容路径携带 Skill Assignment；
 - API session 或平台 Adapter 只能充当 frozen View 后面的 pre-bound Driver，不得在调用时自行选择模型、
@@ -162,7 +162,7 @@ Guide 使用独立只读输入与权限，仅解释已批准 Main State 和显�
 Guide 与短程执行在 main 旁独立调用，不属于研究 child；职责或模型会话可以合并，但 Task 上下文、
 读取允许集、权限和接收者分别限定。同一 UI 的消息呈现不等于把主聊天加入每个模型请求。
 
-main 保持原 Task。短程调用以最小 Task、输入 pins、scope、预算和输出契约执行，默认不通知 main；
+main 保持原 Task。短程调用以最小 Task、输入 pins、scope 和输出契约执行，默认不通知 main；
 若影响其读写、验证或活动 child，则传递最小失效/冲突事实，经所属 main 的 Task 治理处理，不能
 从普通入口任意改 child 指令、rebind 或恢复执行。目标占用及共享写冲突在写前协调，写后状态影响
 评估不替代这一准入检查。方法、Claim、数据或授权变化进入研究路径，混合或歧义先拆分或澄清，

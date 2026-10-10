@@ -11,28 +11,9 @@ Question、Mode/Action 产生 Task、Method Resolution 与 Capability Requiremen
 
 ## 2. Project Protocol
 
-建议最低结构：
+协议职责：
 
-```yaml
-project_id: demo
-question_refs: [Q-001]
-active_modes: [evidence-synthesis, simulation]
-claim_ceiling: [source_reported, simulation_supported]
-required_human_gates:
-  - approve_method_assumptions
-  - approve_main_claim
-  - approve_external_release
-budgets:
-  max_parallel_subagents: 2
-  max_delegation_depth: 1
-  coordination_cost_ratio_warn: 0.33
-context_policy:
-  proactive_checkpoint: true
-  main_raw_material: forbidden
-data_boundary:
-  local_only: true
-  external_upload_requires_approval: true
-```
+Protocol 表达项目问题、方法义务、主张与数据边界、输入和需要的人类决定。程序运行事实与模型工作输入分别装配；通用用户无需先填经济额度。实际支持版本见 [STATUS](../STATUS.md)，原预算字段示意见[迁移边界](../compatibility/BUDGET_CONTRACT_MIGRATION.md)。
 
 协议可以修订，但必须记录旧 revision、修改原因、影响对象和批准人。
 

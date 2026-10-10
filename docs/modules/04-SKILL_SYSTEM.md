@@ -129,7 +129,7 @@ expected increment、evaluation criteria、required evidence classes 和已知 d
 - 风险级别；
 - 数据边界；
 - Agent Profile 权限与工具能力；
-- token/context/时间预算；
+- 实际模型窗口/接口能力与明确任务停止条件；
 - 显式候选 Capability Supply Reports；
 - 已发布、exact-pin 的 SkillReleaseProjection（仅 Skill-bearing 路径）。
 
@@ -169,14 +169,14 @@ Codex 等平台可以根据 description 隐式激活 Skill，但本项目分三�
 
 这样既保留灵活性，又不把可复现任务交给不可观察的隐式匹配。
 
-## 7. 上下文预算
+## 7. 工作集与实际容量
 
-- 主 Agent 只看 name、description、capabilities、cost 和 compatibility 元数据；
+- 主 Agent 先看 name、description、capabilities 和 compatibility 导航；实际加载消耗由程序记录；
 - 子 Agent 只加载本次 required/optional Skills；
 - Skill 正文采用渐进披露：`SKILL.md` 保持可执行，长参考进入 `references/`，脚本进入 `scripts/`；
-- Skill 数量受 Task/Profile 的明确预算与选择上限限制；旧 Task→Assignment Resolver 的两个主 Skill/一个校验 Skill 默认属于该兼容接口，不是所有 Runtime 的固定编制；
-- project-internal Skill 同样计入所用接口的选择与上下文预算，不因角色或来源获得额外权限/槽位；
-- Skill 指令总量超预算时必须拆任务，不能压缩成含混“大综合 Skill”；
+- Skill 按任务方法义务和真实模型容量选择，不以经济额度决定加载；旧选择编制见[兼容边界](../compatibility/README.md)；
+- project-internal Skill 同样满足方法义务、资格及真实容量，不因来源获得额外权限；
+- 实际模型容量不足时明确 gap、分段读取或拆分工作，不能丢失方法条件或合并成含混指令；
 - 频繁同时出现的一组 Skills 只有在真实数据证明稳定后才能形成 Bundle。
 - Agent 只能读取本次选中 Skill 的 `SKILL.md` 和其中为当前步骤显式引用的 references；不得借 Skill 发现递归读取其他候选 Skill 或整个 reference 树。
 - Runtime 对未选 Skill 只读取发布投影元数据；Maintainer 如需比较候选正文，应创建独立的 Skill 评估
@@ -230,7 +230,7 @@ Skill 若要求超出上层边界的动作，Resolver 必须阻断或裁剪，�
 |---|---|---|
 | SKILL-MISSING | 已冻结 Skill binding 不存在；正式 no-Skill/direct-tool 不适用 | BLOCK |
 | SKILL-VERSION-DRIFT | 执行版本与 frozen Projection/Supply/View 锁不一致；兼容路径核 Assignment | BLOCK |
-| SKILL-CONTEXT-FLOOD | Skill 总上下文超预算 | WARN/BLOCK |
+| SKILL-CONTEXT-FLOOD | Skill 实际输入超过模型容量 | WARN/BLOCK |
 | SKILL-CONFLICT | Skills 或输出契约冲突 | BLOCK |
 | SKILL-PERMISSION-ESCALATION | Skill 请求超出权限 | BLOCK |
 | SKILL-IMPLICIT-CRITICAL | 关键任务仅靠隐式激活 | BLOCK |

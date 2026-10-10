@@ -7,7 +7,7 @@ Research Agent Workbench（RWB）是一套**由人负责决策、以文件契约
 - 版本化的 Task、Assignment、Handoff、Decision、Evidence、Claim 与 Trace 契约；
 - 面向学科差异的 Mode / Action / Method 语义，而不是固定研究流水线；
 - no-Skill、直接工具、受限 Skill 与 Human Gate 等并列执行路径；
-- 受控读取、受限写入、预算、停止条件和风险分级交接；
+- 受控读取、受限写入、实际用量记录、停止条件和风险分级交接；
 - provider-neutral 的隔离执行缝与文件权威 Trace；
 - 确定性 Schema、引用、哈希、权限和闭集一致性校验。
 

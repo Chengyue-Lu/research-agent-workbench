@@ -36,6 +36,10 @@ Action 和历史 Method Resolution 保持可解释。实现和验证边界见
 [Projection](../implementation/SKILL_RELEASE_PROJECTION.md)及 [Skill closeout](../implementation/SKILL_EXECUTION_CLOSEOUT.md)，
 不能把 legacy Assignment/非空 Skill lock 当作所有新任务的前置。
 
+## 预算契约与模型工作输入
+
+旧必需 budget、View/Host/Session 停止行为与候选模型预算上下文按显式版本解释，新方向及消费者迁移见[预算契约迁移](BUDGET_CONTRACT_MIGRATION.md)。当前仍受旧实现约束，不因文档变化宣称新路径可执行；既有 live grant 和冻结评价条件保留。
+
 ## 迁移规则
 
 CLI、项目模板和 Schema 的版本/弃用规则见 [0.x 兼容政策](CLI_SCHEMA_POLICY.md)。
