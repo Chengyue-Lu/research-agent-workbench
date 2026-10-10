@@ -14,6 +14,7 @@
 | 前端未授权/未成型控制工件被Runtime消费 | 独立人类ceilings、Schema/pins；explicit完整冻结链，无fake资格 | 控制producer→Runtime实际接通；自然语言planner与真实来源适用性待补 |
 | Runtime重选Supply或silent fallback | 仅消费冻结选择；调用既有Bundle/View/Host，漂移阻断 | 支持的procedure路径已验证；可信observer/verifier由caller负责 |
 | 主子预算/取消/失败遗漏 | 整个执行范围统计，actual attempted而非responses；unknown保留，不自动paid retry；Task末轮复检 | 原R2/R3已修复并独立复查；合作取消不保证硬中断 |
+| child 执行后 parent 无容量消费；嵌套 child 花掉祖先或同级预算 | 已提出整 wave 的 child 首 Session 与 fresh parent Session 在首个 child 前共同准入；pending 预留穿过嵌套，实际/规划/unknown 分开 | 后继候选见[预算桥接](delegation-wave-008/VERIFICATION.md)；容量机会不保证内容质量，显式 Session 配置仍须符合 invocation；三项 Task 不因此 DONE |
 | 任务完成与Claim/Human接受混淆 | 执行slice、main处置、人类决定分别记录 | 报告/receipt false authority守卫测试通过；Task语义接受仍待 |
 | Guide问答污染main/项目 | 独立caller、获准快照、无Tool/write/message/Trace-state writer接点，反例测试 | 已实现/离线验证；外层remote授权/timeout/usage账由caller负责 |
 | 多writer/局部提交失败 | 首轮单提交者/独占发布，保留失败；不宣称CAS或全事务；state从fixed report取值 | 原R4已修复并复查；覆盖/篡改拒绝，CAS/全事务未提供 |

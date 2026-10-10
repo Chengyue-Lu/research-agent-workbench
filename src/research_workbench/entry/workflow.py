@@ -115,6 +115,16 @@ class WorkflowResult:
     human_acceptance: bool = False
 
 
+@dataclass(frozen=True)
+class _SessionReservation:
+    """Unstarted planning capacity; never actual usage or an unknown hold."""
+    task_id: str
+    model_calls: int
+    output_tokens_per_call: int
+    tokens: int
+    deadline_monotonic: float
+
+
 def _portable_scope(value: str) -> str:
     if not isinstance(value, str) or not value or "\\" in value:
         raise ValueError("scope must be a portable relative path")
@@ -255,6 +265,7 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
     ordinal = 0
     node_usage = {}
     node_started = {}
+    pending_sessions = []
     attempt_id = attempt_id or "WORKFLOW-" + hashlib.sha256(str(directory).encode()).hexdigest()[:16]
 
     def event(kind, payload):
@@ -290,41 +301,81 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
     event("workflow-started", {"task": copy.deepcopy(task), "budget": asdict(budget),
                               "prior_model_calls": calls, "known_tokens": known, "held_tokens": held})
 
-    def invoke(role, node, depth, context):
-        nonlocal ordinal, held
-        now = clock()
-        if isinstance(now, bool) or not isinstance(now, (int, float)) or not math.isfinite(now) or now < started:
-            raise ValueError("workflow clock became invalid")
-        remaining = deadline - now
-        key = node["task_id"]
-        own_calls, own_output = node_usage.get(key, (0, 0))
-        if own_calls >= node["budget"].get("max_turns", budget.max_model_calls):
+    def pending_capacity(excluding=None):
+        slots = [slot for slot in pending_sessions if slot is not excluding]
+        return sum(slot.model_calls for slot in slots), sum(slot.tokens for slot in slots)
+
+    def plan_session(node, available_calls):
+        own_calls, own_output = node_usage.get(node["task_id"], (0, 0))
+        remaining_turns = node["budget"].get("max_turns", budget.max_model_calls) - own_calls
+        if remaining_turns <= 0:
             raise ValueError("role Task turn budget exhausted across sessions")
-        node_deadline = node_started.setdefault(key, now) + node["budget"].get("max_seconds", budget.max_seconds)
-        slice_deadline = min(deadline, node_deadline)
-        remaining = min(remaining, slice_deadline - now)
-        if cancel_requested and cancel_requested():
-            raise ValueError("workflow cancellation requested")
-        if remaining <= 0 or calls >= budget.max_model_calls or held:
-            raise ValueError("workflow time/call budget exhausted or actual usage is unknown")
-        session_calls = min(budget.max_session_model_turns, budget.max_model_calls-calls,
-                            node["budget"].get("max_turns", budget.max_model_calls)-own_calls)
+        session_calls = min(budget.max_session_model_turns, available_calls, remaining_turns)
+        if session_calls <= 0:
+            raise ValueError("workflow call budget exhausted after pending Session reservations")
         cap = min(budget.max_output_tokens_per_call,
                   (node["budget"].get("max_output_tokens", budget.max_total_tokens)-own_output)
                   // session_calls)
         if cap <= 0:
             raise ValueError("role Task output budget exhausted across sessions")
+        node_start = node_started.get(node["task_id"])
+        session_deadline = (deadline if node_start is None else min(deadline,
+            node_start + node["budget"].get("max_seconds", budget.max_seconds)))
+        return _SessionReservation(node["task_id"], session_calls, cap,
+            session_calls * (budget.input_reservation_per_call + cap), session_deadline)
+
+    def checked_time(node):
+        now = clock()
+        if isinstance(now, bool) or not isinstance(now, (int, float)) or not math.isfinite(now) or now < started:
+            raise ValueError("workflow clock became invalid")
+        if cancel_requested and cancel_requested():
+            raise ValueError("workflow cancellation requested")
+        node_start = node_started.get(node["task_id"], now)
+        slice_deadline = min(deadline, node_start + node["budget"].get("max_seconds", budget.max_seconds))
+        if now >= slice_deadline:
+            raise ValueError("workflow time/call budget exhausted or actual usage is unknown")
+        if any(now >= slot.deadline_monotonic for slot in pending_sessions):
+            raise ValueError("pending parent consumption deadline exhausted")
+        if pending_sessions:
+            slice_deadline = min(slice_deadline, min(slot.deadline_monotonic for slot in pending_sessions))
+        return now, slice_deadline
+
+    def mark_unstarted(nodes):
+        for node in nodes:
+            identifier = node.get("task_id")
+            if isinstance(identifier, str) and identifier and identifier not in unstarted:
+                unstarted.append(identifier)
+
+    def invoke(role, node, depth, context, reserved_session=None):
+        nonlocal ordinal, held
+        now, slice_deadline = checked_time(node)
+        key = node["task_id"]
+        own_calls, own_output = node_usage.get(key, (0, 0))
+        node_started.setdefault(key, now)
+        pending_calls, pending_tokens = pending_capacity(excluding=reserved_session)
+        if calls >= budget.max_model_calls or held:
+            raise ValueError("workflow time/call budget exhausted or actual usage is unknown")
+        planned = plan_session(node, budget.max_model_calls-calls-pending_calls)
+        if reserved_session is not None:
+            if not any(slot is reserved_session for slot in pending_sessions) or reserved_session.task_id != key:
+                raise ValueError("role has no matching pending Session reservation")
+            if (reserved_session.model_calls > planned.model_calls
+                    or reserved_session.output_tokens_per_call > planned.output_tokens_per_call):
+                raise ValueError("pending Session reservation exceeds the current role budget")
+            planned = reserved_session
+        session_calls, cap, reservation = planned.model_calls, planned.output_tokens_per_call, planned.tokens
         # Authorize and reserve every possible request before entering a Session.
         # Unknown usage holds the entire slice, including its unused turns.
-        reservation = session_calls * (budget.input_reservation_per_call + cap)
-        if known + reservation > budget.max_total_tokens:
+        if known + pending_tokens + reservation > budget.max_total_tokens:
             raise ValueError("workflow token reservation exceeds remaining budget")
         ordinal += 1
         invocation = RoleInvocation(role, copy.deepcopy(node), ordinal, depth, copy.deepcopy(context), session_calls, cap,
-                                    remaining, reservation, deadline_monotonic=slice_deadline, clock=clock)
+                                    slice_deadline-now, reservation, deadline_monotonic=slice_deadline, clock=clock)
         event("role-started", {"ordinal": ordinal, "role": role, "task_id": node["task_id"],
                                "depth": depth, "context": invocation.context, "reserved_tokens": reservation,
                                "reserved_model_calls": session_calls, "output_tokens_per_call": cap})
+        if reserved_session is not None:
+            pending_sessions[:] = [slot for slot in pending_sessions if slot is not reserved_session]
         try:
             result = executor(invocation)
         except Exception as exc:
@@ -344,7 +395,11 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
             raise ValueError("role Task turn budget exceeded after execution")
         if node_output > node["budget"].get("max_output_tokens", budget.max_total_tokens):
             raise ValueError("role Task output budget exceeded across sessions")
-        if result.model_calls > session_calls or calls > budget.max_model_calls or known > budget.max_total_tokens:
+        actual_tokens = (result.input_tokens + result.output_tokens
+                         if result.input_tokens is not None and result.output_tokens is not None else None)
+        if (result.model_calls > session_calls or calls + pending_calls > budget.max_model_calls
+                or known + pending_tokens > budget.max_total_tokens
+                or (actual_tokens is not None and actual_tokens > reservation)):
             raise ValueError("executor exceeded its dispatched model/token budget")
         if result.status != "completed":
             reason = "; ".join(result.limitations) or "no completion evidence"
@@ -354,87 +409,126 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
         finished = clock()
         if finished-node_started[key] > node["budget"].get("max_seconds", budget.max_seconds):
             raise ValueError("role Task deadline exceeded after execution")
+        if finished > slice_deadline:
+            raise ValueError("role Session deadline exceeded after execution")
         if finished-started > budget.max_seconds:
             raise ValueError("workflow deadline exceeded after role execution")
         control = _parse_control(result.text)
         controls.append({"task_id": node["task_id"], "control": copy.deepcopy(control)})
         return control
 
-    def node_run(node, depth, role):
+    def node_run(node, depth, role, first_session=None):
         outcomes = []
         writes = []
-        control = invoke(role, node, depth, {"phase": "plan-or-execute", "child_results": []})
+        control = invoke(role, node, depth, {"phase": "plan-or-execute", "child_results": []}, first_session)
         while control["decision"] == "delegate":
             parent_packet = TaskPacket.from_mapping(node)
             children = [item["task"] for item in control["delegations"]]
-            if len(outcomes)+len(children) > budget.max_children_per_task:
-                raise ValueError("main chose more child Tasks than the configured ceiling")
-            if parent_packet.delegation.max_parallel < 1:
-                raise ValueError("parent has no permitted child execution slot")
-            # Validate the whole proposed wave before starting even its first child.
-            for child in children:
-                child_packet = _validate_child(child, node, depth=depth+1, budget=budget, catalog=catalog)
-                if child_packet.task_id in seen_tasks:
-                    raise ValueError("child Task identity was already dispatched or proposed")
-                for scope in child_packet.write_scope:
-                    if any(_scope_within(scope, prior) or _scope_within(prior, scope) for prior in writes):
-                        raise ValueError("child write scopes overlap")
-                    writes.append(scope)
-                seen_tasks.add(child_packet.task_id)
-            event("delegation-proposed", {"parent": node["task_id"], "tasks": children})
-            for index, child in enumerate(children):
-                observation_start = len(observations)
-                try:
-                    child_control = node_run(child, depth+1, "child")
-                except ValueError:
-                    unstarted.extend(i["task_id"] for i in children[index+1:])
-                    raise
-                actual = copy.deepcopy(observations[observation_start:])
-                usage = {name: (None if any(item[name] is None for item in actual)
-                                else sum(item[name] for item in actual))
-                         for name in ("model_calls", "tool_calls", "input_tokens", "output_tokens")}
-                outcome = {"task_id": child["task_id"], "disposition": child_control["decision"],
-                                 "summary": child_control["summary"], "limitations": child_control["limitations"],
-                                 "next_actions": child_control["next_actions"],
-                                 "execution_status": actual[-1]["status"], "usage": usage,
-                                 "usage_scope": "child-task-and-descendants",
-                                 "artifact_refs": [pin for item in actual for pin in item["artifact_refs"]],
-                                 "receipt_refs": [pin for item in actual for pin in item["receipt_refs"]],
-                                 "execution_observations": [{key: item[key] for key in (
-                                     "ordinal", "role", "task_id", "status", "model_calls", "tool_calls",
-                                     "input_tokens", "output_tokens", "artifact_refs", "receipt_refs")}
-                                     for item in actual]}
-                from research_workbench.entry.handoff import publish_compact_handoff, consume_compact_handoff, receipt_validation_refs
-                transfer = {"status": {"complete": "stage-completed", "blocked": "blocked", "human-review": "waiting"}[child_control["decision"]],
-                    "summary": outcome["summary"],
-                    "limitations": list(dict.fromkeys([*outcome["limitations"], *[item for observed in actual for item in observed["limitations"]]])),
-                    "conflicts": child_control.get("conflicts", []), "unresolved": child_control.get("unresolved", []),
-                    "human_decision_required": child_control.get("human_decision_required", [])
-                        or (outcome["next_actions"] if child_control["decision"] == "human-review" else []),
-                    "next_actions": outcome["next_actions"], "artifact_refs": outcome["artifact_refs"],
-                    "receipt_refs": outcome["receipt_refs"], "usage": outcome["usage"],
-                    "validation_refs": receipt_validation_refs(project, outcome["receipt_refs"])}
-                child_attempt = attempt_id + ":" + child["task_id"]
-                child_anchor = child["write_scope"][0].removesuffix("/**").rstrip("/")
-                handoff_ref = publish_compact_handoff(project, task=child, attempt_id=child_attempt,
-                    directory=child_anchor + "/handoff-" + str(actual[-1]["ordinal"]), observation=transfer, catalog=catalog)
-                consumed = consume_compact_handoff(project, handoff_ref, expected_task=child,
-                    expected_attempt_id=child_attempt, expected_observation=transfer, catalog=catalog)
-                outcome["handoff_ref"] = {"path": handoff_ref.path, "sha256": handoff_ref.sha256}
-                outcome["handoff"] = consumed["document"]
-                handoff_consumptions.append({"handoff_ref": outcome["handoff_ref"], "task": copy.deepcopy(child),
-                    "attempt_id": child_attempt, "observation": transfer})
-                event("handoff-produced-and-validated", {"parent": node["task_id"], "task_id": child["task_id"],
-                      "handoff_ref": outcome["handoff_ref"], "producer_ref": consumed["producer_ref"]})
-                outcomes.append(outcome)
-            # Revalidate each exact Handoff immediately at its fresh-main input
-            # boundary; execution metadata remains caller-owned, not model text.
-            for outcome in outcomes:
-                expected = next(item for item in handoff_consumptions if item["handoff_ref"] == outcome["handoff_ref"])
-                consume_compact_handoff(project, outcome["handoff_ref"], expected_task=expected["task"],
-                    expected_attempt_id=expected["attempt_id"], expected_observation=expected["observation"], catalog=catalog)
-            control = invoke(role, node, depth, {"phase": "consume-child-results", "child_results": outcomes})
-            event("child-results-consumed", {"parent": node["task_id"], "task_ids": [i["task_id"] for i in outcomes]})
+            # Validate and admit the entire known wave, including the fresh
+            # parent consumer. Future descendants have not been proposed yet.
+            try:
+                if len(outcomes)+len(children) > budget.max_children_per_task:
+                    raise ValueError("main chose more child Tasks than the configured ceiling")
+                if parent_packet.delegation.max_parallel < 1:
+                    raise ValueError("parent has no permitted child execution slot")
+                for child in children:
+                    child_packet = _validate_child(child, node, depth=depth+1, budget=budget, catalog=catalog)
+                    if child_packet.task_id in seen_tasks:
+                        raise ValueError("child Task identity was already dispatched or proposed")
+                    for scope in child_packet.write_scope:
+                        if any(_scope_within(scope, prior) or _scope_within(prior, scope) for prior in writes):
+                            raise ValueError("child write scopes overlap")
+                        writes.append(scope)
+                    seen_tasks.add(child_packet.task_id)
+                checked_time(node)
+                parent_session = plan_session(node, budget.max_model_calls)
+                child_sessions = [plan_session(child, budget.max_model_calls) for child in children]
+                wave_sessions = [*child_sessions, parent_session]
+                pending_calls, pending_tokens = pending_capacity()
+                wave_calls = sum(slot.model_calls for slot in wave_sessions)
+                wave_tokens = sum(slot.tokens for slot in wave_sessions)
+                if held:
+                    raise ValueError("actual role usage is unknown; stop subsequent dispatch")
+                if calls + pending_calls + wave_calls > budget.max_model_calls:
+                    raise ValueError("delegation wave call reservation exceeds remaining budget")
+                if known + pending_tokens + wave_tokens > budget.max_total_tokens:
+                    raise ValueError("delegation wave token reservation exceeds remaining budget")
+            except (ValueError, TypeError):
+                mark_unstarted(children)
+                event("delegation-proposed", {"parent": node["task_id"], "tasks": children, "admitted": False})
+                raise
+            pending_sessions.extend(wave_sessions)
+            event("delegation-proposed", {"parent": node["task_id"], "tasks": children, "admitted": True,
+                "reserved_model_calls": wave_calls, "reserved_tokens": wave_tokens,
+                "ancestor_and_sibling_model_calls": pending_calls,
+                "ancestor_and_sibling_tokens": pending_tokens})
+            try:
+                for index, child in enumerate(children):
+                    observation_start = len(observations)
+                    held_before = held
+                    try:
+                        child_control = node_run(child, depth+1, "child", child_sessions[index])
+                    except (ValueError, TypeError):
+                        current = observations[observation_start:]
+                        first_unstarted = index if not any(item["model_calls"] for item in current) and held == held_before else index+1
+                        mark_unstarted(children[first_unstarted:])
+                        raise
+                    actual = copy.deepcopy(observations[observation_start:])
+                    usage = {name: (None if any(item[name] is None for item in actual)
+                                    else sum(item[name] for item in actual))
+                             for name in ("model_calls", "tool_calls", "input_tokens", "output_tokens")}
+                    outcome = {"task_id": child["task_id"], "disposition": child_control["decision"],
+                                     "summary": child_control["summary"], "limitations": child_control["limitations"],
+                                     "next_actions": child_control["next_actions"],
+                                     "execution_status": actual[-1]["status"], "usage": usage,
+                                     "usage_scope": "child-task-and-descendants",
+                                     "artifact_refs": [pin for item in actual for pin in item["artifact_refs"]],
+                                     "receipt_refs": [pin for item in actual for pin in item["receipt_refs"]],
+                                     "execution_observations": [{key: item[key] for key in (
+                                         "ordinal", "role", "task_id", "status", "model_calls", "tool_calls",
+                                         "input_tokens", "output_tokens", "artifact_refs", "receipt_refs")}
+                                         for item in actual]}
+                    from research_workbench.entry.handoff import publish_compact_handoff, consume_compact_handoff, receipt_validation_refs
+                    transfer = {"status": {"complete": "stage-completed", "blocked": "blocked", "human-review": "waiting"}[child_control["decision"]],
+                        "summary": outcome["summary"],
+                        "limitations": list(dict.fromkeys([*outcome["limitations"], *[item for observed in actual for item in observed["limitations"]]])),
+                        "conflicts": child_control.get("conflicts", []), "unresolved": child_control.get("unresolved", []),
+                        "human_decision_required": child_control.get("human_decision_required", [])
+                            or (outcome["next_actions"] if child_control["decision"] == "human-review" else []),
+                        "next_actions": outcome["next_actions"], "artifact_refs": outcome["artifact_refs"],
+                        "receipt_refs": outcome["receipt_refs"], "usage": outcome["usage"],
+                        "validation_refs": receipt_validation_refs(project, outcome["receipt_refs"])}
+                    child_attempt = attempt_id + ":" + child["task_id"]
+                    child_anchor = child["write_scope"][0].removesuffix("/**").rstrip("/")
+                    handoff_ref = publish_compact_handoff(project, task=child, attempt_id=child_attempt,
+                        directory=child_anchor + "/handoff-" + str(actual[-1]["ordinal"]), observation=transfer, catalog=catalog)
+                    consumed = consume_compact_handoff(project, handoff_ref, expected_task=child,
+                        expected_attempt_id=child_attempt, expected_observation=transfer, catalog=catalog)
+                    outcome["handoff_ref"] = {"path": handoff_ref.path, "sha256": handoff_ref.sha256}
+                    outcome["handoff"] = consumed["document"]
+                    handoff_consumptions.append({"handoff_ref": outcome["handoff_ref"], "task": copy.deepcopy(child),
+                        "attempt_id": child_attempt, "observation": transfer})
+                    event("handoff-produced-and-validated", {"parent": node["task_id"], "task_id": child["task_id"],
+                          "handoff_ref": outcome["handoff_ref"], "producer_ref": consumed["producer_ref"]})
+                    outcomes.append(outcome)
+                # Revalidate each exact Handoff immediately at its fresh-main input
+                # boundary; execution metadata remains caller-owned, not model text.
+                for outcome in outcomes:
+                    expected = next(item for item in handoff_consumptions if item["handoff_ref"] == outcome["handoff_ref"])
+                    consume_compact_handoff(project, outcome["handoff_ref"], expected_task=expected["task"],
+                        expected_attempt_id=expected["attempt_id"], expected_observation=expected["observation"], catalog=catalog)
+                control = invoke(role, node, depth, {"phase": "consume-child-results", "child_results": outcomes}, parent_session)
+                event("child-results-consumed", {"parent": node["task_id"], "task_ids": [i["task_id"] for i in outcomes]})
+            except (ValueError, TypeError):
+                # A stopped actual child or its Handoff publication also
+                # leaves the still-pending siblings unstarted.
+                mark_unstarted(children[index+1:])
+                raise
+            finally:
+                # Stopping releases unused planning slots without recording
+                # fictional usage or converting them into unknown holds.
+                pending_sessions[:] = [slot for slot in pending_sessions
+                    if not any(slot is wave_slot for wave_slot in wave_sessions)]
         return control
 
     try:

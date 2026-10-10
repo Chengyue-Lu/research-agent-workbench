@@ -70,7 +70,7 @@ class ComponentPlanTests(unittest.TestCase):
             'test_entry_guide', 'test_entry_handoff', 'test_entry_intake',
             'test_entry_intake_call', 'test_entry_intake_constraints',
             'test_entry_roles', 'test_entry_stage', 'test_entry_state',
-            'test_entry_workflow',
+            'test_entry_wave', 'test_entry_wave_bridge', 'test_entry_workflow',
         }
         for module in ('intake', 'caller', 'executor', 'driver', 'workflow', '__init__'):
             path = 'src/research_workbench/entry/' + module + '.py'
@@ -90,11 +90,11 @@ class ComponentPlanTests(unittest.TestCase):
             'tests/entry_chain_support.py': {
                 'test_entry_bridge_flow', 'test_entry_caller', 'test_entry_deadline',
                 'test_entry_factory', 'test_entry_intake_call',
-                'test_entry_intake_constraints',
+                'test_entry_intake_constraints', 'test_entry_wave_bridge',
             },
             'tests/entry_factory_support.py': {
                 'test_entry_caller', 'test_entry_deadline', 'test_entry_factory',
-                'test_entry_intake_constraints',
+                'test_entry_intake_constraints', 'test_entry_wave_bridge',
             },
         }
         for path, expected in consumers.items():
@@ -125,10 +125,10 @@ class ComponentPlanTests(unittest.TestCase):
             'test_api_session_runner': {'test_entry_deadline'},
             'test_conformance_session_policy': {'test_entry_deadline'},
             'test_entry_bridge_flow': {'test_entry_deadline'},
-            'test_entry_caller': {'test_entry_deadline', 'test_entry_intake_constraints'},
-            'test_entry_driver': {'test_entry_intake_constraints'},
+            'test_entry_caller': {'test_entry_deadline', 'test_entry_intake_constraints', 'test_entry_wave_bridge'},
+            'test_entry_driver': {'test_entry_intake_constraints', 'test_entry_wave_bridge'},
             'test_entry_intake': {'test_entry_intake_constraints'},
-            'test_entry_intake_call': {'test_entry_deadline'},
+            'test_entry_intake_call': {'test_entry_deadline', 'test_entry_wave_bridge'},
         }
         for module, expected in consumers.items():
             path = 'tests/' + module + '.py'
@@ -184,7 +184,7 @@ class ComponentPlanTests(unittest.TestCase):
         path = 'tests/test_entry_caller.py'
         missing = 'tests/test_entry_intake_constraints.py'
         report = self.plan([path], inventory=self.inventory - {missing})
-        self.assertEqual({'test_entry_caller', 'test_entry_deadline'},
+        self.assertEqual({'test_entry_caller', 'test_entry_deadline', 'test_entry_wave_bridge'},
                          set(report['selected_tests']))
         self.assertEqual([], report['components'])
         self.assertEqual([missing], report['unknown_paths'])

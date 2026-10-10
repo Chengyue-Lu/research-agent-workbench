@@ -211,8 +211,8 @@ class ApiRoleBindingFactory:
             derived = copy.deepcopy(parent_method)
             derived["resolution_id"] += "-child-" + hashlib.sha256(_bytes(task)).hexdigest()[:12]
             derived["task_ref"] = {"task_id": task_id, "revision": task.get("revision", 1), "sha256": task_pin.sha256}
-            derived["limitations"] = [*derived["limitations"],
-                "Child reuses actual parent Method obligations; this is not new method/Human acceptance."]
+            derived["limitations"] = list(dict.fromkeys([*derived["limitations"],
+                "Child reuses actual parent Method obligations; this is not new method/Human acceptance."]))
             method_pin = self._write(directory, "child-method.json", derived, "method_resolution")
         evidence_docs = {p.path: self._read(p, "capability_conformance_evidence") for p in self.conformance}
         if any(d["evidence_kind"] == "deterministic-fixture" or d["scope"]["scope_kind"] == "synthetic-bounded-fixture"

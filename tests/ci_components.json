@@ -24,6 +24,8 @@
         "test_entry_roles",
         "test_entry_stage",
         "test_entry_state",
+        "test_entry_wave",
+        "test_entry_wave_bridge",
         "test_entry_workflow"
       ],
       "flags": [
@@ -387,13 +389,15 @@
       "test_entry_deadline",
       "test_entry_factory",
       "test_entry_intake_call",
-      "test_entry_intake_constraints"
+      "test_entry_intake_constraints",
+      "test_entry_wave_bridge"
     ],
     "tests/entry_factory_support.py": [
       "test_entry_caller",
       "test_entry_deadline",
       "test_entry_factory",
-      "test_entry_intake_constraints"
+      "test_entry_intake_constraints",
+      "test_entry_wave_bridge"
     ],
     "tests/test_api_session_runner.py": [
       "test_entry_deadline"
@@ -406,16 +410,19 @@
     ],
     "tests/test_entry_caller.py": [
       "test_entry_deadline",
-      "test_entry_intake_constraints"
+      "test_entry_intake_constraints",
+      "test_entry_wave_bridge"
     ],
     "tests/test_entry_driver.py": [
-      "test_entry_intake_constraints"
+      "test_entry_intake_constraints",
+      "test_entry_wave_bridge"
     ],
     "tests/test_entry_intake.py": [
       "test_entry_intake_constraints"
     ],
     "tests/test_entry_intake_call.py": [
-      "test_entry_deadline"
+      "test_entry_deadline",
+      "test_entry_wave_bridge"
     ],
     "tests/coverage_policy.yaml": [
       "test_coverage_policy"

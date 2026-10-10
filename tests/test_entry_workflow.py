@@ -159,7 +159,11 @@ class EntryWorkflowTests(unittest.TestCase):
         executor = ScriptedExecutor([output("delegate", [only_child]), output()])
         result, _, _ = self.run_case(executor, main=parent)
         self.assertEqual("safe-paused", result.status)
-        self.assertEqual(2, result.model_calls)
+        self.assertEqual(1, result.model_calls)
+        self.assertEqual(35, result.known_tokens)
+        self.assertEqual(0, result.held_tokens)
+        self.assertEqual(("C",), result.unstarted_tasks)
+        self.assertEqual(1, len(executor.invocations))
         self.assertIn("turn budget exhausted", result.summary)
 
     def test_failed_child_keeps_unstarted_siblings_and_no_retry(self):
