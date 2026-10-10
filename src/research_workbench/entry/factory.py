@@ -156,9 +156,6 @@ class ApiRoleBindingFactory:
             raise EntryBindingError("factory does not implement intake or independent Guide")
         if type(invocation.ordinal) is not int or invocation.ordinal <= 0 or type(invocation.depth) is not int or invocation.depth < 0:
             raise EntryBindingError("actual positive invocation ordinal/nonnegative depth required")
-        if self.action_field == "planning_action_id":
-            raise EntryBindingError(
-                "planning selector execution is blocked: Runtime Bundle supports only Action slices")
         task = _plain(invocation.task)
         if self.catalog.validate("task_packet", task) or task.get("required_skills"):
             raise EntryBindingError("valid actual no-Skill Task required")
@@ -275,7 +272,9 @@ class ApiRoleBindingFactory:
                   (selected.resolution, supply_pin, "resolution-candidate-supply")]
         edges += [(supply_pin, p, "supply-conformance") for p in used_evidence]
         manifest = {"schema_version": "0.1.0", "bundle_id": f"ROLE-BUNDLE-{invocation.ordinal}", "revision": 1,
-            "profile": "runtime-bundle", "execution_scope": {"kind": "action-capability-slice", "action_ref": self.action_ref,
+            "profile": "runtime-bundle", "execution_scope": {
+                "kind": "action-capability-slice" if self.action_field == "action_ref" else "planning-capability-slice",
+                self.action_field: self.action_ref,
                 "requirement_id": rid, "task_capability_closure": {"required": list(task["required_capabilities"]),
                     "closed": [rid], "task_completion": False}},
             "entrypoint": {"kind": "resolved_capability_snapshot", "path": selected.snapshot.path, "sha256": selected.snapshot.sha256},

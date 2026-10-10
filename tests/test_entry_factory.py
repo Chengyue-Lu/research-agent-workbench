@@ -10,12 +10,18 @@ from types import SimpleNamespace
 from research_workbench.artifacts.integrity import hash_file
 from research_workbench.entry.binding import EntryBindingError
 from research_workbench.entry.driver import ObservedExecutionBinding
-from research_workbench.execution import load_runtime_bundle
+from research_workbench.entry.executor import FrozenRoleExecutor
+from research_workbench.execution import (
+    GenericCloseoutValidationError, load_runtime_bundle,
+    load_resolved_execution_view, validate_generic_execution_receipt,
+)
+from research_workbench.execution.host import ExecutionHostValidationError
 from research_workbench.io import load_document
 from research_workbench.validation.schemas import SchemaCatalog
 from tests.entry_chain_support import write_document
 from tests.entry_factory_support import FactoryTestInputs, make_factory
 from tests.test_entry_driver import observe
+from tests.execution_fixtures import SequenceClock, plain
 
 
 class EntryFactoryTests(unittest.TestCase):
@@ -68,7 +74,7 @@ class EntryFactoryTests(unittest.TestCase):
             self.assertEqual(3, len(factory.record_refs))
             self.assertEqual([], inputs.provider.requests)
 
-    def test_no_mode_planning_selector_is_explicitly_blocked_before_archive(self):
+    def test_no_mode_planning_selector_freezes_executes_and_cold_replays_exact_identity(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             inputs = FactoryTestInputs(root)
@@ -80,10 +86,16 @@ class EntryFactoryTests(unittest.TestCase):
             # original formatting example has none; no product default is added.
             requirement_id = inputs.requirement["requirement_id"]
             task["required_capabilities"] = [requirement_id]
+            task["safe_pause_conditions"] = [
+                "An exact input identity/hash or the authorized output write scope cannot be verified."
+            ]
             task_pin = write_document(root, "controls/planning-task.json", task)
             method["task_ref"] = {"task_id": task["task_id"], "revision": task["revision"],
                                   "sha256": task_pin.sha256}
             method["action_decisions"][0]["capability_requirements"] = [requirement_id]
+            # The lightweight routing fixture has no execution pause condition;
+            # this explicitly execution-bound test Method carries its Task limit.
+            method["action_decisions"][0]["blocked_conditions"] = copy.deepcopy(task["safe_pause_conditions"])
             method_pin = write_document(root, "controls/planning-method.json", method)
             catalog = SchemaCatalog()
             self.assertEqual([], catalog.validate("task_packet", task))
@@ -92,16 +104,74 @@ class EntryFactoryTests(unittest.TestCase):
             self.assertEqual([], method["mode_resolution"]["selected_mode_refs"])
             self.assertEqual([], task["required_skills"])
             factory = inputs.build_factory(task_pin=task_pin, method_pin=method_pin,
-                action_ref=None, planning_action_id="output-format")
+                action_ref=None, planning_action_id="output-format",
+                schema_root=Path(__file__).resolve().parents[1] / "schemas",
+                host_clock=SequenceClock("2026-08-26T00:00:01Z", "2026-08-26T00:00:02Z", "2026-08-26T00:00:03Z"))
             self.assertEqual("planning_action_id", factory.action_field)
-            with self.assertRaisesRegex(EntryBindingError, "planning selector execution is blocked"):
-                factory(inputs.invocation(task=task))
-            self.assertEqual([], factory.records)
-            self.assertEqual((), factory.record_refs)
+            invocation = inputs.invocation(task=task)
+            binding = factory(invocation)
+            bundle = load_runtime_bundle(binding.bundle_ref.path, project_root=root,
+                                         schema_root=factory.catalog_root)
+            view = load_resolved_execution_view(binding.view_ref.path,
+                expected_sha256=binding.view_ref.sha256, bundle=bundle, schema_root=factory.catalog_root)
+            scope = plain(bundle.manifest["execution_scope"])
+            self.assertEqual("planning-capability-slice", scope["kind"])
+            self.assertEqual("output-format", scope["planning_action_id"])
+            self.assertNotIn("action_ref", scope)
+            self.assertEqual([requirement_id], scope["task_capability_closure"]["required"])
+            self.assertFalse(scope["task_capability_closure"]["task_completion"])
+            self.assertEqual(scope, plain(view.document["execution_scope"]))
+            self.assertEqual(method_pin.sha256, view.document["method_resolution_ref"]["sha256"])
+            self.assertEqual(method["action_decisions"][0]["stop_conditions"],
+                             plain(view.document["stop_conditions"]))
+            self.assertEqual(task["safe_pause_conditions"], plain(view.document["safe_pause_conditions"]))
+            self.assertEqual(1, len(factory.record_refs))
+            self.assertEqual(factory.record_refs[0].sha256, hash_file(root / factory.record_refs[0].path))
+            self.assertEqual(method_pin.sha256, factory.records[0]["method"]["sha256"])
+            self.assertEqual(task_pin.sha256, factory.records[0]["task"]["sha256"])
             self.assertEqual([], inputs.provider.requests)
-            self.assertFalse((root / inputs.options["output_directory"]).exists())
-            # This retained negative exposes an execution-contract gap; it is
-            # not planning execution success, qualification or acceptance.
+            executor = FrozenRoleExecutor(root, binding_factory=lambda actual: binding,
+                                           accountable_owner="offline planning identity test owner")
+            observation = executor(invocation)
+            self.assertEqual("completed", observation.status)
+            self.assertEqual(1, len(inputs.provider.requests))
+            result = executor.results[0]
+            self.assertEqual(scope, result.host_report["execution_scope"])
+            self.assertIsNotNone(result.receipt_ref, result.closeout_error)
+            cold_bundle = load_runtime_bundle(binding.bundle_ref.path, project_root=root,
+                                               schema_root=factory.catalog_root)
+            receipt = validate_generic_execution_receipt(result.receipt_ref.path,
+                expected_sha256=result.receipt_ref.sha256, bundle=cold_bundle, schema_root=factory.catalog_root)
+            self.assertEqual(scope, receipt.document["execution_scope"])
+            self.assertEqual("planning-capability-slice-only", receipt.document["completion_claim"])
+            self.assertFalse(receipt.document["boundaries"]["task_completion"])
+
+            # A fresh file hash cannot replace the Method namespace or scope.
+            changed_view = plain(view.document)
+            changed_view["method_resolution_ref"]["sha256"] = "0" * 64
+            changed_pin = write_document(root, "tamper/view.json", changed_view)
+            with self.assertRaises(ExecutionHostValidationError):
+                load_resolved_execution_view(changed_pin.path, expected_sha256=changed_pin.sha256,
+                    bundle=cold_bundle, schema_root=factory.catalog_root)
+            changed_host = copy.deepcopy(result.host_report)
+            changed_host["execution_scope"]["planning_action_id"] = "other-planning-id"
+            host_pin = write_document(root, "tamper/host.json", changed_host)
+            changed_receipt = copy.deepcopy(receipt.document)
+            changed_receipt["host_report_ref"].update(path=host_pin.path, sha256=host_pin.sha256)
+            receipt_pin = write_document(root, "tamper/receipt.json", changed_receipt)
+            with self.assertRaises(GenericCloseoutValidationError):
+                validate_generic_execution_receipt(receipt_pin.path, expected_sha256=receipt_pin.sha256,
+                    bundle=cold_bundle, schema_root=factory.catalog_root)
+            for claim in ("action-capability-slice-only", "none"):
+                bad = copy.deepcopy(receipt.document)
+                bad["completion_claim"] = claim
+                self.assertTrue(SchemaCatalog(factory.catalog_root).validate("generic_execution_receipt", bad))
+            bad = copy.deepcopy(receipt.document)
+            bad["status"] = "failed"
+            self.assertTrue(SchemaCatalog(factory.catalog_root).validate("generic_execution_receipt", bad))
+            self.assertEqual(1, len(inputs.provider.requests))
+            # Scripted external observations prove this offline consumer path,
+            # not production qualification or scientific/Human acceptance.
 
     def test_mutated_requirement_cache_cannot_replace_the_actual_pinned_requirement(self):
         with tempfile.TemporaryDirectory() as temporary:

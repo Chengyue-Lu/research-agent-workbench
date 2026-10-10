@@ -33,6 +33,7 @@ class IntakeWorkflowResult:
     intake_report_verified: bool = False
     task_completion: bool = False
     human_acceptance: bool = False
+    handoff_ref: FileReference | None = None
 
 
 def _ref(pin: Any) -> FileReference:
@@ -203,10 +204,21 @@ def run_frozen_intake_workflow(
         budget=replace(budget, max_seconds=remaining), catalog=SchemaCatalog(binding_factory.catalog_root),
         clock=workflow_clock, cancel_requested=cancel_requested,
         prior_usage=(intake_result.as_role_observation(),))
+    from research_workbench.entry.handoff import EntryHandoffError, publish_workflow_handoff
+    handoff_ref = None
+    reason = "INTAKE-WORKFLOW-" + workflow.status.upper()
+    try:
+        handoff_ref = publish_workflow_handoff(project, result=workflow,
+            catalog=SchemaCatalog(binding_factory.catalog_root))
+    except (EntryHandoffError, ValueError, OSError) as exc:
+        # Paid execution/accounting remains observable even when formal transfer
+        # is blocked. Missing H2 prerequisites never fabricate a successful ref.
+        reason = "INTAKE-WORKFLOW-HANDOFF-BLOCKED: " + str(exc)
     refs = _unique_refs((*retained, *external, *(_ref(ref) for ref in binding_factory.record_refs),
-                        FileReference.from_mapping(workflow.report_ref)))
-    return IntakeWorkflowResult(intake_result, workflow, "INTAKE-WORKFLOW-" + workflow.status.upper(),
-                                refs, external, True)
+                        FileReference.from_mapping(workflow.report_ref),
+                        *((handoff_ref,) if handoff_ref else ())))
+    return IntakeWorkflowResult(intake_result, workflow, reason,
+                                refs, external, True, handoff_ref=handoff_ref)
 
 
 __all__ = ["IntakeWorkflowResult", "run_frozen_intake_workflow"]

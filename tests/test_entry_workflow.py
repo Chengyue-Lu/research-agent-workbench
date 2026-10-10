@@ -81,6 +81,12 @@ class EntryWorkflowTests(unittest.TestCase):
                     self.assertEqual([f"result {i}" for i in range(count)], [i["summary"] for i in consumed])
                     self.assertEqual("consume-child-results", executor.invocations[-1].context["phase"])
                     self.assertIn("child-results-consumed", [i["kind"] for i in records])
+                    self.assertIn("handoff-produced-and-validated", [i["kind"] for i in records])
+                    for actual in consumed:
+                        self.assertEqual(actual["task_id"], actual["handoff"]["task_id"])
+                        self.assertEqual(actual["summary"], actual["handoff"]["result"]["summary"])
+                        self.assertEqual([], actual["handoff"]["skill_lock"])
+                        self.assertIn("producer_ref", actual["handoff"])
 
     def test_overwide_child_and_write_collision_block_whole_wave_before_child_calls(self):
         cases = []

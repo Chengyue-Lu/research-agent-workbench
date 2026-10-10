@@ -30,12 +30,19 @@ class EntryStateTests(unittest.TestCase):
             first_data = json.loads((root/first.path).read_bytes())
             MainStatePacket.from_mapping(first_data)
             self.assertEqual([], first_data["accepted_decisions"])
+            handoff_path = first_data["recent_handoffs"][-1]["ref"]
+            self.assertNotEqual(result.report_ref["path"], handoff_path)
+            formal = json.loads((root / handoff_path).read_bytes())
+            self.assertEqual("safe-paused", formal["status"])  # no validated output Receipt in this native stub
+            self.assertEqual(formal["status"], first_data["continuity_status"])
+            self.assertEqual(formal["status"], first_data["active_tasks"][-1]["status"])
+            self.assertIn(formal["producer_ref"]["path"], [ref["path"] for ref in first_data["machine_state_refs"]])
             second = publish_workflow_checkpoint(root, result=result, protocol_ref=protocol, checkpoint_id="STATE2",
                 output="work/state2.json", write_scope=["work/**"], previous_state_ref={"path": first.path, "sha256": first.sha256})
             data = json.loads((root/second.path).read_bytes())
             self.assertEqual(first.path, data["previous_checkpoint_ref"])
             self.assertEqual([], data["accepted_decisions"])
-            self.assertEqual(result.next_actions, tuple(data["next_actions"]))
+            self.assertEqual(tuple(formal["recommended_next_actions"]), tuple(data["next_actions"]))
 
     def test_no_overwrite_and_scope_or_result_drift_blocks(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -74,6 +81,36 @@ class EntryStateTests(unittest.TestCase):
                         protocol_ref=protocol, checkpoint_id="TAMPER", output=destination, write_scope=["work/**"])
                 self.assertFalse((root/destination).exists())
             self.assertEqual(original_report, (root/result.report_ref["path"]).read_bytes())
+
+    def test_child_negative_items_survive_main_completion_and_checkpoint(self):
+        from tests.test_entry_workflow import child
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            protocol = root / "protocol.json"
+            protocol.write_text(json.dumps(_protocol("P")), encoding="utf-8")
+            protocol_pin = {"path": "protocol.json", "sha256": hashlib.sha256(protocol.read_bytes()).hexdigest()}
+            actual_child = json.loads(output(summary="Child slice complete."))
+            actual_child.update(limitations=["beta measurement unavailable"],
+                conflicts=[{"topic": "beta", "status": "unknown"}], unresolved=["beta is unresolved"],
+                human_decision_required=["Choose whether beta is needed."])
+            executor = ScriptedExecutor([output("delegate", [child("C")]), json.dumps(actual_child), output()])
+            result = run_research_workflow(root, directory="work/flow", task=task(), executor=executor,
+                budget=WorkflowBudget(12, 10000, 100, 100, 60, 4, 2))
+            checkpoint = publish_workflow_checkpoint(root, result=result, protocol_ref=protocol_pin,
+                checkpoint_id="NEGATIVE-STATE", output="work/state.json", write_scope=["work/**"])
+            state = json.loads((root / checkpoint.path).read_bytes())
+            self.assertIn("beta measurement unavailable", state["open_risks"])
+            self.assertIn("beta is unresolved", state["open_risks"])
+            self.assertIn("beta", " ".join(state["open_conflicts"]))
+            self.assertIn("Choose whether beta is needed.", state["next_actions"])
+            self.assertEqual([], state["accepted_decisions"])
+            formal = json.loads((root / state["recent_handoffs"][-1]["ref"]).read_bytes())
+            self.assertEqual("safe-paused", formal["status"])
+            self.assertEqual("safe-paused", state["continuity_status"])
+            self.assertEqual(1, formal["unresolved"].count("Required output contracts not verified: handoff-packet"))
+            self.assertIn("beta is unresolved", formal["unresolved"])
+            child_result = executor.invocations[-1].context["child_results"][0]
+            self.assertIn(child_result["handoff_ref"]["path"], [ref["path"] for ref in state["machine_state_refs"]])
 
 
 if __name__ == "__main__":

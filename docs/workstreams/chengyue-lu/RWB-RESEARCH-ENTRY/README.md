@@ -1,6 +1,6 @@
 # RWB通用研究执行入口
 
-2026-10-10 当前阅读入口（PR140 未合并开发候选）：[包内 caller/factory](package-caller-003/README.md)与[本轮模块输入输出、验证和缺口](package-caller-003/VERIFICATION.md)。此前结果保留在[桥接报告](chain-proof-002/ROOT_REPORT.md)、[覆盖与缺口](chain-proof-002/COVERAGE.md)、[接口使用说明](chain-proof-002/USAGE.md)。真实 API 的结果与停点以对应版本报告为准；Source/Human/正式 Skill 资格、真实科研验收及 M12 未完成。
+2026-10-10 当前阅读入口（PR140 未合并开发候选）：[planning 与正式 Handoff](planning-handoff-004/README.md)及[本轮模块输入输出、验证和缺口](planning-handoff-004/VERIFICATION.md)。包内 caller/factory 的前一 Action 切片见[原记录](package-caller-003/VERIFICATION.md)。更早结果保留在[桥接报告](chain-proof-002/ROOT_REPORT.md)、[覆盖与缺口](chain-proof-002/COVERAGE.md)、[接口使用说明](chain-proof-002/USAGE.md)。真实 API 的结果与停点以对应版本报告为准；Source/Human/正式 Skill 资格、真实科研验收及 M12 未完成。
 
 以下为初始实施任务快照；其中 READY 和初始验收范围不代表当前成熟度。原 65 项离线交付保留在历史 COMPLETION/manifest，后续桥接证据在上方三个入口更新。
 

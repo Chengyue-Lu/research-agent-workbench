@@ -12,6 +12,7 @@ from pathlib import Path
 from research_workbench.artifacts.integrity import resolve_within_root
 from research_workbench.context.models import MainStatePacket, checkpoint_digest
 from research_workbench.entry.workflow import WorkflowResult, _scope_within
+from research_workbench.entry.handoff import consume_compact_handoff, publish_workflow_handoff, workflow_handoff_observation
 from research_workbench.io import load_document_bytes
 from research_workbench.protocol.models import ProjectProtocol
 from research_workbench.tasks import FileReference
@@ -30,7 +31,8 @@ def _read(root, ref, *, parse=True):
 
 
 def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, checkpoint_id,
-                                output, write_scope, previous_state_ref=None, created_at=None, catalog=None):
+                                output, write_scope, previous_state_ref=None, created_at=None, catalog=None,
+                                handoff_ref=None):
     """Persist an immutable checkpoint, never resume an Agent or accept a Claim.
 
     Caller owns the single state submission responsibility and output authority.
@@ -55,6 +57,20 @@ def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, c
         raise ValueError("checkpoint result does not match retained workflow")
     if report.get("human_acceptance") is not False or report.get("task_completion") is not False:
         raise ValueError("workflow result tried to grant completion or Human authority")
+    expected_transfer = workflow_handoff_observation(report, project)
+    expected_transfer["artifact_refs"].append(dict(result.report_ref))
+    if handoff_ref is None:
+        # Legacy application call sites may explicitly submit a checkpoint
+        # without the new caller wrapper. Produce its actual typed Handoff once.
+        known = Path(result.report_ref["path"]).parent / "handoff" / "handoff.json"
+        existing = resolve_within_root(project, known.as_posix())
+        handoff_ref = (FileReference(known.as_posix(), hashlib.sha256(existing.read_bytes()).hexdigest())
+                       if existing is not None and existing.is_file()
+                       else publish_workflow_handoff(project, result=result, catalog=catalog))
+    handoff_pin, _ = _read(project, handoff_ref)
+    expected_attempt = report.get("attempt_id", "WORKFLOW-" + report["task_id"])
+    consumed = consume_compact_handoff(project, handoff_pin, expected_task=report["task"],
+        expected_attempt_id=expected_attempt, expected_observation=expected_transfer, catalog=catalog)
     previous = {}
     previous_pin = None
     if previous_state_ref:
@@ -64,6 +80,15 @@ def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, c
         MainStatePacket.from_mapping(previous)
     machine = {protocol_pin.path: {"path": protocol_pin.path, "sha256": protocol_pin.sha256},
                report_pin.path: retained_ref}
+    for ref in [
+            {"path": handoff_pin.path, "sha256": handoff_pin.sha256}, consumed["producer_ref"],
+            consumed["task_ref"], *consumed["artifact_pins"]]:
+        machine[ref["path"]] = {"path": ref["path"], "sha256": ref["sha256"]}
+    for expected in report.get("handoff_consumptions", []):
+        child = consume_compact_handoff(project, expected["handoff_ref"], expected_task=expected["task"],
+            expected_attempt_id=expected["attempt_id"], expected_observation=expected["observation"], catalog=catalog)
+        for ref in [expected["handoff_ref"], child["producer_ref"], child["task_ref"], *child["artifact_pins"]]:
+            machine[ref["path"]] = {"path": ref["path"], "sha256": ref["sha256"]}
     for ref in previous.get("machine_state_refs", []):
         _read(project, ref, parse=False)
         machine[ref["path"]] = dict(ref)
@@ -77,20 +102,27 @@ def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, c
         constraints.append(constraint)
     if protocol.data_boundary.get("local_only") and "local data must not be uploaded" not in constraints:
         constraints.append("local data must not be uploaded")
-    risks = list(dict.fromkeys([*previous.get("open_risks", []), *report["limitations"]]))
+    risks = list(dict.fromkeys([*previous.get("open_risks", []),
+        *consumed["document"]["limitations"], *consumed["document"]["unresolved"]]))
+    conflicts = list(previous.get("open_conflicts", []))
+    for conflict in consumed["document"]["conflicts"]:
+        entry = json.dumps(conflict, sort_keys=True, ensure_ascii=False)
+        if entry not in conflicts:
+            conflicts.append(entry)
     if report["held_tokens"]:
         risks.append("Actual model usage is unknown; retained token reservation requires review.")
     document = {"schema_version": "0.1.0", "checkpoint_id": checkpoint_id,
-                "continuity_status": report["status"], "project_protocol_ref": f"{protocol_pin.path}@{protocol.revision}",
+                "continuity_status": consumed["document"]["status"], "project_protocol_ref": f"{protocol_pin.path}@{protocol.revision}",
                 "current_questions": list(protocol.question_refs), "pinned_constraints": constraints,
                 "accepted_decisions": list(previous.get("accepted_decisions", [])),
                 "active_tasks": [i for i in previous.get("active_tasks", []) if i["task_id"] != report["task_id"]]
-                    +[{"task_id": report["task_id"], "status": report["status"]}],
+                    +[{"task_id": report["task_id"], "status": consumed["document"]["status"]}],
                 "recent_handoffs": list(previous.get("recent_handoffs", []))
-                    +[{"ref": report_pin.path, "disposition": report["disposition"]}],
-                "open_conflicts": list(previous.get("open_conflicts", [])), "open_risks": risks,
-                "next_actions": list(report["next_actions"]) or ["Human review of the retained execution result."],
-                "artifact_index_refs": list(dict.fromkeys([*previous.get("artifact_index_refs", []), report_pin.path])),
+                    +[{"ref": handoff_pin.path, "disposition": report["disposition"]}],
+                "open_conflicts": conflicts, "open_risks": risks,
+                "next_actions": list(dict.fromkeys([*consumed["document"]["recommended_next_actions"],
+                    *consumed["document"]["human_decision_required"]])) or ["Human review of the retained execution result."],
+                "artifact_index_refs": list(dict.fromkeys([*previous.get("artifact_index_refs", []), report_pin.path, handoff_pin.path])),
                 "machine_state_refs": [machine[p] for p in sorted(machine)],
                 "created_at": created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
     if previous_pin:
@@ -117,6 +149,8 @@ def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, c
         # Recheck consumed pins at publication; this does not promise cross-file CAS.
         _read(project, protocol_pin)
         _read(project, report_pin)
+        consume_compact_handoff(project, handoff_pin, expected_task=report["task"],
+            expected_attempt_id=expected_attempt, expected_observation=expected_transfer, catalog=catalog)
         if previous_pin:
             _read(project, previous_pin)
         for ref in machine.values():

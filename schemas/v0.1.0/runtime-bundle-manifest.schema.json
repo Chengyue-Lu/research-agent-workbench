@@ -25,11 +25,12 @@
     "execution_scope": {
       "type": "object",
       "required": [
-        "kind", "action_ref", "requirement_id", "task_capability_closure"
+        "kind", "requirement_id", "task_capability_closure"
       ],
       "properties": {
-        "kind": { "const": "action-capability-slice" },
+        "kind": { "enum": ["action-capability-slice", "planning-capability-slice"] },
         "action_ref": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
+        "planning_action_id": { "$ref": "common.schema.json#/$defs/nonEmptyString" },
         "requirement_id": {
           "type": "string",
           "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
@@ -56,6 +57,18 @@
           "additionalProperties": false
         }
       },
+      "oneOf": [
+        {
+          "properties": { "kind": { "const": "action-capability-slice" } },
+          "required": ["action_ref"],
+          "not": { "required": ["planning_action_id"] }
+        },
+        {
+          "properties": { "kind": { "const": "planning-capability-slice" } },
+          "required": ["planning_action_id"],
+          "not": { "required": ["action_ref"] }
+        }
+      ],
       "additionalProperties": false
     },
     "entrypoint": {

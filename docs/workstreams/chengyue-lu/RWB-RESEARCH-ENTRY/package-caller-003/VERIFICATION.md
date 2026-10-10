@@ -1,5 +1,7 @@
 # 包内入口验证
 
+此页为前一包内 Action 切片的不可混用来源记录。planning 与正式 Handoff 的后续实现及新来源验证见[当前验收记录](../planning-handoff-004/VERIFICATION.md)；下述未完成项描述当时状态。
+
 本轮已补齐包内受信 factory/caller，并完成已支持 Action/no-Skill 路径的离线、安装包外部消费、真实 API 和冷回放。三项 Task 保持 IN_PROGRESS；planning 与正式 Handoff 的缺口仍未完成。证据与缺口分开记录，避免把选定路径接通当作整项验收。
 
 ## 模块实际做了什么

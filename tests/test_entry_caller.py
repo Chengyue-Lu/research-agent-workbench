@@ -104,11 +104,14 @@ class EntryCallerTests(unittest.TestCase):
                 self.assertEqual((), result.external_control_refs)
                 self.assertFalse(result.task_completion)
                 self.assertFalse(result.human_acceptance)
+                self.assertIsNotNone(result.handoff_ref, result.reason)
+                self.assertIn(result.handoff_ref, result.artifact_refs)
                 if children:
                     payload = json.loads(provider.requests[-1].messages[1].content[0].text)
                     actual = payload["caller_context"]["child_results"]
                     self.assertEqual(children, len(actual))
                     self.assertTrue(all(len(child["receipt_refs"]) == 1 for child in actual))
+                    self.assertTrue(all(child["handoff"]["task_id"] == child["task_id"] for child in actual))
                 for record in factory.records:
                     receipt = next(item for item in workflow.observations
                         if item["ordinal"] == record["ordinal"])["receipt_refs"][0]
