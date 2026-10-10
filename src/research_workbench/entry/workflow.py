@@ -76,6 +76,8 @@ class RoleInvocation:
     max_seconds: float
     max_total_tokens: int
     instructions: str = CONTROL_INSTRUCTIONS
+    deadline_monotonic: float | None = None
+    clock: Callable[[], float] | None = field(default=None, repr=False, compare=False)
 
 
 @dataclass(frozen=True)
@@ -136,7 +138,9 @@ def _validate_task(task: Mapping[str, Any], catalog: SchemaCatalog):
         raise ValueError("role Task failed schema validation")
     packet = TaskPacket.from_mapping(task)
     if packet.required_skills:
-        raise ValueError("this caller has no admitted Skill-loading implementation")
+        raise ValueError("HANDOFF-SKILL-LOADING-UNSUPPORTED: this caller has no admitted Skill-loading implementation")
+    if packet.handoff_policy.require_transfer_manifest or packet.handoff_policy.semantic_review == "required":
+        raise ValueError("HANDOFF-TRANSFER-AUDIT-REQUIRED: compact adapter has no actual Manifest/Audit")
     for scope in packet.write_scope:
         _portable_scope(scope)
     for root in packet.permissions.allowed_roots:
@@ -227,6 +231,10 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
     human request. Dispatches are sequential; max_parallel remains a ceiling,
     not a promise of concurrent native processes or hard cancellation.
     """
+    started = clock()
+    if isinstance(started, bool) or not isinstance(started, (int, float)) or not math.isfinite(started):
+        raise ValueError("workflow clock must be finite")
+    deadline = started + budget.max_seconds
     project = Path(root).resolve()
     catalog = catalog or SchemaCatalog()
     packet = _validate_task(task, catalog)
@@ -244,7 +252,6 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
     unstarted = []
     seen_tasks = {packet.task_id}
     calls, known, held = 0, 0, 0
-    started = clock()
     ordinal = 0
     node_usage = {}
     node_started = {}
@@ -285,13 +292,17 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
 
     def invoke(role, node, depth, context):
         nonlocal ordinal, held
-        remaining = budget.max_seconds - (clock()-started)
+        now = clock()
+        if isinstance(now, bool) or not isinstance(now, (int, float)) or not math.isfinite(now) or now < started:
+            raise ValueError("workflow clock became invalid")
+        remaining = deadline - now
         key = node["task_id"]
         own_calls, own_output = node_usage.get(key, (0, 0))
         if own_calls >= node["budget"].get("max_turns", budget.max_model_calls):
             raise ValueError("role Task turn budget exhausted across sessions")
-        remaining = min(remaining, node["budget"].get("max_seconds", budget.max_seconds)
-                        - (clock()-node_started.setdefault(key, clock())))
+        node_deadline = node_started.setdefault(key, now) + node["budget"].get("max_seconds", budget.max_seconds)
+        slice_deadline = min(deadline, node_deadline)
+        remaining = min(remaining, slice_deadline - now)
         if cancel_requested and cancel_requested():
             raise ValueError("workflow cancellation requested")
         if remaining <= 0 or calls >= budget.max_model_calls or held:
@@ -310,7 +321,7 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
             raise ValueError("workflow token reservation exceeds remaining budget")
         ordinal += 1
         invocation = RoleInvocation(role, copy.deepcopy(node), ordinal, depth, copy.deepcopy(context), session_calls, cap,
-                                    min(remaining, node["budget"].get("max_seconds", remaining)), reservation)
+                                    remaining, reservation, deadline_monotonic=slice_deadline, clock=clock)
         event("role-started", {"ordinal": ordinal, "role": role, "task_id": node["task_id"],
                                "depth": depth, "context": invocation.context, "reserved_tokens": reservation,
                                "reserved_model_calls": session_calls, "output_tokens_per_call": cap})

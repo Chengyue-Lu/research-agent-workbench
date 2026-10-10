@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import MappingProxyType
@@ -11,7 +12,7 @@ from typing import Any, Mapping
 from research_workbench.artifacts.integrity import resolve_within_root
 from research_workbench.capability.resolver import permission_policy_covers
 from research_workbench.contracts.common import PermissionPolicy, require_relative_path, to_plain
-from research_workbench.tasks.models import FileReference
+from research_workbench.tasks.models import FileReference, HandoffPolicy
 from research_workbench.validation.schemas import SchemaCatalog
 from research_workbench.entry.roles import EntryInputError, document_bytes, read_pinned_inputs
 
@@ -78,6 +79,32 @@ def _permissions(proposed: Mapping[str, Any], ceiling: Mapping[str, Any]) -> Non
             raise EntryInputError(f"human {key} boundary is unknown")
     if not permission_policy_covers(maximum, current):
         raise EntryInputError("draft expands permissions")
+
+
+def _budget(proposed: Mapping[str, Any], ceiling: Mapping[str, Any], label: str) -> None:
+    # Absence is not a narrower value: downstream callers otherwise fall back
+    # to their own defaults and lose the human-supplied limit.
+    missing = ceiling.keys() - proposed.keys()
+    if missing:
+        raise EntryInputError(f"draft removes {label} " + ", ".join(sorted(missing)))
+    for key, value in proposed.items():
+        maximum = ceiling.get(key)
+        if (isinstance(value, bool) or not isinstance(value, (int, float))
+                or not math.isfinite(value) or value < 0
+                or isinstance(maximum, bool) or not isinstance(maximum, (int, float))
+                or not math.isfinite(maximum) or maximum < 0 or value > maximum):
+            raise EntryInputError(f"draft expands {label} {key}")
+
+
+def _handoff_policy(task: Mapping[str, Any], maximum_task: Mapping[str, Any]) -> None:
+    if "handoff_policy" in maximum_task and "handoff_policy" not in task:
+        raise EntryInputError("draft removes human handoff_policy")
+    proposed = HandoffPolicy.from_mapping(task.get("handoff_policy", {}))
+    required = HandoffPolicy.from_mapping(maximum_task.get("handoff_policy", {}))
+    if (required.require_transfer_manifest and not proposed.require_transfer_manifest
+            or required.semantic_review == "required" and proposed.semantic_review != "required"
+            or proposed.minimum_semantic_samples < required.minimum_semantic_samples):
+        raise EntryInputError("draft weakens human handoff_policy")
 
 
 @dataclass(frozen=True, slots=True)
@@ -150,9 +177,7 @@ def compile_control_draft(
     for scope in task["write_scope"]:
         if not any(_scope_within(scope, allowed) for allowed in maximum_task["write_scope"]):
             raise EntryInputError("draft expands write scope")
-    for key, value in task["budget"].items():
-        if key not in maximum_task["budget"] or value > maximum_task["budget"][key]:
-            raise EntryInputError(f"draft expands budget {key}")
+    _budget(task["budget"], maximum_task["budget"], "budget")
     delegation, maximum_delegation = task["delegation"], maximum_task["delegation"]
     if delegation["allowed"] and not maximum_delegation["allowed"]:
         raise EntryInputError("draft enables unauthorized delegation")
@@ -161,14 +186,15 @@ def compile_control_draft(
         protocol_key = "max_delegation_depth" if key == "max_depth" else "max_parallel_subagents"
         if value > maximum_delegation.get(key, 0) or value > protocol["budgets"][protocol_key]:
             raise EntryInputError(f"draft expands delegation {key}")
-    for key, value in delegation.get("sub_budget", {}).items():
-        maximum = maximum_delegation.get("sub_budget", {}).get(key)
-        if isinstance(value, bool) or not isinstance(value, (int, float)) or maximum is None or value < 0 or value > maximum:
-            raise EntryInputError("draft expands child sub-budget")
+    _budget(delegation.get("sub_budget", {}), maximum_delegation.get("sub_budget", {}),
+            "child sub-budget")
     _subset(task["active_modes"], maximum_task["active_modes"], "Task modes")
     _subset(task["active_modes"], protocol["active_modes"], "Protocol modes")
     _subset(task["question_refs"], maximum_task["question_refs"], "Task questions")
     _subset(task["required_skills"], maximum_task["required_skills"], "required Skills")
+    if not set(maximum_task["required_skills"]) <= set(task["required_skills"]):
+        raise EntryInputError("draft removes required human Skills")
+    _handoff_policy(task, maximum_task)
     if not set(maximum_task["forbidden_skills"]) <= set(task["forbidden_skills"]):
         raise EntryInputError("draft removes forbidden Skills")
     for key in ("completion_checks", "safe_pause_conditions", "stop_conditions", "stale_if"):

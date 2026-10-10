@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import math
+import time
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Callable, Mapping
@@ -50,7 +52,27 @@ class FrozenRoleExecutor:
         self.results = []
 
     def __call__(self, invocation: RoleInvocation) -> RoleObservation:
+        # Workflow owns the admitted time domain. A factory's separate Session
+        # clock cannot restart or extend that deadline after expensive freezing.
+        clock = invocation.clock or time.monotonic
+        deadline = invocation.deadline_monotonic
+        if deadline is not None:
+            if (isinstance(deadline, bool) or not isinstance(deadline, (int, float))
+                    or not math.isfinite(deadline) or invocation.clock is None):
+                raise ValueError("an absolute role deadline requires its trusted clock")
+        observed = clock()
+        if (isinstance(observed, bool) or not isinstance(observed, (int, float))
+                or not math.isfinite(observed)):
+            raise ValueError("role clock must be finite")
+        if deadline is None:
+            deadline = observed + invocation.max_seconds
+        if observed >= deadline:
+            return RoleObservation("safe-paused", "", 0, 0, 0,
+                limitations=("ENTRY-TIME-BUDGET: deadline exhausted before factory",))
         binding = self.factory(invocation)
+        if clock() >= deadline:
+            return RoleObservation("safe-paused", "", 0, 0, 0,
+                limitations=("ENTRY-TIME-BUDGET: deadline exhausted during factory",))
         bundle = load_runtime_bundle(binding.bundle_ref.path, project_root=self.root,
                                      schema_root=binding.schema_root)
         if bundle.manifest_sha256 != binding.bundle_ref.sha256:
@@ -107,6 +129,7 @@ class FrozenRoleExecutor:
         limits = replace(limits, max_total_tokens=(limits.max_total_tokens
             if limits.max_total_tokens is not None else invocation.max_total_tokens),
             allowed_tool_side_effects=frozenset(limits.allowed_tool_side_effects))
+        deadline = min(deadline, deadline - invocation.max_seconds + limits.max_seconds)
         options = dict(bundle_ref=binding.bundle_ref, view_ref=binding.view_ref, role=invocation.role,
                        provider=binding.provider, binding_observer=binding.binding_observer,
                        output_dir=binding.output_dir, output_path=binding.output_path,
@@ -117,8 +140,8 @@ class FrozenRoleExecutor:
                        schema_root=binding.schema_root)
         if binding.host_clock is not None:
             options["host_clock"] = binding.host_clock
-        if binding.session_clock is not None:
-            options["session_clock"] = binding.session_clock
+        options["session_clock"] = clock
+        options["deadline_monotonic"] = deadline
         result = execute_role_slice(self.root, **options)
         self.results.append(result)
         session = result.session

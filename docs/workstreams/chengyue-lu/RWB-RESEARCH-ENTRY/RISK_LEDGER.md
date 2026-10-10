@@ -6,6 +6,8 @@
 
 2026-10-10 本轮当前证据见 [planning / 正式 Handoff 验收](planning-handoff-004/VERIFICATION.md)。受信 caller/factory 的 Action 与 planning 身份已接入冻结、Host 和 Receipt；实际 child/final Handoff producer 与独立完整性 consumer 已接入新主会话及 checkpoint。结构、安装消费和实际 API 的来源及结果分别列示；早期停点不记为整链成功。三项 Task 保持 IN_PROGRESS。
 
+2026-10-10 最新审查识别人类预算/必需条件省略、准备后超时派发和 entry CI 归属缺口。本轮候选修复保留每个 ceiling、必需 Skill/Handoff policy，并将共享 deadline 核验传至实际 Provider/Tool 边界；真实调用事实与 intent 分开。entry 源码及新回归的显式直接消费者进入 CI。旧包复现、首轮静态 gap、333-case 首败与修后消费者验收均见 [审查修复记录](review-fixes-007/VERIFICATION.md)。当前 compact 路径仍不支持 required-Skill/H2 执行，已在执行前停止；完整支持、Source/Skill/Human 接受和三项 Task 的完整义务仍待后续验收。历史 API 来源和 [stage 证据](stage-evidence-006/VERIFICATION.md)保留，本轮没有新增付费请求。
+
 | 风险 | 应对与验收 | 当前状态 |
 |---|---|---|
 | Role配置存在而未进入模型请求 | 实际startup/request内容pin与消费测试；必载baseline | no-Skill路径已实现/离线验证；required Skill未实现阻断 |

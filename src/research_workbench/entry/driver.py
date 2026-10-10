@@ -139,12 +139,21 @@ class SessionExecutionDriver:
         recorder: AgentTraceRecorder, output_path: str, output_contract: str,
         input_refs: Sequence[Mapping[str, str]] = (), limits: ApiSessionLimits | None = None,
         session_clock: Callable[[], float] = time.monotonic,
+        deadline_monotonic: float | None = None,
         cancel_requested: Callable[[], bool] | None = None,
         request_builder: Callable[..., ModelRequest] | None = None,
         request_payloads: Sequence[str] = ("project-context",),
         observation: ObservedExecutionBinding | None = None,
         tools: Sequence[ClientTool] = (), tool_refs: Mapping[str, str] | None = None,
     ) -> None:
+        prepared_at = session_clock()
+        if (isinstance(prepared_at, bool) or not isinstance(prepared_at, (int, float))
+                or not math.isfinite(prepared_at)):
+            raise EntryDriverError("Session clock must be finite")
+        if deadline_monotonic is not None and (
+                isinstance(deadline_monotonic, bool) or not isinstance(deadline_monotonic, (int, float))
+                or not math.isfinite(deadline_monotonic)):
+            raise EntryDriverError("absolute Session deadline must be finite")
         self.root = Path(root).resolve()
         if self.root != view.project_root:
             raise EntryDriverError("Driver and View roots differ")
@@ -240,8 +249,10 @@ class SessionExecutionDriver:
         self.tool_invocations = 0
         self.used_tool_refs: set[str] = set()
         self.tool_call_ids: set[str] = set()
-        self.started: float | None = None
+        self.started = prepared_at
+        self.deadline = min(prepared_at + self.limits.max_seconds, deadline_monotonic) if deadline_monotonic is not None else prepared_at + self.limits.max_seconds
         self._executed = False
+        self._runner: IsolatedApiSessionRunner | None = None
 
     @property
     def binding(self) -> Mapping[str, Any]:
@@ -259,9 +270,6 @@ class SessionExecutionDriver:
         if self.cancel and self.cancel():
             self.failure = "ENTRY-CANCELLED"
             raise EntryDriverError("execution cancellation requested before use")
-        if self.started is not None and self.clock()-self.started >= self.limits.max_seconds:
-            self.failure = "ENTRY-TIME-BUDGET"
-            raise EntryDriverError("Session deadline exhausted before use")
         if _tool_signature(self.tool_definitions) != self.tool_signature:
             self.failure = "ENTRY-TOOL-DEFINITION-DRIFT"
             raise EntryDriverError("declared Tool definitions changed before use")
@@ -271,6 +279,7 @@ class SessionExecutionDriver:
             _read_pin(self.root, CloseoutPin(item["path"], item["sha256"]))
 
     def record(self, kind: str, payload: Mapping[str, Any]) -> None:
+        self._sync_dispatch_facts()
         if kind == "provider-request":
             self._check_use()
             current = payload["request"]
@@ -280,7 +289,6 @@ class SessionExecutionDriver:
                 self.failure = "ENTRY-REQUEST-BOUNDARY"
                 raise EntryDriverError("request exceeds frozen model/Tool/call boundary")
             self.recorder.record(kind, payload)
-            self.requests += 1
         elif kind == "provider-response":
             self.recorder.record(kind, payload)
             response = payload["response"]
@@ -305,16 +313,39 @@ class SessionExecutionDriver:
             # Trace/Host/Receipt use frozen component identity; Session keeps the
             # request's client name for result assembly and handler lookup.
             self.recorder.record(kind, {**payload, "name": self.tool_refs[name]})
-            if kind == "tool-attempted":
-                self.tool_invocations += 1
-                self.tool_call_ids.add(call_id)
-                self.used_tool_refs.add(self.tool_refs[name])
-            elif payload.get("status") == "failed":
+            if kind == "tool-result" and payload.get("status") == "failed":
                 self.failure = self.failure or "ENTRY-TOOL-FAILED"
         else:
             if kind == "capture-gap":
                 self.gaps.append(str(payload.get("reason", "capture-gap")))
             self.recorder.record(kind, payload)
+
+    def _dispatch(self, kind: str, payload: Mapping[str, Any]) -> bool:
+        """Further restrict admission; only the Runner counts real invocations."""
+        now = self.clock()
+        if (isinstance(now, bool) or not isinstance(now, (int, float))
+                or not math.isfinite(now) or now < self.started or now >= self.deadline):
+            self.failure = "ENTRY-TIME-BUDGET"
+            return False
+        if self.cancel and self.cancel():
+            self.failure = "ENTRY-CANCELLED"
+            return False
+        # Cancellation observation is caller code and can itself be slow.
+        now = self.clock()
+        if (isinstance(now, bool) or not isinstance(now, (int, float))
+                or not math.isfinite(now) or now < self.started or now >= self.deadline):
+            self.failure = "ENTRY-TIME-BUDGET"
+            return False
+        return True
+
+    def _sync_dispatch_facts(self) -> None:
+        if self._runner is None:
+            return
+        facts = self._runner.dispatch_facts
+        self.requests = facts["provider_invocations"]
+        self.tool_invocations = facts["tool_invocations"]
+        self.tool_call_ids = {call_id for call_id, _ in facts["tool_calls"]}
+        self.used_tool_refs = {self.tool_refs[name] for _, name in facts["tool_calls"]}
 
     def execute(self, request: FrozenExecutionRequest) -> ExecutionDriverResult:
         if self._executed:
@@ -343,17 +374,20 @@ class SessionExecutionDriver:
         registry = ProviderRegistry()
         registry.register(str(self._declared.binding["provider"]["ref"]), self.provider)
         runner = IsolatedApiSessionRunner(registry, tools=self.tools, clock=self.clock)
-        started = self.clock()
-        self.started = started
+        self._runner = runner
+        started = self.started
         try:
             self.session = runner.run(provider_name=str(self._declared.binding["provider"]["ref"]),
                 request=model_request, limits=self.limits, event_sink=self,
+                deadline_monotonic=self.deadline, dispatch_guard=self._dispatch,
                 cancel_requested=lambda: bool(self.failure) or bool(self.cancel and self.cancel()))
         except Exception as exc:
             self.failure = self.failure or "ENTRY-SESSION-EXCEPTION"
             if not isinstance(exc, EntryDriverError):
                 self.gaps.append("session-exception:" + type(exc).__name__)
                 self.recorder.record_capture_gap("events", self.gaps[-1])
+        finally:
+            self._sync_dispatch_facts()
         if self.requests and (not self.responses or any(response.usage.output_tokens is None for response in self.responses)):
             self.gaps.append("output-token-usage-unavailable")
             self.recorder.record_capture_gap("events", self.gaps[-1])
@@ -387,6 +421,7 @@ def execute_role_slice(
     report_id: str, receipt_id: str, accountable_owner: str,
     input_refs: Sequence[Mapping[str, str]] = (), limits: ApiSessionLimits | None = None,
     host_clock: HostClock | None = None, session_clock: Callable[[], float] = time.monotonic,
+    deadline_monotonic: float | None = None,
     cancel_requested: Callable[[], bool] | None = None, schema_root: str | Path | None = None,
     request_builder: Callable[..., ModelRequest] | None = None,
     request_payloads: Sequence[str] = ("project-context",),
@@ -398,12 +433,22 @@ def execute_role_slice(
     Partial failures remain retained; unavailable facts never become a complete
     Receipt. Output locations must lie in the frozen permission intersection.
     """
+    prepared_at = session_clock()
+    if (isinstance(prepared_at, bool) or not isinstance(prepared_at, (int, float))
+            or not math.isfinite(prepared_at)):
+        raise EntryDriverError("Session clock must be finite")
+    if deadline_monotonic is not None and (
+            isinstance(deadline_monotonic, bool) or not isinstance(deadline_monotonic, (int, float))
+            or not math.isfinite(deadline_monotonic)):
+        raise EntryDriverError("absolute Session deadline must be finite")
     project_root = Path(root).resolve()
     _read_pin(project_root, bundle_ref)
     bundle = load_runtime_bundle(bundle_ref.path, project_root=project_root, schema_root=schema_root)
     if bundle.manifest_sha256 != bundle_ref.sha256.lower().removeprefix("sha256:"):
         raise EntryDriverError("Runtime Bundle changed while loading")
     view = load_resolved_execution_view(view_ref.path, expected_sha256=view_ref.sha256, bundle=bundle, schema_root=schema_root)
+    duration = limits.max_seconds if limits is not None else float(view.document["effective_constraints"]["budget"].get("max_seconds", 60))
+    deadline_monotonic = min(prepared_at + duration, deadline_monotonic) if deadline_monotonic is not None else prepared_at + duration
     destination = _scope_path(project_root, output_dir, view.document)
     output = _scope_path(project_root, output_path, view.document)
     if output.exists() or destination.exists():
@@ -441,6 +486,7 @@ def execute_role_slice(
         binding_observer=binding_observer, observation=observed, recorder=recorder,
         output_path=output_path, output_contract=output_contract, input_refs=actual_inputs,
         limits=limits, session_clock=session_clock, cancel_requested=cancel_requested,
+        deadline_monotonic=deadline_monotonic,
         request_builder=request_builder, request_payloads=request_payloads,
         tools=tools, tool_refs=tool_refs)
     if driver.tools:
@@ -452,8 +498,20 @@ def execute_role_slice(
             "limits": {name: getattr(driver.limits, name) for name in (
                 "max_model_turns", "max_tool_calls", "max_parallel_tool_calls", "max_tool_result_chars")},
         })
+    def admitted(started_at):
+        now = session_clock()
+        if (isinstance(now, bool) or not isinstance(now, (int, float))
+                or not math.isfinite(now) or now < prepared_at or now >= deadline_monotonic):
+            return False
+        if dispatch_guard is not None and dispatch_guard(started_at) is not True:
+            return False
+        # A caller guard can itself consume time; never extend the deadline.
+        now = session_clock()
+        return (not isinstance(now, bool) and isinstance(now, (int, float))
+                and math.isfinite(now) and prepared_at <= now < deadline_monotonic)
+
     host = execute_frozen_view(view, driver, report_id=report_id, attempt_id=attempt_id,
-        clock=clock, schema_root=schema_root, dispatch_guard=dispatch_guard)
+        clock=clock, schema_root=schema_root, dispatch_guard=admitted)
     host_pin = _persist(project_root, destination / "host.json", host)
     if host["execution_phase"] == "post-call":
         recorder.record_execution_fact(fact_id=attempt_id, view_ref=host["view_ref"],

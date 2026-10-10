@@ -175,9 +175,28 @@ class EntryWorkflowTests(unittest.TestCase):
         result, _, _ = self.run_case(executor, cancel_requested=lambda: True)
         self.assertEqual(0, result.model_calls)
         self.assertEqual("safe-paused", result.status)
-        ticks = iter([0, 0, 0, 0, 70])
-        result, _, _ = self.run_case(ScriptedExecutor([output()]), clock=lambda: next(ticks))
+        self.assertEqual([], executor.invocations)
+        self.assertEqual(0, result.known_tokens)
+        self.assertEqual(0, result.held_tokens)
+        monotonic_time = [0.0]
+        executor = ScriptedExecutor([output()])
+        def complete_after_deadline(invocation):
+            observed = executor(invocation)
+            monotonic_time[0] = 70.0
+            return observed
+        result, records, _ = self.run_case(complete_after_deadline, clock=lambda: monotonic_time[0])
         self.assertEqual("safe-paused", result.status)
+        self.assertEqual(1, len(executor.invocations))
+        self.assertEqual(1, result.model_calls)
+        self.assertEqual(35, result.known_tokens)
+        self.assertEqual(0, result.held_tokens)
+        self.assertEqual(1, len(result.observations))
+        self.assertEqual(1, result.observations[0]["model_calls"])
+        self.assertEqual(20, result.observations[0]["input_tokens"])
+        self.assertEqual(15, result.observations[0]["output_tokens"])
+        self.assertIn("deadline exceeded after execution", result.summary)
+        self.assertEqual(1, sum(record["kind"] == "role-finished" for record in records))
+        self.assertEqual(1, sum(record["kind"] == "workflow-stopped" for record in records))
 
     def test_plain_directory_scope_anchor_is_compatible_without_similar_prefix_expansion(self):
         from research_workbench.entry.workflow import _scope_within
