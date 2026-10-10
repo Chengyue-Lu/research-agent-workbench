@@ -1,6 +1,6 @@
 # M0-008 本地验证与剩余项
 
-2026-10-08；定义/实现 base 为 develop `e49386140c18cdfb9e6065b7c59e2545f863e386`；当前为未合并 feature 候选。Task 仍为 IN_PROGRESS，不等同已支持或实际远端同步。
+2026-10-10；定义/实现 base 为 develop `e49386140c18cdfb9e6065b7c59e2545f863e386`；当前为未合并 feature 完成候选。Task DONE 对应本分支验收，不等同 develop 已支持；实际远端同步证据独立见 [记录](REMOTE_SYNC_RECORD.md)。
 
 ## 改了什么
 
@@ -8,7 +8,7 @@
 |---|---|
 | PR body → 治理 parser | 固定 owner 不再必填或按账户名单拒绝；旧 owner 元数据继续可读，未添加新必填 actor/reviewer |
 | policy → risk/workstream validator | 固定人员映射撤销；直接 Task 目录与原 namespace 目录均可用，README/R2 Risk Ledger、路径边界、Task 资格和风险检查保留 |
-| 模板/CODEOWNERS → 提交与审核表面 | 模板去固定责任人；CODEOWNERS 不再按账户指派路径。检查所需风险和证据保持；不声称服务器审核规则已经改变 |
+| 模板/CODEOWNERS → 提交与审核表面 | 模板去固定责任人；CODEOWNERS 不再按账户指派路径。检查所需风险和证据保持；两服务器review层已另行同步并核对hard层不变 |
 | 文档 → 人类消费 | PR141 已合并事实校准；既有计划说明当前不用重复指定工程细节、正式准入/语义变化/具体合并的决定时点 |
 
 ## 实际检查
@@ -19,6 +19,6 @@ Python 3.11.16；执行 `python -m unittest tests.test_pr_governance tests.test_
 
 ## 剩余与下一动作
 
-四个实际线上 ruleset 已只读记录：develop/main hard 层 active、零 bypass，分别保持 squash/merge、required CI、latest base、线程解决和 force/delete；独立 review 层仍有 Code Owner，main 仍需 approval/last-push。本地实现不替代远端前后事实。下一步按已接受取消人员方向准备具体 review 层同步差异并保留 hard 层完整性，完成适用检查与人类合并决定后才考虑 M0-008 收口。
+按2026-10-10明确授权，两review层已各PUT一次并GET重新读取，取消人员审批并清空具名bypass；两hard层没有PUT且after规范字段与before完全一致。详见 [线上记录](REMOTE_SYNC_RECORD.md)。本地正反检查、原head hosted CI与线上事实闭合，M0-008提出完成；具体PR142合并仍待人类指令，新head检查按新CI结果接受。
 
 另一条可直接实施的桥接切片是 PR140 包内 no-Skill/readonly 受信 caller/factory。现有材料足以先做离线实现；不需要人类重填角色数量或控制 JSON，实际 API 仍在既有 18:00–09:00 窗口及累计预算内重核执行资格。M1-010/M2-009/M11-008、实际 Skill 资格、真实项目和 M5/M12 等仍各自验收。
