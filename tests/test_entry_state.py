@@ -112,6 +112,25 @@ class EntryStateTests(unittest.TestCase):
             child_result = executor.invocations[-1].context["child_results"][0]
             self.assertIn(child_result["handoff_ref"]["path"], [ref["path"] for ref in state["machine_state_refs"]])
 
+    def test_optional_stage_publication_adds_exact_refs_without_changing_acceptance(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            protocol, result = self.prepare(root)
+            ref = publish_workflow_checkpoint(root, result=result, protocol_ref=protocol, checkpoint_id="STAGE",
+                output="work/state.json", write_scope=["work/**"], stage_evidence_output="work/stage.json")
+            state = json.loads((root / ref.path).read_bytes())
+            stage_pin = next(pin for pin in state["machine_state_refs"] if pin["path"] == "work/stage.json")
+            self.assertEqual(stage_pin["sha256"], hashlib.sha256((root / stage_pin["path"]).read_bytes()).hexdigest())
+            stage = json.loads((root / stage_pin["path"]).read_bytes())
+            self.assertIn(stage["sources"]["journal_ref"], state["machine_state_refs"])
+            self.assertIn(stage_pin["path"], state["artifact_index_refs"])
+            self.assertEqual([], state["accepted_decisions"])
+            self.assertTrue(state["open_risks"])
+            for output_path in ("outside-stage.json", "work/state2.json"):
+                with self.subTest(path=output_path), self.assertRaises(ValueError):
+                    publish_workflow_checkpoint(root, result=result, protocol_ref=protocol, checkpoint_id="BAD",
+                        output="work/state2.json", write_scope=["work/**"], stage_evidence_output=output_path)
+
 
 if __name__ == "__main__":
     unittest.main()

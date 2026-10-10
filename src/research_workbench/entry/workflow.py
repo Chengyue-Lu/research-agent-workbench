@@ -450,6 +450,7 @@ def run_research_workflow(root, *, directory, task: Mapping[str, Any], executor:
                "task_completion": False, "human_acceptance": False,
                "attempt_id": attempt_id, "handoff_sections": sections, "handoff_consumptions": handoff_consumptions}
     event("workflow-finished", {"status": status, "model_calls": calls, "known_tokens": known, "held_tokens": held})
+    payload["journal_ref"] = _file_ref(project, journal)
     report = dest / "workflow.json"
     with report.open("x", encoding="utf-8", newline="\n") as stream:
         json.dump(payload, stream, ensure_ascii=False, indent=2, allow_nan=False)

@@ -13,10 +13,9 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | --- | --- | --- |
 | 接受的 develop 实现 | 文件 Core、方法/能力控制、受限 Runtime、provenance 与 synthetic Harness 已有实现 | 分类见下表；Task DONE 不超出原验收含义 |
 | 已发布 `v0.1.0` | curated alpha、wheel/sdist、Runtime resources 与 checkout 外 Python 3.11/3.13 安装及 offline-demo 重建证据 | [首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)固定 source/main/tag/附件身份；其后 develop 修复不自动成为该包内容 |
-| 独立代码候选 PR140 | 研究入口、受信包内 caller/factory、Action/planning 冻结身份、动态主子执行、正式 child/final Handoff 消费与 checkpoint；选定合成桥接有结构、安装消费及实际 API 证据 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；当前模块输入输出、首次失败、实际来源与剩余缺口见 [planning-handoff-004](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/planning-handoff-004/README.md)。M1-010/M2-009/M11-008 保持 IN_PROGRESS；选定通路证据不证明通用真实工程、Skill 资格或科研效果 |
+| 独立代码候选 PR140 | 研究入口、受信包内 caller/factory、Action/planning 冻结身份、动态主子执行、正式 child/final Handoff 消费与 checkpoint；应用层阶段证据与显式获准的 Guide 来源核验 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；原桥接见 [planning-handoff-004](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/planning-handoff-004/README.md)，新阶段来源与独立验证范围见 [stage-evidence-006](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/stage-evidence-006/VERIFICATION.md)。M1-010/M2-009/M11-008 保持 IN_PROGRESS；选定通路证据不证明通用真实工程、Skill 资格或科研效果 |
 | 已合并的通用桥接定义 | 需求/材料接入、动态主子运行与冻结执行分别定义验收 | [定义与验证边界](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)；M1-010/M2-009/M11-008 的状态由 TASKS 维护，定义接受不代表实现完成 |
 | 已合并的真实环境接合定义 PR141 | 27 项桥接与真实化 Task 已进入 develop；实现、质量与整链验收分别按各项定义推进 | [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 于北京时间 2026-10-08 03:03 合并为 `e49386140c18cdfb9e6065b7c59e2545f863e386`；[下一阶段唯一计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)与 [TASKS](TASKS.md)维护实施顺序和状态，不把文档合并计为实现通过 |
-
 | 已合并 M0-008 / PR142 | Task/风险治理、模板及远端review层同步已完成，hard层保持；见[验证](workstreams/M0-GOVERNANCE-ALIGNMENT/VERIFICATION.md)与[线上记录](workstreams/M0-GOVERNANCE-ALIGNMENT/REMOTE_SYNC_RECORD.md) | [PR142](https://github.com/Chengyue-Lu/research-agent-workbench/pull/142)于2026-10-10合入develop，squash `67a7c5f6a0c3495f1ad583864d87b25f5bf892e2`；M0-008 DONE，不授运行、研究或发布接受 |
 
 ## 本分支的应用接合候选

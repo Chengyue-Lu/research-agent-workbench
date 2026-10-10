@@ -32,7 +32,7 @@ def _read(root, ref, *, parse=True):
 
 def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, checkpoint_id,
                                 output, write_scope, previous_state_ref=None, created_at=None, catalog=None,
-                                handoff_ref=None):
+                                handoff_ref=None, stage_evidence_output=None):
     """Persist an immutable checkpoint, never resume an Agent or accept a Claim.
 
     Caller owns the single state submission responsibility and output authority.
@@ -40,6 +40,10 @@ def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, c
     is provided. Prior human decisions are preserved verbatim, never generated.
     """
     project = Path(root).resolve()
+    if stage_evidence_output is not None:
+        checkpoint_destination = resolve_within_root(project, str(output))
+        if checkpoint_destination is None or not any(_scope_within(checkpoint_destination.relative_to(project).as_posix(), scope) for scope in write_scope):
+            raise ValueError("checkpoint exceeds the caller's explicit state write scope")
     catalog = catalog or SchemaCatalog()
     protocol_pin, protocol_doc = _read(project, protocol_ref)
     if catalog.validate("project_protocol", protocol_doc):
@@ -96,6 +100,18 @@ def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, c
         for ref in observation.get("artifact_refs", []):
             _read(project, ref, parse=False)
             machine[ref["path"]] = dict(ref)
+    stage_pin = None
+    if stage_evidence_output is not None:
+        from research_workbench.entry.stage import publish_workflow_stage_evidence, _source_pins
+        if resolve_within_root(project, str(stage_evidence_output)) == resolve_within_root(project, str(output)):
+            raise ValueError("stage evidence and checkpoint destinations must differ")
+        stage_pin = publish_workflow_stage_evidence(project, result=result, handoff_ref=handoff_pin,
+            output=stage_evidence_output, write_scope=write_scope, catalog=catalog)
+        _, stage_document = _read(project, stage_pin)
+        for ref in [{"path": stage_pin.path, "sha256": stage_pin.sha256}, *_source_pins(stage_document["sources"])]:
+            if ref["path"] in machine and machine[ref["path"]] != ref:
+                raise ValueError("stage source conflicts with checkpoint machine pin")
+            machine[ref["path"]] = ref
     constraints = list(previous.get("pinned_constraints", []))
     constraint = "claim ceiling: "+", ".join(protocol.claim_ceiling)
     if constraint not in constraints:
@@ -122,7 +138,8 @@ def publish_workflow_checkpoint(root, *, result: WorkflowResult, protocol_ref, c
                 "open_conflicts": conflicts, "open_risks": risks,
                 "next_actions": list(dict.fromkeys([*consumed["document"]["recommended_next_actions"],
                     *consumed["document"]["human_decision_required"]])) or ["Human review of the retained execution result."],
-                "artifact_index_refs": list(dict.fromkeys([*previous.get("artifact_index_refs", []), report_pin.path, handoff_pin.path])),
+                "artifact_index_refs": list(dict.fromkeys([*previous.get("artifact_index_refs", []), report_pin.path, handoff_pin.path,
+                    *([stage_pin.path] if stage_pin else [])])),
                 "machine_state_refs": [machine[p] for p in sorted(machine)],
                 "created_at": created_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")}
     if previous_pin:
