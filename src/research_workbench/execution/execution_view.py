@@ -15,6 +15,7 @@ from typing import Any, Iterable, Mapping, Sequence
 
 from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
 from research_workbench.execution.runtime_bundle import ValidatedRuntimeBundle
+from research_workbench.execution.scope import selected_method_decision
 from research_workbench.io import load_document_bytes
 from research_workbench.validation.schemas import SchemaCatalog
 
@@ -679,22 +680,10 @@ def produce_resolved_execution_view(
         "completion_checks": _plain(
             requirement["verification_expectations"]["deterministic"]
         ),
-        "safe_pause_conditions": _plain(
-            next(
-                decision["blocked_conditions"]
-                for decision in method["action_decisions"]
-                if decision.get("action_ref")
-                == bundle.manifest["execution_scope"]["action_ref"]
-            )
-        ),
-        "stop_conditions": _plain(
-            next(
-                decision["stop_conditions"]
-                for decision in method["action_decisions"]
-                if decision.get("action_ref")
-                == bundle.manifest["execution_scope"]["action_ref"]
-            )
-        ),
+        "safe_pause_conditions": _plain(selected_method_decision(
+            bundle.manifest["execution_scope"], method)["blocked_conditions"]),
+        "stop_conditions": _plain(selected_method_decision(
+            bundle.manifest["execution_scope"], method)["stop_conditions"]),
         "boundaries": {
             "supply_selection": False,
             "automatic_fallback": False,

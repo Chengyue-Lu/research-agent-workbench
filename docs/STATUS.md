@@ -1,6 +1,6 @@
 # 实现状态
 
-状态：Current implementation authority。文档校准：2026-10-08；继承已审实现范围的基线为 develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`。
+状态：Current implementation authority。文档校准：2026-10-10；继承已审实现范围的基线为 develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`。
 本轮协调者提供的 primary develop 来源元信息为 `11c3b57dfbf8af0dc2587fc421d097e2544941c3`；它不表示本轮重新完整审查或重测了该来源的所有新增实现，也不扩大旧接受范围。
 
 本页维护工程成熟度、实现覆盖、候选和缺口。exact Task 的定义、状态、risk、依赖与验收以 [TASKS](TASKS.md) 为准，方向与 Gate 见 [ROADMAP](ROADMAP.md)；公开入口的使用契约与证据等级见 [SUPPORTED_FEATURES](SUPPORTED_FEATURES.md)。历史收口记录绑定当时身份，不作为新的运行、权限或接受事件。
@@ -13,10 +13,17 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | --- | --- | --- |
 | 接受的 develop 实现 | 文件 Core、方法/能力控制、受限 Runtime、provenance 与 synthetic Harness 已有实现 | 分类见下表；Task DONE 不超出原验收含义 |
 | 已发布 `v0.1.0` | curated alpha、wheel/sdist、Runtime resources 与 checkout 外 Python 3.11/3.13 安装及 offline-demo 重建证据 | [首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)固定 source/main/tag/附件身份；其后 develop 修复不自动成为该包内容 |
-| 独立代码候选 PR140 | 研究入口、角色请求、主子结果消费与 checkpoint 等分支实现；有界合成材料上的实际 API/只读 Tool 和桥接已有候选证据 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；本轮只继承已核范围，不新测试。候选通路证据不证明通用真实工程、Skill 资格或科研效果 |
+| 独立代码候选 PR140 | 研究入口、受信包内 caller/factory、Action/planning 冻结身份、动态主子执行、正式 child/final Handoff 消费与 checkpoint；应用层阶段证据与显式获准的 Guide 来源核验 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；原桥接见 [planning-handoff-004](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/planning-handoff-004/README.md)，新阶段来源与独立验证范围见 [stage-evidence-006](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/stage-evidence-006/VERIFICATION.md)。M1-010/M2-009/M11-008 保持 IN_PROGRESS；选定通路证据不证明通用真实工程、Skill 资格或科研效果 |
 | 已合并的通用桥接定义 | 需求/材料接入、动态主子运行与冻结执行分别定义验收 | [定义与验证边界](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)；M1-010/M2-009/M11-008 的状态由 TASKS 维护，定义接受不代表实现完成 |
+| PR140 基础上的后继候选 | 对已提出的整组委派预留 child 首会话与 parent 消费容量，嵌套保留祖先/同级 pending 预算；actual/known/unknown 与未开始事实分开 | 新分支 `codex/research-entry-continuation` 基于 PR140 `766bf45`，未合并；范围与来源见[委派预算验收](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/delegation-wave-008/VERIFICATION.md)。原三项 Task 保持 IN_PROGRESS，不继承旧 API 来源资格 |
 | 已合并的真实环境接合定义 PR141 | 27 项桥接与真实化 Task 已进入 develop；实现、质量与整链验收分别按各项定义推进 | [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 于北京时间 2026-10-08 03:03 合并为 `e49386140c18cdfb9e6065b7c59e2545f863e386`；[下一阶段唯一计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)与 [TASKS](TASKS.md)维护实施顺序和状态，不把文档合并计为实现通过 |
-| M0-008 完成候选 PR142 | 本地治理/模板检查及实际远端 review 层同步已闭合，hard 层保持；见 [验证](workstreams/M0-GOVERNANCE-ALIGNMENT/VERIFICATION.md)与 [线上记录](workstreams/M0-GOVERNANCE-ALIGNMENT/REMOTE_SYNC_RECORD.md) | Task DONE 为当前 feature 的验收候选；PR142 未合并，本地代码不计作 develop 已支持，实际远端同步事实独立成立 |
+| 已合并 M0-008 / PR142 | Task/风险治理、模板及远端review层同步已完成，hard层保持；见[验证](workstreams/M0-GOVERNANCE-ALIGNMENT/VERIFICATION.md)与[线上记录](workstreams/M0-GOVERNANCE-ALIGNMENT/REMOTE_SYNC_RECORD.md) | [PR142](https://github.com/Chengyue-Lu/research-agent-workbench/pull/142)于2026-10-10合入develop，squash `67a7c5f6a0c3495f1ad583864d87b25f5bf892e2`；M0-008 DONE，不授运行、研究或发布接受 |
+
+## 本分支的应用接合候选
+
+`codex/research-entry-integration` 增加可选 research entry 应用层：角色最低指令和获准快照、受人类 ceilings 限制的控制草稿、显式供给冻结与 Bundle/View 接合、procedure/no-Skill/零 Tool 的 Session Driver、main 动态0..N及跨请求预算、固定报告的 checkpoint 发布、独立只读 Guide。实际支持和测试范围见[完成矩阵](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/COMPLETION.md)，参数和接点见[使用说明](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/USAGE.md)。这是待 PR 审查的隔离实现，不表示已合并、live 资格、整 Task/科研接受、M12 解冻或新的发行。
+
+M12 与前端独立窗口已交付[连续性规划](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/m12/PLAN.md)和[前端规划](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/frontend/PLAN.md)。它们是后续候选与接合约束，未实施恢复或图形 UI，canonical Task 状态不变。
 
 ## 已实现
 

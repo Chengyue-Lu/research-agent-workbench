@@ -48,6 +48,27 @@ class RuntimeBundleTests(RuntimeBundleFixture, unittest.TestCase):
         self._write(root, "bundle/manifest.yaml", manifest)
         return manifest_path
 
+    def test_optional_task_revision_preserves_default_one_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self._build_bundle(root)
+            task = load_document(root / "bundle/task.yaml")
+            task.pop("revision")
+            task_hash = self._write(root, "bundle/task.yaml", task)
+            snapshot = load_document(root / "bundle/snapshot.yaml")
+            snapshot["task_ref"]["content_hash"] = "sha256:" + task_hash
+            self._write(root, "bundle/snapshot.yaml", snapshot)
+            manifest = self._rewrite_method_chain(root,
+                lambda method: method["task_ref"].update(sha256=task_hash))
+            document = load_document(manifest)
+            for item in document["documents"]:
+                if item["path"] == "bundle/task.yaml":
+                    item["sha256"] = task_hash
+            self._write(root, "bundle/manifest.yaml", document)
+            bundle = load_runtime_bundle(manifest.relative_to(root),
+                project_root=root, schema_root=ROOT / "schemas")
+            self.assertNotIn("revision", bundle.documents[(root / "bundle/task.yaml").resolve()])
+
     def test_zero_skill_bundle_uses_only_explicit_exact_closure(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
@@ -64,6 +85,61 @@ class RuntimeBundleTests(RuntimeBundleFixture, unittest.TestCase):
             self.assertEqual((root / "bundle/snapshot.yaml").resolve(), validated.entrypoint_path)
             with self.assertRaises(TypeError):
                 validated.manifest["profile"] = "maintainer-full"
+
+    def _planning_bundle(self, root: Path) -> Path:
+        self._build_bundle(root)
+        def planning(method):
+            decision = next(item for item in method["action_decisions"]
+                            if item.get("action_ref") == "ES-A4@1.0.0")
+            decision.pop("action_ref")
+            decision.pop("action_content_hash")
+            decision["planning_action_id"] = "local-contract-check"
+        path = self._rewrite_method_chain(root, planning)
+        manifest = load_document(path)
+        scope = manifest["execution_scope"]
+        scope.pop("action_ref")
+        scope.update(kind="planning-capability-slice", planning_action_id="local-contract-check")
+        self._write(root, "bundle/manifest.yaml", manifest)
+        return path
+
+    def test_planning_selector_requires_one_exact_method_decision_and_full_closure(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            path = self._planning_bundle(root)
+            bundle = load_runtime_bundle(path, project_root=root, schema_root=ROOT / "schemas")
+            self.assertEqual("local-contract-check", bundle.manifest["execution_scope"]["planning_action_id"])
+        mutations = {
+            "wrong-id": lambda scope: scope.update(planning_action_id="wrong-id"),
+            "mixed-selectors": lambda scope: scope.update(action_ref="ES-A4@1.0.0"),
+            "opposite-kind": lambda scope: scope.update(kind="action-capability-slice"),
+            "wrong-requirement": lambda scope: scope.update(requirement_id="wrong-requirement"),
+            "missing-full-demand": lambda scope: scope["task_capability_closure"].update(required=["wrong-requirement"]),
+            "wrong-closed": lambda scope: scope["task_capability_closure"].update(closed=["wrong-requirement"]),
+        }
+        for name, mutate in mutations.items():
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                path = self._planning_bundle(root)
+                manifest = load_document(path)
+                mutate(manifest["execution_scope"])
+                self._write(root, "bundle/manifest.yaml", manifest)
+                with self.assertRaises(RuntimeBundleValidationError):
+                    load_runtime_bundle(path, project_root=root, schema_root=ROOT / "schemas")
+        for duplicate in (False, True):
+            with self.subTest(duplicate=duplicate), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                path = self._planning_bundle(root)
+                def alter(method):
+                    if duplicate:
+                        decision = next(item for item in method["action_decisions"] if "planning_action_id" in item)
+                        repeated = copy.deepcopy(decision)
+                        repeated["decision_id"] += "-duplicate"
+                        method["action_decisions"].append(repeated)
+                    else:
+                        method["resolution_status"] = "blocked"
+                self._rewrite_method_chain(root, alter)
+                with self.assertRaises(RuntimeBundleValidationError):
+                    load_runtime_bundle(path, project_root=root, schema_root=ROOT / "schemas")
 
     def test_directory_manifest_and_document_inputs_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

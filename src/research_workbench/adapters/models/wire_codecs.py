@@ -169,6 +169,7 @@ class _Profile:
     schema_policy: str
     beta: bool
     capabilities: frozenset[Capability]
+    limits: Mapping[str, int | float | str]
 
 
 def _profile(document: Mapping[str, object]) -> _Profile:
@@ -226,7 +227,8 @@ def _profile(document: Mapping[str, object]) -> _Profile:
             _error("Gemma Text policy requires its exact profile/model and Text-only capability", unsupported=True)
     return _Profile(provider, family, requested_model, str(mode),
                     str(mapping["role_policy_id"]), str(mapping["tool_policy_id"]),
-                    str(mapping["schema_policy_id"]), endpoint.get("base_path") == "/beta", supported)
+                    str(mapping["schema_policy_id"]), endpoint.get("base_path") == "/beta", supported,
+                    MappingProxyType(dict(_object(implementation.get("limits", {})))))
 
 
 def _schema(schema: object) -> dict[str, object]:
@@ -275,8 +277,19 @@ def _validate_request(request: ModelRequest, profile: _Profile) -> None:
         _error("max_output_tokens must be a positive integer", request=True)
     if request.temperature is not None and (isinstance(request.temperature, bool) or not isinstance(request.temperature, (int, float))):
         _error("temperature must be a finite number", request=True)
+    # Full Profiles declare limits. Legacy pure wire descriptors may omit them;
+    # enforce each supplied ceiling without inventing a vendor-wide default.
+    output_limit = profile.limits.get("max_output_tokens")
+    tool_limit = profile.limits.get("max_tools")
+    for limit in (output_limit, tool_limit):
+        if limit is not None and (type(limit) is not int or limit <= 0):
+            _error("profile limits must be positive integers")
+    if output_limit is not None and (request.max_output_tokens is None or request.max_output_tokens > output_limit):
+        _error("request exceeds the profile output token limit", request=True)
+    if tool_limit is not None and len(request.tools) > tool_limit:
+        _error("request exceeds the profile tool definition limit", request=True)
     snapshot = ProviderCapabilities(provider=profile.provider, adapter_version=CODEC_VERSION,
-                                    supported=profile.capabilities, models=(profile.model,))
+                                    supported=profile.capabilities, models=(profile.model,), limits=profile.limits)
     # Preserve hard constraints. This pure descriptor has no account evidence;
     # hard DataPolicy requests remain gaps until a separately evidenced interface exists.
     preflight_error = None

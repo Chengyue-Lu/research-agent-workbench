@@ -96,6 +96,8 @@ def plan(changes, inventory, policy):
             if path not in paths:
                 for name, rule in components.items():
                     if test in rule['tests']: choose(name, path, 'removed-test-owner')
+            for key, tests in direct.items():
+                if matches(path, key): choose_tests(tests, path, 'direct-map')
             continue
         if path.endswith('.md') or path.startswith('docs/'):
             choose('docs', path, 'documentation')

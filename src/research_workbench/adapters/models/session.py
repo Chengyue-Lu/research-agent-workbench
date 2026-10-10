@@ -143,6 +143,20 @@ class IsolatedApiSessionRunner:
         if len(self._tools) != len(tools):
             raise ValueError("client tool names must be unique")
         self._clock = clock
+        self._provider_invocations = 0
+        self._tool_dispatches: list[tuple[str, str]] = []
+
+    @property
+    def dispatch_facts(self) -> Mapping[str, Any]:
+        """Detached actual invocation facts for the current/most recent run.
+
+        A caller owns this Runner for one run at a time. Durable intent capture
+        and an admission callback do not count as an actual dispatch. Facts also
+        remain available if capture or a Provider raises before run returns.
+        """
+        return {"provider_invocations": self._provider_invocations,
+                "tool_invocations": len(self._tool_dispatches),
+                "tool_calls": tuple(self._tool_dispatches)}
 
     def run(
         self,
@@ -153,12 +167,23 @@ class IsolatedApiSessionRunner:
         cancel_requested: Callable[[], bool] | None = None,
         event_sink: SessionEventSink | ConformanceSessionSummarySink | None = None,
         tool_choice_transition: ConformanceSessionPolicy | None = None,
+        deadline_monotonic: float | None = None,
+        dispatch_guard: Callable[[str, Mapping[str, Any]], bool] | None = None,
     ) -> ApiSessionResult:
+        self._provider_invocations = 0
+        self._tool_dispatches = []
+        if deadline_monotonic is not None and (
+            isinstance(deadline_monotonic, bool)
+            or not isinstance(deadline_monotonic, (int, float))
+            or not math.isfinite(deadline_monotonic)
+        ):
+            raise ValueError("absolute Session deadline must be finite")
         if tool_choice_transition is not None:
             return self._run_conformance_session(
                 provider_name=provider_name, request=request, limits=limits,
                 cancel_requested=cancel_requested, event_sink=event_sink,
                 policy=tool_choice_transition,
+                deadline_monotonic=deadline_monotonic, dispatch_guard=dispatch_guard,
             )
         declared = {tool.name for tool in request.tools}
         missing_handlers = sorted(declared - set(self._tools))
@@ -196,6 +221,17 @@ class IsolatedApiSessionRunner:
         tool_call_count = 0
         warnings: list[str] = []
         cancelled = cancel_requested or (lambda: False)
+        deadline = min(started + limits.max_seconds, deadline_monotonic) if deadline_monotonic is not None else started + limits.max_seconds
+        guarded_dispatch = deadline_monotonic is not None or dispatch_guard is not None
+
+        def expired() -> bool:
+            observed = self._clock()
+            return (isinstance(observed, bool) or not isinstance(observed, (int, float))
+                    or not math.isfinite(observed) or observed < started or observed >= deadline)
+
+        def paused(reason: str) -> ApiSessionResult:
+            return self._finish(ApiSessionStatus.SAFE_PAUSED, reason, provider_name,
+                request.model, responses, tool_call_count, warnings, event_sink)
 
         while True:
             if cancelled():
@@ -220,7 +256,7 @@ class IsolatedApiSessionRunner:
                     warnings,
                     event_sink,
                 )
-            if self._clock() - started >= limits.max_seconds:
+            if expired():
                 return self._finish(
                     ApiSessionStatus.SAFE_PAUSED,
                     "wall-time-budget",
@@ -237,7 +273,16 @@ class IsolatedApiSessionRunner:
                 # This durability call is intentionally outside the provider
                 # exception boundary: failure must block before network use.
                 event_sink.record("provider-request", {"request": current})
+            # Durable capture and boundary validation can be slow. The final
+            # admission occurs after them, immediately before the real send.
+            if guarded_dispatch and expired():
+                return paused("wall-time-budget")
+            if dispatch_guard is not None and dispatch_guard("provider", {"request": current}) is not True:
+                return paused("dispatch-blocked")
+            if guarded_dispatch and expired():
+                return paused("wall-time-budget")
             try:
+                self._provider_invocations += 1
                 response = validate_response_contract(current, provider.generate(current))
             except ProviderError as exc:
                 # A provider that misbehaves mid-loop ends the session honestly
@@ -324,7 +369,7 @@ class IsolatedApiSessionRunner:
                     warnings,
                     event_sink,
                 )
-            if self._clock() - started >= limits.max_seconds:
+            if expired():
                 return self._finish(
                     ApiSessionStatus.SAFE_PAUSED,
                     "wall-time-budget",
@@ -376,16 +421,27 @@ class IsolatedApiSessionRunner:
                             warnings,
                             event_sink,
                         )
+                    if guarded_dispatch and expired():
+                        return paused("wall-time-budget")
                     binding = self._tools[call.name]
                     # Invocation is the accounting boundary: failures and
                     # oversized results still consumed a call and may have
                     # produced an observable side effect.
-                    tool_call_count += 1
                     if event_sink is not None:
                         event_sink.record(
                             "tool-attempted",
                             {"call_id": call.call_id, "name": call.name, "arguments": dict(call.arguments)},
                         )
+                    if guarded_dispatch and expired():
+                        return paused("wall-time-budget")
+                    if dispatch_guard is not None and dispatch_guard("tool", {
+                        "call_id": call.call_id, "name": call.name, "arguments": dict(call.arguments),
+                    }) is not True:
+                        return paused("dispatch-blocked")
+                    if guarded_dispatch and expired():
+                        return paused("wall-time-budget")
+                    tool_call_count += 1
+                    self._tool_dispatches.append((call.call_id, call.name))
                     try:
                         output = binding.execute(call.arguments)
                         is_error = False
@@ -470,6 +526,8 @@ class IsolatedApiSessionRunner:
         cancel_requested: Callable[[], bool] | None,
         event_sink: SessionEventSink | ConformanceSessionSummarySink | None,
         policy: ConformanceSessionPolicy,
+        deadline_monotonic: float | None,
+        dispatch_guard: Callable[[str, Mapping[str, Any]], bool] | None,
     ) -> ApiSessionResult:
         """Opt-in, two-attempt specific -> successful Tool result -> none path.
 
@@ -617,7 +675,8 @@ class IsolatedApiSessionRunner:
             observed_time = self._clock()
             if not math.isfinite(started) or not math.isfinite(observed_time) or observed_time < started:
                 return "wall-time-clock-invalid"
-            if observed_time - started >= limits.max_seconds:
+            if (observed_time - started >= limits.max_seconds
+                    or deadline_monotonic is not None and observed_time >= deadline_monotonic):
                 return "wall-time-budget"
             return None
 
@@ -645,10 +704,16 @@ class IsolatedApiSessionRunner:
             reason = boundary_reason()
             if reason is not None:
                 return finish(ApiSessionStatus.SAFE_PAUSED, reason)
+            if dispatch_guard is not None and dispatch_guard("provider", {"request": current}) is not True:
+                return finish(ApiSessionStatus.SAFE_PAUSED, "dispatch-blocked")
+            reason = boundary_reason()
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
             try:
                 model_attempts += 1
                 if turn == 1:
                     tool_context_submission_attempts += 1
+                self._provider_invocations += 1
                 response = validate_response_contract(current, freeze_response(provider.generate(current)))
                 response_hash = response_content_sha256(response)
             except ProviderError as exc:
@@ -732,16 +797,24 @@ class IsolatedApiSessionRunner:
                 })
             except Exception:
                 return capture_gap("tool-attempt", "tool-attempt-summary-capture-failed")
-            reason = boundary_reason()
-            if json_content_sha256(call.arguments) != arguments_hash:
-                reason = "conformance-tool-arguments-drift"
+            reason = ("conformance-tool-arguments-drift"
+                if json_content_sha256(call.arguments) != arguments_hash else boundary_reason())
             if reason is not None:
                 # The attempt was durably announced, but no handler ran.
                 # No Tool result or transition is fabricated.
                 return finish(ApiSessionStatus.SAFE_PAUSED, reason)
             # Revalidate after the capture boundary before the one invocation.
             validate_response_contract(current, response)
+            if dispatch_guard is not None and dispatch_guard("tool", {
+                "call_id": call.call_id, "name": call.name, "arguments": dict(call.arguments),
+            }) is not True:
+                return finish(ApiSessionStatus.SAFE_PAUSED, "dispatch-blocked")
+            reason = ("conformance-tool-arguments-drift"
+                if json_content_sha256(call.arguments) != arguments_hash else boundary_reason())
+            if reason is not None:
+                return finish(ApiSessionStatus.SAFE_PAUSED, reason)
             tool_call_count += 1  # Failed handlers consume the one Tool budget.
+            self._tool_dispatches.append((call.call_id, call.name))
             try:
                 output = freeze_json(execute_tool(call.arguments))
                 rendered = output if isinstance(output, str) else json.dumps(
