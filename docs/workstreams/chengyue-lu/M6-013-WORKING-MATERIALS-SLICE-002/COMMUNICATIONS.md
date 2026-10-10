@@ -35,3 +35,9 @@
 01:35:59+08:00 首轮最终静态归档见 [Static Checks](STATIC_CHECKS.json)：三份新产品 pins 与 Handoff 一致，64 个内部 Schema refs 可定位，19 个当时的相对 Markdown 文件目标可定位，旧三份文件仍与基线字节一致。新增本归档链接后再次核 Markdown 目标数量，更新 JSON 中最后范围；未运行测试。产品提交前仅 stage 本切片 10 个新文件，config 环境设置不 stage；最终 commit/push/remote 身份由实际 Git 结果和回传保留，不推定 merged/accepted。
 
 提交前 Git 暂存提示新 JSON 的 CRLF 会规范化为 LF，故先统一新 Schema/静态归档的实际 LF 字节并更新最终 Schema pin；未改变旧文件或 Python 模块/测试。原暂存前 Schema SHA d9ba3a47b42776f7d123b8e341f9cc9bc9fbf87c3505f70b9d70feaf4a4ed51c 保留于此；最终 SHA abd3f3cd8346933cc4c225a2927c0fb0805b913e7029f7b1a382a9e43705f100。这不是产品测试失败或 Schema 语义变更。
+
+## Root scoped 验收与实际 Guide 消费回执
+
+2026-10-11：收到主窗口 scoped 验收回执，完整原文保存在 [Root Integration Receipt](ROOT_INTEGRATION_RECEIPT.md)。Root 报告 fast-forward source45f4101e/receiptf0ffb564 至 codex/working-input-material-slots，并接独立 opt-in working_guide actual consumer；源码 53 PASS（新投影14/实际Guide16/旧投影9/旧角色14），fresh installed 同53重复 PASS，模块/固定Schema字节身份与默认Catalog0.1.0证实。本窗口没有运行测试或复核其原日志，不将安装重复加为106个独立方法。
+
+Root 报告消费者保留旧 Task/Profile/output grant、Task 精确读集、ordinary-only result slot、派发前 pins 复验与离散取消；CI 最初 expected entry 集合缺新模块的10个subtest failures原件保留，后继同步集合与fixture direct edge后42 run/41 PASS/1 POSIX-on-Windows SKIP/0 failure。PR144已合并2009，PR145 fixed7341 的governance/四shards/CI result成功；后继Draft PR发布中，未提供新PR身份。本产品source与三份pins保持冻结，M6-013继续IN_PROGRESS，后继main/child/intake及Task/Policy/View/Host/Session迁移等待独立Packet，不以结果标签代替正式Handoff。
