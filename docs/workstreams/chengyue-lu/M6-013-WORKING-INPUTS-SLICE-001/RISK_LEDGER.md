@@ -11,4 +11,3 @@
 | 停止语义误分类 | caller 明确分类，模块不猜旧 free-form stop | kind 类型可程序检查，condition 语义和实际 Gate 仍需 caller/人类依据 |
 | 旧 live grant 被放宽 | 不读或改实际 grant/账/Attempt；无新付费授权 | 历史版本/失败证据保持；不作 live 接受 |
 | 默认/安装消费者与 CI 漏接 | 新文件/显式 pending 列表；不写共享 backend/resources/CI | Root 串行映射和安装/全消费者验证；不能借静态通过判通用路径通过 |
-

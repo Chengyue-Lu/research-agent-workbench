@@ -9,7 +9,7 @@
 | 文件 | 状态 | SHA-256 |
 | --- | --- | --- |
 | [working_inputs.py](../../../../src/research_workbench/entry/working_inputs.py) | 纯程序白名单投影，输出 model-working-input 0.2.0；当前只接受 source Task 0.1.0 | `cfc4ede84553fbfd19bfee3e8424f2456b28fa5c79fd7504bc148db0d3e7ca21` |
-| [model-working-input.schema.json](../../../../schemas/v0.2.0/model-working-input.schema.json) | 独立、无外部 $refs 的候选契约，边界 false；没有覆盖旧 Schema | `0cb858f0aeebf19f2132f5cb508737aff82580a38e42b3367bb91838a8aaceb1` |
+| [model-working-input.schema.json](../../../../schemas/v0.2.0/model-working-input.schema.json) | 独立、无外部 $refs 的候选契约，边界 false；没有覆盖旧 Schema | `5f08be38bda25d8f67155208201032ae8d06af0b7a694cc9b6a73064d9f5bd5a` |
 | [test_entry_working_inputs.py](../../../../tests/test_entry_working_inputs.py) | 9 项测试代码，**未执行** | `f26498dee241ae747856312f99b5a133734e6ee2bacb79f67b85edf88f72f28f` |
 | [TASKS](../../../TASKS.md) | 仅 M6-013 READY→IN_PROGRESS，定义/依赖/验收不变 | 用 Git diff 界定 |
 
@@ -36,4 +36,3 @@ Task 0.2.0 source 目前明确拒绝。Task/Policy/View/Host/Session candidate 0
 1. 统一运行本独立测试，检查 v0.2.0 Schema 及旧 v0.1.0 正反证据，归档任何失败；静态结果不替代它。
 2. 接受/修订候选版本号与 typed slots；按迁移表串行改 producer、dispatch、Core 消费者及角色输入/输出 baseline，保留旧 bytes/hash/live grant。
 3. 给 actual request 差异、unknown usage 与有效交付独立判定、无经济额度运行、旧 budget 准确回放、权限/ref/资格取消失败等 evidence，再评估 M6-013 后续切片。无需等 review 才消费此源码候选。
-
