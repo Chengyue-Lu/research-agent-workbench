@@ -17,6 +17,8 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | 已合并的通用桥接定义 | 需求/材料接入、动态主子运行与冻结执行分别定义验收 | [定义与验证边界](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)；M1-010/M2-009/M11-008 的状态由 TASKS 维护，定义接受不代表实现完成 |
 | 已合并的真实环境接合定义 PR141 | 27 项桥接与真实化 Task 已进入 develop；实现、质量与整链验收分别按各项定义推进 | [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 于北京时间 2026-10-08 03:03 合并为 `e49386140c18cdfb9e6065b7c59e2545f863e386`；[下一阶段唯一计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)与 [TASKS](TASKS.md)维护实施顺序和状态，不把文档合并计为实现通过 |
 
+| 已合并 M0-008 / PR142 | Task/风险治理、模板及远端review层同步已完成，hard层保持；见[验证](workstreams/M0-GOVERNANCE-ALIGNMENT/VERIFICATION.md)与[线上记录](workstreams/M0-GOVERNANCE-ALIGNMENT/REMOTE_SYNC_RECORD.md) | [PR142](https://github.com/Chengyue-Lu/research-agent-workbench/pull/142)于2026-10-10合入develop，squash `67a7c5f6a0c3495f1ad583864d87b25f5bf892e2`；M0-008 DONE，不授运行、研究或发布接受 |
+
 ## 本分支的应用接合候选
 
 `codex/research-entry-integration` 增加可选 research entry 应用层：角色最低指令和获准快照、受人类 ceilings 限制的控制草稿、显式供给冻结与 Bundle/View 接合、procedure/no-Skill/零 Tool 的 Session Driver、main 动态0..N及跨请求预算、固定报告的 checkpoint 发布、独立只读 Guide。实际支持和测试范围见[完成矩阵](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/COMPLETION.md)，参数和接点见[使用说明](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/USAGE.md)。这是待 PR 审查的隔离实现，不表示已合并、live 资格、整 Task/科研接受、M12 解冻或新的发行。

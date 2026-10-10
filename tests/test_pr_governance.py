@@ -111,10 +111,18 @@ class PullRequestBodyTests(unittest.TestCase):
         governance.validate_body(valid_body(shared_contract="maybe"), report)
         self.assertIn("META-BOOLEAN", codes(report, "ERROR"))
 
-    def test_unknown_owner_is_rejected(self) -> None:
+    def test_legacy_owner_metadata_is_accepted_without_a_person_whitelist(self) -> None:
         report = governance.GovernanceReport()
-        governance.validate_body(valid_body(owner="@unknown"), report)
-        self.assertIn("OWNER-UNKNOWN", codes(report, "ERROR"))
+        metadata, _, _, _ = governance.validate_body(valid_body(owner="@another-contributor"), report)
+        self.assertFalse(report.has_errors, report.findings)
+        self.assertEqual("another-contributor", metadata["Accountable owner"])
+
+    def test_owner_can_be_omitted_without_replacement_actor_or_reviewer(self) -> None:
+        body = valid_body().replace("- **责任人**: @Chengyue-Lu\n", "")
+        report = governance.GovernanceReport()
+        metadata, _, _, _ = governance.validate_body(body, report)
+        self.assertFalse(report.has_errors, report.findings)
+        self.assertNotIn("Accountable owner", metadata)
 
 
 class RiskInferenceTests(unittest.TestCase):
@@ -303,7 +311,7 @@ class WorkstreamTests(unittest.TestCase):
         self.assertIn("WORKSTREAM-R2", codes(report, "ERROR"))
 
     @mock.patch.object(governance, "_read_blob", return_value="ok")
-    def test_provided_workstream_must_match_owner(self, _: mock.Mock) -> None:
+    def test_legacy_workstream_namespace_need_not_match_owner(self, reader: mock.Mock) -> None:
         report = governance.GovernanceReport()
         governance.validate_workstream(
             raw_workstream="docs/workstreams/huangyi/example",
@@ -312,7 +320,42 @@ class WorkstreamTests(unittest.TestCase):
             head_sha="x",
             report=report,
         )
-        self.assertIn("WORKSTREAM-OWNER-MISMATCH", codes(report, "ERROR"))
+        self.assertFalse(report.has_errors, report.findings)
+        reader.assert_called_once_with("x", "docs/workstreams/huangyi/example/README.md")
+
+    @mock.patch.object(governance, "_read_blob", return_value="ok")
+    def test_r2_task_workstream_without_person_namespace_checks_both_evidence_files(self, reader: mock.Mock) -> None:
+        report = governance.GovernanceReport()
+        governance.validate_workstream(
+            raw_workstream="docs/workstreams/M0-GOVERNANCE-ALIGNMENT",
+            effective_risk="R2", head_sha="x", report=report,
+        )
+        self.assertFalse(report.has_errors, report.findings)
+        self.assertEqual([
+            mock.call("x", "docs/workstreams/M0-GOVERNANCE-ALIGNMENT/README.md"),
+            mock.call("x", "docs/workstreams/M0-GOVERNANCE-ALIGNMENT/RISK_LEDGER.md"),
+        ], reader.call_args_list)
+
+    @mock.patch.object(governance, "_read_blob")
+    def test_person_free_r2_workstream_still_rejects_missing_risk_ledger(self, reader: mock.Mock) -> None:
+        reader.side_effect = ["readme", governance.GovernanceError("missing Risk Ledger")]
+        report = governance.GovernanceReport()
+        governance.validate_workstream(
+            raw_workstream="docs/workstreams/M0-GOVERNANCE-ALIGNMENT",
+            effective_risk="R2", head_sha="x", report=report,
+        )
+        self.assertIn("WORKSTREAM-EVIDENCE", codes(report, "ERROR"))
+
+    @mock.patch.object(governance, "_read_blob")
+    def test_person_free_workstream_keeps_path_escape_and_directory_guards(self, reader: mock.Mock) -> None:
+        for path in ("/docs/workstreams/TASK", "docs/workstreams/../TASK", "docs/workstreams"):
+            with self.subTest(path=path):
+                report = governance.GovernanceReport()
+                governance.validate_workstream(
+                    raw_workstream=path, effective_risk="R2", head_sha="x", report=report,
+                )
+                self.assertIn("WORKSTREAM-PATH", codes(report, "ERROR"))
+        reader.assert_not_called()
 
 
 class TopologyTests(unittest.TestCase):
@@ -1151,20 +1194,30 @@ class PolicyAndCodeownersTests(unittest.TestCase):
             ),
         )
 
-    def test_codeowners_has_no_global_wildcard_and_keeps_sensitive_paths(self) -> None:
+    def test_codeowners_has_no_person_assignments_and_sensitive_paths_keep_risk_gates(self) -> None:
         lines = [
             line.strip()
             for line in (ROOT / ".github" / "CODEOWNERS").read_text(encoding="utf-8").splitlines()
             if line.strip() and not line.lstrip().startswith("#")
         ]
-        self.assertFalse(any(line.split()[0] == "*" for line in lines))
-        patterns = {line.split()[0] for line in lines}
-        self.assertTrue({"/.github/", "/docs/ARCHITECTURE.md", "/schemas/", "/registry/"} <= patterns)
+        self.assertEqual([], lines)
+        for path, expected in (
+            (".github/CODEOWNERS", "R2"),
+            ("docs/ARCHITECTURE.md", "R2"),
+            ("schemas/task.schema.json", "R1"),
+            ("registry/profiles.json", "R1"),
+        ):
+            with self.subTest(path=path):
+                risk, _ = governance.infer_minimum_risk(
+                    [path], shared_contract=False, authority_impact=False,
+                )
+                self.assertEqual(expected, risk)
 
     def test_template_omits_machine_known_and_retired_fields(self) -> None:
         template = (ROOT / ".github" / "pull_request_template.md").read_text(encoding="utf-8")
         self.assertNotIn("基线 SHA", template)
         self.assertNotIn("跨负责人审查人", template)
+        self.assertNotIn("**责任人**", template)
         self.assertNotIn("task-closeout", template)
         for required in ("风险等级", "共享契约", "权威依据", "对抗性证据"):
             self.assertIn(required, template)
