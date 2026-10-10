@@ -1,6 +1,6 @@
 # 实现状态
 
-状态：Current implementation authority。文档校准：2026-10-08；继承已审实现范围的基线为 develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`。
+状态：Current implementation authority。文档校准：2026-10-10；继承已审实现范围的基线为 develop `d3c4d23206339ebc7f18b5621f3aa5453f96335e`。
 本轮协调者提供的 primary develop 来源元信息为 `11c3b57dfbf8af0dc2587fc421d097e2544941c3`；它不表示本轮重新完整审查或重测了该来源的所有新增实现，也不扩大旧接受范围。
 
 本页维护工程成熟度、实现覆盖、候选和缺口。exact Task 的定义、状态、risk、依赖与验收以 [TASKS](TASKS.md) 为准，方向与 Gate 见 [ROADMAP](ROADMAP.md)；公开入口的使用契约与证据等级见 [SUPPORTED_FEATURES](SUPPORTED_FEATURES.md)。历史收口记录绑定当时身份，不作为新的运行、权限或接受事件。
@@ -13,9 +13,9 @@ RWB 处于**内部技术 alpha**：核心文件契约、解析、确定性校验
 | --- | --- | --- |
 | 接受的 develop 实现 | 文件 Core、方法/能力控制、受限 Runtime、provenance 与 synthetic Harness 已有实现 | 分类见下表；Task DONE 不超出原验收含义 |
 | 已发布 `v0.1.0` | curated alpha、wheel/sdist、Runtime resources 与 checkout 外 Python 3.11/3.13 安装及 offline-demo 重建证据 | [首发完成记录](workstreams/chengyue-lu/M14-CURATED-RELEASE/FIRST_RELEASE_COMPLETE.md)固定 source/main/tag/附件身份；其后 develop 修复不自动成为该包内容 |
-| 独立代码候选 PR140 | 研究入口、角色请求、主子结果消费与 checkpoint 等分支实现；有界合成材料上的实际 API/只读 Tool 和桥接已有候选证据 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；本轮只继承已核范围，不新测试。候选通路证据不证明通用真实工程、Skill 资格或科研效果 |
-| 通用桥接定义候选 | 需求/材料接入、动态主子运行与冻结执行分别定义验收 | [定义与验证边界](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)；M1-010/M2-009/M11-008 的具体 READY 状态由 TASKS 维护，不代表实现完成 |
-| 真实环境接合定义候选 PR141 | 将工程环境、决策事实、供给发现、真实预算、入口/角色/材料、Tools/Skill 加载、质量与整链缺口纳入 exact Tasks | [下一阶段唯一计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)及 [TASKS](TASKS.md)维护定义与启动条件；[PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 候选定义不等于合并、实现或接受 |
+| 独立代码候选 PR140 | 研究入口、角色请求、主子结果消费与 checkpoint 等分支实现；有界合成材料上的实际 API/只读 Tool 和桥接已有候选证据 | [PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 未合并，不计入本页 develop 支持；本轮补齐包内 caller/factory 并按既有授权重测 exact producer→consumer；候选过程与缺口见 [package-caller-003](workstreams/chengyue-lu/RWB-RESEARCH-ENTRY/package-caller-003/README.md)。候选通路证据不证明通用真实工程、Skill 资格或科研效果 |
+| 已合并的通用桥接定义 | 需求/材料接入、动态主子运行与冻结执行分别定义验收 | [定义与验证边界](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/README.md)；M1-010/M2-009/M11-008 的状态由 TASKS 维护，定义接受不代表实现完成 |
+| 已合并的真实环境接合定义 PR141 | 27 项桥接与真实化 Task 已进入 develop；实现、质量与整链验收分别按各项定义推进 | [PR141](https://github.com/Chengyue-Lu/research-agent-workbench/pull/141) 于北京时间 2026-10-08 03:03 合并为 `e49386140c18cdfb9e6065b7c59e2545f863e386`；[下一阶段唯一计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)与 [TASKS](TASKS.md)维护实施顺序和状态，不把文档合并计为实现通过 |
 
 ## 本分支的应用接合候选
 

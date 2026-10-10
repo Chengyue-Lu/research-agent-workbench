@@ -4,6 +4,8 @@
 
 当前接合必须保留实际 intake pins、逐 Task 独立冻结、可信实际 binding 观测、typed conformance 检查和显式 Tool/session 边界。Guide caller 还须检查响应是否完整并记录实际 usage；项目未写入与模型回答完整性是不同事实。候选资产文件存在不证明 request 装配或准入。
 
+2026-10-10 包内切片的当前证据见 [模块输入输出及缺口](package-caller-003/VERIFICATION.md)。受信 caller/factory 已落盘，Action 路径离线及安装冷回放通过；planning 执行契约和正式/compact Handoff producer-consumer 仍有已确认缺口。历史 Compact/generic 可达范围不作为本次 Handoff 完整验收，三项 Task 保持 IN_PROGRESS。
+
 | 风险 | 应对与验收 | 当前状态 |
 |---|---|---|
 | Role配置存在而未进入模型请求 | 实际startup/request内容pin与消费测试；必载baseline | no-Skill路径已实现/离线验证；required Skill未实现阻断 |
