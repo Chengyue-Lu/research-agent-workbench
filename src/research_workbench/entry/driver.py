@@ -19,6 +19,7 @@ from research_workbench.adapters.models import (
     IsolatedApiSessionRunner, ModelProvider, ModelRequest, ProviderRegistry,
 )
 from research_workbench.artifacts.integrity import hash_bytes, resolve_within_root
+from research_workbench.entry.materials import MaterialInputError, read_material_inputs
 from research_workbench.execution.generic_closeout import (
     CloseoutPin, GenericCloseoutValidationError, build_generic_execution_receipt,
     validate_generic_execution_receipt,
@@ -35,6 +36,20 @@ from research_workbench.validation.schemas import SchemaCatalog
 
 class EntryDriverError(ValueError):
     """A caller configuration or exact-input boundary could not be satisfied."""
+
+
+class _MaterialCheckedProvider:
+    """Recheck after all Runner callbacks, before entering the actual Provider."""
+    def __init__(self, driver):
+        self.driver = driver
+
+    def capabilities(self):
+        return self.driver.provider.capabilities()
+
+    def generate(self, request):
+        self.driver._read_inputs()
+        self.driver._provider_invocations += 1
+        return self.driver.provider.generate(request)
 
 
 @dataclass(frozen=True, slots=True)
@@ -171,7 +186,8 @@ class SessionExecutionDriver:
         for item in self.input_refs:
             if item != declared.get(item.get("path")):
                 raise EntryDriverError("Role input is not an exact declared Task input")
-            _read_pin(self.root, CloseoutPin(item["path"], item["sha256"]))
+        self._read_inputs()
+        self._provider_invocations = 0
         self.clock, self.cancel = session_clock, cancel_requested
         self.builder = request_builder or _default_request_builder
         budget = view.document["effective_constraints"]["budget"]
@@ -275,8 +291,14 @@ class SessionExecutionDriver:
             raise EntryDriverError("declared Tool definitions changed before use")
         profile = self.view.document["agent_profile_ref"]
         _read_pin(self.root, CloseoutPin(profile["path"], profile["sha256"]))
-        for item in self.input_refs:
-            _read_pin(self.root, CloseoutPin(item["path"], item["sha256"]))
+        self._read_inputs()
+
+    def _read_inputs(self) -> tuple[dict[str, Any], ...]:
+        try:
+            return read_material_inputs(self.root, self.input_refs)
+        except MaterialInputError as exc:
+            self.failure = exc.code
+            raise EntryDriverError(str(exc)) from exc
 
     def record(self, kind: str, payload: Mapping[str, Any]) -> None:
         self._sync_dispatch_facts()
@@ -336,13 +358,16 @@ class SessionExecutionDriver:
                 or not math.isfinite(now) or now < self.started or now >= self.deadline):
             self.failure = "ENTRY-TIME-BUDGET"
             return False
+        # Caller callbacks and durable capture precede this final read check.
+        self._read_inputs()
         return True
 
     def _sync_dispatch_facts(self) -> None:
         if self._runner is None:
             return
         facts = self._runner.dispatch_facts
-        self.requests = facts["provider_invocations"]
+        # A rejected guard facade is not an invocation of the actual Provider.
+        self.requests = self._provider_invocations
         self.tool_invocations = facts["tool_invocations"]
         self.tool_call_ids = {call_id for call_id, _ in facts["tool_calls"]}
         self.used_tool_refs = {self.tool_refs[name] for _, name in facts["tool_calls"]}
@@ -358,9 +383,8 @@ class SessionExecutionDriver:
         profile = load_document_bytes(profile_path, profile_bytes)
         task = _plain(_task(self.view))
         self.recorder.record_content_read(profile_pin["path"], access="content", allowlist_basis="frozen View Profile", content_sha256=hash_bytes(profile_bytes))
-        for item in self.input_refs:
-            _, content = _read_pin(self.root, CloseoutPin(item["path"], item["sha256"]))
-            self.recorder.record_content_read(item["path"], access="content", allowlist_basis="exact Task input", content_sha256=hash_bytes(content))
+        for item in self._read_inputs():
+            self.recorder.record_content_read(item["path"], access="content", allowlist_basis="exact Task input", content_sha256=item["sha256"])
         model_request = self.builder(self.root, role=self.role, task=task, profile=profile,
             model=str(self._declared.binding["model"]["ref"]), input_refs=self.input_refs,
             tools=self.tool_definitions, max_output_tokens=self.limits.max_output_tokens_per_turn)
@@ -372,7 +396,7 @@ class SessionExecutionDriver:
             model_request.data_policy, local_only=model_request.data_policy.local_only or not self.remote,
             allow_provider_server_tools=False))
         registry = ProviderRegistry()
-        registry.register(str(self._declared.binding["provider"]["ref"]), self.provider)
+        registry.register(str(self._declared.binding["provider"]["ref"]), _MaterialCheckedProvider(self))
         runner = IsolatedApiSessionRunner(registry, tools=self.tools, clock=self.clock)
         self._runner = runner
         started = self.started

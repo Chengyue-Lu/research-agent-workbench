@@ -20,6 +20,7 @@ from research_workbench.entry.binding import (
 )
 from research_workbench.entry.driver import ObservedExecutionBinding
 from research_workbench.entry.executor import FrozenRoleBinding
+from research_workbench.entry.materials import MaterialInputError, read_material_inputs
 from research_workbench.entry.workflow import RoleInvocation
 from research_workbench.execution.execution_view import PinnedExecutionInput
 from research_workbench.execution.generic_closeout import CloseoutPin
@@ -200,6 +201,10 @@ class ApiRoleBindingFactory:
                 or not any(_within(relative, a) for a in task["write_scope"])
                 or not any(_within(relative, a) for a in permissions.get("allowed_roots", []))):
             raise EntryBindingError("actual Task cannot write this per-role archive")
+        try:
+            read_material_inputs(self.root, task["input_refs"])
+        except MaterialInputError as exc:
+            raise EntryBindingError(str(exc)) from exc
         directory = _path(self.root, relative)
         directory.mkdir(parents=True, exist_ok=False)
         if known:

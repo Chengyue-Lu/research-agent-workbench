@@ -14,11 +14,10 @@ from typing import Any, Iterable, Mapping
 from research_workbench.adapters.models.port import (
     ContentBlock, DataPolicy, Message, ModelRequest, ToolDefinition,
 )
-from research_workbench.artifacts.integrity import resolve_within_root
 from research_workbench.capability.models import AgentProfile
 from research_workbench.capability.resolver import permission_policy_covers
 from research_workbench.contracts.common import to_plain
-from research_workbench.io import load_document_bytes
+from research_workbench.entry.materials import MaterialInputError, read_material_inputs
 from research_workbench.tasks.models import FileReference, TaskPacket
 from research_workbench.validation.schemas import SchemaCatalog
 
@@ -38,6 +37,9 @@ _COMMON = (
     "additional file access, automatic reference traversal or write authority. "
     "A list of refs does not mean those files have been opened. This input "
     "verification applies only to payload.inputs, not arbitrary caller_context. "
+    "material_provenance describes checked declared source relations. It "
+    "establishes neither scientific qualification nor permissions; ordinary "
+    "inputs may have no declared source relation. "
     "When the Task explicitly requires a named Tool invocation, an already read "
     "input snapshot is not that invocation or its result. Before final control "
     "text, invoke that Tool only if authorized and available, using the provider's "
@@ -184,37 +186,11 @@ def _reference(value: FileReference | Mapping[str, Any]) -> FileReference:
 def read_pinned_inputs(
     root: str | Path, references: Iterable[FileReference | Mapping[str, Any]],
 ) -> tuple[dict[str, Any], ...]:
-    """Read exactly the listed files once; hash and decode those same bytes."""
-    captured: list[dict[str, Any]] = []
-    seen: set[Path] = set()
-    total = 0
-    for value in references:
-        reference = _reference(value)
-        path = resolve_within_root(root, reference.path)
-        if path is None or not path.is_file():
-            raise EntryInputError(f"missing or outside-root input: {reference.path}")
-        if path in seen:
-            raise EntryInputError(f"duplicate input: {reference.path}")
-        seen.add(path)
-        if path.stat().st_size > 1_048_576:
-            raise EntryInputError(f"input exceeds bounded text limit: {reference.path}")
-        raw = path.read_bytes()
-        total += len(raw)
-        if len(raw) > 1_048_576 or total > 4_194_304:
-            raise EntryInputError("input snapshot exceeds bounded text limit")
-        if hashlib.sha256(raw).hexdigest() != reference.sha256:
-            raise EntryInputError(f"input hash mismatch: {reference.path}")
-        if reference.revision is not None:
-            document = load_document_bytes(path, raw)
-            if not isinstance(document, Mapping) or document.get("revision") != reference.revision:
-                raise EntryInputError(f"input revision mismatch: {reference.path}")
-        try:
-            text = raw.decode("utf-8")
-        except UnicodeDecodeError as exc:
-            raise EntryInputError("entry supports explicit UTF-8 text inputs only") from exc
-        captured.append({"path": reference.path, "sha256": reference.sha256,
-                         "revision": reference.revision, "text": text})
-    return tuple(captured)
+    """Consume exact pins and the source relations in their selected closure."""
+    try:
+        return read_material_inputs(root, references)
+    except MaterialInputError as exc:
+        raise EntryInputError(str(exc)) from exc
 
 
 def _without_none(value: Any) -> Any:

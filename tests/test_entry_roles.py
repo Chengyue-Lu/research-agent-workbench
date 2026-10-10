@@ -65,7 +65,11 @@ class EntryRoleTests(unittest.TestCase):
         raw = (self.root / "source.txt").read_bytes()
         expected_hash = hashlib.sha256(raw).hexdigest()
         self.assertEqual([{"path": "source.txt", "sha256": expected_hash,
-                           "revision": None, "text": raw.decode("utf-8")}], payload["inputs"])
+                           "revision": None, "text": raw.decode("utf-8")}],
+                         [{key: value for key, value in item.items() if key != "material_provenance"}
+                          for item in payload["inputs"]])
+        self.assertEqual("ordinary-input", payload["inputs"][0]["material_provenance"]["kind"])
+        self.assertEqual("not-established", payload["inputs"][0]["material_provenance"]["scientific_qualification"])
         self.assertEqual(self.task["input_refs"][0]["sha256"], expected_hash)
         self.assertEqual(hashlib.sha256(user_text.encode("utf-8")).hexdigest(),
                          request.metadata["input_snapshot_sha256"])

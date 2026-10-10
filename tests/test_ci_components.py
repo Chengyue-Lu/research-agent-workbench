@@ -69,10 +69,12 @@ class ComponentPlanTests(unittest.TestCase):
             'test_entry_driver', 'test_entry_executor', 'test_entry_factory',
             'test_entry_guide', 'test_entry_handoff', 'test_entry_intake',
             'test_entry_intake_call', 'test_entry_intake_constraints',
+            'test_entry_material_bridge', 'test_entry_materials',
             'test_entry_roles', 'test_entry_stage', 'test_entry_state',
-            'test_entry_wave', 'test_entry_wave_bridge', 'test_entry_workflow',
+            'test_entry_wave', 'test_entry_wave_bridge', 'test_entry_working_inputs', 'test_entry_workflow',
         }
-        for module in ('intake', 'caller', 'executor', 'driver', 'workflow', '__init__'):
+        for module in ('intake', 'caller', 'executor', 'driver', 'workflow', '__init__',
+                       'materials', 'roles', 'factory', 'intake_call'):
             path = 'src/research_workbench/entry/' + module + '.py'
             with self.subTest(path=path):
                 self.assertIn(path, self.inventory)
@@ -90,11 +92,13 @@ class ComponentPlanTests(unittest.TestCase):
             'tests/entry_chain_support.py': {
                 'test_entry_bridge_flow', 'test_entry_caller', 'test_entry_deadline',
                 'test_entry_factory', 'test_entry_intake_call',
-                'test_entry_intake_constraints', 'test_entry_wave_bridge',
+                'test_entry_intake_constraints', 'test_entry_material_bridge',
+                'test_entry_wave_bridge',
             },
             'tests/entry_factory_support.py': {
                 'test_entry_caller', 'test_entry_deadline', 'test_entry_factory',
-                'test_entry_intake_constraints', 'test_entry_wave_bridge',
+                'test_entry_intake_constraints', 'test_entry_material_bridge',
+                'test_entry_wave_bridge',
             },
         }
         for path, expected in consumers.items():
@@ -126,14 +130,15 @@ class ComponentPlanTests(unittest.TestCase):
             'test_conformance_session_policy': {'test_entry_deadline'},
             'test_entry_bridge_flow': {'test_entry_deadline', 'test_entry_intake_call'},
             'test_entry_caller': {'test_entry_deadline', 'test_entry_handoff',
-                                  'test_entry_intake_constraints', 'test_entry_wave_bridge'},
+                                  'test_entry_intake_constraints', 'test_entry_material_bridge',
+                                  'test_entry_wave_bridge'},
             'test_entry_driver': {'test_entry_bridge_flow', 'test_entry_caller',
                                   'test_entry_control_chain', 'test_entry_executor',
                                   'test_entry_factory', 'test_entry_intake_call',
                                   'test_entry_intake_constraints', 'test_entry_wave_bridge'},
             'test_entry_intake': {'test_entry_cli', 'test_entry_intake_constraints'},
             'test_entry_intake_call': {'test_entry_caller', 'test_entry_deadline',
-                                       'test_entry_wave_bridge'},
+                                       'test_entry_material_bridge', 'test_entry_wave_bridge'},
         }
         for module, expected in consumers.items():
             path = 'tests/' + module + '.py'
@@ -147,6 +152,48 @@ class ComponentPlanTests(unittest.TestCase):
                 self.assertFalse(report['smoke'])
                 self.assertFalse(report['install'])
                 self.assertEqual(['3.11'], report['python_versions'])
+
+    def test_material_test_edits_select_only_the_edited_module(self):
+        for module in ('test_entry_materials', 'test_entry_material_bridge', 'test_entry_working_inputs'):
+            with self.subTest(module=module):
+                path = 'tests/' + module + '.py'
+                self.assertIn(path, self.inventory)
+                report = self.plan([path])
+                self.assertEqual([module], report['selected_tests'])
+                self.assertEqual([], report['components'])
+                self.assertEqual([], report['unknown_paths'])
+                self.assertFalse(report['smoke'])
+                self.assertFalse(report['install'])
+                self.assertEqual(['3.11'], report['python_versions'])
+
+    def test_missing_material_regressions_are_visible_in_source_only_plan(self):
+        for module in ('test_entry_materials', 'test_entry_material_bridge'):
+            with self.subTest(module=module):
+                missing = 'tests/' + module + '.py'
+                report = self.plan(['src/research_workbench/entry/materials.py'],
+                                   inventory=self.inventory - {missing})
+                self.assertEqual(['entry'], report['components'])
+                self.assertEqual([missing], report['unknown_paths'])
+                self.assertNotIn(module, report['selected_tests'])
+                self.assertIn('test_entry_wave_bridge', report['selected_tests'])
+                self.assertTrue(any(row['kind'] == 'mapped-test-absent' and row['path'] == missing
+                                    for row in report['reasons']))
+                self.assertTrue(report['smoke'])
+
+    def test_missing_material_bridge_consumer_stays_visible_for_fixture_edits(self):
+        missing = 'tests/test_entry_material_bridge.py'
+        for path in ('tests/entry_chain_support.py', 'tests/entry_factory_support.py',
+                     'tests/test_entry_caller.py', 'tests/test_entry_intake_call.py'):
+            with self.subTest(path=path):
+                report = self.plan([path], inventory=self.inventory - {missing})
+                self.assertEqual([], report['components'])
+                self.assertEqual([missing], report['unknown_paths'])
+                self.assertNotIn('test_entry_material_bridge', report['selected_tests'])
+                self.assertIn('test_entry_wave_bridge', report['selected_tests'])
+                self.assertTrue(any(row['kind'] == 'mapped-test-absent' and row['path'] == missing
+                                    for row in report['reasons']))
+                self.assertFalse(report['smoke'])
+                self.assertFalse(report['install'])
 
     def test_existing_test_module_maps_select_self_and_declared_consumers(self):
         consumers = {
@@ -190,7 +237,7 @@ class ComponentPlanTests(unittest.TestCase):
         missing = 'tests/test_entry_intake_constraints.py'
         report = self.plan([path], inventory=self.inventory - {missing})
         self.assertEqual({'test_entry_caller', 'test_entry_deadline', 'test_entry_handoff',
-                          'test_entry_wave_bridge'},
+                          'test_entry_material_bridge', 'test_entry_wave_bridge'},
                          set(report['selected_tests']))
         self.assertEqual([], report['components'])
         self.assertEqual([missing], report['unknown_paths'])
@@ -222,6 +269,7 @@ class ComponentPlanTests(unittest.TestCase):
         self.assertTrue({'test_entry_bridge_flow', 'test_entry_caller', 'test_entry_control_chain',
                          'test_entry_executor', 'test_entry_factory', 'test_entry_intake_call',
                          'test_entry_deadline', 'test_entry_intake_constraints',
+                         'test_entry_materials', 'test_entry_material_bridge',
                          'test_entry_wave', 'test_entry_wave_bridge'}.issubset(report['selected_tests']))
         self.assertEqual([path], report['unknown_paths'])
         self.assertTrue(any(row['kind'] == 'removed-test-owner' for row in report['reasons']))

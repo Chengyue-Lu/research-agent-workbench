@@ -178,6 +178,9 @@ class _CapturedProvider:
     def generate(self, request):
         capture = self.capture
         capture.check()
+        # Recheck after the trusted guard/capture/cancellation callbacks, just
+        # before recording an actual invocation and entering the provider.
+        read_pinned_inputs(capture.root, capture.task["input_refs"])
         capture.event("provider-invocation-started", {"model_calls": capture.calls + 1,
             "configured_provider": capture.provider_name, "model": request.model})
         capture.calls += 1
