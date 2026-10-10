@@ -631,7 +631,9 @@ class AgentTraceRecorder:
         if result_entered_context:
             result_payload = cleaned.get("result", cleaned)
             result_bytes = json.dumps(result_payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-            relative = f"{TRACE_TOOL_EVENTS_DIRNAME}/{_safe_id(operation_id)}-{status}.json"
+            operation_digest = _sha256_bytes(operation_id.encode("utf-8"))[:12]
+            # Keep filenames short and distinct even for repeated or unsafe IDs.
+            relative = f"{TRACE_TOOL_EVENTS_DIRNAME}/{self._event_sequence + 1:04d}-{operation_digest}.json"
             result_path = self.attempt_dir / relative
             _create_exclusive(result_path, result_bytes + b"\n")
             result_ref = _ref(result_path, relative)

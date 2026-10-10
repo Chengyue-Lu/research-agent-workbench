@@ -19,6 +19,7 @@ from research_workbench.capability.projection_supply import (
     projection_supply_fact_issues,
 )
 from research_workbench.io import load_document_bytes
+from research_workbench.execution.scope import selected_method_decision
 from research_workbench.validation.schemas import SchemaCatalog
 
 
@@ -174,7 +175,7 @@ def _derived_edges(
             if expected is not None:
                 edges.add((method_path, task_path, "method-task"))
                 pins.append((task_path, expected))
-            if task_ref.get("task_id") != task.get("task_id") or task_ref.get("revision") != task.get("revision"):
+            if task_ref.get("task_id") != task.get("task_id") or task_ref.get("revision") != task.get("revision", 1):
                 pins.append((task_path, "identity-mismatch"))
     return edges, pins
 
@@ -441,7 +442,7 @@ def _validate_lineage(
             )
         )
 
-    # Runtime Core consumes one exact Action/Capability slice.  The manifest
+    # Runtime Core consumes one exact Action or Method-local planning slice. The manifest
     # exposes the complete Task demand and the singleton closed set so a slice
     # receipt cannot be mistaken for whole-Task completion.
     execution_scope = manifest.get("execution_scope", {})
@@ -452,22 +453,19 @@ def _validate_lineage(
     declared_closed = {
         item for item in closure.get("closed", ()) if isinstance(item, str)
     }
-    action_ref = execution_scope.get("action_ref")
-    matching_actions = [
-        decision
-        for decision in method.get("action_decisions", ())
-        if isinstance(decision, Mapping) and decision.get("action_ref") == action_ref
-    ]
+    try:
+        selected_decision = selected_method_decision(execution_scope, method)
+    except ValueError:
+        selected_decision = None
     if (
-        execution_scope.get("kind") != "action-capability-slice"
-        or execution_scope.get("requirement_id") != expected_requirement_id
+        execution_scope.get("requirement_id") != expected_requirement_id
         or declared_required != required_capabilities
         or declared_closed != {expected_requirement_id}
-        or len(matching_actions) != 1
+        or selected_decision is None
         or expected_requirement_id
         not in {
             item
-            for item in matching_actions[0].get("capability_requirements", ())
+            for item in selected_decision.get("capability_requirements", ())
             if isinstance(item, str)
         }
     ):
@@ -475,7 +473,7 @@ def _validate_lineage(
             RuntimeBundleIssue(
                 root,
                 "RUNTIME-BUNDLE-EXECUTION-SLICE-MISMATCH",
-                "execution_scope must bind the exact Method Action, Requirement, full Task demand, and singleton closed capability",
+                "execution_scope must bind one exact proceed Method Action/planning decision, Requirement, full Task demand, and singleton closed capability",
             )
         )
     if closure.get("task_completion") is not False:

@@ -14,6 +14,7 @@ from research_workbench.execution.host import (
     load_resolved_execution_view,
 )
 from research_workbench.execution.runtime_bundle import ValidatedRuntimeBundle
+from research_workbench.execution.scope import slice_completion_claim
 from research_workbench.io import load_document_bytes
 from research_workbench.observability.trace import validate_attempt_trace
 from research_workbench.validation.schemas import SchemaCatalog
@@ -565,7 +566,8 @@ def _build_execution_receipt(
         "execution_kind": execution_kind,
         "status": host_status,
         "completion_claim": (
-            "action-capability-slice-only" if host_status == "completed" else "none"
+            slice_completion_claim(view.document["execution_scope"])
+            if host_status == "completed" else "none"
         ),
         "task_ref": _plain(view.document["task_ref"]),
         "execution_scope": _plain(view.document["execution_scope"]),

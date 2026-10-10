@@ -1506,6 +1506,37 @@ def _resources_quickstart(args: argparse.Namespace) -> int:
     return 0
 
 
+def _entry_draft(args: argparse.Namespace) -> int:
+    from research_workbench.entry.intake import compile_control_draft, persist_control_draft
+    from research_workbench.io import load_document
+    root = Path(args.root).resolve()
+    def read(relative):
+        path = resolve_within_root(root, relative)
+        if path is None or not path.is_file():
+            raise ValueError("entry input must be an explicit existing project-relative file")
+        return path
+    draft = compile_control_draft(root, response=read(args.response).read_text(encoding="utf-8"),
+        protocol_ceiling=load_document(read(args.protocol_ceiling)),
+        task_ceiling=load_document(read(args.task_ceiling)))
+    refs = persist_control_draft(root, directory=args.output_directory, draft=draft)
+    print(json.dumps({"status": "draft", "qualification": "schema-validated-control-draft",
+        "artifacts": [{"path": ref.path, "sha256": ref.sha256} for ref in refs],
+        "unknowns": list(draft.unknowns)}, ensure_ascii=False))
+    return 0
+
+
+def _entry_guide_preview(args: argparse.Namespace) -> int:
+    from research_workbench.entry.guide import build_guide_request
+    request = build_guide_request(args.root, question=args.question,
+        main_state_ref={"path": args.state, "sha256": args.state_sha256},
+        model=args.model, max_output_tokens=args.max_output_tokens)
+    print(json.dumps({"qualification": "request-preview-only", "model": request.model,
+        "max_output_tokens": request.max_output_tokens, "tools": [], "metadata": dict(request.metadata),
+        "messages": [{"role": message.role, "content": [block.text for block in message.content]}
+                     for message in request.messages]}, ensure_ascii=False))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="rwb", description="Research Agent Workbench utilities")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1535,6 +1566,24 @@ def build_parser() -> argparse.ArgumentParser:
     for command in (init_parser, project_check):
         command.add_argument("--runtime-root", help="absolute resource override root")
         command.add_argument("--manifest-sha256", help="external digest required with a resource override")
+
+    entry = subparsers.add_parser("entry", help="prepare explicit research control drafts and read-only requests")
+    entry_commands = entry.add_subparsers(dest="entry_command", required=True)
+    entry_draft = entry_commands.add_parser("draft", help="validate a model proposal under human control ceilings")
+    entry_draft.add_argument("--root", required=True)
+    entry_draft.add_argument("--response", required=True, help="project-relative JSON proposal file")
+    entry_draft.add_argument("--protocol-ceiling", required=True)
+    entry_draft.add_argument("--task-ceiling", required=True)
+    entry_draft.add_argument("--output-directory", required=True)
+    entry_draft.set_defaults(handler=_entry_draft)
+    entry_guide = entry_commands.add_parser("guide-preview", help="build one approved MainState request without sending")
+    entry_guide.add_argument("--root", required=True)
+    entry_guide.add_argument("--state", required=True)
+    entry_guide.add_argument("--state-sha256", required=True)
+    entry_guide.add_argument("--question", required=True)
+    entry_guide.add_argument("--model", required=True)
+    entry_guide.add_argument("--max-output-tokens", type=int, default=1024)
+    entry_guide.set_defaults(handler=_entry_guide_preview)
 
     validate = subparsers.add_parser("validate", help="run schema, deterministic, and reference checks")
     validate.add_argument("paths", nargs="+", help="document files or directories")
