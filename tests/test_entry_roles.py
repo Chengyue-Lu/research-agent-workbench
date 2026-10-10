@@ -50,6 +50,7 @@ class EntryRoleTests(unittest.TestCase):
         self.assertIn('"delegations"', request.messages[0].content[0].text)
         self.assertEqual(ROLE_BASELINES["main"], request.messages[0].content[0].text)
         payload = json.loads(request.messages[1].content[0].text)
+        self.assertEqual("main", payload["role"])
         self.assertEqual(["source.txt"], [item["path"] for item in payload["inputs"]])
         self.assertEqual("failed", payload["caller_context"]["actual_child_results"][0]["status"])
         self.assertEqual(2, len(request.messages))
@@ -104,12 +105,46 @@ class EntryRoleTests(unittest.TestCase):
         self.request(context={"actual_child_results": ["private prior result"]})
         self.assertNotIn("private prior result", self.request().messages[1].content[0].text)
 
+    def test_consuming_main_identity_is_visible_with_reused_child_profile(self):
+        parent = copy.deepcopy(self.task)
+        parent["task_id"] = "ENTRY-PARENT"
+        child = copy.deepcopy(self.task)
+        child["task_id"] = "ENTRY-REVIEW-CHILD"
+        child_request = self.request(role="child", task=child,
+            context={"phase": "plan-or-execute", "child_results": []})
+        # Only request assembly is exercised here; no Handoff admission or
+        # scientific independence is claimed by this supplied context fixture.
+        supplied = {"phase": "consume-child-results", "child_results": [{
+            "task_id": child["task_id"], "summary": "Child Task observation.",
+            "disposition": "complete"}]}
+        original = copy.deepcopy(supplied)
+        request = self.request(role="main", task=parent, context=supplied)
+        payload = json.loads(request.messages[1].content[0].text)
+        child_payload = json.loads(child_request.messages[1].content[0].text)
+        self.assertEqual("main", payload["role"])
+        self.assertEqual("child", child_payload["role"])
+        self.assertEqual(parent["task_id"], payload["task"]["task_id"])
+        self.assertEqual(child["task_id"], child_payload["task"]["task_id"])
+        self.assertEqual(payload["profile"], child_payload["profile"])
+        self.assertEqual("consume-child-results", payload["caller_context"]["phase"])
+        self.assertEqual(child["task_id"], payload["caller_context"]["child_results"][0]["task_id"])
+        self.assertEqual(original, payload["caller_context"])
+        self.assertEqual(original, supplied)
+        self.assertEqual(2, len(request.messages))
+        self.assertEqual((), request.tools)
+        self.assertIn("are not your own previous response", request.messages[0].content[0].text)
+        self.assertIn("same Profile does not identify the same Task or API session", request.messages[0].content[0].text)
+        self.assertIn("do not establish scientific independence", request.messages[0].content[0].text)
+        self.assertIn("Further delegation remains your decision", request.messages[0].content[0].text)
+        self.assertIsNone(json.loads(self.request().messages[1].content[0].text)["caller_context"])
+
     def test_child_receives_own_task_snapshot_without_delegation_or_prior_results(self):
         task = copy.deepcopy(self.task)
         task["delegation"] = {"allowed": False, "max_depth": 0, "max_parallel": 0}
         request = self.request(role="child", task=task,
                                context={"phase": "plan-or-execute", "child_results": []})
         payload = json.loads(request.messages[1].content[0].text)
+        self.assertEqual("child", payload["role"])
         self.assertFalse(payload["task"]["delegation"]["allowed"])
         self.assertEqual([], payload["caller_context"]["child_results"])
         self.assertEqual((self.root / "source.txt").read_bytes().decode("utf-8"),
@@ -127,6 +162,7 @@ class EntryRoleTests(unittest.TestCase):
     def test_intake_receives_real_control_schemas_without_skill_admission(self):
         request = self.request(role="intake")
         payload = json.loads(request.messages[1].content[0].text)
+        self.assertEqual("intake", payload["role"])
         self.assertIn("task_packet", payload["control_output_schemas"])
         self.assertIn("unknowns", request.messages[0].content[0].text)
         self.assertIsNone(payload["caller_context"])
@@ -163,6 +199,19 @@ class EntryRoleTests(unittest.TestCase):
     def test_guide_cannot_take_generic_main_context(self):
         with self.assertRaises(EntryInputError):
             self.request(role="guide", context={"main_chat": "old history"})
+
+    def test_visible_guide_identity_keeps_read_only_request_without_main_context(self):
+        guide_task = copy.deepcopy(self.task)
+        guide_task["permissions"]["filesystem"] = "read-only"
+        request = self.request(role="guide", task=guide_task)
+        payload = json.loads(request.messages[1].content[0].text)
+        self.assertEqual("guide", payload["role"])
+        self.assertEqual((), request.tools)
+        self.assertIsNone(payload["caller_context"])
+        self.assertIsNone(payload["caller_instructions"])
+        self.assertNotIn("delegation_output_schemas", payload)
+        self.assertNotIn("control_output_schemas", payload)
+        self.assertEqual(ROLE_BASELINES["guide"], request.messages[0].content[0].text)
 
     def test_write_scope_outside_explicit_roots_blocks(self):
         task = copy.deepcopy(self.task)

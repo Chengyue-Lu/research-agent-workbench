@@ -79,6 +79,16 @@ ROLE_BASELINES: Mapping[str, str] = MappingProxyType({
         "by the compiler, not invented by the model."
     ),
     "main": _COMMON + (
+        'Your current role is payload.role; your current Task identity and '
+        'requirements are in payload.task, including task_id. Read '
+        'payload.caller_context.phase when present. During consume-child-results, '
+        'coordinate the current parent Task and evaluate caller-supplied '
+        'child_results from other child Tasks and their role executions; these '
+        'are not your own previous response. An Agent Profile is a reusable '
+        'configuration; the same Profile does not identify the same Task or API '
+        'session. Separate sessions alone do not establish scientific independence. '
+        'Further delegation remains your decision when actual missing work, '
+        'conflicts or Task review requirements justify it within the ceilings. '
         'Coordinate the bounded work and consume actual child results. Your entire '
         'final response must be exactly one raw JSON object, beginning with { and '
         'ending with }. Include no prose before or after it and no Markdown or '
@@ -98,7 +108,9 @@ ROLE_BASELINES: Mapping[str, str] = MappingProxyType({
         'results and record disposition; completing a slice is not Human acceptance.'
     ),
     "child": _COMMON + (
-        "Execute only this atomic Task, use only declared inputs and tools, and "
+        "Your current role is payload.role and your current atomic Task is "
+        "payload.task, including its task_id. Read payload.caller_context.phase "
+        "when present. Execute only this atomic Task, use only declared inputs and tools, and "
         "write only its authorized scope. Return observed results, failed or "
         "unstarted work, usage/unknowns, output refs and limitations for main. "
         "You are executing this Task, not its parent. Disabled delegation only "
@@ -265,7 +277,7 @@ def build_role_request(
     if any((value.path, value.sha256, value.revision) not in permitted for value in requested_refs):
         raise EntryInputError("input is outside Task exact read set")
     inputs = read_pinned_inputs(root, requested_refs)
-    payload = {"task": _without_none(to_plain(task)), "profile": profile.agent_profile_id,
+    payload = {"role": role, "task": _without_none(to_plain(task)), "profile": profile.agent_profile_id,
                "inputs": inputs, "caller_instructions": instructions,
                "caller_context": context}
     if role == "intake":
