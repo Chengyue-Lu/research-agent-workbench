@@ -122,4 +122,4 @@ M5 四臂/盲评/Pilot 与 net benefit，Mode/Skill 准入，后续复杂研究�
 
 各场景进入其直接任务验收，不建立总评测平台或更改 M5 冻结协议。记录研究产物、人工纠正、首个有效动作等待、选择/回查、重复工作、旧信息沿用、方向和维护/解释实际消耗，不预写收益数字。
 
-具体定义差异与读写边界见 [本轮规划整改记录](PLANNING_USAGE_REPLAN.md)，运行语义见 [ADR-0025](../../../decisions/0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)。
+具体定义差异与读写边界见 [本轮规划整改记录](PLANNING_USAGE_REPLAN.md)，运行语义见 [ADR-0027](../../../decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)。

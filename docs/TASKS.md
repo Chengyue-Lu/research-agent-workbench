@@ -38,7 +38,7 @@ active implementation；`DONE` 只表示既有验收及证据已经接受，且�
 具体意图、路由与语义影响由版本绑定、评审的角色 Prompt 或 Skill 承载；程序独立核契约/权限/diff/hash/ref并记录实际用量，
 不代替语义判断。Prompt/Skill 路线可选，选择 Skill 时满足其实际加载/资格；职责可合并，无固定角色/API 数量。
 
-预算整改依据见 [ADR-0025](decisions/0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)。通用产品采用程序记账、模型最小工作输入，
+预算整改依据见 [ADR-0027](decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)。通用产品采用程序记账、模型最小工作输入，
 不要求经济额度、不默认 budget preflight 或模型预算管理。当前代码仍使用旧强制预算契约，迁移由 M6-013 独立实施，
 已有桥接按其实际版本验收且明确旧行为；新的无额度产品路径由 M11-010 消费迁移证据。旧 DONE、固定 live grant
 和 M5 冻结比较条件不静默重解释。Codex 机制对照留在 Issue #18，不是 M Task、依赖或验收前置。
@@ -171,7 +171,7 @@ M5-006 acceptance fail closed。
 | M6-010 | DONE | DeepSeek Flash 的真实 Windows Provider/session conformance | M6-009, M6-002, `M6-DEEPSEEK-LIVE-AUTHORIZATION-GATE`（可审计外部条件） | 按[通用接入计划](workstreams/chengyue-lu/M6-GENERAL-PROVIDER-DEFINITION/PLAN.md)冻结exact source/profile/endpoint/Flash model与observed identity策略、非思考模式、Credential reference、Windows Host/session/Tool、报告及预算/time/retry/data-egress边界；具名授权且北京时间18:00后及官方闲时窗内才运行固定合成text/schema/tool shape与实际有界client Tool/session往返；fresh session、预绑定Tool本地验证、usage/stops/全部失败费用与未知成本/零请求阻断/预算停闭合，脱敏报告可独立复核，不保存原始prompt/response/tool arguments/隐藏思考/密钥；只接受exact DeepSeek Flash Provider/session，不替代原M6-004 OpenAI验收或M11端到端/A4 admission/M5 Pilot/科研评价；M5消费同一binding，配置/model/source drift重验适用性 |
 | M6-011 | READY | 实际模型能力适配与运行用量记录 | M6-009, M6-002 | 按实际模型窗口、接口输出容量和协议要求配置调用参数，区分技术容量与人为经济配额；程序关联 request/intent/Task/Attempt/父子实际 token、调用、耗时、Provider 费用、failed/unknown，零调用与未知不混淆且未知不填零；不新增通用额度、余额预检、预占、unknown holds 或模型预算上下文；记录缺失不单独阻断有效工作，费用请求可按需解释，兼容旧版本；现有 budget 字段/View/Host/Session 的强制去耦由 M6-013 负责，不把增强记账设为普通入口/Tools共同前置 |
 | M6-012 | PARKED | 真实 read/write/execute/search Tool 的受控执行 | M11-008 | 真实 handlers 落实路径/进程/网络和副作用约束，记录 actual/partial 产物、失败和原生 usage/unknown；消费已有执行事实接口，不等待 M6-011 增强记账或以余额阻断；选中工具的参数、实际技术容量、环境与权限可验，不只改 label；readonly 正常路径无写入，无资格路径零执行；外写/执行仍需相应授权 |
-| M6-013 | READY | 运行用量与模型工作输入的版本化契约迁移 | M1-004, M1-005, M6-002, M11-002, M11-004 | 按 ADR-0025 显式发布新版本 Task/Policy/View/Host/Session 与角色请求投影，通用执行不要求 budget/sub_budget/经济额度，不做余额/预占/超额/unknown holds 阻断；模型输入只含任务相关职责/材料/权限/交付与实际停止条件，不默认含预算字段/账本或自估用量；程序记录 actual/failed/unknown 并将记账缺口与执行/交付判定分开；取消、接口真实容量/超时及权限/引用/供给/Human Gate 检查保持；旧工件/测试按原版本精确解释，拒绝静默松绑或假兼容，交付双版本正反检查、actual request 差异和迁移消费者表；不重写 DONE/旧评价协议，不因旧额度缺失妨碍新路径，不改变 Resolver/Runtime 权属 |
+| M6-013 | READY | 运行用量与模型工作输入的版本化契约迁移 | M1-004, M1-005, M6-002, M11-002, M11-004 | 按 ADR-0027 显式发布新版本 Task/Policy/View/Host/Session 与角色请求投影，通用执行不要求 budget/sub_budget/经济额度，不做余额/预占/超额/unknown holds 阻断；模型输入只含任务相关职责/材料/权限/交付与实际停止条件，不默认含预算字段/账本或自估用量；程序记录 actual/failed/unknown 并将记账缺口与执行/交付判定分开；取消、接口真实容量/超时及权限/引用/供给/Human Gate 检查保持；旧工件/测试按原版本精确解释，拒绝静默松绑或假兼容，交付双版本正反检查、actual request 差异和迁移消费者表；不重写 DONE/旧评价协议，不因旧额度缺失妨碍新路径，不改变 Resolver/Runtime 权属 |
 
 2026-08-19 的历史 live 诊断不替代当前 M6-004 Gate；OpenAI live conformance、EVID/SIM SIR 与
 process-kill recovery 均不作为 `K-INTEGRATION-1` 的合并阻塞项。

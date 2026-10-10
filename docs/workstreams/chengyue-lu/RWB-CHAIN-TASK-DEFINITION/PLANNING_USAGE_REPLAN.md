@@ -12,7 +12,7 @@
 - develop `67a7c5f6a0c3495f1ad583864d87b25f5bf892e2`；[PR140](https://github.com/Chengyue-Lu/research-agent-workbench/pull/140) 候选 `766bf45ccde4637684e2100480e9f1577cc61662`，仍 OPEN/Draft；[PR142](https://github.com/Chengyue-Lu/research-agent-workbench/pull/142) 已合并到固定 develop，M0-008 已 DONE。
 - 当前 AGENTS/README、文档入口、Development、Architecture、TASKS/ROADMAP/STATUS、本 workstream 现有计划/设计/风险记录；只扩展读取预算、角色工作输入、模块接点、兼容示例、文档/公开投影和治理检查的相关内容。源码/Schema 只用于确认当前预算字段与执行行为，不进行实现。
 
-执行 Profile 为 documentation coordinator；required Skills 为 `[]`，不委派。写入范围限根 AGENTS/README、主要规划/状态/施工导航、相关模块预算条款、本 workstream 当前索引/风险记录、ADR-0025 与兼容迁移页。新增的两个契约说明是本轮版本整改的必要记录，未新增三份独立功能设计或空白任务。代码、Schema、Registry、测试、CI/治理配置及历史工件保持不变。worktree 的本地 memory 配置复制保留 `generate_memories=false/use_memories=true`，不提交。
+执行 Profile 为 documentation coordinator；required Skills 为 `[]`，不委派。写入范围限根 AGENTS/README、主要规划/状态/施工导航、相关模块预算条款、本 workstream 当前索引/风险记录、ADR-0027 与兼容迁移页。新增的两个契约说明是本轮版本整改的必要记录，未新增三份独立功能设计或空白任务。代码、Schema、Registry、测试、CI/治理配置及历史工件保持不变。worktree 的本地 memory 配置复制保留 `generate_memories=false/use_memories=true`，不提交。
 
 本轮程序用量/命令结果作为观察记录，不设经济额度或模型预算职责；没有付费 Provider 调用。停止于具体文档 PR、Issue #18 对照范围记录及验证交付。merge、产品实现、live 授权、科学/Skill/来源接受和 Topic 5 激活分别保留。
 
@@ -36,7 +36,7 @@
 
 ## 运行语义与原件保留
 
-[ADR-0025](../../../decisions/0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md) 定义程序记录实际 token/调用/耗时/可得费用/failed/unknown，经济额度不成为通用前置或停止条件；模型消费最小工作输入，不生成预算或管理账本。模型真实窗口、接口参数、传输超时、明确取消和实际失败独立处理；权限、数据、版本、资格、Human Gate、Claim/科学接受保持。
+[ADR-0027](../../../decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md) 定义程序记录实际 token/调用/耗时/可得费用/failed/unknown，经济额度不成为通用前置或停止条件；模型消费最小工作输入，不生成预算或管理账本。模型真实窗口、接口参数、传输超时、明确取消和实际失败独立处理；权限、数据、版本、资格、Human Gate、Claim/科学接受保持。
 
 现行实现仍要求预算对象并执行旧限制，PR140 候选还有预算职责/完整 Task 的模型输入；[STATUS](../../../STATUS.md) 与公开支持矩阵如实区分文档方向和实际支持。M6-013 将显式发新版本并验证 producer→consumer 闭包；隐藏 Prompt、传极大额度或只删词不算完成。
 
@@ -60,6 +60,14 @@
 | `git diff --check` / 提交范围 | 无空白错误；提交只允许上述 Markdown，本地 memory 配置不提交 |
 
 PR 治理绑定具体提交与完整 27 个变化 Task ID，结果由 PR 验证段及本地发布回执记录。未改源代码/Schema/Registry/测试/CI/配置，当前旧预算和历史授权的行为测试没有改标为新方向通过。
+
+## ADR 编号整合（2026-10-11）
+
+关联测试窗口报告候选编号冲突。本轮仅核 PR140 `766bf45ccde4637684e2100480e9f1577cc61662`、PR143 `fcb1cfd31783a9e751d000208af1f3c83b04910e` 的 ADR 文件名元数据及当前 PR144 文档：0025 已用于 `PLANNING-EXECUTION-IDENTITY`，0026 已用于 `PINNED-COMPACT-HANDOFF-CONSUMPTION`，该范围内 0027 未占用。将本 PR 的用量/模型工作输入决定改为 ADR-0027，并同步当前引用及 PR 正文。
+
+决定正文仅改编号，M6-013 定义仅改 ADR 引用；其余任务状态、依赖和验收语义保持。旧提交 `2d771cf1e26e7f2b50e7609a77d7c1134e5920fe`、固定证据和原本地档案/hash 不重写。PR140/143 的 planning/Handoff ADR 文件与身份保持，不复制或修改其正文；新 head 的文档、内部链接和治理检查另行绑定。
+
+编号修正本地核对：17 项现有文档/公开表面检查 PASS，28 Markdown / 347 内部链接 PASS；Task ID/状态/依赖不变，唯一 Task 行差异是 M6-013 的 ADR 引用；ADR 正文除标题编号外逐字相同，旧用量 ADR 路径引用无残留，源代码/Schema/Registry/测试/CI/示例差异为空。PR 治理及线上检查由新 head 的独立结果确认，不复用旧绿色作为本轮结果。
 
 ## 档案、工作记录与下一步
 

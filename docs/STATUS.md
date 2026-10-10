@@ -7,7 +7,7 @@
 
 2026-10-10 文档规划：关联意图、范围化记忆/角色工作集、单层活跃方向、事件/只读前端和程序记账方向已获人类授权纳入本轮 task-definition PR；本分支尚未合并，不新增实现覆盖。M1-016/017、M2-015、M3-014/015、M6-013 的具体状态以 TASKS 为准。
 
-现行 develop 的 Task/Policy/View/Host/Session 仍有必需预算与硬限制；PR140 固定候选还把预算相关职责/完整 Task 送入模型。新方向要求无通用经济配额、模型默认无预算上下文、记账与完成分别判定，迁移尚未实现；见[ADR-0025](decisions/0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)与[版本边界](compatibility/BUDGET_CONTRACT_MIGRATION.md)。现有 stage sidecar 是事后产物，不是实时运行视图；完整记忆维护、方向合流和只读前端不因定义而宣称已支持。
+现行 develop 的 Task/Policy/View/Host/Session 仍有必需预算与硬限制；PR140 固定候选还把预算相关职责/完整 Task 送入模型。新方向要求无通用经济配额、模型默认无预算上下文、记账与完成分别判定，迁移尚未实现；见[ADR-0027](decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)与[版本边界](compatibility/BUDGET_CONTRACT_MIGRATION.md)。现有 stage sidecar 是事后产物，不是实时运行视图；完整记忆维护、方向合流和只读前端不因定义而宣称已支持。
 
 ## 成熟度与来源身份
 

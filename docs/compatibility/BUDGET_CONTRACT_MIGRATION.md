@@ -1,6 +1,6 @@
 # 预算契约的显式版本迁移
 
-本页是迁移边界，当前覆盖由 [STATUS](../STATUS.md)维护，新方向见 [ADR-0025](../decisions/0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)。新方向的实现任务为 [TASKS](../TASKS.md) 中 M6-013。
+本页是迁移边界，当前覆盖由 [STATUS](../STATUS.md)维护，新方向见 [ADR-0027](../decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)。新方向的实现任务为 [TASKS](../TASKS.md) 中 M6-013。
 
 ## 当前旧版行为
 

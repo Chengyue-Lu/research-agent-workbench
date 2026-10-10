@@ -28,7 +28,7 @@ ADR 保存已接受架构决定及其理由；当前系统说明仍以[总体架
 | [0022](0022-SINGLE-PR-MAINTAINER-REVIEW-EXCEPTION.md) | Accepted by named maintainer | Reviewer 不可用时的单次维护者审核例外与独立硬门禁 |
 | [0023](0023-DEVELOPMENT-WITHOUT-PERSON-ASSIGNMENTS.md) | Human-authorized direction；机器同步待 M0-008 | 取消固定开发人员分工和指定人员审核前置，保留功能权威与硬门禁 |
 | [0024](0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md) | Proposed for PR141；尚未实现 | 既有研究主线外的入口层与 Guide/短程分支；角色规则承载判断 |
-| [0025](0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md) | 2026-10-10 人类授权方向；本 PR 审阅，迁移未实现 | 实际用量记录、无通用经济配额及模型工作输入分离 |
+| [0027](0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md) | 2026-10-10 人类授权方向；本 PR 审阅，迁移未实现 | 实际用量记录、无通用经济配额及模型工作输入分离 |
 
 `0017` 原文件曾与 Assignment Handoff 决定重复使用编号 `0005`；2026-08-22 只修正文件名和标题，Git 历史保留原路径与内容关系。
 

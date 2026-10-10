@@ -95,4 +95,4 @@ flowchart TB
 
 有限方向按现有 Task/Handoff 记录基线和局部结果，选择某方向卡片不授予 child 控制权；首版反馈精确关联方向并投递所属 main。M2-015 不新增持久分支身份或恢复权威。只读展示消费 M1-016/017 的实际事件/快照，后续操作复用 M1-013/015 的实现入口；只读显示不以所有路由/记忆维护完工为前置。
 
-程序记录实际调用/费用/未知，不要求用户先填经济额度，不要求模型生成子预算。新的无预算工作输入与旧 Task/Policy/View 区分，迁移见 [ADR-0025](../../../decisions/0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)及 [版本边界](../../../compatibility/BUDGET_CONTRACT_MIGRATION.md)。旧固定候选的强制预算接口仍是迁移源事实，文档接受不表示已经移除。
+程序记录实际调用/费用/未知，不要求用户先填经济额度，不要求模型生成子预算。新的无预算工作输入与旧 Task/Policy/View 区分，迁移见 [ADR-0027](../../../decisions/0027-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)及 [版本边界](../../../compatibility/BUDGET_CONTRACT_MIGRATION.md)。旧固定候选的强制预算接口仍是迁移源事实，文档接受不表示已经移除。
