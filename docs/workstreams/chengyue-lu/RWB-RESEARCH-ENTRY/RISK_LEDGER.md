@@ -4,7 +4,7 @@
 
 当前接合必须保留实际 intake pins、逐 Task 独立冻结、可信实际 binding 观测、typed conformance 检查和显式 Tool/session 边界。Guide caller 还须检查响应是否完整并记录实际 usage；项目未写入与模型回答完整性是不同事实。候选资产文件存在不证明 request 装配或准入。
 
-2026-10-10 包内切片的当前证据见 [模块输入输出及缺口](package-caller-003/VERIFICATION.md)。受信 caller/factory 已落盘，Action 路径离线及安装冷回放通过；planning 执行契约和正式/compact Handoff producer-consumer 仍有已确认缺口。历史 Compact/generic 可达范围不作为本次 Handoff 完整验收，三项 Task 保持 IN_PROGRESS。
+2026-10-10 本轮当前证据见 [planning / 正式 Handoff 验收](planning-handoff-004/VERIFICATION.md)。受信 caller/factory 的 Action 与 planning 身份已接入冻结、Host 和 Receipt；实际 child/final Handoff producer 与独立完整性 consumer 已接入新主会话及 checkpoint。结构、安装消费和实际 API 的来源及结果分别列示；早期停点不记为整链成功。三项 Task 保持 IN_PROGRESS。
 
 | 风险 | 应对与验收 | 当前状态 |
 |---|---|---|
@@ -15,8 +15,10 @@
 | 任务完成与Claim/Human接受混淆 | 执行slice、main处置、人类决定分别记录 | 报告/receipt false authority守卫测试通过；Task语义接受仍待 |
 | Guide问答污染main/项目 | 独立caller、获准快照、无Tool/write/message/Trace-state writer接点，反例测试 | 已实现/离线验证；外层remote授权/timeout/usage账由caller负责 |
 | 多writer/局部提交失败 | 首轮单提交者/独占发布，保留失败；不宣称CAS或全事务；state从fixed report取值 | 原R4已修复并复查；覆盖/篡改拒绝，CAS/全事务未提供 |
-| legacy Handoff非空Skill锁 | Compact/generic路径明确支持范围，正式迁移独立定义 | 保留 |
+| Handoff能力与交付语义 | 空 Skill lock 对应 no-Skill 路径；消费独立 Task/attempt/observation 与每份 Receipt 实际 pins，保留 missing-output、限制与人类待决 | 本切片已接入；required Skill 加载、H2 Manifest/语义审查缺证据仍阻断；产物内容质量不由结构校验代替 |
 | M12/Topic5被普通续接暗中解冻 | 新窗口只规划，manual新输入与自动恢复分开 | 保留 |
 | synthetic测试被当live/科研正确性 | 注入Provider/Driver标明测试来源，live资格独立 | 保留 |
 
-回退：撤销本分支新增的可选入口代码与相关使用文档；既有契约/Registry/已DONE Task保持原bytes。发布与合并由具名人类及实际PR规则决定。
+回退：撤销本分支新增的可选入口代码与相关使用文档；既有契约/Registry/已DONE Task保持原bytes。发布与合并由人类决断及实际 PR 规则决定。
+
+实际模型文本不能证明能力调用或独立会话来源：有 Tool 的两轮模型曾把已读 snapshot 误称为 native 调用；事实检查按真实 HTTP/Tool/Trace 拒收。独立 review 场景也曾在正式 child Handoff 已进入新主请求后，被新主误认作自身旧回答，保留 safe-paused。baseline 的职责/会话说明仅帮助模型执行；实际调用及 Task 内容质量仍须按观测验收。
