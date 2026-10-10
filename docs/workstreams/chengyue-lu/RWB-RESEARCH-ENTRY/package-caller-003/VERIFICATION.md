@@ -20,6 +20,7 @@
 - 补充 intake/Driver/control chain/文档及 Requirement 缓存：21 项通过。首次 planning 正例暴露 Runtime Bundle 不支持 planning 身份，完整失败保留。
 - planning 早期 block 与原 Action 正例复测：2 项通过；原 Action 为重复验证，不叠加 unique 总数。当前三套合计 104 个不同最终用例通过，规划执行成功没有计入。
 - 首轮20项的3 failures/1 error保留：Requirement 漂移已有下游拒绝但缺 factory 同级重读；子任务正例使用了过大预算；未声明 Requirement 反例使用无效 ID。修复后保留原规则与断言。
+- 首次 hosted CI 的261项第2分片有1条公共文档断言失败：旧测试逐字要求“任何”，已接受文档使用“任意”。改为检查 Provider Adapter 的具体表行、structural/bounded 等级及账号/配置/Tool/用途资格边界，完整14项 public-surface 回归通过；未改支持承诺或产品代码。原CI日志和修正证据保留，最新提交重新执行CI。
 
 详细 stdout、worker 通信、输入/版本 pins、安装 probe 与冷回放回执位于本轮 ignored 档案；评审先读此表。此前15个实际链路 Attempt 的结果绑定旧来源，不替代本轮包内接口证明。
 
