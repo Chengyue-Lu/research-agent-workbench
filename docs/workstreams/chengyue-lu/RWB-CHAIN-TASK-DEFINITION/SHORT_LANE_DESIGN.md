@@ -1,10 +1,10 @@
 # 同一对话入口下的研究、查询与局部修改
 
-2026-10-08；AUDIT-RWB-DOCS-005；PR141 设计候选。依据 [ADR-0024](../../../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)，exact scope/deps/state 由 [TASKS](../../../TASKS.md)维护，排程见 [REALIZATION_PLAN](REALIZATION_PLAN.md)。本文件描述后续接口及案例，不表示已有路由、写回或状态评估实现。
+2026-10-10；AUDIT-RWB-DOCS-006 更新已定义接点；原 AUDIT-RWB-DOCS-005/PR141 为来源。依据 [ADR-0024](../../../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)，exact scope/deps/state 由 [TASKS](../../../TASKS.md)维护，排程见 [REALIZATION_PLAN](REALIZATION_PLAN.md)。本文件描述后续接口及案例，不表示已有路由、写回或状态评估实现。
 
 ## 请求先分流，研究才形成 Protocol
 
-人类在一个对话框询问、编辑或提出研究任务。应用先为每个请求确定目标与获准范围，界面再将各路结果呈现到同一处。共享显示不等于把全聊天送给每个模型。本设计只增加既有研究主线之前的入口层及旁路，研究 Protocol/Task/Method、main/child、Handoff、MainState 和人类决定的主线保持。
+人类在一个对话框询问、编辑或提出研究任务。应用先把请求拆为有关联的意图并逐项确定目标与获准范围，界面再将各路结果呈现到同一处。共享显示不等于把全聊天送给每个模型。本设计只增加既有研究主线之前的入口层及旁路，研究 Protocol/Task/Method、main/child、Handoff、MainState 和人类决定的主线保持。
 
 ```mermaid
 flowchart TB
@@ -33,12 +33,12 @@ flowchart TB
 
 架构规定各分支允许读写什么、接收/输出哪些引用、如何隔离以及何处需要人类采纳。角色 Skill/提示词规定如何理解需求、识别研究含义、提出路径和评估实际变更；装配时绑定 Profile、规则版本/hash、适用范围和所需材料。评审覆盖局部呈现与研究语义、混合请求、缺少状态视图、提示注入和不确定情形，不能以固定关键词或文件大小保证路由正确。
 
-程序独立检查权限、预算、目标版本、diff/ref 和输入冲突；它不能替代语义判断。模型输出只构成有依据的路由/影响提案，须通过适用执行边界；材料不足则澄清或保留 unknown。角色必载提示词与可选方法 Skill 分开，不为每次短程操作强加 Skill Supply；实际选择 Skill 时沿既有加载、评价/准入和 use-boundary，不用提示词版本替代 Skill 资格。职责可以合并，不新增固定 Core Role 或调用编制。
+程序独立检查权限、目标版本、diff/ref 和输入冲突；它不能替代语义判断。模型输出只构成有依据的路由/影响提案，须通过适用执行边界；材料不足则澄清或保留 unknown。角色必载提示词与可选方法 Skill 分开，不为每次短程操作强加 Skill Supply；实际选择 Skill 时沿既有加载、评价/准入和 use-boundary，不用提示词版本替代 Skill 资格。职责可以合并，不新增固定 Core Role 或调用编制。
 
 | 路径 | 最小上下文与控制 | 实际输出与状态接点 |
 |---|---|---|
 | Guide | 问题、获准 MainState/必要 refs；独立只读、无主聊天默认读取 | 有依据的解释和未知；不写项目、不通知 main。修改建议只是新请求候选 |
-| 短程任务 | 局部目标、选中文件/片段及版本、写范围、预算与检查；独立会话和最小有界 Task | 实际局部工件、diff、检查与影响评估；默认不直接 MainState/主会话反馈 |
+| 短程任务 | 局部目标、选中文件/片段及版本、写范围、输出检查；独立会话和最小有界 Task | 实际局部工件、diff、检查与影响评估；默认不直接 MainState/主会话反馈 |
 | 研究需求 | 意图、获准材料、项目政策与未知 | Protocol/Task/Method/Requirement 规划后，main 执行与人类决定 |
 | 当前主 Task 意见 | 人类明确的目标 Task 和有界修改，不包含全部旁路聊天 | 沿该 Task 的治理入口处理；正在执行的子 Task 仍由 main 协调 |
 | 混合或歧义 | 最小必要项目/任务 metadata，询问具体目标或拆分关联请求 | 澄清/路由提案，不通过猜测投递 main/child 或扩大写入 |
@@ -47,9 +47,9 @@ flowchart TB
 
 ## 短程任务不是免控制的直接模型调用
 
-短程 Agent 与 Guide/main 同级是应用职责关系；它不继承 main 的科学决定权或 child 控制权。没有研究 Protocol 不等于没有 Task、预算、输入版本、能力与执行事实。复用 no-Skill/direct Tool 的最小 Method/Requirement/Resolution/Snapshot/Bundle/View，只声明本次局部操作需要的能力；缺 Action、供给或资格时记录 gap，不制造 Mode、Skill 或 accepted Supply。
+短程 Agent 与 Guide/main 同级是应用职责关系；它不继承 main 的科学决定权或 child 控制权。没有研究 Protocol 不等于没有 Task、输入版本、能力与执行事实。复用 no-Skill/direct Tool 的最小 Method/Requirement/Resolution/Snapshot/Bundle/View，只声明本次局部操作需要的能力；缺 Action、供给或资格时记录 gap，不制造 Mode、Skill 或 accepted Supply。
 
-当前 intake 要完整研究 Protocol/Task ceilings，现有候选 factory 仅接 readonly Tool，Guide 也没有短程写回能力；这些既有接口不自动满足本设计。后续由最小短程 compiler、获准 Tool handler 和统一 caller 接合。Guide 的独立生成仍需在统一 caller 内闭合实际权限、费用与记录，不能以“询问”绕过总预算。
+当前 intake 要完整研究 Protocol/Task ceilings，现有候选 factory 仅接 readonly Tool，Guide 也没有短程写回能力；这些既有接口不自动满足本设计。后续由最小短程 compiler、获准 Tool handler 和统一 caller 接合。Guide 的独立生成仍需在统一 caller 内闭合实际权限、调用和可得用量记录，模型不默认读取账本或管理额度；记账 unknown 与回答/执行判定分别处理。
 
 写入前核对目标版本、授权和活动任务使用情况。冲突对象优先另存局部候选或停止写入；不能因为打算后置评估就先覆盖活动 main/child 的冻结输入。短程不暴露任意 child session 的独立修改入口；人类若要改变某个子任务，先明确其所属主 Task，再由该治理接点处理。
 
@@ -79,9 +79,20 @@ flowchart TB
 | 重排一个章节段落，内容/引用/活动输入不变 | 独立短程实际编辑及 diff/check；post none，MainState before/after 相同、main 待办/上下文未变 |
 | “只改一句”，实际从“可能相关”变成“已经证明” | 不能按规模判低风险；预分类应识别研究含义，若执行中才发现则 relevant/hold/待采纳，不静默更新研究结论 |
 | 主张不变，但被 MainState pin 的文件被改 | 保留旧不可变版本，或进入明确引用维护提案；坏 pin 不能当 none |
-| 请求内容同时含查询、局部编辑和新的研究目标 | 拆为关联请求/澄清，各路独立输入及预算记录，研究部分才生成 Protocol |
+| 请求内容同时含查询、局部编辑和新的研究目标 | 拆为关联请求/澄清，各意图独立输入、状态/结果及程序用量记录，研究部分才生成 Protocol |
 | 修改的文件正在被 main 或 child 写入/消费 | 执行前检测冲突，另存候选或阻断；确切输入失效通过对应 Task 接点最小通知 |
 | “继续刚才研究”或明确修订主 Task | 核目标 Task 后投递主治理入口；不猜任意 child，未明确目标先澄清 |
 | 人类试图独立重绑 child API/改其执行指令 | 不提供普通旁路直接操控入口；关联主 Task 再由 main 协调，授权/资格不因此放宽 |
 
 新完整研究从0/人工材料初始化继续共用原研究流程；前述旁路只决定是否进入它。一次旁路请求不得使 main 自动认为收到下一研究任务，也不能将 pending 提案当已接受 MainState。后续 M11-011 验证实际 producer、recipient、请求上下文、diff/check、State 前后及通知事实，不能用模拟路由或 JSON 字段代替实际链。
+
+
+## 关联意图、方向与显示接点
+
+意图分解仅消费消息、必要项目/Task 摘要和授权 metadata。每项保留原文对应、目的、对象、route/目标、共同/局部限制、依赖/冲突及结果入口；原 request、intent、Task、Attempt 分别关联，不互相替代。明确项直接处理，影响投递或执行的未知才澄清。路由后再装配角色工作集，不先遍历记忆库，不默认加入预算余额/账本或自估 token 指令。
+
+“解释旧失败、修改方法段、比较 A/B，暂不更新主结论”形成三个关联意图；共同限制随适用意图传播。A/B 可是比较研究内部方向，父目标仍一致。已完成项独立先交付；失败项保留诊断、依赖失败项等待；仅在用户要求或父目标需要时综合，不通过一个最终模型重写所有交付来掩盖状态。
+
+有限方向按现有 Task/Handoff 记录基线和局部结果，选择某方向卡片不授予 child 控制权；首版反馈精确关联方向并投递所属 main。M2-015 不新增持久分支身份或恢复权威。只读展示消费 M1-016/017 的实际事件/快照，后续操作复用 M1-013/015 的实现入口；只读显示不以所有路由/记忆维护完工为前置。
+
+程序记录实际调用/费用/未知，不要求用户先填经济额度，不要求模型生成子预算。新的无预算工作输入与旧 Task/Policy/View 区分，迁移见 [ADR-0025](../../../decisions/0025-USAGE-RECORDING-AND-MODEL-WORKING-INPUT.md)及 [版本边界](../../../compatibility/BUDGET_CONTRACT_MIGRATION.md)。旧固定候选的强制预算接口仍是迁移源事实，文档接受不表示已经移除。

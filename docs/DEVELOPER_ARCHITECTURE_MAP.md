@@ -62,7 +62,7 @@ flowchart TB
 | 入口职责 | 有界执行接点 | 结果消费边界 |
 |---|---|---|
 | Guide 查询 | 独立只读允许集与批准 refs | 向人类解释；默认不回传 main |
-| 独立短程 Task | 最小 Task/scope/pins/预算/输出/permission；既有 Method/Requirement、Bundle/View 与合法 binding | 局部工件和 change record；写后评估是否需状态提案 |
+| 独立短程 Task | 最小 Task/scope/pins/输出/permission；既有 Method/Requirement、Bundle/View 与合法 binding | 局部工件和 change record；写后评估是否需状态提案 |
 | 完整研究 | Protocol 整理与现有主链 | main 消费结果、维护当前 Task 与人类待决项 |
 
 Guide 与短程调用在 main 旁，与研究 child 不同；同一对话框不共享其模型上下文或权限。
@@ -81,7 +81,7 @@ Guide 与短程调用在 main 旁，与研究 child 不同；同一对话框不�
 | Capability Resolver | Capability Resolution、Resolved Capability Snapshot | Bundle producer/loader | 唯一 eligible selection；gap/ambiguous/blocked 不伪造 executable closure |
 | 显式 manifest producer / Bundle loader | Validated Runtime Bundle | View producer、Host | 完整 selected closure，Method proceed，Action/Capability slice；禁止扫描全仓发现输入 |
 | View producer | Resolved Execution View | Thin Host | exact Profile/DataPolicy/Host policy/binding 与最终最严交集；不足或 stale 阻断 |
-| Thin Host + pre-bound Driver | Host report、actual facts 与执行工件 | Trace / closeout producer | 重验 pins/freshness、限制调用与预算；保留 preflight block/post-call failure/unknown |
+| Thin Host + pre-bound Driver | Host report、actual facts 与执行工件 | Trace / closeout producer | 重验 pins/freshness、核调用权限与实际技术能力、记录用量；保留 preflight block/post-call failure/unknown |
 | Trace、Artifact、Validator、closeout producer | hash-pinned Trace facts、验证、Receipt | 主执行接收者 / 审计 | closed set 完整；Receipt 只声明 slice closeout，不接受 Claim 或完成整项 Task |
 | 主执行接收者 / checkpoint writer | Handoff disposition、Main State、下一动作 | 新主会话 / Human / Guide | 明确采用结果和保留限制；resume check 不自动运行 next action |
 
@@ -117,7 +117,7 @@ Guide 与短程调用在 main 旁，与研究 child 不同；同一对话框不�
 
 ## 4. main、child 与结果消费
 
-main 在 Protocol/Task 的深度、并发、预算和 write scope 内决定 0..N 个子 Task；零子任务是正常路径。
+main 在 Protocol/Task 的深度、实际并发能力和 write scope 内决定 0..N 个子 Task；零子任务是正常路径。
 每次子执行都有独立 Task、允许集、Profile、冻结输入与输出契约。平台原生 child 或隔离 API session
 都可承载它；独立会话不等于独立科学证据，同供应商也不等于共享隐式会话状态。
 

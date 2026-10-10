@@ -41,7 +41,7 @@ M1-010（需求/材料与契约产物）、M2-009（角色与有界主子消费�
 
 新建输入和人工既有材料是入口策略，共用 Protocol/Task/Mode/Method 流程。材料必须显式声明、授权并冻结；
 缺 MainState 时保持 unknown，不补造历史接受或自动恢复。角色职责可合并，必载职责提示与可选方法 Skill 分开；
-main 在已授权上限内提出 0..N child，每个 child 仍有有界 Task、fresh context、权限预算预检及独立冻结。
+main 在已授权上限内提出 0..N child，每个 child 仍有有界 Task、fresh context、权限/版本/供给预检及独立冻结。
 这属于 caller 消费既有接口，不授予 Host 组队、重选 Supply 或修改科研权威。
 
 Guide 使用独立只读上下文，只读取 approved MainState/必要 refs；不默认读取主聊天、原 logs 或全仓，
@@ -52,16 +52,18 @@ Guide 使用独立只读上下文，只读取 approved MainState/必要 refs；�
 
 [下一阶段计划](workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/REALIZATION_PLAN.md)把候选桥接与真实工程使用间的差距
 映射到 exact M Tasks。简要实施 waves 见[施工导航](M_SERIES_IMPLEMENTATION_MAP.md#4-真实环境接合的实施-waves)，详细排程由该计划说明；
-它们不新增 hard dependency，不覆盖 TASKS 的定义、状态或启动条件，也不表示 PR140/PR141 已合并。
+它们不新增 hard dependency，不覆盖 TASKS 的定义、状态或启动条件，也不表示对应功能已实现或完成 Task 验收。
 
-基础接口先落实机器治理与人员规则对齐、工程环境事实、可配置真实预算/能力、actual 决策事实生产/提交和逐候选供给发现。
+基础接口先落实机器治理与人员规则对齐、工程环境事实、实际模型能力适配、程序用量记录和版本化工作输入迁移、actual 决策事实生产/提交和逐候选供给发现。
 后续接合自然意图与人工材料、职责/prompt、不同 child Method/Profile、qualified Skill actual load、真实 Tools、
 大输入、partial 工件、短 MainState、研究对象及 Task 目标质量，再以 installed 通用入口和工程整链 Gate 取证。
-预算参数化不删除权限、数据外发、实际绑定、未知用量和失败留存约束；动态选择仍由 Capability Resolver 完成，Host 只执行 frozen View。
+用量观测与经济限制分开，不默认要求额度或模型预算管理；权限、数据外发、实际绑定、未知用量和失败留存分别检查；动态选择仍由 Capability Resolver 完成，Host 只执行 frozen View。
 
 这一路线不要求先完成 M5 四臂净价值研究；其现有评价 Gate、Mode 候选/新 Skill 准入以及 M12/Topic 5 仍独立。
 当前接入人工状态/新 Task 与定向 partial 修复不引入自动上下文延续或会话恢复。
 API 成功、结构有效或 action-only Receipt 不产生 Skill 合格、Task 目标完成、科学正确性或 Human 接受。
+
+三条增量线消费上述基础：范围化研究记忆/角色工作集、复合意图/活跃任务内有限方向、实际事件/只读显示。读取不等待维护，当前状态不等待摘要，只读显示不等待完整统一入口。具体分段交付见唯一实施计划；自动上下文替换、迁移恢复和持久分支生命周期仍按 Topic 5 审查，不由应用分支隐式激活。Codex 对照由 Issue #18 收集候选，不构成工程路线的 Gate。
 
 ### 1.3 既有研究主线外的入口层与分支
 

@@ -10,43 +10,10 @@
 
 ## 2. Task Packet
 
-下例用于说明 Task 字段职责；它是示意，不是完整可执行输入。实际 Task 须通过所用 Schema 与引用
+实际 Task 须通过所用 Schema 与引用
 闭包校验，执行还须提供合法冻结输入、资格证据、Profile/policies/binding 和允许集。
 
-```yaml
-schema_version: 0.1.0
-task_id: QUICKSTART-001
-goal: Check explicit local artifact references and produce a bounded check report.
-question_refs: []
-active_modes: []
-required_capabilities: []
-required_skills: []
-forbidden_skills: [final-synthesis]
-agent_profile: evidence-scout
-input_refs: []
-write_scope:
-  - work/QUICKSTART-001/**
-required_outputs:
-  - deterministic-check-report
-permissions:
-  external_write: false
-delegation:
-  allowed: false
-budget:
-  max_turns: 4
-  max_output_tokens: 800
-atomic_boundary: One bounded reference check and persisted report.
-completion_checks:
-  - declared artifact references and report pass deterministic checks
-safe_pause_conditions:
-  - next atomic unit would consume the closeout reserve
-  - required source, permission, or human decision is unavailable
-stop_conditions:
-  - required_outputs_complete
-  - human_judgment_required
-stale_if:
-  - any_input_hash_changes
-```
+Task 的字段职责是目标、问题/方法关联、获准输入/写范围、交付、权限、委派和真实完成/停止条件。模型消费这些职责的显式工作投影，程序持有完整冻结执行元数据和记账。旧版非空 budget 示例见[迁移边界](../compatibility/BUDGET_CONTRACT_MIGRATION.md)；当前支持以 [STATUS](../STATUS.md)为准，不以文档方向宣称 Schema 已迁移。
 
 Task 必须可在有限时间内完成。`goal` 不能写成“完成整个研究”或“确保论文正确”。
 
@@ -56,7 +23,7 @@ direct Tool、procedure 或 Adapter/Provider supply 路径不得为了满足旧�
 Skill Assignment；Assignment 只服务历史 Skill-bound 兼容路径。旧版本和 legacy surface 的
 回放边界见[兼容性说明](../compatibility/README.md)。
 
-Task Packet 表达 research intent、Atomic Work Unit、输入/输出约束、权限和预算；它不是最终冻结的
+Task Packet 表达 research intent、Atomic Work Unit、输入/输出约束、权限与真实停止条件；它不是最终冻结的
 Execution Contract。`atomic_boundary` 说明可安全切换的最小边界；`completion_checks` 是 Task 声明的
 deterministic completion criteria，不是 Claim、Human Decision 或科学正确性 authority；
 `safe_pause_conditions` 说明何时允许持久化后停止。上下文不足只能进入 `safe-paused`，不能把未通过
@@ -65,7 +32,7 @@ deterministic completion criteria，不是 Claim、Human Decision 或科学正�
 目标关系为：
 
 ```text
-Task Packet = research intent + atomic boundary + input/output constraints + permissions/budget
+Task Packet = research intent + atomic boundary + input/output constraints + permissions/stop conditions
 Method Resolution = provider-neutral methodology decision
 Capability Requirement = provider-neutral demand and ceilings
 Capability Supply Report = one implementation's reported capability and boundary facts, without selection authority
@@ -86,7 +53,7 @@ Thin Execution Host = consume exact Bundle-bound View and report actual executio
 
 [统一入口设计候选](../decisions/0024-UNIFIED-ENTRY-AND-SHORT-TASK-ROUTING.md)中的短程 Task 是 main 旁
 的有界局部工作，不要求每次建立或修订完整研究 Protocol，仍声明目标、scope、exact input pins、
-预算、输出、权限与停止条件。执行复用合法 no-Skill/direct Tool 的最小 Method、Requirement、
+输出、权限与停止条件，实际消耗由程序记录。执行复用合法 no-Skill/direct Tool 的最小 Method、Requirement、
 Capability selection、Bundle/View；Task 或“短程”标签不提供 permission grant。详细规则由
 [短程入口设计](../workstreams/chengyue-lu/RWB-CHAIN-TASK-DEFINITION/SHORT_LANE_DESIGN.md)维护，实际覆盖见 STATUS。
 
@@ -118,7 +85,7 @@ requirements 一致，但 `task_completion` 固定为 `false`；一个 slice 闭
 
 Resolved Execution View 消费已经验证的 Bundle 和 exact Profile、DataPolicy、Host policy、Execution
 Binding，冻结 Provider、Adapter、Model、Runtime、Host、三组 freshness windows、required outputs，以及
-permission/data-egress/side-effect/budget 的最严交集。View producer 不能重新选择 Supply，交集也不能低于
+permission/data-egress/side-effect 的最严交集和实际技术能力。View producer 不能重新选择 Supply，交集也不能低于
 selected Supply 的真实运行需求；无法满足时 fail closed 并请求上游形成新的 Resolution→Snapshot→View。
 View 是 Host 的 final frozen execution contract，但仍不创造 permission grant、Claim/Human authority 或
 Task completion。
@@ -221,7 +188,7 @@ actual binding。任何 Receipt status 都不构成 Claim promotion、Human acce
 
 ## 8. 预警
 
-- `TASK-TOO-BROAD`：目标无法在预算内完成；
+- `TASK-TOO-BROAD`：目标缺少可检查的原子交付或超出真实能力；
 - `TASK-SKILL-MISMATCH`：Task 明确要求 Skill 时，冻结的 Skill binding 未覆盖该要求；一般 Capability
   Requirement 无可用供给时属于 capability gap，不得自动改写成 Skill Need；
 - `TASK-WRITE-OVERLAP`：并行写范围重叠；
